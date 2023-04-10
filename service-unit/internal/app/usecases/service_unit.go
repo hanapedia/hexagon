@@ -5,32 +5,12 @@ import (
 	"log"
 
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/core"
-	externalBuilder "github.com/hanapedia/the-bench/service-unit/internal/infrastructure/external_service_adapter/builder"
+	serviceAdapterBuilder "github.com/hanapedia/the-bench/service-unit/internal/infrastructure/service_adapter/builder"
 )
 
 type ServiceUnit struct {
-	Name            string
-	serverAdapters  []core.ServerAdapter
-	ServiceHandlers []ServiceHandler
-}
-
-type ServiceHandler struct {
-	ID       string
-	Name     string
-	Protocol string
-	Action   string
-	TaskSets []TaskSet
-}
-
-type TaskSet struct {
-	ExternalServiceAdapter core.ExternalServiceAdapter
-	Concurrent             bool
-}
-
-func (si *ServiceHandler) Handle() {
-	for _, ts := range si.TaskSets {
-		ts.ExternalServiceAdapter.Call()
-	}
+	Name           string
+	serverAdapters []core.ServerAdapter
 }
 
 func NewServiceUnit(configLoader core.ConfigLoader) ServiceUnit {
@@ -39,45 +19,48 @@ func NewServiceUnit(configLoader core.ConfigLoader) ServiceUnit {
 		log.Fatalf("Error loading config: %v", err)
 	}
 
-	serviceHandler := mapServiceHandler(config.Name, &config.ServerInterfaceConfigs)
+	serverAdapters := mapServiceHandlerToServer(config.Name, &config.HandlerConfigs)
 
 	serviceUnit := ServiceUnit{
-		Name:            config.Name,
-		ServiceHandlers: *serviceHandler,
+		Name:           config.Name,
+		serverAdapters: *serverAdapters,
 	}
+
 	return serviceUnit
 }
 
-func mapServiceHandler(serviceName string, serviceHandlerConfigs *[]core.ServiceHandlerConfig) *[]ServiceHandler {
-	serviceHandler := make([]ServiceHandler, len(*serviceHandlerConfigs))
-	for i, serviceHandlerConfig := range *serviceHandlerConfigs {
-		taskSets := mapTaskSet(&serviceHandlerConfig.Flow)
-		serviceHandler[i] = ServiceHandler{
-			Name:     serviceHandlerConfig.Name,
-			Protocol: serviceHandlerConfig.Protocol,
-			Action:   serviceHandlerConfig.Action,
+func mapServiceHandlerToServer(serviceName string, HandlerConfigs *[]core.HandlerConfig) *[]core.ServerAdapter {
+	serverAdapters := make([]core.ServerAdapter, len(*HandlerConfigs))
+	for _, HandlerConfig := range *HandlerConfigs {
+		taskSets := mapTaskSet(&HandlerConfig.Flow)
+		handler := core.Handler{
+			Name:     HandlerConfig.Name,
+			Protocol: HandlerConfig.Protocol,
+			Action:   HandlerConfig.Action,
 			ID: fmt.Sprintf(
 				"%s.%s.%s.%s",
 				serviceName,
-				serviceHandlerConfig.Protocol,
-				serviceHandlerConfig.Action,
-				serviceHandlerConfig.Name,
+				HandlerConfig.Protocol,
+				HandlerConfig.Action,
+				HandlerConfig.Name,
 			),
 			TaskSets: *taskSets,
 		}
+
+        serverAdapterBuilder.UpSertServerAdapter(&serverAdapters, handler)
 	}
-	return &serviceHandler
+	return &serverAdapters
 }
 
-func mapTaskSet(steps *[]core.Step) *[]TaskSet {
-	tasksets := make([]TaskSet, len(*steps))
+func mapTaskSet(steps *[]core.Step) *[]core.TaskSet {
+	tasksets := make([]core.TaskSet, len(*steps))
 	for i, step := range *steps {
-		externalServiceAdapter, err := externalBuilder.NewExternalServiceAdapterFromID(step.AdapterId)
+		serviceAdapter, err := serviceAdapterBuilder.NewServiceAdapterFromID(step.AdapterId)
 		if err != nil {
 			log.Printf("Skipped interface: %s", err)
 			continue
 		}
-		tasksets[i] = TaskSet{ExternalServiceAdapter: externalServiceAdapter, Concurrent: step.Concurrent}
+		tasksets[i] = core.TaskSet{ServiceAdapter: serviceAdapter, Concurrent: step.Concurrent}
 	}
 
 	return &tasksets

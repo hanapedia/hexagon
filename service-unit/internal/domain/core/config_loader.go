@@ -5,11 +5,11 @@ type ConfigLoader interface {
 }
 
 type ServiceUnitConfig struct {
-	Name                   string                 `yaml:"name"`
-	ServerInterfaceConfigs []ServiceHandlerConfig `yaml:"handler"`
+	Name           string          `yaml:"name"`
+	HandlerConfigs []HandlerConfig `yaml:"handler"`
 }
 
-type ServiceHandlerConfig struct {
+type HandlerConfig struct {
 	Name     string `yaml:"name"`
 	Protocol string `yaml:"protocol"`
 	Action   string `yaml:"action"`
