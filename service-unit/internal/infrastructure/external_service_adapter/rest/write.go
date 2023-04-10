@@ -1,4 +1,4 @@
-package rest_interface
+package rest
 
 import (
 	"encoding/json"
@@ -8,20 +8,20 @@ import (
 	"time"
 )
 
-type RestReadInterface struct {
+type RestWriteAdapter struct {
 	URL string
 }
 
-type RestReadResponse struct {
+type RestWriteResponse struct {
 	Message string `json:"message"`
 }
 
-func (rgi RestReadInterface) Run() (string, error) {
+func (rpa RestWriteAdapter) Call() (string, error) {
 	client := http.Client{
 		Timeout: time.Millisecond * 500,
 	}
 
-	resp, err := client.Get(rgi.URL)
+	resp, err := client.Post(rpa.URL, "application/json", nil)
 	if err != nil {
 		return "", err
 	}
@@ -36,12 +36,12 @@ func (rgi RestReadInterface) Run() (string, error) {
 		return "", err
 	}
 
-	var restReadResponse RestReadResponse
-	err = json.Unmarshal(body, &restReadResponse)
+	var restWriteResponse RestWriteResponse
+	err = json.Unmarshal(body, &restWriteResponse)
 	if err != nil {
 		return "", err
 	}
 
-	return restReadResponse.Message, nil
+	return restWriteResponse.Message, nil
 }
 

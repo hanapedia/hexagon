@@ -1,23 +1,22 @@
 package core
 
-type ConfigLoader interface{
-  Load() (ServiceUnitConfig, error)
+type ConfigLoader interface {
+	Load() (ServiceUnitConfig, error)
 }
 
 type ServiceUnitConfig struct {
-	Name                   string                  `yaml:"name"`
-	ServerInterfaceConfigs []ServerInterfaceConfig `yaml:"interfaces"`
+	Name                   string                 `yaml:"name"`
+	ServerInterfaceConfigs []ServiceHandlerConfig `yaml:"handler"`
 }
 
-type ServerInterfaceConfig struct {
+type ServiceHandlerConfig struct {
 	Name     string `yaml:"name"`
 	Protocol string `yaml:"protocol"`
-	Action     string `yaml:"action"`
+	Action   string `yaml:"action"`
 	Flow     []Step `yaml:"flow"`
 }
 
 type Step struct {
-	InterfaceID string `yaml:"interfaceId"`
-	Concurrent  bool  `yaml:"concurrent,omitempty"`
+	AdapterId  string `yaml:"adapterId"`
+	Concurrent bool   `yaml:"concurrent,omitempty"`
 }
-
