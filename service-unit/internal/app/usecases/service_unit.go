@@ -5,7 +5,8 @@ import (
 	"log"
 
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/core"
-	serviceAdapterBuilder "github.com/hanapedia/the-bench/service-unit/internal/infrastructure/service_adapter/builder"
+	serviceAdapterFactory "github.com/hanapedia/the-bench/service-unit/internal/infrastructure/service_adapter/factory"
+	serverAdapterFactory "github.com/hanapedia/the-bench/service-unit/internal/infrastructure/server_adapter/factory"
 )
 
 type ServiceUnit struct {
@@ -47,7 +48,7 @@ func mapServiceHandlerToServer(serviceName string, HandlerConfigs *[]core.Handle
 			TaskSets: *taskSets,
 		}
 
-        serverAdapterBuilder.UpSertServerAdapter(&serverAdapters, handler)
+        serverAdapterFactory.UpSertServerAdapter(&serverAdapters, handler)
 	}
 	return &serverAdapters
 }
@@ -55,7 +56,7 @@ func mapServiceHandlerToServer(serviceName string, HandlerConfigs *[]core.Handle
 func mapTaskSet(steps *[]core.Step) *[]core.TaskSet {
 	tasksets := make([]core.TaskSet, len(*steps))
 	for i, step := range *steps {
-		serviceAdapter, err := serviceAdapterBuilder.NewServiceAdapterFromID(step.AdapterId)
+		serviceAdapter, err := serviceAdapterFactory.NewServiceAdapterFromID(step.AdapterId)
 		if err != nil {
 			log.Printf("Skipped interface: %s", err)
 			continue
