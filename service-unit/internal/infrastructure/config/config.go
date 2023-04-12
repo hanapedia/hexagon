@@ -7,11 +7,11 @@ import (
 )
 
 type YamlConfigLoader struct {
-	path string
+	Path string
 }
 
 func (ycl YamlConfigLoader) Load() (core.ServiceUnitConfig, error) {
-	data, err := ioutil.ReadFile(ycl.path)
+	data, err := ioutil.ReadFile(ycl.Path)
 
 	var config core.ServiceUnitConfig
 	err = yaml.Unmarshal(data, &config)

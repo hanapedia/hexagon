@@ -15,6 +15,11 @@ type ServerAdapter interface {
     Serve() error
 }
 
+type ServerAdapterError struct {
+    ServerAdapter ServerAdapter 
+    Error error
+}
+
 type Handler struct {
 	ID       string
 	Name     string

@@ -5,16 +5,11 @@ import (
 	"log"
 
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/core"
-	serviceAdapterFactory "github.com/hanapedia/the-bench/service-unit/internal/infrastructure/service_adapter/factory"
 	serverAdapterFactory "github.com/hanapedia/the-bench/service-unit/internal/infrastructure/server_adapter/factory"
+	serviceAdapterFactory "github.com/hanapedia/the-bench/service-unit/internal/infrastructure/service_adapter/factory"
 )
 
-type ServiceUnit struct {
-	Name           string
-	serverAdapters []core.ServerAdapter
-}
-
-func NewServiceUnit(configLoader core.ConfigLoader) ServiceUnit {
+func NewServiceUnit(configLoader core.ConfigLoader) *core.ServiceUnit {
 	config, err := configLoader.Load()
 	if err != nil {
 		log.Fatalf("Error loading config: %v", err)
@@ -22,16 +17,16 @@ func NewServiceUnit(configLoader core.ConfigLoader) ServiceUnit {
 
 	serverAdapters := mapServiceHandlerToServer(config.Name, &config.HandlerConfigs)
 
-	serviceUnit := ServiceUnit{
+	serviceUnit := core.ServiceUnit{
 		Name:           config.Name,
-		serverAdapters: *serverAdapters,
+		ServerAdapters: serverAdapters,
 	}
 
-	return serviceUnit
+	return &serviceUnit
 }
 
-func mapServiceHandlerToServer(serviceName string, HandlerConfigs *[]core.HandlerConfig) *[]core.ServerAdapter {
-	serverAdapters := make([]core.ServerAdapter, len(*HandlerConfigs))
+func mapServiceHandlerToServer(serviceName string, HandlerConfigs *[]core.HandlerConfig) *[]*core.ServerAdapter {
+	serverAdapters := make([]*core.ServerAdapter, len(*HandlerConfigs))
 	for _, HandlerConfig := range *HandlerConfigs {
 		taskSets := mapTaskSet(&HandlerConfig.Flow)
 		handler := core.Handler{
@@ -48,7 +43,10 @@ func mapServiceHandlerToServer(serviceName string, HandlerConfigs *[]core.Handle
 			TaskSets: *taskSets,
 		}
 
-        serverAdapterFactory.UpSertServerAdapter(&serverAdapters, handler)
+		err := serverAdapterFactory.UpsertServerAdapter(&serverAdapters, &handler)
+		if err != nil {
+			log.Fatalf("Error registering handler to server adapter: %v", err)
+		}
 	}
 	return &serverAdapters
 }
