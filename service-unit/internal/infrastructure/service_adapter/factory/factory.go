@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/core"
-	"github.com/hanapedia/the-bench/service-unit/internal/infrastructure/service_adapter/rest"
 	"github.com/hanapedia/the-bench/service-unit/pkg/shared"
 )
 
@@ -14,20 +13,6 @@ type ServiceAdapterDetails struct {
 	protocol      string
 	action        string
 	handlerName string
-}
-
-func (serviceAdapterDetails ServiceAdapterDetails) RestAdapterBuilder() (core.ServiceAdapter, error) {
-	var err error = nil
-	var serviceAdapter core.ServiceAdapter
-	switch serviceAdapterDetails.action {
-	case "read":
-		serviceAdapter = rest.RestReadAdapter{URL: serviceAdapterDetails.serviceName}
-	case "write":
-		serviceAdapter = rest.RestWriteAdapter{URL: serviceAdapterDetails.serviceName}
-	default:
-		err = errors.New("No matching protocol found")
-	}
-	return serviceAdapter, err
 }
 
 func newServiceAdapterDetails(id string) (ServiceAdapterDetails, error) {
@@ -49,7 +34,7 @@ func NewServiceAdapterFromID(id string) (core.ServiceAdapter, error) {
 	var serviceAdapter core.ServiceAdapter
 	switch serviceAdapterDetails.protocol {
 	case "rest":
-		serviceAdapter, err = serviceAdapterDetails.RestAdapterBuilder()
+		serviceAdapter, err = serviceAdapterDetails.RestServiceAdapterFactory()
 	default:
 		err = errors.New("No matching protocol found")
 	}
