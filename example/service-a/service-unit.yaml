@@ -1,0 +1,16 @@
+name: service-a
+handler:
+  - name: getUser
+    protocol: rest
+    action: read
+    flow:
+      - adapterId: service-b.rest.read.getUserPreference
+      - adapterId: service-c.rest.read.getUserHistory
+        concurrent: true
+      - adapterId: service-d.rest.write.postUserLog
+  - name: updateUser
+    protocol: rest
+    action: write
+    flow:
+      - adapterId: service-c.rest.read.getUserHistory
+      - adapterId: service-d.rest.write.updateUserPreference

@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+  service-a:
+    image: hiroki11hanada/service-unit:v1.0
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./service-a/service-unit.yaml:/app/config/service-unit.yaml
+
+  service-b:
+    image: hiroki11hanada/service-unit:v1.0
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./service-b/service-unit.yaml:/app/config/service-unit.yaml
+
+  service-c:
+    image: hiroki11hanada/service-unit:v1.0
+    ports:
+      - "8083:8080"
+    volumes:
+      - ./service-c/service-unit.yaml:/app/config/service-unit.yaml
+
+  service-d:
+    image: hiroki11hanada/service-unit:v1.0
+    ports:
+      - "8084:8080"
+    volumes:
+      - ./service-d/service-unit.yaml:/app/config/service-unit.yaml

@@ -1,0 +1,6 @@
+name: service-b
+handler:
+  - name: getUserPreference 
+    protocol: rest
+    action: read
+    flow: []
