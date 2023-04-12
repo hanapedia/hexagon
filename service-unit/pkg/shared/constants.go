@@ -1,6 +1,17 @@
 package shared
 
-const ServiceNameIndex = 0
-const ProtocolIndex = 1
-const ActionIndex = 2
-const AdapterNameIndex = 3
+const (
+ ServiceNameIndex = 0
+ ProtocolIndex = 1
+ ActionIndex = 2
+ AdapterNameIndex = 3
+
+)
+
+type ServerAdapterProtocol string
+
+const (
+  REST ServerAdapterProtocol = "rest"
+  // GRPC ServerAdapterProtocol = "grpc"
+  // KAFKA ServerAdapterProtocol = "kafka"
+)

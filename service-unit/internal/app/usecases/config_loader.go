@@ -9,8 +9,9 @@ func NewConfigLoader(format string) core.ConfigLoader {
 	var configLoader core.ConfigLoader
 	switch format {
 	case "yaml":
+		configLoader = config.YamlConfigLoader{Path: "./config/service-unit.yaml"}
 	default:
-		configLoader = config.YamlConfigLoader{Path: "/var/service-unit.yaml"}
+		configLoader = config.YamlConfigLoader{Path: "./config/service-unit.yaml"}
 	}
 	return configLoader
 }

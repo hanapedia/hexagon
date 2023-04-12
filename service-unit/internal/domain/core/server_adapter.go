@@ -13,6 +13,7 @@ package core
 // not the services themselves; hence the name `ServiceAdapter`
 type ServerAdapter interface {
     Serve() error
+    Register(*Handler) error
 }
 
 type ServerAdapterError struct {

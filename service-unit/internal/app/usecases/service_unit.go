@@ -7,48 +7,56 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/core"
 	serverAdapterFactory "github.com/hanapedia/the-bench/service-unit/internal/infrastructure/server_adapter/factory"
 	serviceAdapterFactory "github.com/hanapedia/the-bench/service-unit/internal/infrastructure/service_adapter/factory"
+	"github.com/hanapedia/the-bench/service-unit/pkg/shared"
 )
 
-func NewServiceUnit(configLoader core.ConfigLoader) *core.ServiceUnit {
+func NewServiceUnit(configLoader core.ConfigLoader) core.ServiceUnit {
 	config, err := configLoader.Load()
 	if err != nil {
 		log.Fatalf("Error loading config: %v", err)
 	}
+    log.Println("Config successfully loaded.")
 
 	serverAdapters := mapServiceHandlerToServer(config.Name, &config.HandlerConfigs)
+    log.Println("Handler to Server mapping completed.")
 
 	serviceUnit := core.ServiceUnit{
 		Name:           config.Name,
 		ServerAdapters: serverAdapters,
 	}
 
-	return &serviceUnit
+	return serviceUnit
 }
 
-func mapServiceHandlerToServer(serviceName string, HandlerConfigs *[]core.HandlerConfig) *[]*core.ServerAdapter {
-	serverAdapters := make([]*core.ServerAdapter, len(*HandlerConfigs))
-	for _, HandlerConfig := range *HandlerConfigs {
-		taskSets := mapTaskSet(&HandlerConfig.Flow)
+func mapServiceHandlerToServer(serviceName string, HandlerConfigs *[]core.HandlerConfig) map[shared.ServerAdapterProtocol]*core.ServerAdapter {
+	serverAdapters := make(map[shared.ServerAdapterProtocol]*core.ServerAdapter)
+	for _, handlerConfig := range *HandlerConfigs {
+		taskSets := mapTaskSet(&handlerConfig.Flow)
 		handler := core.Handler{
-			Name:     HandlerConfig.Name,
-			Protocol: HandlerConfig.Protocol,
-			Action:   HandlerConfig.Action,
+			Name:     handlerConfig.Name,
+			Protocol: handlerConfig.Protocol,
+			Action:   handlerConfig.Action,
 			ID: fmt.Sprintf(
 				"%s.%s.%s.%s",
 				serviceName,
-				HandlerConfig.Protocol,
-				HandlerConfig.Action,
-				HandlerConfig.Name,
+				handlerConfig.Protocol,
+				handlerConfig.Action,
+				handlerConfig.Name,
 			),
 			TaskSets: *taskSets,
 		}
-
-		err := serverAdapterFactory.UpsertServerAdapter(&serverAdapters, &handler)
+		serverAdapterProtocol := shared.ServerAdapterProtocol(handler.Protocol)
+		_, ok := serverAdapters[serverAdapterProtocol]
+		if !ok {
+			serverAdapters[serverAdapterProtocol] = serverAdapterFactory.NewServerAdapter(serverAdapterProtocol)
+		}
+		err := serverAdapterFactory.RegiserHandlerToServerAdapter(serverAdapterProtocol, serverAdapters[serverAdapterProtocol], &handler)
 		if err != nil {
 			log.Fatalf("Error registering handler to server adapter: %v", err)
 		}
+        log.Printf("Successfully mapped '%s' handler to '%s' server", handler.Name, serverAdapterProtocol)
 	}
-	return &serverAdapters
+	return serverAdapters
 }
 
 func mapTaskSet(steps *[]core.Step) *[]core.TaskSet {

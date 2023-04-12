@@ -3,7 +3,6 @@ package rest
 import (
 	"errors"
 	"fmt"
-	"log"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/core"
@@ -27,11 +26,11 @@ type RestResponse struct {
 	Message string `json:"message"`
 }
 
-func (rsa *RestServerAdapter) Register(handler *core.Handler) error {
+func (rsa RestServerAdapter) Register(handler *core.Handler) error {
 	var err error = nil
-	switch handler.Protocol {
+	switch handler.Action {
 	case "read":
-		rsa.server.Get(handler.Name, func(c *fiber.Ctx) error {
+		rsa.server.Get("/"+handler.Name, func(c *fiber.Ctx) error {
 			for _, task := range handler.TaskSets {
 				_, err := task.ServiceAdapter.Call()
 				if err != nil {
@@ -41,7 +40,7 @@ func (rsa *RestServerAdapter) Register(handler *core.Handler) error {
 			return c.Status(fiber.StatusOK).JSON(RestResponse{Message: fmt.Sprintf("Successfully ran %s", handler.ID)})
 		})
 	case "write":
-		rsa.server.Post(handler.Name, func(c *fiber.Ctx) error {
+		rsa.server.Post("/"+handler.Name, func(c *fiber.Ctx) error {
 			for _, task := range handler.TaskSets {
 				_, err := task.ServiceAdapter.Call()
 				if err != nil {
@@ -54,13 +53,4 @@ func (rsa *RestServerAdapter) Register(handler *core.Handler) error {
 		err = errors.New("Handler has no matching action")
 	}
 	return err
-}
-
-func StartServer(addr string) {
-	app := setupRouter()
-
-	err := app.Listen(addr)
-	if err != nil {
-		log.Fatalf("Error starting server: %v", err)
-	}
 }
