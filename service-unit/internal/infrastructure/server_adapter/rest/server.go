@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/core"
 )
 
@@ -15,7 +16,10 @@ type RestServerAdapter struct {
 }
 
 func NewRestServerAdapter() RestServerAdapter {
-	return RestServerAdapter{addr: ":8080", server: fiber.New()}
+    app := fiber.New()
+    app.Use(logger.New())
+    
+	return RestServerAdapter{addr: ":8080", server: app}
 }
 
 func (rsa RestServerAdapter) Serve() error {

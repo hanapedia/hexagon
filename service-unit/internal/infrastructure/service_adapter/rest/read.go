@@ -28,7 +28,7 @@ func (rga RestReadAdapter) Call() (string, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", errors.New("unexpected status code")
+		return "", errors.New("unexpected status code calling:" + rga.URL)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
@@ -44,4 +44,3 @@ func (rga RestReadAdapter) Call() (string, error) {
 
 	return restReadResponse.Message, nil
 }
-
