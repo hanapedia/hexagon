@@ -13,9 +13,9 @@ func (serviceAdapterDetails ServiceAdapterDetails) RestServiceAdapterFactory() (
 	var serviceAdapter core.ServiceAdapter
 	switch serviceAdapterDetails.action {
 	case "read":
-    serviceAdapter = rest.RestReadAdapter{URL: fmt.Sprintf("http://%s:8080", serviceAdapterDetails.serviceName)}
+    serviceAdapter = rest.RestReadAdapter{URL: fmt.Sprintf("http://%s:8080/%s", serviceAdapterDetails.serviceName, serviceAdapterDetails.handlerName)}
 	case "write":
-		serviceAdapter = rest.RestWriteAdapter{URL: fmt.Sprintf("http://%s:8080", serviceAdapterDetails.serviceName)}
+		serviceAdapter = rest.RestWriteAdapter{URL: fmt.Sprintf("http://%s:8080/%s", serviceAdapterDetails.serviceName, serviceAdapterDetails.handlerName)}
 	default:
 		err = errors.New("No matching protocol found")
 	}
