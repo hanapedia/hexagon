@@ -1,0 +1,12 @@
+name: chain3
+handler:
+  - name: get
+    protocol: rest
+    action: read
+    flow:
+      - adapterId: chain4.rest.read.get
+  - name: post
+    protocol: rest
+    action: read
+    flow:
+      - adapterId: chain4.rest.read.post

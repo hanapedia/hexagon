@@ -1,0 +1,20 @@
+name: gateway
+handler:
+  - name: get
+    protocol: rest
+    action: read
+    flow:
+      - adapterId: fanout1.rest.read.get
+      - adapterId: fanout2.rest.read.get
+      - adapterId: fanout3.rest.read.get
+      - adapterId: fanout4.rest.read.get
+      - adapterId: fanout5.rest.read.get
+  - name: post
+    protocol: rest
+    action: read
+    flow:
+      - adapterId: fanout1.rest.write.get
+      - adapterId: fanout2.rest.write.get
+      - adapterId: fanout3.rest.write.get
+      - adapterId: fanout4.rest.write.get
+      - adapterId: fanout5.rest.write.get

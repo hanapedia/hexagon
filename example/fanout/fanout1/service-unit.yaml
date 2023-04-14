@@ -1,0 +1,10 @@
+name: fanout1
+handler:
+  - name: get
+    protocol: rest
+    action: read
+    flow: []
+  - name: post
+    protocol: rest
+    action: read
+    flow: []
