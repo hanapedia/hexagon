@@ -6,5 +6,5 @@ handler:
     flow: []
   - name: post
     protocol: rest
-    action: read
+    action: write
     flow: []

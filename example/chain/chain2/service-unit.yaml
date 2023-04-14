@@ -7,6 +7,6 @@ handler:
       - adapterId: chain3.rest.read.get
   - name: post
     protocol: rest
-    action: read
+    action: write
     flow:
-      - adapterId: chain3.rest.read.post
+      - adapterId: chain3.rest.write.post

@@ -11,10 +11,10 @@ handler:
       - adapterId: fanout5.rest.read.get
   - name: post
     protocol: rest
-    action: read
+    action: write
     flow:
-      - adapterId: fanout1.rest.write.get
-      - adapterId: fanout2.rest.write.get
-      - adapterId: fanout3.rest.write.get
-      - adapterId: fanout4.rest.write.get
-      - adapterId: fanout5.rest.write.get
+      - adapterId: fanout1.rest.write.post
+      - adapterId: fanout2.rest.write.post
+      - adapterId: fanout3.rest.write.post
+      - adapterId: fanout4.rest.write.post
+      - adapterId: fanout5.rest.write.post
