@@ -12,15 +12,15 @@ func main() {
 	configLoader := usecases.NewConfigLoader("yaml")
 
 	serviceUnit := usecases.NewServiceUnit(configLoader)
-    log.Println("Service unit successfully loaded.")
+	log.Println("Service unit successfully loaded.")
 
 	errChan := make(chan core.ServerAdapterError)
 	for protocol, serverAdapter := range serviceUnit.ServerAdapters {
 		serverAdapterCopy := serverAdapter
-        log.Printf("Serving '%s' server.", protocol) 
+		log.Printf("Serving '%s' server.", protocol)
 		go func() {
 			if err := (*serverAdapterCopy).Serve(); err != nil {
-				errChan <- core.ServerAdapterError{ServerAdapter: *serverAdapterCopy, Error: err}
+				errChan <- core.ServerAdapterError{ServerAdapter: serverAdapterCopy, Error: err}
 			}
 		}()
 	}

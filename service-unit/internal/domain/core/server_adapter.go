@@ -17,7 +17,7 @@ type ServerAdapter interface {
 }
 
 type ServerAdapterError struct {
-    ServerAdapter ServerAdapter 
+    ServerAdapter *ServerAdapter 
     Error error
 }
 
