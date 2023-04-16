@@ -1,6 +1,6 @@
 // A server Adapter can have multiple handlers
 // A handler can have multiple tasks sets
-// A task have a single external service adapter
+// A task have a single external invocation adapter
 package core
 
 // ServerAdapter provides common interface for all the server resources.
@@ -10,7 +10,7 @@ package core
 // - Kafka consumer
 //
 // It is intended to represent the individual interfaces on each exteranl service,
-// not the services themselves; hence the name `ServiceAdapter`
+// not the services themselves; hence the name `InvocationAdapter`
 type ServerAdapter interface {
     Serve() error
     Register(*Handler) error
@@ -30,7 +30,7 @@ type Handler struct {
 }
 
 type TaskSet struct {
-	ServiceAdapter ServiceAdapter
+	InvocationAdapter InvocationAdapter
 	Concurrent             bool
 }
 

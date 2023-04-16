@@ -36,7 +36,7 @@ func (rsa RestServerAdapter) Register(handler *core.Handler) error {
 	case "read":
 		rsa.server.Get("/"+handler.Name, func(c *fiber.Ctx) error {
 			for _, task := range handler.TaskSets {
-				_, err := task.ServiceAdapter.Call()
+				_, err := task.InvocationAdapter.Call()
 				if err != nil {
 					return err
 				}
@@ -46,7 +46,7 @@ func (rsa RestServerAdapter) Register(handler *core.Handler) error {
 	case "write":
 		rsa.server.Post("/"+handler.Name, func(c *fiber.Ctx) error {
 			for _, task := range handler.TaskSets {
-				_, err := task.ServiceAdapter.Call()
+				_, err := task.InvocationAdapter.Call()
 				if err != nil {
 					return err
 				}

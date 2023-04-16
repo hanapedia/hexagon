@@ -6,7 +6,7 @@ import (
 
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/core"
 	serverAdapterFactory "github.com/hanapedia/the-bench/service-unit/internal/infrastructure/server_adapter/factory"
-	serviceAdapterFactory "github.com/hanapedia/the-bench/service-unit/internal/infrastructure/service_adapter/factory"
+	invocationAdapterFactory "github.com/hanapedia/the-bench/service-unit/internal/infrastructure/invocation_adapter/factory"
 	"github.com/hanapedia/the-bench/service-unit/pkg/shared"
 )
 
@@ -62,12 +62,12 @@ func mapServiceHandlerToServer(serviceName string, HandlerConfigs *[]core.Handle
 func mapTaskSet(steps *[]core.Step) *[]core.TaskSet {
 	tasksets := make([]core.TaskSet, len(*steps))
 	for i, step := range *steps {
-		serviceAdapter, err := serviceAdapterFactory.NewServiceAdapterFromID(step.AdapterId)
+		invocationAdapter, err := invocationAdapterFactory.NewInvocationAdapterFromID(step.AdapterId)
 		if err != nil {
 			log.Printf("Skipped interface: %s", err)
 			continue
 		}
-		tasksets[i] = core.TaskSet{ServiceAdapter: serviceAdapter, Concurrent: step.Concurrent}
+		tasksets[i] = core.TaskSet{InvocationAdapter: invocationAdapter, Concurrent: step.Concurrent}
 	}
 
 	return &tasksets
