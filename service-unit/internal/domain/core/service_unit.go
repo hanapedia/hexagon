@@ -1,10 +1,10 @@
 package core
 
 import (
-	"github.com/hanapedia/the-bench/service-unit/pkg/shared"
+	"github.com/hanapedia/the-bench/service-unit/pkg/constants"
 )
 
 type ServiceUnit struct {
 	Name           string
-	ServerAdapters map[shared.ServerAdapterProtocol]*ServerAdapter
+	ServerAdapters map[constants.ServerAdapterProtocol]*ServerAdapter
 }

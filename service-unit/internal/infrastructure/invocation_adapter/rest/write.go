@@ -1,19 +1,21 @@
 package rest
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/hanapedia/the-bench/service-unit/internal/domain/contract"
+	"github.com/hanapedia/the-bench/service-unit/pkg/constants"
+	"github.com/hanapedia/the-bench/service-unit/pkg/utils"
 )
 
 type RestWriteAdapter struct {
 	URL string
-}
-
-type RestWriteResponse struct {
-	Message string `json:"message"`
 }
 
 func (rwa RestWriteAdapter) Call() (string, error) {
@@ -21,7 +23,21 @@ func (rwa RestWriteAdapter) Call() (string, error) {
 		Timeout: time.Millisecond * 500,
 	}
 
-	resp, err := client.Post(rwa.URL, "application/json", nil)
+	payload, err := utils.GenerateRandomString(constants.PayloadSize)
+	if err != nil {
+		return "", err
+	}
+
+	restRequestBody := contract.RestRequestBody{
+		Message: fmt.Sprintf("Posting %vkB of random text to %s", constants.PayloadSize, rwa.URL),
+		Payload: &payload,
+	}
+	jsonRestRequestBody, err := json.Marshal(restRequestBody)
+	if err != nil {
+		return "", err
+	}
+
+	resp, err := client.Post(rwa.URL, "application/json", bytes.NewReader(jsonRestRequestBody))
 	if err != nil {
 		return "", err
 	}
@@ -36,12 +52,11 @@ func (rwa RestWriteAdapter) Call() (string, error) {
 		return "", err
 	}
 
-	var restWriteResponse RestWriteResponse
-	err = json.Unmarshal(body, &restWriteResponse)
+	var restResponse contract.RestResponseBody
+	err = json.Unmarshal(body, &restResponse)
 	if err != nil {
 		return "", err
 	}
 
-	return restWriteResponse.Message, nil
+	return restResponse.Message, nil
 }
-

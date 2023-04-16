@@ -5,10 +5,10 @@ import (
 
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/core"
 	"github.com/hanapedia/the-bench/service-unit/internal/infrastructure/server_adapter/rest"
-	"github.com/hanapedia/the-bench/service-unit/pkg/shared"
+	"github.com/hanapedia/the-bench/service-unit/pkg/constants"
 )
 
-func NewServerAdapter(serverAdapterProtocol shared.ServerAdapterProtocol) *core.ServerAdapter {
+func NewServerAdapter(serverAdapterProtocol constants.ServerAdapterProtocol) *core.ServerAdapter {
 	var serverAdapter core.ServerAdapter
 
 	switch serverAdapterProtocol {
@@ -24,7 +24,7 @@ func NewServerAdapter(serverAdapterProtocol shared.ServerAdapterProtocol) *core.
 // Takes the pointer to the slice of ServerAdapters
 // Update or insert ServiceAdapter based on the handler input.
 // Does not return any value
-func RegiserHandlerToServerAdapter(serverAdapterProtocol shared.ServerAdapterProtocol, serverAdapter *core.ServerAdapter, handler *core.Handler) error {
+func RegiserHandlerToServerAdapter(serverAdapterProtocol constants.ServerAdapterProtocol, serverAdapter *core.ServerAdapter, handler *core.Handler) error {
 	err := (*serverAdapter).Register(handler)
 
 	return err

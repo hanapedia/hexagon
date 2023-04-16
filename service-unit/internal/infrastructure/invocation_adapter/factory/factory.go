@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/core"
-	"github.com/hanapedia/the-bench/service-unit/pkg/shared"
+	"github.com/hanapedia/the-bench/service-unit/pkg/constants"
 )
 
 type InvocationAdapterDetails struct {
@@ -22,10 +22,10 @@ func newInvocationAdapterDetails(id string) (InvocationAdapterDetails, error) {
 		err = errors.New("Invalid adapter id")
 	}
 	return InvocationAdapterDetails{
-		serviceName:   idSubstring[shared.ServiceNameIndex],
-		protocol:      idSubstring[shared.ProtocolIndex],
-		action:        idSubstring[shared.ActionIndex],
-		handlerName: idSubstring[shared.AdapterNameIndex],
+		serviceName:   idSubstring[constants.ServiceNameIndex],
+		protocol:      idSubstring[constants.ProtocolIndex],
+		action:        idSubstring[constants.ActionIndex],
+		handlerName: idSubstring[constants.AdapterNameIndex],
 	}, err
 }
 

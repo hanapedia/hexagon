@@ -1,4 +1,4 @@
-package shared
+package constants
 
 const (
  ServiceNameIndex = 0
@@ -14,4 +14,12 @@ const (
   REST ServerAdapterProtocol = "rest"
   // GRPC ServerAdapterProtocol = "grpc"
   // KAFKA ServerAdapterProtocol = "kafka"
+)
+
+const (
+  PayloadSize = 16
+)
+
+const (
+  RestServerAddr = ":8080"
 )

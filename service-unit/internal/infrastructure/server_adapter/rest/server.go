@@ -6,7 +6,10 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/hanapedia/the-bench/service-unit/internal/domain/contract"
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/core"
+	"github.com/hanapedia/the-bench/service-unit/pkg/constants"
+	"github.com/hanapedia/the-bench/service-unit/pkg/utils"
 )
 
 // must implement core.ServerAdapter
@@ -16,18 +19,14 @@ type RestServerAdapter struct {
 }
 
 func NewRestServerAdapter() RestServerAdapter {
-    app := fiber.New()
-    app.Use(logger.New())
-    
-	return RestServerAdapter{addr: ":8080", server: app}
+	app := fiber.New()
+	app.Use(logger.New())
+
+	return RestServerAdapter{addr: constants.RestServerAddr, server: app}
 }
 
 func (rsa RestServerAdapter) Serve() error {
 	return rsa.server.Listen(rsa.addr)
-}
-
-type RestResponse struct {
-	Message string `json:"message"`
 }
 
 func (rsa RestServerAdapter) Register(handler *core.Handler) error {
@@ -41,7 +40,15 @@ func (rsa RestServerAdapter) Register(handler *core.Handler) error {
 					return err
 				}
 			}
-			return c.Status(fiber.StatusOK).JSON(RestResponse{Message: fmt.Sprintf("Successfully ran %s", handler.ID)})
+			payload, err := utils.GenerateRandomString(constants.PayloadSize)
+			if err != nil {
+				return err
+			}
+			restResponse := contract.RestResponseBody{
+				Message: fmt.Sprintf("Successfully ran %s, sending %vKB.", handler.ID, constants.PayloadSize),
+				Payload: &payload,
+			}
+			return c.Status(fiber.StatusOK).JSON(restResponse)
 		})
 	case "write":
 		rsa.server.Post("/"+handler.Name, func(c *fiber.Ctx) error {
@@ -51,7 +58,10 @@ func (rsa RestServerAdapter) Register(handler *core.Handler) error {
 					return err
 				}
 			}
-			return c.Status(fiber.StatusOK).JSON(RestResponse{Message: fmt.Sprintf("Successfully ran %s", handler.ID)})
+			restResponse := contract.RestResponseBody{
+				Message: fmt.Sprintf("Successfully ran %s.", handler.ID),
+			}
+			return c.Status(fiber.StatusOK).JSON(restResponse)
 		})
 	default:
 		err = errors.New("Handler has no matching action")

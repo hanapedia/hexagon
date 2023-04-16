@@ -7,7 +7,7 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/core"
 	serverAdapterFactory "github.com/hanapedia/the-bench/service-unit/internal/infrastructure/server_adapter/factory"
 	invocationAdapterFactory "github.com/hanapedia/the-bench/service-unit/internal/infrastructure/invocation_adapter/factory"
-	"github.com/hanapedia/the-bench/service-unit/pkg/shared"
+	"github.com/hanapedia/the-bench/service-unit/pkg/constants"
 )
 
 func NewServiceUnit(configLoader core.ConfigLoader) core.ServiceUnit {
@@ -28,8 +28,8 @@ func NewServiceUnit(configLoader core.ConfigLoader) core.ServiceUnit {
 	return serviceUnit
 }
 
-func mapServiceHandlerToServer(serviceName string, HandlerConfigs *[]core.HandlerConfig) map[shared.ServerAdapterProtocol]*core.ServerAdapter {
-	serverAdapters := make(map[shared.ServerAdapterProtocol]*core.ServerAdapter)
+func mapServiceHandlerToServer(serviceName string, HandlerConfigs *[]core.HandlerConfig) map[constants.ServerAdapterProtocol]*core.ServerAdapter {
+	serverAdapters := make(map[constants.ServerAdapterProtocol]*core.ServerAdapter)
 	for _, handlerConfig := range *HandlerConfigs {
 		taskSets := mapTaskSet(&handlerConfig.Flow)
 		handler := core.Handler{
@@ -45,7 +45,7 @@ func mapServiceHandlerToServer(serviceName string, HandlerConfigs *[]core.Handle
 			),
 			TaskSets: *taskSets,
 		}
-		serverAdapterProtocol := shared.ServerAdapterProtocol(handler.Protocol)
+		serverAdapterProtocol := constants.ServerAdapterProtocol(handler.Protocol)
 		_, ok := serverAdapters[serverAdapterProtocol]
 		if !ok {
 			serverAdapters[serverAdapterProtocol] = serverAdapterFactory.NewServerAdapter(serverAdapterProtocol)

@@ -6,14 +6,12 @@ import (
 	"io/ioutil"
 	"net/http"
 	"time"
+
+	"github.com/hanapedia/the-bench/service-unit/internal/domain/contract"
 )
 
 type RestReadAdapter struct {
 	URL string
-}
-
-type RestReadResponse struct {
-	Message string `json:"message"`
 }
 
 func (rga RestReadAdapter) Call() (string, error) {
@@ -36,11 +34,11 @@ func (rga RestReadAdapter) Call() (string, error) {
 		return "", err
 	}
 
-	var restReadResponse RestReadResponse
-	err = json.Unmarshal(body, &restReadResponse)
+	var restResponse contract.RestResponseBody
+	err = json.Unmarshal(body, &restResponse)
 	if err != nil {
 		return "", err
 	}
 
-	return restReadResponse.Message, nil
+	return restResponse.Message, nil
 }
