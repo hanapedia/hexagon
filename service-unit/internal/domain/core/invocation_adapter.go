@@ -12,3 +12,8 @@ package core
 type InvocationAdapter interface {
 	Call() (string, error)
 }
+
+type InvocationAdapterError struct {
+	InvocationAdapter *InvocationAdapter
+	Error             error
+}

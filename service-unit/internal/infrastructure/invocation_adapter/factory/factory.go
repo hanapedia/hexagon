@@ -17,7 +17,7 @@ type InvocationAdapterDetails struct {
 
 func newInvocationAdapterDetails(id string) (InvocationAdapterDetails, error) {
 	idSubstring := strings.Split(id, ".")
-	var err error = nil
+	var err error
 	if len(idSubstring) != 4 {
 		err = errors.New("Invalid adapter id")
 	}

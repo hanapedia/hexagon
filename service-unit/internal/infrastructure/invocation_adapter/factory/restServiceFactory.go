@@ -9,7 +9,7 @@ import (
 )
 
 func (invocationAdapterDetails InvocationAdapterDetails) RestInvocationAdapterFactory() (core.InvocationAdapter, error) {
-	var err error = nil
+	var err error
 	var invocationAdapter core.InvocationAdapter
 	switch invocationAdapterDetails.action {
 	case "read":
