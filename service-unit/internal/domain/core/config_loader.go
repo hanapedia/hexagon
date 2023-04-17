@@ -13,7 +13,7 @@ type HandlerConfig struct {
 	Name     string `yaml:"name"`
 	Protocol string `yaml:"protocol"`
 	Action   string `yaml:"action"`
-	Flow     []Step `yaml:"flow"`
+	Steps     []Step `yaml:"flow"`
 }
 
 type Step struct {
