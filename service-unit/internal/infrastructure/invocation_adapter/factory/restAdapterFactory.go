@@ -8,7 +8,7 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/internal/infrastructure/invocation_adapter/rest"
 )
 
-func (invocationAdapterDetails InvocationAdapterDetails) RestInvocationAdapterFactory() (core.InvocationAdapter, error) {
+func (invocationAdapterDetails InvocationAdapterDetails) restInvocationAdapterFactory() (core.InvocationAdapter, error) {
 	var err error
 	var invocationAdapter core.InvocationAdapter
 	switch invocationAdapterDetails.action {
