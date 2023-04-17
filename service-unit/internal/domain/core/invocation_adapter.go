@@ -13,6 +13,12 @@ type InvocationAdapter interface {
 	Call() (string, error)
 }
 
+// Used to reuse connections to other serivces
+// Wrapper interface, so the struct to implement this should have pointer to actual connection
+type Connection interface {
+	Close()
+}
+
 type InvocationAdapterError struct {
 	InvocationAdapter *InvocationAdapter
 	Error             error

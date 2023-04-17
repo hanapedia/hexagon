@@ -20,5 +20,6 @@ const (
 )
 
 const (
-	RestServerAddr = ":8080"
+	RestServerAddr  = ":8080"
+	KafkaBrokerAddr = "kafka:9092"
 )

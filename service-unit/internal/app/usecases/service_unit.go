@@ -5,8 +5,8 @@ import (
 	"log"
 
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/core"
-	serverAdapterFactory "github.com/hanapedia/the-bench/service-unit/internal/infrastructure/server_adapter/factory"
 	invocationAdapterFactory "github.com/hanapedia/the-bench/service-unit/internal/infrastructure/invocation_adapter/factory"
+	serverAdapterFactory "github.com/hanapedia/the-bench/service-unit/internal/infrastructure/server_adapter/factory"
 	"github.com/hanapedia/the-bench/service-unit/pkg/constants"
 )
 
@@ -15,10 +15,10 @@ func NewServiceUnit(configLoader core.ConfigLoader) core.ServiceUnit {
 	if err != nil {
 		log.Fatalf("Error loading config: %v", err)
 	}
-    log.Println("Config successfully loaded.")
+	log.Println("Config successfully loaded.")
 
 	serverAdapters := mapServiceHandlerToServer(config.Name, &config.HandlerConfigs)
-    log.Println("Handler to Server mapping completed.")
+	log.Println("Handler to Server mapping completed.")
 
 	serviceUnit := core.ServiceUnit{
 		Name:           config.Name,
@@ -28,10 +28,12 @@ func NewServiceUnit(configLoader core.ConfigLoader) core.ServiceUnit {
 	return serviceUnit
 }
 
+// Map each handler to server instance
 func mapServiceHandlerToServer(serviceName string, HandlerConfigs *[]core.HandlerConfig) map[constants.ServerAdapterProtocol]*core.ServerAdapter {
 	serverAdapters := make(map[constants.ServerAdapterProtocol]*core.ServerAdapter)
+	connections := make(map[string]core.Connection)
 	for _, handlerConfig := range *HandlerConfigs {
-		taskSets := mapTaskSet(&handlerConfig.Flow)
+		taskSets := mapTaskSet(&handlerConfig.Steps, &connections)
 		handler := core.Handler{
 			Name:     handlerConfig.Name,
 			Protocol: handlerConfig.Protocol,
@@ -54,15 +56,16 @@ func mapServiceHandlerToServer(serviceName string, HandlerConfigs *[]core.Handle
 		if err != nil {
 			log.Fatalf("Error registering handler to server adapter: %v", err)
 		}
-        log.Printf("Successfully mapped '%s' handler to '%s' server", handler.Name, serverAdapterProtocol)
+		log.Printf("Successfully mapped '%s' handler to '%s' server", handler.Name, serverAdapterProtocol)
 	}
 	return serverAdapters
 }
 
-func mapTaskSet(steps *[]core.Step) *[]core.TaskSet {
+// Create task set from config
+func mapTaskSet(steps *[]core.Step, connections *map[string]core.Connection) *[]core.TaskSet {
 	tasksets := make([]core.TaskSet, len(*steps))
 	for i, step := range *steps {
-		invocationAdapter, err := invocationAdapterFactory.NewInvocationAdapterFromID(step.AdapterId)
+		invocationAdapter, err := invocationAdapterFactory.NewInvocationAdapter(step.AdapterId, connections)
 		if err != nil {
 			log.Printf("Skipped interface: %s", err)
 			continue
