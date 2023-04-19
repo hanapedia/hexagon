@@ -1,23 +1,23 @@
-// A server Adapter can have multiple handlers
+// A ingress Adapter can have multiple handlers
 // A handler can have multiple tasks sets
-// A task have a single external invocation adapter
+// A task have a single egress adapter
 package core
 
-// ServerAdapter provides common interface for all the server resources.
+// IngressAdapter provides common interface for all the ingress resources.
 // Example resources include:
 // - REST API server
 // - gRPC server
 // - Kafka consumer
 //
 // It is intended to represent the individual interfaces on each exteranl service,
-// not the services themselves; hence the name `InvocationAdapter`
-type ServerAdapter interface {
+// not the services themselves; hence the name `EgressAdapter`
+type IngressAdapter interface {
     Serve() error
     Register(*Handler) error
 }
 
-type ServerAdapterError struct {
-    ServerAdapter *ServerAdapter 
+type IngressAdapterError struct {
+    IngressAdapter *IngressAdapter 
     Error error
 }
 
@@ -30,7 +30,7 @@ type Handler struct {
 }
 
 type TaskSet struct {
-	InvocationAdapter InvocationAdapter
+	EgressAdapter EgressAdapter
 	Concurrent             bool
 }
 

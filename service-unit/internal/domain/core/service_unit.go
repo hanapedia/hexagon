@@ -6,5 +6,6 @@ import (
 
 type ServiceUnit struct {
 	Name           string
-	ServerAdapters map[constants.ServerAdapterProtocol]*ServerAdapter
+	Config         *ConfigLoader
+	ServerAdapters *map[constants.AdapterProtocol]*IngressAdapter
 }
