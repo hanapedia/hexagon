@@ -9,21 +9,13 @@ import (
 )
 
 func main() {
-	configLoader := usecases.NewConfigLoader("yaml")
-
-	serviceUnit := usecases.NewServiceUnit(configLoader)
+	serviceUnit := usecases.NewServiceUnit("yaml")
 	log.Println("Service unit successfully loaded.")
 
+    serviceUnit.Setup()
+
 	errChan := make(chan core.IngressAdapterError)
-	for protocol, serverAdapter := range serviceUnit.ServerAdapters {
-		serverAdapterCopy := serverAdapter
-		log.Printf("Serving '%s' server.", protocol)
-		go func() {
-			if err := (*serverAdapterCopy).Serve(); err != nil {
-				errChan <- core.IngressAdapterError{IngressAdapter: serverAdapterCopy, Error: err}
-			}
-		}()
-	}
+    serviceUnit.Start(errChan)
 
 	serverAdapterError := <-errChan
 	log.Fatalf("%s failed: %s", reflect.TypeOf(serverAdapterError.IngressAdapter).Elem().Name(), serverAdapterError.Error)

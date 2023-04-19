@@ -20,13 +20,13 @@ func TaskSetHandler(taskSets []core.TaskSet) []core.EgressAdapterError {
 		}
 	}
 
-	var invocationAdapterErrors []core.EgressAdapterError
+	var egressAdapterErrors []core.EgressAdapterError
 	for i := 0; i < len(taskSets); i++ {
 		<-done
 		invocationAdapterError := <-errCh
 		if invocationAdapterError.Error != nil {
-			invocationAdapterErrors = append(invocationAdapterErrors, invocationAdapterError)
+			egressAdapterErrors = append(egressAdapterErrors, invocationAdapterError)
 		}
 	}
-	return invocationAdapterErrors
+	return egressAdapterErrors
 }

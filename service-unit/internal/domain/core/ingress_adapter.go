@@ -3,6 +3,8 @@
 // A task have a single egress adapter
 package core
 
+import "github.com/hanapedia/the-bench/service-unit/pkg/constants"
+
 // IngressAdapter provides common interface for all the ingress resources.
 // Example resources include:
 // - REST API server
@@ -12,26 +14,24 @@ package core
 // It is intended to represent the individual interfaces on each exteranl service,
 // not the services themselves; hence the name `EgressAdapter`
 type IngressAdapter interface {
-    Serve() error
-    Register(*Handler) error
+	Serve() error
+	Register(*Handler) error
 }
 
 type IngressAdapterError struct {
-    IngressAdapter *IngressAdapter 
-    Error error
+	IngressAdapter *IngressAdapter
+	Error          error
 }
 
 type Handler struct {
 	ID       string
 	Name     string
-	Protocol string
+	Protocol constants.AdapterProtocol
 	Action   string
 	TaskSets []TaskSet
 }
 
 type TaskSet struct {
 	EgressAdapter EgressAdapter
-	Concurrent             bool
+	Concurrent    bool
 }
-
-

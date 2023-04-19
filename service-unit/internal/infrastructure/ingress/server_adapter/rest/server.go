@@ -37,11 +37,11 @@ func (rsa RestServerAdapter) Register(handler *core.Handler) error {
 	switch handler.Action {
 	case "read":
 		rsa.server.Get("/"+handler.Name, func(c *fiber.Ctx) error {
-			invocationAdapterErrors := common.TaskSetHandler(handler.TaskSets)
-			for _, invocationAdapterError := range invocationAdapterErrors {
+			egressAdapterErrors := common.TaskSetHandler(handler.TaskSets)
+			for _, egressAdapterError := range egressAdapterErrors {
 				log.Printf("Invocating %s failed: %s",
-					reflect.TypeOf(invocationAdapterError.EgressAdapter).Elem().Name(),
-					invocationAdapterError.Error,
+					reflect.TypeOf(egressAdapterError.EgressAdapter).Elem().Name(),
+					egressAdapterError.Error,
 				)
 			}
 
@@ -57,11 +57,11 @@ func (rsa RestServerAdapter) Register(handler *core.Handler) error {
 		})
 	case "write":
 		rsa.server.Post("/"+handler.Name, func(c *fiber.Ctx) error {
-			invocationAdapterErrors := common.TaskSetHandler(handler.TaskSets)
-			for _, invocationAdapterError := range invocationAdapterErrors {
+			egressAdapterErrors := common.TaskSetHandler(handler.TaskSets)
+			for _, egressAdapterError := range egressAdapterErrors {
 				log.Printf("Invocating %s failed: %s",
-					reflect.TypeOf(invocationAdapterError.EgressAdapter).Elem().Name(),
-					invocationAdapterError.Error,
+					reflect.TypeOf(egressAdapterError.EgressAdapter).Elem().Name(),
+					egressAdapterError.Error,
 				)
 			}
 

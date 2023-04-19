@@ -15,8 +15,6 @@ func NewServerAdapter(serverAdapterProtocol constants.AdapterProtocol) *core.Ing
 	switch serverAdapterProtocol {
 	case constants.REST:
 		serverAdapter = rest.NewRestServerAdapter()
-	case constants.KAFKA:
-		serverAdapter = kafka.NewKafkaConsumerAdapter()
 	default:
 		log.Fatal("Adapter currently unsupported.")
 	}
@@ -24,10 +22,23 @@ func NewServerAdapter(serverAdapterProtocol constants.AdapterProtocol) *core.Ing
 	return &serverAdapter
 }
 
+func NewConsumerAdapter(protocol constants.AdapterProtocol, action string) *core.IngressAdapter {
+	var consumerAdapter core.IngressAdapter
+
+	switch protocol {
+	case constants.KAFKA:
+		consumerAdapter = kafka.NewKafkaConsumerAdapter(action)
+	default:
+		log.Fatal("Adapter currently unsupported.")
+	}
+
+	return &consumerAdapter
+}
+
 // Takes the pointer to the slice of ServerAdapters
 // Update or insert ServiceAdapter based on the handler input.
 // Does not return any value
-func RegiserHandlerToServerAdapter(serverAdapter *core.IngressAdapter, handler *core.Handler) error {
+func RegiserHandlerToEgressAdapter(serverAdapter *core.IngressAdapter, handler *core.Handler) error {
 	err := (*serverAdapter).Register(handler)
 
 	return err

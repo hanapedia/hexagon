@@ -10,7 +10,8 @@ import (
 func (egressAdapterDetails EgressAdapterDetails) kafkaEgressAdapterFactory() (core.EgressAdapter, error) {
 	var kafkaEgressAdapter core.EgressAdapter
 	var err error
-	if kafkaWriterConnection, ok := egressAdapterDetails.connection.(*kafkaAdapter.KafkaWriterConnection); ok {
+  kafkaEgressAdapter = kafkaAdapter.KafkaProducerAdapter{Writer: egressAdapterDetails.connection}
+	if kafkaWriterConnection, ok := (*egressAdapterDetails.connection).(*kafkaAdapter.KafkaWriterConnection); ok {
 		kafkaEgressAdapter = kafkaAdapter.KafkaProducerAdapter{Writer: kafkaWriterConnection.Connection}
 	} else {
 		err = errors.New("Unmatched connection instance")

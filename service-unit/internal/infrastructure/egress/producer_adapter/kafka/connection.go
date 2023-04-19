@@ -10,7 +10,7 @@ type KafkaWriterConnection struct {
 }
 
 // Only cosumer connection is included for Kafka
-func NewKafkaConnection(addr string, topic string) core.Connection {
+func NewKafkaConnection(addr string, topic string) core.EgressConnection {
 	connection := kafka.Writer{
 		Addr:     kafka.TCP(addr),
 		Topic:    topic,

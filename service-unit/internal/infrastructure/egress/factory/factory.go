@@ -14,7 +14,7 @@ type EgressAdapterDetails struct {
 	protocol    constants.AdapterProtocol
 	action      string
 	handlerName string
-	connection  core.Connection
+	connection  *core.EgressConnection
 }
 
 func newEgressAdapterDetails(id string) (EgressAdapterDetails, error) {
@@ -31,14 +31,14 @@ func newEgressAdapterDetails(id string) (EgressAdapterDetails, error) {
 	}, err
 }
 
-func NewEgressAdapter(id string, connections *map[string]core.Connection) (core.EgressAdapter, error) {
+func NewEgressAdapter(id string, connections *map[string]*core.EgressConnection) (core.EgressAdapter, error) {
 	egressAdapterDetails, err := newEgressAdapterDetails(id)
 	var egressAdapter core.EgressAdapter
 	switch egressAdapterDetails.protocol {
 	case constants.REST:
 		egressAdapter, err = egressAdapterDetails.restEgressAdapterFactory()
 	case constants.KAFKA:
-        egressAdapterDetails.UpsertConnection(id, connections)
+		egressAdapterDetails.UpsertConnection(id, connections)
 		egressAdapter, err = egressAdapterDetails.kafkaEgressAdapterFactory()
 	default:
 		err = errors.New("No matching protocol found")
@@ -47,7 +47,7 @@ func NewEgressAdapter(id string, connections *map[string]core.Connection) (core.
 	return egressAdapter, err
 }
 
-func (egressAdapterDetails *EgressAdapterDetails) UpsertConnection(id string, connections *map[string]core.Connection) {
+func (egressAdapterDetails *EgressAdapterDetails) UpsertConnection(id string, connections *map[string]*core.EgressConnection) {
 	connection, ok := (*connections)[id]
 	if ok {
 		egressAdapterDetails.connection = connection
@@ -55,6 +55,7 @@ func (egressAdapterDetails *EgressAdapterDetails) UpsertConnection(id string, co
 	}
 	switch egressAdapterDetails.protocol {
 	case "kafka":
-		egressAdapterDetails.connection = kafka.NewKafkaConnection(constants.KafkaBrokerAddr, egressAdapterDetails.action)
+		kafkaConnection := kafka.NewKafkaConnection(constants.KafkaBrokerAddr, egressAdapterDetails.action)
+		egressAdapterDetails.connection = &kafkaConnection
 	}
 }

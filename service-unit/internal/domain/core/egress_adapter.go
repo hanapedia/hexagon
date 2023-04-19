@@ -15,7 +15,7 @@ type EgressAdapter interface {
 
 // Used to reuse connections to other serivces
 // Wrapper interface, so the struct to implement this should have pointer to actual connection
-type Connection interface {
+type EgressConnection interface {
 	Close()
 }
 
