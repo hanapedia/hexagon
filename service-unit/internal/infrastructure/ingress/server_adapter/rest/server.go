@@ -10,7 +10,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/contract"
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/core"
-	"github.com/hanapedia/the-bench/service-unit/internal/infrastructure/server_adapter/common"
+	"github.com/hanapedia/the-bench/service-unit/internal/infrastructure/ingress/common"
 	"github.com/hanapedia/the-bench/service-unit/pkg/constants"
 	"github.com/hanapedia/the-bench/service-unit/pkg/utils"
 )
@@ -37,11 +37,11 @@ func (rsa RestServerAdapter) Register(handler *core.Handler) error {
 	switch handler.Action {
 	case "read":
 		rsa.server.Get("/"+handler.Name, func(c *fiber.Ctx) error {
-			invocationAdapterErrors := common.TaskSetHandler(handler.TaskSets)
-			for _, invocationAdapterError := range invocationAdapterErrors {
+			egressAdapterErrors := common.TaskSetHandler(handler.TaskSets)
+			for _, egressAdapterError := range egressAdapterErrors {
 				log.Printf("Invocating %s failed: %s",
-					reflect.TypeOf(invocationAdapterError.InvocationAdapter).Elem().Name(),
-					invocationAdapterError.Error,
+					reflect.TypeOf(egressAdapterError.EgressAdapter).Elem().Name(),
+					egressAdapterError.Error,
 				)
 			}
 
@@ -57,11 +57,11 @@ func (rsa RestServerAdapter) Register(handler *core.Handler) error {
 		})
 	case "write":
 		rsa.server.Post("/"+handler.Name, func(c *fiber.Ctx) error {
-			invocationAdapterErrors := common.TaskSetHandler(handler.TaskSets)
-			for _, invocationAdapterError := range invocationAdapterErrors {
+			egressAdapterErrors := common.TaskSetHandler(handler.TaskSets)
+			for _, egressAdapterError := range egressAdapterErrors {
 				log.Printf("Invocating %s failed: %s",
-					reflect.TypeOf(invocationAdapterError.InvocationAdapter).Elem().Name(),
-					invocationAdapterError.Error,
+					reflect.TypeOf(egressAdapterError.EgressAdapter).Elem().Name(),
+					egressAdapterError.Error,
 				)
 			}
 

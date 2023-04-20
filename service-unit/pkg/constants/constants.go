@@ -7,12 +7,12 @@ const (
 	AdapterNameIndex = 3
 )
 
-type ServerAdapterProtocol string
+type AdapterProtocol string
 
 const (
-	REST ServerAdapterProtocol = "rest"
+	REST AdapterProtocol = "rest"
 	// GRPC ServerAdapterProtocol = "grpc"
-	// KAFKA ServerAdapterProtocol = "kafka"
+	KAFKA AdapterProtocol = "kafka"
 )
 
 const (
@@ -20,5 +20,6 @@ const (
 )
 
 const (
-	RestServerAddr = ":8080"
+	RestServerAddr  = ":8080"
+	KafkaBrokerAddr = "kafka:9092"
 )

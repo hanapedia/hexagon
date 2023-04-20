@@ -1,7 +1,8 @@
 package config
 
 import (
-	"io/ioutil"
+	"os"
+
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/core"
 	"gopkg.in/yaml.v3"
 )
@@ -11,7 +12,7 @@ type YamlConfigLoader struct {
 }
 
 func (ycl YamlConfigLoader) Load() (core.ServiceUnitConfig, error) {
-	data, err := ioutil.ReadFile(ycl.Path)
+	data, err := os.ReadFile(ycl.Path)
 
 	var config core.ServiceUnitConfig
 	err = yaml.Unmarshal(data, &config)

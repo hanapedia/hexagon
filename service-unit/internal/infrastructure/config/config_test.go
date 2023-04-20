@@ -20,8 +20,8 @@ func TestYamlConfigLoader_Load(t *testing.T) {
 		{AdapterId: "service-d.rest.write.updateUserPreference"},
 	}
 	handlerConfigs := []core.HandlerConfig{
-		{Name: "getUser", Protocol: "rest", Action: "read", Flow: flow1},
-		{Name: "updateUser", Protocol: "rest", Action: "write", Flow: flow2},
+		{Name: "getUser", Protocol: "rest", Action: "read", Steps: flow1},
+		{Name: "updateUser", Protocol: "rest", Action: "write", Steps: flow2},
 	}
 	expectedConfig := core.ServiceUnitConfig{
 		Name:           "service-a",
