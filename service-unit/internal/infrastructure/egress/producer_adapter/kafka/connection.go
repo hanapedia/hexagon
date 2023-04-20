@@ -20,5 +20,5 @@ func NewKafkaConnection(addr string, topic string) core.EgressConnection {
 }
 
 func (kafkaWriterConnection KafkaWriterConnection) Close() {
-	kafkaWriterConnection.Close()
+	kafkaWriterConnection.Connection.Close()
 }

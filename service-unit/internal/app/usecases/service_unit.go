@@ -18,7 +18,7 @@ type ServiceUnit struct {
 	Config            *core.ServiceUnitConfig
 	ServerAdapters    *map[constants.AdapterProtocol]*core.IngressAdapter
 	ConsumerAdapters  *map[string]*core.IngressAdapter
-	EgressConnections *map[string]*core.EgressConnection
+	EgressConnections *map[string]core.EgressConnection
 }
 
 func NewServiceUnit(format string) ServiceUnit {
@@ -31,7 +31,7 @@ func NewServiceUnit(format string) ServiceUnit {
 	serverAdapters := make(map[constants.AdapterProtocol]*core.IngressAdapter)
 	consumerAdapters := make(map[string]*core.IngressAdapter)
 
-	egressConnections := make(map[string]*core.EgressConnection)
+	egressConnections := make(map[string]core.EgressConnection)
 
 	return ServiceUnit{Config: &config, ServerAdapters: &serverAdapters, ConsumerAdapters: &consumerAdapters, EgressConnections: &egressConnections}
 }
