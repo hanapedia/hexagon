@@ -1,0 +1,12 @@
+name: producer
+handler:
+  - name: get
+    protocol: rest
+    action: read
+    flow:
+      - adapterId: kafka.kafka.topic1.test
+  - name: post
+    protocol: rest
+    action: write
+    flow:
+      - adapterId: kafka.kafka.topic1.test2

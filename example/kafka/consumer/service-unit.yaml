@@ -1,0 +1,6 @@
+name: consumer
+handler:
+  - name: consume
+    protocol: kafka
+    action: topic1
+    flow: []
