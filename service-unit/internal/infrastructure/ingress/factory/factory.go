@@ -38,7 +38,7 @@ func NewConsumerAdapter(protocol constants.AdapterProtocol, action string) *core
 // Takes the pointer to the slice of ServerAdapters
 // Update or insert ServiceAdapter based on the handler input.
 // Does not return any value
-func RegiserHandlerToEgressAdapter(serverAdapter *core.IngressAdapter, handler *core.Handler) error {
+func RegiserHandlerToIngressAdapter(serverAdapter *core.IngressAdapter, handler *core.Handler) error {
 	err := (*serverAdapter).Register(handler)
 
 	return err

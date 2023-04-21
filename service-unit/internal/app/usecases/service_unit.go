@@ -124,7 +124,7 @@ func (su *ServiceUnit) mapHandlersToIngressAdapters() {
 		}
         log.Printf("registering handler %s", handlerConfig.Name)
 
-		err := ingressAdapterFactory.RegiserHandlerToEgressAdapter(ingressAdapter, &handler)
+		err := ingressAdapterFactory.RegiserHandlerToIngressAdapter(ingressAdapter, &handler)
 		if err != nil {
 			log.Fatalf("Error registering handler to server adapter: %v", err)
 		}

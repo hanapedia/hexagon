@@ -5,7 +5,7 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
-type KafkaWriterConnection struct {
+type KafkaProducerConnection struct {
 	Connection *kafka.Writer
 }
 
@@ -16,9 +16,9 @@ func NewKafkaConnection(addr string, topic string) core.EgressConnection {
 		Topic:    topic,
 		Balancer: &kafka.RoundRobin{},
 	}
-	return KafkaWriterConnection{Connection: &connection}
+	return KafkaProducerConnection{Connection: &connection}
 }
 
-func (kafkaWriterConnection KafkaWriterConnection) Close() {
-	kafkaWriterConnection.Connection.Close()
+func (kafkaProducerConnection KafkaProducerConnection) Close() {
+	kafkaProducerConnection.Connection.Close()
 }
