@@ -10,7 +10,7 @@ COPY generate-dummy-data.go .
 RUN go run generate-dummy-data.go
 
 # Final stage
-FROM mongo:latest
+FROM mongo:4.4-focal
 
 # Copy the custom script and data files
 COPY import-data.sh /docker-entrypoint-initdb.d/
