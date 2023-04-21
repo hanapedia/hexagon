@@ -51,18 +51,20 @@ func NewEgressAdapter(id string, connections *map[string]core.EgressConnection) 
 }
 
 func (egressAdapterDetails *EgressAdapterDetails) UpsertConnection(connections *map[string]core.EgressConnection) {
-    connectionKey := fmt.Sprintf("%s.%s", egressAdapterDetails.protocol, egressAdapterDetails.action)
+	connectionKey := fmt.Sprintf("%s.%s", egressAdapterDetails.protocol, egressAdapterDetails.action)
 	connection, ok := (*connections)[connectionKey]
 	if ok {
-        log.Printf("connection already exists reusing %v", reflect.TypeOf(connection))
+		log.Printf("connection already exists reusing %v", reflect.TypeOf(connection))
 		egressAdapterDetails.connection = connection
 		return
 	}
 	switch egressAdapterDetails.protocol {
 	case "kafka":
 		kafkaConnection := kafka.NewKafkaConnection(constants.KafkaBrokerAddr, egressAdapterDetails.action)
-        log.Printf("created new connection %v", reflect.TypeOf(kafkaConnection))
+		log.Printf("created new connection %v", reflect.TypeOf(kafkaConnection))
 		egressAdapterDetails.connection = kafkaConnection
-        (*connections)[connectionKey] = kafkaConnection
+		(*connections)[connectionKey] = kafkaConnection
+	default:
+		log.Fatalf("invalid protocol")
 	}
 }
