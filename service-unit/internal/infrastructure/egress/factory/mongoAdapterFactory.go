@@ -3,25 +3,26 @@ package factory
 import (
 	"errors"
 
+	"github.com/hanapedia/the-bench/config/constants"
+	"github.com/hanapedia/the-bench/config/model"
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/core"
 	"github.com/hanapedia/the-bench/service-unit/internal/infrastructure/egress/repository_adapter/mongo"
-	"github.com/hanapedia/the-bench/config/constants"
 )
 
-func (egressAdapterDetails EgressAdapterDetails) mongoEgressAdapterFactory() (core.EgressAdapter, error) {
+func mongoEgressAdapterFactory(adapterConfig model.StatefulEgressConfig, connection core.EgressConnection) (core.EgressAdapter, error) {
 	var mongoEgressAdapter core.EgressAdapter
 	var err error
-	if mongoConnection, ok := (egressAdapterDetails.connection).(mongo.MongoConnection); ok {
-		switch egressAdapterDetails.action {
-		case string(constants.READ):
+	if mongoConnection, ok := (connection).(mongo.MongoConnection); ok {
+		switch adapterConfig.Action {
+		case constants.READ:
 			mongoEgressAdapter = mongo.MongoReadAdapter{
 				Connection: mongoConnection.Connection,
-				Collection: constants.RepositoryEntryVariant(egressAdapterDetails.adapterName),
+				Collection: constants.RepositoryEntryVariant(adapterConfig.Size),
 			}
-		case string(constants.WRITE):
+		case constants.WRITE:
 			mongoEgressAdapter = mongo.MongoWriteAdapter{
 				Connection: mongoConnection.Connection,
-				Collection: constants.RepositoryEntryVariant(egressAdapterDetails.adapterName),
+				Collection: constants.RepositoryEntryVariant(adapterConfig.Size),
 			}
 		default:
 			err = errors.New("No matching protocol found")

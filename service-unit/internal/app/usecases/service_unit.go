@@ -17,7 +17,7 @@ import (
 type ServiceUnit struct {
 	Name              string
 	Config            *model.ServiceUnitConfig
-	ServerAdapters    *map[constants.AdapterProtocol]*core.IngressAdapter
+	ServerAdapters    *map[constants.IngressAdapterVairant]*core.IngressAdapter
 	ConsumerAdapters  *map[string]*core.IngressAdapter
 	EgressConnections *map[string]core.EgressConnection
 }
@@ -29,7 +29,7 @@ func NewServiceUnit(format string) ServiceUnit {
 		log.Fatalf("Error loading config: %v", err)
 	}
 
-	serverAdapters := make(map[constants.AdapterProtocol]*core.IngressAdapter)
+	serverAdapters := make(map[constants.IngressAdapterVairant]*core.IngressAdapter)
 	consumerAdapters := make(map[string]*core.IngressAdapter)
 
 	egressConnections := make(map[string]core.EgressConnection)
@@ -70,16 +70,16 @@ func (su *ServiceUnit) Setup() {
 func (su *ServiceUnit) initializeIngressAdapters() {
 	for _, handlerConfig := range su.Config.HandlerConfigs {
 		switch handlerConfig.Protocol {
-		case constants.REST:
+		case constants.REST_Server:
 			su.initializeServerAdapter(handlerConfig.Protocol)
-		case constants.KAFKA:
+		case constants.KAFKA_Consumer:
 			su.initializeConsumerAdapter(handlerConfig.Protocol, handlerConfig.Action)
 		}
 	}
 }
 
 // Prepare server adapters
-func (su *ServiceUnit) initializeServerAdapter(protocol constants.AdapterProtocol) {
+func (su *ServiceUnit) initializeServerAdapter(protocol constants.IngressAdapterVairant) {
 	_, ok := (*su.ServerAdapters)[protocol]
 	if !ok {
 		(*su.ServerAdapters)[protocol] = ingressAdapterFactory.NewServerAdapter(protocol)
@@ -87,7 +87,7 @@ func (su *ServiceUnit) initializeServerAdapter(protocol constants.AdapterProtoco
 }
 
 // Prepare consumer adapters
-func (su *ServiceUnit) initializeConsumerAdapter(protocol constants.AdapterProtocol, action string) {
+func (su *ServiceUnit) initializeConsumerAdapter(protocol constants.IngressAdapterVairant, action string) {
 	consumerKey := fmt.Sprintf("%s.%s", protocol, action)
 	_, ok := (*su.ConsumerAdapters)[consumerKey]
 	if !ok {
@@ -117,9 +117,9 @@ func (su *ServiceUnit) mapHandlersToIngressAdapters() {
 
         var ingressAdapter *core.IngressAdapter
 		switch handlerConfig.Protocol {
-		case constants.REST:
+		case constants.REST_Server:
             ingressAdapter = (*su.ServerAdapters)[handler.Protocol]
-		case constants.KAFKA:
+		case constants.KAFKA_Consumer:
             consumerKey := fmt.Sprintf("%s.%s", handler.Protocol, handler.Action)
             ingressAdapter = (*su.ConsumerAdapters)[consumerKey]
 		}
@@ -137,7 +137,7 @@ func (su *ServiceUnit) mapHandlersToIngressAdapters() {
 func (su ServiceUnit) mapTaskSet(steps []model.Step) *[]core.TaskSet {
 	tasksets := make([]core.TaskSet, len(steps))
 	for i, step := range steps {
-		egressAdapter, err := egressAdapterFactory.NewEgressAdapter(step.AdapterId, su.EgressConnections)
+		egressAdapter, err := egressAdapterFactory.NewEgressAdapter(step.Adapter, su.EgressConnections)
 		if err != nil {
 			log.Printf("Skipped interface: %s", err)
 			continue

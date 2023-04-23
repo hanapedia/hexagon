@@ -26,7 +26,7 @@ type IngressAdapterError struct {
 type Handler struct {
 	ID       string
 	Name     string
-	Protocol constants.AdapterProtocol
+	Protocol constants.IngressAdapterVairant
 	Action   string
 	TaskSets []TaskSet
 }

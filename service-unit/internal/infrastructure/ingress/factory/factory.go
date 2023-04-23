@@ -9,11 +9,11 @@ import (
 	"github.com/hanapedia/the-bench/config/constants"
 )
 
-func NewServerAdapter(serverAdapterProtocol constants.AdapterProtocol) *core.IngressAdapter {
+func NewServerAdapter(serverAdapterProtocol constants.IngressAdapterVairant) *core.IngressAdapter {
 	var serverAdapter core.IngressAdapter
 
 	switch serverAdapterProtocol {
-	case constants.REST:
+	case constants.REST_Server:
 		serverAdapter = rest.NewRestServerAdapter()
 	default:
 		log.Fatal("Adapter currently unsupported.")
@@ -22,11 +22,11 @@ func NewServerAdapter(serverAdapterProtocol constants.AdapterProtocol) *core.Ing
 	return &serverAdapter
 }
 
-func NewConsumerAdapter(protocol constants.AdapterProtocol, action string) *core.IngressAdapter {
+func NewConsumerAdapter(protocol constants.IngressAdapterVairant, action string) *core.IngressAdapter {
 	var consumerAdapter core.IngressAdapter
 
 	switch protocol {
-	case constants.KAFKA:
+	case constants.KAFKA_Consumer:
 		consumerAdapter = kafka.NewKafkaConsumerAdapter(action)
 	default:
 		log.Fatal("Adapter currently unsupported.")
