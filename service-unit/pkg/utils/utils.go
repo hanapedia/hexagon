@@ -6,7 +6,7 @@ import (
 	mathRand "math/rand"
 	"time"
 
-	"github.com/hanapedia/the-bench/service-unit/pkg/constants"
+	"github.com/hanapedia/the-bench/config/constants"
 )
 
 func GenerateRandomString(kbSize int) (string, error) {

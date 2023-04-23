@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/contract"
-	"github.com/hanapedia/the-bench/service-unit/pkg/constants"
+	"github.com/hanapedia/the-bench/config/constants"
 	"github.com/hanapedia/the-bench/service-unit/pkg/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"

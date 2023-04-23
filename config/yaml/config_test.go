@@ -1,29 +1,29 @@
-package config
+package yaml
 
 import (
 	"reflect"
 	"testing"
 
-	"github.com/hanapedia/the-bench/service-unit/internal/domain/core"
+	"github.com/hanapedia/the-bench/config/model"
 )
 
 func TestYamlConfigLoader_Load(t *testing.T) {
 	testFilePath := "testdata/service-unit.yaml"
 
-	flow1 := []core.Step{
+	flow1 := []model.Step{
 		{AdapterId: "service-b.rest.read.getUserPreference"},
 		{AdapterId: "service-c.rest.read.getUserHistory", Concurrent: true},
 		{AdapterId: "service-d.rest.write.postUserLog"},
 	}
-	flow2 := []core.Step{
+	flow2 := []model.Step{
 		{AdapterId: "service-c.rest.read.getUserHistory"},
 		{AdapterId: "service-d.rest.write.updateUserPreference"},
 	}
-	handlerConfigs := []core.HandlerConfig{
+	handlerConfigs := []model.HandlerConfig{
 		{Name: "getUser", Protocol: "rest", Action: "read", Steps: flow1},
 		{Name: "updateUser", Protocol: "rest", Action: "write", Steps: flow2},
 	}
-	expectedConfig := core.ServiceUnitConfig{
+	expectedConfig := model.ServiceUnitConfig{
 		Name:           "service-a",
 		HandlerConfigs: handlerConfigs,
 	}

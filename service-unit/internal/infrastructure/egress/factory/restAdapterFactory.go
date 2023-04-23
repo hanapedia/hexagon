@@ -6,7 +6,7 @@ import (
 
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/core"
 	"github.com/hanapedia/the-bench/service-unit/internal/infrastructure/egress/invocation_adapter/rest"
-	"github.com/hanapedia/the-bench/service-unit/pkg/constants"
+	"github.com/hanapedia/the-bench/config/constants"
 )
 
 func (egressAdapterDetails EgressAdapterDetails) restEgressAdapterFactory() (core.EgressAdapter, error) {

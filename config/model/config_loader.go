@@ -1,6 +1,6 @@
-package core
+package model
 
-import "github.com/hanapedia/the-bench/service-unit/pkg/constants"
+import "github.com/hanapedia/the-bench/config/constants"
 
 type ConfigLoader interface {
 	Load() (ServiceUnitConfig, error)

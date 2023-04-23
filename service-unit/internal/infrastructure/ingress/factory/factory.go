@@ -6,7 +6,7 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/core"
 	"github.com/hanapedia/the-bench/service-unit/internal/infrastructure/ingress/consumer_adapter/kafka"
 	"github.com/hanapedia/the-bench/service-unit/internal/infrastructure/ingress/server_adapter/rest"
-	"github.com/hanapedia/the-bench/service-unit/pkg/constants"
+	"github.com/hanapedia/the-bench/config/constants"
 )
 
 func NewServerAdapter(serverAdapterProtocol constants.AdapterProtocol) *core.IngressAdapter {

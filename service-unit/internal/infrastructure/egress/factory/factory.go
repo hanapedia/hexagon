@@ -10,7 +10,7 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/core"
 	"github.com/hanapedia/the-bench/service-unit/internal/infrastructure/egress/producer_adapter/kafka"
 	"github.com/hanapedia/the-bench/service-unit/internal/infrastructure/egress/repository_adapter/mongo"
-	"github.com/hanapedia/the-bench/service-unit/pkg/constants"
+	"github.com/hanapedia/the-bench/config/constants"
 )
 
 type EgressAdapterDetails struct {
