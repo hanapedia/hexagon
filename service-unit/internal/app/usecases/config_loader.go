@@ -1,17 +1,17 @@
 package usecases
 
 import (
-	"github.com/hanapedia/the-bench/service-unit/internal/domain/core"
-	"github.com/hanapedia/the-bench/service-unit/internal/infrastructure/config"
+	"github.com/hanapedia/the-bench/config/model"
+	"github.com/hanapedia/the-bench/config/yaml"
 )
 
-func NewConfigLoader(format string) core.ConfigLoader {
-	var configLoader core.ConfigLoader
+func NewConfigLoader(format string) model.ConfigLoader {
+	var configLoader model.ConfigLoader
 	switch format {
 	case "yaml":
-		configLoader = config.YamlConfigLoader{Path: "./config/service-unit.yaml"}
+		configLoader = yaml.YamlConfigLoader{Path: "./config/service-unit.yaml"}
 	default:
-		configLoader = config.YamlConfigLoader{Path: "./config/service-unit.yaml"}
+		configLoader = yaml.YamlConfigLoader{Path: "./config/service-unit.yaml"}
 	}
 	return configLoader
 }

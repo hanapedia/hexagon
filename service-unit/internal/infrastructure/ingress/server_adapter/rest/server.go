@@ -11,7 +11,7 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/contract"
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/core"
 	"github.com/hanapedia/the-bench/service-unit/internal/infrastructure/ingress/common"
-	"github.com/hanapedia/the-bench/service-unit/pkg/constants"
+	"github.com/hanapedia/the-bench/config/constants"
 	"github.com/hanapedia/the-bench/service-unit/pkg/utils"
 )
 

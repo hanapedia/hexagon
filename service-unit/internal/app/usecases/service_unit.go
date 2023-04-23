@@ -7,7 +7,8 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/internal/domain/core"
 	egressAdapterFactory "github.com/hanapedia/the-bench/service-unit/internal/infrastructure/egress/factory"
 	ingressAdapterFactory "github.com/hanapedia/the-bench/service-unit/internal/infrastructure/ingress/factory"
-	"github.com/hanapedia/the-bench/service-unit/pkg/constants"
+	"github.com/hanapedia/the-bench/config/constants"
+	"github.com/hanapedia/the-bench/config/model"
 )
 
 // ServerAdapters hold the adapters for server processes from REST, gRPC
@@ -15,7 +16,7 @@ import (
 // EgressConnections hold the persistent connections for egress adapters
 type ServiceUnit struct {
 	Name              string
-	Config            *core.ServiceUnitConfig
+	Config            *model.ServiceUnitConfig
 	ServerAdapters    *map[constants.AdapterProtocol]*core.IngressAdapter
 	ConsumerAdapters  *map[string]*core.IngressAdapter
 	EgressConnections *map[string]core.EgressConnection
@@ -133,7 +134,7 @@ func (su *ServiceUnit) mapHandlersToIngressAdapters() {
 }
 
 // Create task set from config
-func (su ServiceUnit) mapTaskSet(steps []core.Step) *[]core.TaskSet {
+func (su ServiceUnit) mapTaskSet(steps []model.Step) *[]core.TaskSet {
 	tasksets := make([]core.TaskSet, len(steps))
 	for i, step := range steps {
 		egressAdapter, err := egressAdapterFactory.NewEgressAdapter(step.AdapterId, su.EgressConnections)

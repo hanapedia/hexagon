@@ -3,7 +3,7 @@
 // A task have a single egress adapter
 package core
 
-import "github.com/hanapedia/the-bench/service-unit/pkg/constants"
+import "github.com/hanapedia/the-bench/config/constants"
 
 // IngressAdapter provides common interface for all the ingress resources.
 // Example resources include:

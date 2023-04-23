@@ -3,7 +3,7 @@ package kafka
 import (
 	"context"
 
-	"github.com/hanapedia/the-bench/service-unit/pkg/constants"
+	"github.com/hanapedia/the-bench/config/constants"
 	"github.com/hanapedia/the-bench/service-unit/pkg/utils"
 	"github.com/segmentio/kafka-go"
 )
