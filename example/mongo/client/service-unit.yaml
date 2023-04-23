@@ -4,9 +4,17 @@ handler:
     protocol: rest
     action: read
     flow:
-      - adapterId: mongo.mongo.read.small
+      - adapter:
+          stateful:
+            variant: mongo
+            action: read
+            size: small
   - name: post
     protocol: rest
     action: write
     flow:
-      - adapterId: mongo.mongo.write.large
+      - adapter:
+          stateful:
+            variant: mongo
+            action: write
+            size: large

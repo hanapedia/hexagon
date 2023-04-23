@@ -4,17 +4,67 @@ handler:
     protocol: rest
     action: read
     flow:
-      - adapterId: fanout1.rest.read.get
-      - adapterId: fanout2.rest.read.get
-      - adapterId: fanout3.rest.read.get
-      - adapterId: fanout4.rest.read.get
-      - adapterId: fanout5.rest.read.get
+      - adapter:
+          stateless:
+            variant: rest
+            service: fanout1
+            action: read
+            route: get
+      - adapter:
+          stateless:
+            variant: rest
+            service: fanout2
+            action: read
+            route: get
+      - adapter:
+          stateless:
+            variant: rest
+            service: fanout3
+            action: read
+            route: get
+      - adapter:
+          stateless:
+            variant: rest
+            service: fanout4
+            action: read
+            route: get
+      - adapter:
+          stateless:
+            variant: rest
+            service: fanout5
+            action: read
+            route: get
   - name: post
     protocol: rest
     action: write
     flow:
-      - adapterId: fanout1.rest.write.post
-      - adapterId: fanout2.rest.write.post
-      - adapterId: fanout3.rest.write.post
-      - adapterId: fanout4.rest.write.post
-      - adapterId: fanout5.rest.write.post
+      - adapter:
+          stateless:
+            variant: rest
+            service: fanout1
+            action: write
+            route: post
+      - adapter:
+          stateless:
+            variant: rest
+            service: fanout2
+            action: write
+            route: post
+      - adapter:
+          stateless:
+            variant: rest
+            service: fanout3
+            action: write
+            route: post
+      - adapter:
+          stateless:
+            variant: rest
+            service: fanout4
+            action: write
+            route: post
+      - adapter:
+          stateless:
+            variant: rest
+            service: fanout5
+            action: write
+            route: post
