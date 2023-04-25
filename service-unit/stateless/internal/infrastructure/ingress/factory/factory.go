@@ -9,11 +9,11 @@ import (
 	"github.com/hanapedia/the-bench/config/constants"
 )
 
-func NewServerAdapter(serverAdapterProtocol constants.IngressAdapterVairant) *core.IngressAdapter {
+func NewServerAdapter(serverAdapterProtocol constants.StatelessAdapterVariant) *core.IngressAdapter {
 	var serverAdapter core.IngressAdapter
 
 	switch serverAdapterProtocol {
-	case constants.REST_Server:
+	case constants.REST:
 		serverAdapter = rest.NewRestServerAdapter()
 	default:
 		log.Fatal("Adapter currently unsupported.")
@@ -22,11 +22,11 @@ func NewServerAdapter(serverAdapterProtocol constants.IngressAdapterVairant) *co
 	return &serverAdapter
 }
 
-func NewConsumerAdapter(protocol constants.IngressAdapterVairant, action string) *core.IngressAdapter {
+func NewConsumerAdapter(protocol constants.BrokerAdapterVariant, action string) *core.IngressAdapter {
 	var consumerAdapter core.IngressAdapter
 
 	switch protocol {
-	case constants.KAFKA_Consumer:
+	case constants.KAFKA:
 		consumerAdapter = kafka.NewKafkaConsumerAdapter(action)
 	default:
 		log.Fatal("Adapter currently unsupported.")
@@ -38,7 +38,7 @@ func NewConsumerAdapter(protocol constants.IngressAdapterVairant, action string)
 // Takes the pointer to the slice of ServerAdapters
 // Update or insert ServiceAdapter based on the handler input.
 // Does not return any value
-func RegiserHandlerToIngressAdapter(serverAdapter *core.IngressAdapter, handler *core.Handler) error {
+func RegiserHandlerToIngressAdapter(serverAdapter *core.IngressAdapter, handler *core.IngressAdapterHandler) error {
 	err := (*serverAdapter).Register(handler)
 
 	return err

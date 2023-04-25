@@ -18,7 +18,7 @@ type KafkaConsumerAdapter struct {
 
 type KafkaConsumer struct {
 	reader  *kafka.Reader
-	handler *core.Handler
+	handler *core.IngressAdapterHandler
 }
 
 func NewKafkaConsumerAdapter(topic string) KafkaConsumerAdapter {
@@ -54,7 +54,7 @@ func (kca KafkaConsumerAdapter) Serve() error {
 	return err
 }
 
-func (kca KafkaConsumerAdapter) Register(handler *core.Handler) error {
+func (kca KafkaConsumerAdapter) Register(handler *core.IngressAdapterHandler) error {
 	kca.kafkaConsumer.handler = handler
 	return nil
 }

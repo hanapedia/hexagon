@@ -8,7 +8,7 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
 )
 
-func statelesEgressAdapterFactory(adapterConfig model.StatelessEgressConfig) (core.EgressAdapter, error) {
+func statelesEgressAdapterFactory(adapterConfig model.StatelessAdapterConfig) (core.EgressAdapter, error) {
 	switch adapterConfig.Variant {
 	case constants.REST:
 		return restEgressAdapterFactory(adapterConfig)

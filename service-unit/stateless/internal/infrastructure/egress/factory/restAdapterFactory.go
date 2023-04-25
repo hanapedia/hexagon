@@ -10,7 +10,7 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/egress/invocation_adapter/rest"
 )
 
-func restEgressAdapterFactory(adapterConfig model.StatelessEgressConfig) (core.EgressAdapter, error) {
+func restEgressAdapterFactory(adapterConfig model.StatelessAdapterConfig) (core.EgressAdapter, error) {
 	var err error
 	var restEgressAdapter core.EgressAdapter
 	switch adapterConfig.Action {

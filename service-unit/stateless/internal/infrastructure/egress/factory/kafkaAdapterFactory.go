@@ -8,7 +8,7 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/egress/producer_adapter/kafka"
 )
 
-func kafkaEgressAdapterFactory(adapterConfig model.BrokerEgressConfig, connection core.EgressConnection) (core.EgressAdapter, error) {
+func kafkaEgressAdapterFactory(adapterConfig model.BrokerAdapterConfig, connection core.EgressConnection) (core.EgressAdapter, error) {
 	var kafkaEgressAdapter core.EgressAdapter
 	var err error
 	if kafkaProducerConnection, ok := (connection).(kafka.KafkaProducerConnection); ok {

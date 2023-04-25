@@ -7,25 +7,19 @@ const (
 	AdapterNameIndex = 3
 )
 
-type StatelessEgressVariant string
-type BrokerEgressVariant string
-type StatefulEgressVariant string
+type StatelessAdapterVariant string
+type BrokerAdapterVariant string
+type StatefulAdapterVariant string
 const (
-	REST StatelessEgressVariant = "rest"
-	GRPC StatelessEgressVariant = "grpc"
+	REST StatelessAdapterVariant = "rest"
+	GRPC StatelessAdapterVariant = "grpc"
 
-	KAFKA    BrokerEgressVariant = "kafka"
-	RABBITMQ BrokerEgressVariant = "rabbitmq"
-	Pulsar   BrokerEgressVariant = "pulsar"
+	KAFKA    BrokerAdapterVariant = "kafka"
+	RABBITMQ BrokerAdapterVariant = "rabbitmq"
+	Pulsar   BrokerAdapterVariant = "pulsar"
 
-	MONGO   StatefulEgressVariant = "mongo"
-	POSTGRE StatefulEgressVariant = "postgre"
-)
-
-type IngressAdapterVairant string
-const(
-    REST_Server IngressAdapterVairant = "rest"
-    KAFKA_Consumer IngressAdapterVairant = "kafka"
+	MONGO   StatefulAdapterVariant = "mongo"
+	POSTGRE StatefulAdapterVariant = "postgre"
 )
 
 type Action string

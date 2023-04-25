@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/hanapedia/the-bench/config/constants"
+	"github.com/hanapedia/the-bench/config/model"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
 	egressAdapterFactory "github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/egress/factory"
 	ingressAdapterFactory "github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/factory"
-	"github.com/hanapedia/the-bench/config/constants"
-	"github.com/hanapedia/the-bench/config/model"
 )
 
 // ServerAdapters hold the adapters for server processes from REST, gRPC
@@ -17,7 +17,7 @@ import (
 type ServiceUnit struct {
 	Name              string
 	Config            *model.ServiceUnitConfig
-	ServerAdapters    *map[constants.IngressAdapterVairant]*core.IngressAdapter
+	ServerAdapters    *map[constants.StatelessAdapterVariant]*core.IngressAdapter
 	ConsumerAdapters  *map[string]*core.IngressAdapter
 	EgressConnections *map[string]core.EgressConnection
 }
@@ -29,7 +29,7 @@ func NewServiceUnit(format string) ServiceUnit {
 		log.Fatalf("Error loading config: %v", err)
 	}
 
-	serverAdapters := make(map[constants.IngressAdapterVairant]*core.IngressAdapter)
+	serverAdapters := make(map[constants.StatelessAdapterVariant]*core.IngressAdapter)
 	consumerAdapters := make(map[string]*core.IngressAdapter)
 
 	egressConnections := make(map[string]core.EgressConnection)
@@ -68,68 +68,79 @@ func (su *ServiceUnit) Setup() {
 
 // Prepare ingress adapters
 func (su *ServiceUnit) initializeIngressAdapters() {
-	for _, handlerConfig := range su.Config.HandlerConfigs {
-		switch handlerConfig.Protocol {
-		case constants.REST_Server:
-			su.initializeServerAdapter(handlerConfig.Protocol)
-		case constants.KAFKA_Consumer:
-			su.initializeConsumerAdapter(handlerConfig.Protocol, handlerConfig.Action)
+	for _, ingressAdapterConfig := range su.Config.IngressAdapterConfig {
+		if ingressAdapterConfig.StatelessIngressAdapterConfig != nil {
+			su.initializeServerAdapter(*ingressAdapterConfig.StatelessIngressAdapterConfig)
+			continue
 		}
+		if ingressAdapterConfig.BrokerIngressAdapterConfig != nil {
+			su.initializeConsumerAdapter(*ingressAdapterConfig.BrokerIngressAdapterConfig)
+			continue
+		}
+		log.Fatal("Invalid ingress adapter config.")
 	}
 }
 
 // Prepare server adapters
-func (su *ServiceUnit) initializeServerAdapter(protocol constants.IngressAdapterVairant) {
-	_, ok := (*su.ServerAdapters)[protocol]
+func (su *ServiceUnit) initializeServerAdapter(statelessAdapterConfig model.StatelessAdapterConfig) {
+	serverKey := getServerKey(statelessAdapterConfig)
+	_, ok := (*su.ServerAdapters)[serverKey]
 	if !ok {
-		(*su.ServerAdapters)[protocol] = ingressAdapterFactory.NewServerAdapter(protocol)
+		(*su.ServerAdapters)[serverKey] = ingressAdapterFactory.NewServerAdapter(serverKey)
 	}
 }
 
+// get server key
+func getServerKey(statelessAdapterConfig model.StatelessAdapterConfig) constants.StatelessAdapterVariant {
+	return statelessAdapterConfig.Variant
+}
+
 // Prepare consumer adapters
-func (su *ServiceUnit) initializeConsumerAdapter(protocol constants.IngressAdapterVairant, action string) {
-	consumerKey := fmt.Sprintf("%s.%s", protocol, action)
+func (su *ServiceUnit) initializeConsumerAdapter(brokerIngressAdapterConfig model.BrokerAdapterConfig) {
+	consumerKey := getConsumerKey(brokerIngressAdapterConfig)
 	_, ok := (*su.ConsumerAdapters)[consumerKey]
 	if !ok {
-		(*su.ConsumerAdapters)[consumerKey] = ingressAdapterFactory.NewConsumerAdapter(protocol, action)
+		(*su.ConsumerAdapters)[consumerKey] = ingressAdapterFactory.NewConsumerAdapter(brokerIngressAdapterConfig.Variant, brokerIngressAdapterConfig.Topic)
 	}
+}
+
+func getConsumerKey(brokerIngressAdapterConfig model.BrokerAdapterConfig) string {
+	return fmt.Sprintf("%s.%s", brokerIngressAdapterConfig.Variant, brokerIngressAdapterConfig.Topic)
+}
+
+// Handler configuration can omit the serivce name so the service name needs to be assigned for better logging
+func assignServicename(service string, statelessAdapterConfig *model.StatelessAdapterConfig) *model.StatelessAdapterConfig {
+	if statelessAdapterConfig.Service == "" {
+		statelessAdapterConfig.Service = service
+	}
+	return statelessAdapterConfig
 }
 
 // Map handlers to ingress adapters
 func (su *ServiceUnit) mapHandlersToIngressAdapters() {
-	for _, handlerConfig := range su.Config.HandlerConfigs {
-        log.Printf("start mapping %s", handlerConfig.Name)
-		taskSets := su.mapTaskSet(handlerConfig.Steps)
-		handler := core.Handler{
-			Name:     handlerConfig.Name,
-			Protocol: handlerConfig.Protocol,
-			Action:   handlerConfig.Action,
-			ID: fmt.Sprintf(
-				"%s.%s.%s.%s",
-				su.Name,
-				handlerConfig.Protocol,
-				handlerConfig.Action,
-				handlerConfig.Name,
-			),
-			TaskSets: *taskSets,
+	for _, ingressAdapterConfig := range su.Config.IngressAdapterConfig {
+		taskSets := su.mapTaskSet(ingressAdapterConfig.Steps)
+		handler := core.IngressAdapterHandler{
+			StatelessIngressAdapterConfig: assignServicename(su.Name, ingressAdapterConfig.StatelessIngressAdapterConfig),
+			BrokerIngressAdapterConfig:    ingressAdapterConfig.BrokerIngressAdapterConfig,
+			TaskSets:                      *taskSets,
 		}
-        log.Printf("taskset generated %s", handlerConfig.Name)
 
-        var ingressAdapter *core.IngressAdapter
-		switch handlerConfig.Protocol {
-		case constants.REST_Server:
-            ingressAdapter = (*su.ServerAdapters)[handler.Protocol]
-		case constants.KAFKA_Consumer:
-            consumerKey := fmt.Sprintf("%s.%s", handler.Protocol, handler.Action)
-            ingressAdapter = (*su.ConsumerAdapters)[consumerKey]
+		var ingressAdapter *core.IngressAdapter
+		if ingressAdapterConfig.StatelessIngressAdapterConfig != nil {
+			ingressAdapter = (*su.ServerAdapters)[ingressAdapterConfig.StatelessIngressAdapterConfig.Variant]
 		}
-        log.Printf("registering handler %s", handlerConfig.Name)
+		if ingressAdapterConfig.BrokerIngressAdapterConfig != nil {
+			consumerKey := getConsumerKey(*ingressAdapterConfig.BrokerIngressAdapterConfig)
+			ingressAdapter = (*su.ConsumerAdapters)[consumerKey]
+		}
+		log.Printf("registering handler %s", handler.GetId())
 
 		err := ingressAdapterFactory.RegiserHandlerToIngressAdapter(ingressAdapter, &handler)
 		if err != nil {
 			log.Fatalf("Error registering handler to server adapter: %v", err)
 		}
-		log.Printf("Successfully mapped '%s' handler to '%s' server", handler.Name, handler.Protocol)
+		log.Printf("Successfully mapped '%s' handler.", handler.GetId())
 	}
 }
 
@@ -137,7 +148,7 @@ func (su *ServiceUnit) mapHandlersToIngressAdapters() {
 func (su ServiceUnit) mapTaskSet(steps []model.Step) *[]core.TaskSet {
 	tasksets := make([]core.TaskSet, len(steps))
 	for i, step := range steps {
-		egressAdapter, err := egressAdapterFactory.NewEgressAdapter(step.Adapter, su.EgressConnections)
+		egressAdapter, err := egressAdapterFactory.NewEgressAdapter(step.EgressAdapterConfig, su.EgressConnections)
 		if err != nil {
 			log.Printf("Skipped interface: %s", err)
 			continue
@@ -147,4 +158,3 @@ func (su ServiceUnit) mapTaskSet(steps []model.Step) *[]core.TaskSet {
 
 	return &tasksets
 }
-

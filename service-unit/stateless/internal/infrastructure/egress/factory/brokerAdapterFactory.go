@@ -12,7 +12,7 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/egress/producer_adapter/kafka"
 )
 
-func brokerEgressAdapterFactory(adapterConfig model.BrokerEgressConfig, connection core.EgressConnection) (core.EgressAdapter, error) {
+func brokerEgressAdapterFactory(adapterConfig model.BrokerAdapterConfig, connection core.EgressConnection) (core.EgressAdapter, error) {
 	switch adapterConfig.Variant {
 	case constants.KAFKA:
 		return kafkaEgressAdapterFactory(adapterConfig, connection)
@@ -23,7 +23,7 @@ func brokerEgressAdapterFactory(adapterConfig model.BrokerEgressConfig, connecti
 
 }
 
-func upsertBrokerEgressConnection(adapterConfig model.BrokerEgressConfig, connections *map[string]core.EgressConnection) core.EgressConnection {
+func upsertBrokerEgressConnection(adapterConfig model.BrokerAdapterConfig, connections *map[string]core.EgressConnection) core.EgressConnection {
 	key := fmt.Sprintf("%s.%s", adapterConfig.Variant, adapterConfig.Topic)
 	connection, ok := (*connections)[key]
 	if ok {

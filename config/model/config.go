@@ -8,8 +8,8 @@ type ServiceUnitConfig struct {
 }
 
 type IngressAdapterConfig struct {
-	StatelessEgressAdapterConfig *StatelessAdapterConfig `yaml:"stateless,omitempty"`
-	BrokerEgressAdapterConfig    *BrokerAdapterConfig    `yaml:"broker,omitempty"`
+	StatelessIngressAdapterConfig *StatelessAdapterConfig `yaml:"stateless,omitempty"`
+	BrokerIngressAdapterConfig    *BrokerAdapterConfig    `yaml:"broker,omitempty"`
 	Steps    []Step                          `yaml:"steps"`
 }
 
@@ -30,22 +30,22 @@ type EgressAdapterConfig struct {
 
 // Config fields for stateful services
 type StatelessAdapterConfig struct {
-	Variant constants.StatelessEgressVariant `yaml:"variant"`
-	Service string                           `yaml:"service"`
+	Variant constants.StatelessAdapterVariant `yaml:"variant"`
+	Service string                           `yaml:"service,omitempty"`
 	Action  constants.Action                 `yaml:"action"`
 	Route   string                           `yaml:"route"`
 }
 
 // Config fields for stateful services
 type StatefulAdapterConfig struct {
-	Variant constants.StatefulEgressVariant `yaml:"variant"`
+	Variant constants.StatefulAdapterVariant `yaml:"variant"`
 	Action  constants.Action                `yaml:"action"`
 	Size    string                          `yaml:"size"`
 }
 
 // Config fields for Brokers
 type BrokerAdapterConfig struct {
-	Variant constants.BrokerEgressVariant `yaml:"variant"`
+	Variant constants.BrokerAdapterVariant `yaml:"variant"`
 	Topic   string                        `yaml:"topic"`
 }
 

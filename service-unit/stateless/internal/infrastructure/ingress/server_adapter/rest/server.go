@@ -8,10 +8,10 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/hanapedia/the-bench/config/constants"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/contract"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/common"
-	"github.com/hanapedia/the-bench/config/constants"
 	"github.com/hanapedia/the-bench/service-unit/stateless/pkg/utils"
 )
 
@@ -32,11 +32,15 @@ func (rsa RestServerAdapter) Serve() error {
 	return rsa.server.Listen(rsa.addr)
 }
 
-func (rsa RestServerAdapter) Register(handler *core.Handler) error {
+func (rsa RestServerAdapter) Register(handler *core.IngressAdapterHandler) error {
+	if handler.StatelessIngressAdapterConfig == nil {
+		return errors.New(fmt.Sprintf("Invalid configuartion for handler %s.", handler.GetId()))
+	}
+
 	var err error
-	switch handler.Action {
+	switch handler.StatelessIngressAdapterConfig.Action {
 	case "read":
-		rsa.server.Get("/"+handler.Name, func(c *fiber.Ctx) error {
+		rsa.server.Get("/"+handler.StatelessIngressAdapterConfig.Service, func(c *fiber.Ctx) error {
 			egressAdapterErrors := common.TaskSetHandler(handler.TaskSets)
 			for _, egressAdapterError := range egressAdapterErrors {
 				log.Printf("Invocating %s failed: %s",
@@ -50,13 +54,13 @@ func (rsa RestServerAdapter) Register(handler *core.Handler) error {
 				return err
 			}
 			restResponse := contract.RestResponseBody{
-				Message: fmt.Sprintf("Successfully ran %s, sending %vKB.", handler.ID, constants.PayloadSize),
+				Message: fmt.Sprintf("Successfully ran %s, sending %vKB.", handler.GetId(), constants.PayloadSize),
 				Payload: &payload,
 			}
 			return c.Status(fiber.StatusOK).JSON(restResponse)
 		})
 	case "write":
-		rsa.server.Post("/"+handler.Name, func(c *fiber.Ctx) error {
+		rsa.server.Post("/"+handler.StatelessIngressAdapterConfig.Service, func(c *fiber.Ctx) error {
 			egressAdapterErrors := common.TaskSetHandler(handler.TaskSets)
 			for _, egressAdapterError := range egressAdapterErrors {
 				log.Printf("Invocating %s failed: %s",
@@ -66,7 +70,7 @@ func (rsa RestServerAdapter) Register(handler *core.Handler) error {
 			}
 
 			restResponse := contract.RestResponseBody{
-				Message: fmt.Sprintf("Successfully ran %s.", handler.ID),
+				Message: fmt.Sprintf("Successfully ran %s.", handler.GetId()),
 			}
 			return c.Status(fiber.StatusOK).JSON(restResponse)
 		})
