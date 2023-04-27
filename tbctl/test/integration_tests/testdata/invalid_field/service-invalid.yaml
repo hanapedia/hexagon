@@ -1,0 +1,10 @@
+name: service-invalid
+ingressAdapters:
+  - broker:
+      variant: spark
+      topic: newUser
+    steps:
+      - egressAdapter:
+          broker:
+            variant: hadoop
+            topic: created

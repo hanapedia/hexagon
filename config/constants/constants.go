@@ -7,17 +7,22 @@ const (
 	AdapterNameIndex = 3
 )
 
-type AdapterProtocol string
-
+type StatelessAdapterVariant string
+type BrokerAdapterVariant string
+type StatefulAdapterVariant string
 const (
-	REST AdapterProtocol = "rest"
-	// GRPC ServerAdapterProtocol = "grpc"
-	KAFKA AdapterProtocol = "kafka"
-	MONGO AdapterProtocol = "mongo"
+	REST StatelessAdapterVariant = "rest"
+	GRPC StatelessAdapterVariant = "grpc"
+
+	KAFKA    BrokerAdapterVariant = "kafka"
+	RABBITMQ BrokerAdapterVariant = "rabbitmq"
+	Pulsar   BrokerAdapterVariant = "pulsar"
+
+	MONGO   StatefulAdapterVariant = "mongo"
+	POSTGRE StatefulAdapterVariant = "postgre"
 )
 
 type Action string
-
 const (
 	READ  Action = "read"
 	WRITE Action = "write"
@@ -46,5 +51,5 @@ const (
 )
 
 const (
-  NumInitialEntries = 100
+	NumInitialEntries = 100
 )
