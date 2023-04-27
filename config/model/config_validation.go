@@ -19,9 +19,12 @@ func validateServiceUnitConfigsFields(serviceUnitConfigs []ServiceUnitConfig) []
 // validate fields for service config
 func ValidateServiceUnitConfigFields(serviceUnitConfig ServiceUnitConfig) []InvalidFieldValueError {
 	var fieldErrors []InvalidFieldValueError
-	for _, ingressAdapterConfig := range serviceUnitConfig.IngressAdapterConfigs {
-		fieldErrors = append(fieldErrors, validateIngressAdapterConfig(ingressAdapterConfig)...)
-		for _, step := range ingressAdapterConfig.Steps {
+	for i := range serviceUnitConfig.IngressAdapterConfigs {
+		if serviceUnitConfig.IngressAdapterConfigs[i].StatelessIngressAdapterConfig != nil {
+			serviceUnitConfig.IngressAdapterConfigs[i].StatelessIngressAdapterConfig.Service = serviceUnitConfig.Name
+		}
+		fieldErrors = append(fieldErrors, validateIngressAdapterConfig(serviceUnitConfig.IngressAdapterConfigs[i])...)
+		for _, step := range serviceUnitConfig.IngressAdapterConfigs[i].Steps {
 			fieldErrors = append(fieldErrors, validateEgressAdapterConfig(step.EgressAdapterConfig)...)
 		}
 	}
@@ -32,7 +35,7 @@ func ValidateServiceUnitConfigFields(serviceUnitConfig ServiceUnitConfig) []Inva
 func validateAdapterMapping(serviceUnitConfigs []ServiceUnitConfig) []InvalidAdapterMappingError {
 	serviceAdapterIds := mapIngressAdapters(serviceUnitConfigs)
 	mappingErrors := mapEgressAdapters(serviceAdapterIds, serviceUnitConfigs)
-    return mappingErrors
+	return mappingErrors
 }
 
 // add service names to adapters if it does not exist

@@ -10,9 +10,9 @@ import (
 
 func TestServiceConfigsValidation(t *testing.T) {
 	serviceUnitConfigs := []model.ServiceUnitConfig{
-		getServiceUnitConfig("./testdata/service-a/service-unit.yaml"),
-		getServiceUnitConfig("./testdata/service-b/service-unit.yaml"),
-		getServiceUnitConfig("./testdata/service-c/service-unit.yaml"),
+		getServiceUnitConfig("./testdata/service-a.yaml"),
+		getServiceUnitConfig("./testdata/service-b.yaml"),
+		getServiceUnitConfig("./testdata/service-c.yaml"),
 	}
 	errs := model.ValidateServiceUnitConfigs(serviceUnitConfigs)
 	if len(errs.FieldErrors) > 0 {
@@ -30,7 +30,7 @@ func TestServiceConfigsValidation(t *testing.T) {
 }
 
 func TestServiceConfigValidation(t *testing.T) {
-	serviceUnitConfig := getServiceUnitConfig("./testdata/service-c/service-unit.yaml")
+	serviceUnitConfig := getServiceUnitConfig("./testdata/service-c.yaml")
 	
 	errs := model.ValidateServiceUnitConfigFields(serviceUnitConfig)
 	if len(errs) > 0 {
