@@ -22,19 +22,13 @@ type ServiceUnit struct {
 	EgressConnections *map[string]core.EgressConnection
 }
 
-func NewServiceUnit(format string) ServiceUnit {
-	configLoader := NewConfigLoader(format)
-	config, err := configLoader.Load()
-	if err != nil {
-		log.Fatalf("Error loading config: %v", err)
-	}
-
+func NewServiceUnit(serviceUnitConfig model.ServiceUnitConfig) ServiceUnit {
 	serverAdapters := make(map[constants.StatelessAdapterVariant]*core.IngressAdapter)
 	consumerAdapters := make(map[string]*core.IngressAdapter)
 
 	egressConnections := make(map[string]core.EgressConnection)
 
-	return ServiceUnit{Config: &config, ServerAdapters: &serverAdapters, ConsumerAdapters: &consumerAdapters, EgressConnections: &egressConnections}
+	return ServiceUnit{Config: &serviceUnitConfig, ServerAdapters: &serverAdapters, ConsumerAdapters: &consumerAdapters, EgressConnections: &egressConnections}
 }
 
 // Start ingress adapters
@@ -68,7 +62,7 @@ func (su *ServiceUnit) Setup() {
 
 // Prepare ingress adapters
 func (su *ServiceUnit) initializeIngressAdapters() {
-	for _, ingressAdapterConfig := range su.Config.IngressAdapterConfig {
+	for _, ingressAdapterConfig := range su.Config.IngressAdapterConfigs {
 		if ingressAdapterConfig.StatelessIngressAdapterConfig != nil {
 			su.initializeServerAdapter(*ingressAdapterConfig.StatelessIngressAdapterConfig)
 			continue
@@ -118,7 +112,7 @@ func assignServicename(service string, statelessAdapterConfig *model.StatelessAd
 
 // Map handlers to ingress adapters
 func (su *ServiceUnit) mapHandlersToIngressAdapters() {
-	for _, ingressAdapterConfig := range su.Config.IngressAdapterConfig {
+	for _, ingressAdapterConfig := range su.Config.IngressAdapterConfigs {
 		taskSets := su.mapTaskSet(ingressAdapterConfig.Steps)
 		handler := core.IngressAdapterHandler{
 			StatelessIngressAdapterConfig: assignServicename(su.Name, ingressAdapterConfig.StatelessIngressAdapterConfig),

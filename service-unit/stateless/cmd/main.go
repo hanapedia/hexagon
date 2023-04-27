@@ -9,13 +9,14 @@ import (
 )
 
 func main() {
-	serviceUnit := usecases.NewServiceUnit("yaml")
+	serviceUnitConfig := usecases.GetConfig("yaml")
+	serviceUnit := usecases.NewServiceUnit(serviceUnitConfig)
 	log.Println("Service unit successfully loaded.")
 
-    serviceUnit.Setup()
+	serviceUnit.Setup()
 
 	errChan := make(chan core.IngressAdapterError)
-    serviceUnit.Start(errChan)
+	serviceUnit.Start(errChan)
 
 	serverAdapterError := <-errChan
 	log.Fatalf("%s failed: %s", reflect.TypeOf(serverAdapterError.IngressAdapter).Elem().Name(), serverAdapterError.Error)
