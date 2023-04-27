@@ -4,15 +4,9 @@ handler:
     protocol: rest
     action: read
     flow:
-      - adapter:
-          broker:
-            variant: kafka
-            topic: topic1
+      - adapterId: kafka.kafka.topic1.test
   - name: post
     protocol: rest
     action: write
     flow:
-      - adapter:
-          broker:
-            variant: kafka
-            topic: topic2
+      - adapterId: kafka.kafka.topic1.test2
