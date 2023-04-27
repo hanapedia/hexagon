@@ -4,13 +4,39 @@ handler:
     protocol: rest
     action: read
     flow:
-      - adapterId: service-b.rest.read.getUserPreference
-      - adapterId: service-c.rest.read.getUserHistory
+      - adapter:
+          stateless:
+            variant: rest
+            service: service-b
+            action: read
+            route: getUserPreference
+      - adapter:
+          stateless:
+            variant: rest
+            service: service-c
+            action: read
+            route: getUserHistory
         concurrent: true
-      - adapterId: service-d.rest.write.postUserLog
+      - adapter:
+          stateless:
+            variant: rest
+            service: service-d
+            action: write
+            route: postUserLog
   - name: updateUser
     protocol: rest
     action: write
     flow:
-      - adapterId: service-c.rest.read.getUserHistory
-      - adapterId: service-d.rest.write.updateUserPreference
+      - adapter:
+          stateless:
+            variant: rest
+            service: service-c
+            action: read
+            route: getUserHistory
+        concurrent: true
+      - adapter:
+          stateless:
+            variant: rest
+            service: service-d
+            action: write
+            route: updateUserPreference

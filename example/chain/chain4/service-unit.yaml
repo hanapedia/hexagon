@@ -4,9 +4,19 @@ handler:
     protocol: rest
     action: read
     flow:
-      - adapterId: chain5.rest.read.get
+      - adapter:
+          stateless:
+            variant: rest
+            service: chain5
+            action: read
+            route: get
   - name: post
     protocol: rest
     action: write
     flow:
-      - adapterId: chain5.rest.write.post
+      - adapter:
+          stateless:
+            variant: rest
+            service: chain5
+            action: write
+            route: post

@@ -1,22 +1,20 @@
-name: chain2
+name: client
 handler:
   - name: get
     protocol: rest
     action: read
     flow:
       - adapter:
-          stateless:
-            variant: rest
-            service: chain3
+          stateful:
+            variant: mongo
             action: read
-            route: get
+            size: small
   - name: post
     protocol: rest
     action: write
     flow:
       - adapter:
-          stateless:
-            variant: rest
-            service: chain3
+          stateful:
+            variant: mongo
             action: write
-            route: post
+            size: large
