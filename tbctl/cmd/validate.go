@@ -1,32 +1,53 @@
 /*
 Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"strings"
 
+	"github.com/hanapedia/the-bench/tbctl/pkg/validation"
 	"github.com/spf13/cobra"
 )
+
+var filePath string
 
 // validateCmd represents the validate command
 var validateCmd = &cobra.Command{
 	Use:   "validate",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Validate service unit configs from a YAML file or directory containing YAML files.",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("validate called")
+		if strings.TrimSpace(filePath) == "" {
+			fmt.Println("Error: Missing -f flag or empty file path")
+			return
+		}
+
+		fileInfo, err := os.Stat(filePath)
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
+		}
+
+		if fileInfo.IsDir() {
+			err := validation.ValidateDirectory(filePath)
+			if len(err.FieldErrors) > 0 || len(err.MappingErrors) > 0{
+                log.Fatalf("Validation failed with %v field errors and %v mapping errors.", len(err.FieldErrors), len(err.MappingErrors))
+			}
+		} else {
+			err := validation.ValidateFile(filePath)
+			if len(err) > 0 {
+                log.Fatalf("Validation failed with %v field errors.", len(err))
+			}
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(validateCmd)
+	validateCmd.PersistentFlags().StringVarP(&filePath, "file", "f", "", "YAML file or directory to validate")
 
 	// Here you will define your flags and configuration settings.
 
