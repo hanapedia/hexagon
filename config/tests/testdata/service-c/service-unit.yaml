@@ -1,0 +1,10 @@
+name: service-a
+ingressAdapters:
+  - broker:
+      variant: kafka
+      topic: newUser
+    steps:
+      - egressAdapter:
+          broker:
+            variant: kafka
+            topic: created
