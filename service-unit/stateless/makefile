@@ -10,7 +10,7 @@ build:
 	go mod edit -dropreplace=github.com/hanapedia/the-bench/config
 	go mod tidy
 	docker build -t $(IMAGE_NAME) .
-	go mod edit -replace=github.com/hanapedia/the-bench/config=../config
+	go mod edit -replace=github.com/hanapedia/the-bench/config=../../config
 
 .PHONY: push
 push: build

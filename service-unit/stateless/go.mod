@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/gofiber/fiber/v2 v2.43.0
-	github.com/hanapedia/the-bench/config v0.0.1
+	github.com/hanapedia/the-bench/config v0.0.2
 	github.com/segmentio/kafka-go v0.4.39
 	go.mongodb.org/mongo-driver v1.11.4
 )
