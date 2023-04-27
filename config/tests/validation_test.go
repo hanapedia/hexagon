@@ -8,13 +8,13 @@ import (
 	"github.com/hanapedia/the-bench/config/yaml"
 )
 
-func TestConfigValidation(t *testing.T) {
+func TestServiceConfigsValidation(t *testing.T) {
 	serviceUnitConfigs := []model.ServiceUnitConfig{
 		getServiceUnitConfig("./testdata/service-a/service-unit.yaml"),
 		getServiceUnitConfig("./testdata/service-b/service-unit.yaml"),
 		getServiceUnitConfig("./testdata/service-c/service-unit.yaml"),
 	}
-	errs := model.ValidateConfig(serviceUnitConfigs)
+	errs := model.ValidateServiceUnitConfigs(serviceUnitConfigs)
 	if len(errs.FieldErrors) > 0 {
 		for _, fe := range errs.FieldErrors {
 			log.Println(fe.Error())
@@ -24,6 +24,18 @@ func TestConfigValidation(t *testing.T) {
 	if len(errs.MappingErrors) > 0 {
 		for _, me := range errs.MappingErrors {
 			log.Println(me.Error())
+		}
+		t.Fail()
+	}
+}
+
+func TestServiceConfigValidation(t *testing.T) {
+	serviceUnitConfig := getServiceUnitConfig("./testdata/service-c/service-unit.yaml")
+	
+	errs := model.ValidateServiceUnitConfigFields(serviceUnitConfig)
+	if len(errs) > 0 {
+		for _, fe := range errs {
+			log.Println(fe.Error())
 		}
 		t.Fail()
 	}

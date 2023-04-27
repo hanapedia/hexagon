@@ -1,10 +1,38 @@
 package model
 
-func ValidateConfig(serviceUnitConfigs []ServiceUnitConfig) ConfigValidationError {
+func ValidateServiceUnitConfigs(serviceUnitConfigs []ServiceUnitConfig) ConfigValidationError {
 	addServieNameToAdapters(&serviceUnitConfigs)
-	serviceAdapterIds, fieldErrors := mapIngressAdapters(serviceUnitConfigs)
-	mappingErrors := mapEgressAdapters(serviceAdapterIds, serviceUnitConfigs)
+	fieldErrors := validateServiceUnitConfigsFields(serviceUnitConfigs)
+	mappingErrors := validateAdapterMapping(serviceUnitConfigs)
 	return ConfigValidationError{FieldErrors: fieldErrors, MappingErrors: mappingErrors}
+}
+
+// validate all the field values
+func validateServiceUnitConfigsFields(serviceUnitConfigs []ServiceUnitConfig) []InvalidFieldValueError {
+	var fieldErrors []InvalidFieldValueError
+	for _, serviceUnitConfig := range serviceUnitConfigs {
+		fieldErrors = append(fieldErrors, ValidateServiceUnitConfigFields(serviceUnitConfig)...)
+	}
+	return fieldErrors
+}
+
+// validate fields for service config
+func ValidateServiceUnitConfigFields(serviceUnitConfig ServiceUnitConfig) []InvalidFieldValueError {
+	var fieldErrors []InvalidFieldValueError
+	for _, ingressAdapterConfig := range serviceUnitConfig.IngressAdapterConfigs {
+		fieldErrors = append(fieldErrors, validateIngressAdapterConfig(ingressAdapterConfig)...)
+		for _, step := range ingressAdapterConfig.Steps {
+			fieldErrors = append(fieldErrors, validateEgressAdapterConfig(step.EgressAdapterConfig)...)
+		}
+	}
+
+	return fieldErrors
+}
+
+func validateAdapterMapping(serviceUnitConfigs []ServiceUnitConfig) []InvalidAdapterMappingError {
+	serviceAdapterIds := mapIngressAdapters(serviceUnitConfigs)
+	mappingErrors := mapEgressAdapters(serviceAdapterIds, serviceUnitConfigs)
+    return mappingErrors
 }
 
 // add service names to adapters if it does not exist
@@ -19,20 +47,14 @@ func addServieNameToAdapters(serviceUnitConfigs *[]ServiceUnitConfig) {
 }
 
 // map ingress adapters to services
-func mapIngressAdapters(serviceUnitConfigs []ServiceUnitConfig) ([]string, []InvalidFieldValueError) {
+func mapIngressAdapters(serviceUnitConfigs []ServiceUnitConfig) []string {
 	var serviceAdapterIds []string
-	var fieldErrors []InvalidFieldValueError
 	for _, serviceUnitConfig := range serviceUnitConfigs {
 		for _, ingressAdapterConfig := range serviceUnitConfig.IngressAdapterConfigs {
-			errs := validateIngressAdapterConfig(ingressAdapterConfig)
-			if len(errs) != 0 {
-				fieldErrors = append(fieldErrors, errs...)
-				continue
-			}
 			serviceAdapterIds = append(serviceAdapterIds, generateIngressAdapterId(ingressAdapterConfig))
 		}
 	}
-	return serviceAdapterIds, fieldErrors
+	return serviceAdapterIds
 }
 
 func generateIngressAdapterId(ingressAdapterConfig IngressAdapterConfig) string {
