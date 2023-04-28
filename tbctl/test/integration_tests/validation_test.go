@@ -18,6 +18,13 @@ func TestDirctoryNestedValidation(t *testing.T) {
 	validation.ValidateDirectory("./testdata/nested/")
 }
 
+func TestDirctoryInvalidServiceFieldRejection(t *testing.T) {
+	sufe, aef := validation.ValidateFile("./testdata/invalid_service_unit/service-unit.yaml")
+	if len(sufe) == 0 && len(aef) == 0 {
+		t.Errorf("The function did not return an error")
+	}
+}
+
 func TestDirctoryInvalidFieldRejection(t *testing.T) {
 	sufe, aef := validation.ValidateFile("./testdata/invalid_field/service-invalid.yaml")
 	if len(sufe) == 0 && len(aef) == 0 {
