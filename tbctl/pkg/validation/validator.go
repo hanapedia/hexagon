@@ -7,17 +7,20 @@ import (
 	"github.com/hanapedia/the-bench/tbctl/pkg/loader"
 )
 
-func ValidateFile(path string) []model.InvalidFieldValueError {
+func ValidateFile(path string) ([]model.InvalidServiceUnitFieldValueError, []model.InvalidAdapterFieldValueError) {
 	serviceUnitConfig := loader.GetConfig(path)
-	errs := model.ValidateServiceUnitConfigFields(serviceUnitConfig)
-	if len(errs) > 0 {
-		for _, fe := range errs {
-			log.Println(fe.Error())
-		}
-		return errs
+	sufe, afe := model.ValidateServiceUnitConfigFields(serviceUnitConfig)
+	if len(sufe) == 0 && len(afe) == 0 {
+		log.Printf("No validation error found. Validated %s", serviceUnitConfig.Name)
+		return nil, nil
 	}
-	log.Printf("No validation error found. Validated %s", serviceUnitConfig.Name)
-	return nil
+	for _, fe := range sufe {
+		log.Println(fe.Error())
+	}
+	for _, fe := range afe {
+		log.Println(fe.Error())
+	}
+    return sufe, afe
 }
 
 func ValidateDirectory(path string) model.ConfigValidationError {
@@ -31,8 +34,13 @@ func ValidateDirectory(path string) model.ConfigValidationError {
 		serviceUnitConfigs = append(serviceUnitConfigs, loader.GetConfig(path))
 	}
 	errs := model.ValidateServiceUnitConfigs(serviceUnitConfigs)
-	if len(errs.FieldErrors) > 0 {
-		for _, fe := range errs.FieldErrors {
+	if len(errs.ServiceUnitFieldErrors) > 0 {
+		for _, fe := range errs.ServiceUnitFieldErrors {
+			log.Println(fe.Error())
+		}
+	}
+	if len(errs.AdapterFieldErrors) > 0 {
+		for _, fe := range errs.AdapterFieldErrors {
 			log.Println(fe.Error())
 		}
 	}
@@ -41,8 +49,8 @@ func ValidateDirectory(path string) model.ConfigValidationError {
 			log.Println(me.Error())
 		}
 	}
-	if len(errs.FieldErrors) == 0 && len(errs.MappingErrors) == 0 {
+	if len(errs.ServiceUnitFieldErrors) == 0 && len(errs.AdapterFieldErrors) == 0 && len(errs.MappingErrors) == 0 {
 		log.Printf("No validation error found. Validated %v service configs.", len(serviceUnitConfigs))
 	}
-    return errs
+	return errs
 }

@@ -1,17 +1,33 @@
 package model
 
-import "fmt"
+import (
+	"fmt"
 
-type InvalidFieldValueError struct {
+	"github.com/go-playground/validator/v10"
+)
+
+type InvalidServiceUnitFieldValueError struct {
 	message string
 }
 
-func (e *InvalidFieldValueError) Error() string {
+func (e *InvalidServiceUnitFieldValueError) Error() string {
 	return e.message
 }
 
-func NewInvalidFieldValueError(key string, adapter Adapter, message string) InvalidFieldValueError {
-	return InvalidFieldValueError{message: fmt.Sprintf("Invalid value in: %v found for key: %s. %s", adapter.GetId(), key, message)}
+func NewInvalidServiceUnitFieldValueError(key string, serviceUnitConfig ServiceUnitConfig, message string) InvalidServiceUnitFieldValueError {
+	return InvalidServiceUnitFieldValueError{message: fmt.Sprintf("Invalid value in service unit definition: %v for key: %s. %s", serviceUnitConfig.Name, key, message)}
+}
+
+type InvalidAdapterFieldValueError struct {
+	message string
+}
+
+func (e *InvalidAdapterFieldValueError) Error() string {
+	return e.message
+}
+
+func NewInvalidAdapterFieldValueError(key string, adapter Adapter, message string) InvalidAdapterFieldValueError {
+	return InvalidAdapterFieldValueError{message: fmt.Sprintf("Invalid value in adapter: %v for key: %s. %s", adapter.GetId(), key, message)}
 }
 
 type InvalidAdapterMappingError struct {
@@ -27,6 +43,27 @@ func NewInvalidEgressAdapterError(id string) InvalidAdapterMappingError {
 }
 
 type ConfigValidationError struct {
-	FieldErrors   []InvalidFieldValueError
-	MappingErrors []InvalidAdapterMappingError
+	ServiceUnitFieldErrors []InvalidServiceUnitFieldValueError
+	AdapterFieldErrors     []InvalidAdapterFieldValueError
+	MappingErrors          []InvalidAdapterMappingError
+}
+
+func mapInvalidServiceUnitFieldValueErrors(err error, serviceUnitConfig ServiceUnitConfig) []InvalidServiceUnitFieldValueError {
+	var errs []InvalidServiceUnitFieldValueError
+	if validationErrors, ok := err.(validator.ValidationErrors); ok {
+		for _, fieldError := range validationErrors {
+			errs = append(errs, NewInvalidServiceUnitFieldValueError(fieldError.StructField(), serviceUnitConfig, fieldError.Error()))
+		}
+	}
+	return errs
+}
+
+func mapInvalidAdapterFieldValueErrors(err error, adapter Adapter) []InvalidAdapterFieldValueError {
+	var errs []InvalidAdapterFieldValueError
+	if validationErrors, ok := err.(validator.ValidationErrors); ok {
+		for _, fieldError := range validationErrors {
+			errs = append(errs, NewInvalidAdapterFieldValueError(fieldError.StructField(), adapter, fieldError.Error()))
+		}
+	}
+	return errs
 }

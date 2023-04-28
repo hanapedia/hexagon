@@ -1,5 +1,5 @@
 name: gateway
-ingresAdapters:
+ingressAdapters:
   - stateless:
       action: read
       variant: rest
@@ -9,7 +9,7 @@ ingresAdapters:
           stateless:
             variant: rest
             service: fanout1
-            action: aa
+            action: read
             route: get
       - egressAdapter:
           stateless:

@@ -8,16 +8,16 @@ import (
 
 // Inteface to
 type Adapter interface {
-	Validate() []InvalidFieldValueError
+	Validate() []InvalidAdapterFieldValueError
 	GetId() string
 }
 
-func (sac StatelessAdapterConfig) Validate() []InvalidFieldValueError {
+func (sac StatelessAdapterConfig) Validate() []InvalidAdapterFieldValueError {
 	validate := validator.New()
-	var errs []InvalidFieldValueError
+	var errs []InvalidAdapterFieldValueError
 	err := validate.Struct(sac)
 	if err != nil {
-		errs = append(errs, mapInvalidFieldValueErrors(err, sac)...)
+		errs = append(errs, mapInvalidAdapterFieldValueErrors(err, sac)...)
 	}
 
 	return errs
@@ -33,12 +33,12 @@ func (sac StatelessAdapterConfig) GetId() string {
 	)
 }
 
-func (sac StatefulAdapterConfig) Validate() []InvalidFieldValueError {
+func (sac StatefulAdapterConfig) Validate() []InvalidAdapterFieldValueError {
 	validate := validator.New()
-	var errs []InvalidFieldValueError
+	var errs []InvalidAdapterFieldValueError
 	err := validate.Struct(sac)
 	if err != nil {
-		errs = append(errs, mapInvalidFieldValueErrors(err, sac)...)
+		errs = append(errs, mapInvalidAdapterFieldValueErrors(err, sac)...)
 	}
 
 	return errs
@@ -53,12 +53,12 @@ func (sac StatefulAdapterConfig) GetId() string {
 	)
 }
 
-func (bac BrokerAdapterConfig) Validate() []InvalidFieldValueError {
+func (bac BrokerAdapterConfig) Validate() []InvalidAdapterFieldValueError {
 	validate := validator.New()
-	var errs []InvalidFieldValueError
+	var errs []InvalidAdapterFieldValueError
 	err := validate.Struct(bac)
 	if err != nil {
-		errs = append(errs, mapInvalidFieldValueErrors(err, bac)...)
+		errs = append(errs, mapInvalidAdapterFieldValueErrors(err, bac)...)
 	}
 
 	return errs
@@ -72,12 +72,12 @@ func (bac BrokerAdapterConfig) GetId() string {
 	)
 }
 
-func (iac InternalAdapterConfig) Validate() []InvalidFieldValueError {
+func (iac InternalAdapterConfig) Validate() []InvalidAdapterFieldValueError {
 	validate := validator.New()
-	var errs []InvalidFieldValueError
+	var errs []InvalidAdapterFieldValueError
 	err := validate.Struct(iac)
 	if err != nil {
-		errs = append(errs, mapInvalidFieldValueErrors(err, iac)...)
+		errs = append(errs, mapInvalidAdapterFieldValueErrors(err, iac)...)
 	}
 
 	return errs
@@ -87,17 +87,6 @@ func (iac InternalAdapterConfig) GetId() string {
 	return iac.Name 
 }
 
-func mapInvalidFieldValueErrors(err error, adapter Adapter) []InvalidFieldValueError {
-	var errs []InvalidFieldValueError
-	if validationErrors, ok := err.(validator.ValidationErrors); ok {
-		for _, fieldError := range validationErrors {
-			errs = append(errs, NewInvalidFieldValueError(fieldError.StructField(), adapter, fieldError.Error()))
-		}
-	}
-	return errs
-
-}
-
-func validateAdapter[T Adapter](adapter T) []InvalidFieldValueError {
+func validateAdapter[T Adapter](adapter T) []InvalidAdapterFieldValueError {
 	return adapter.Validate()
 }
