@@ -1,13 +1,14 @@
 package model
 
 type ServiceUnitConfig struct {
-	Name                 string                 `yaml:"name" validate:"required"`
+	Name                  string                 `yaml:"name" validate:"required"`
 	IngressAdapterConfigs []IngressAdapterConfig `yaml:"ingressAdapters" validate:"required"`
 }
 
 type IngressAdapterConfig struct {
 	StatelessIngressAdapterConfig *StatelessAdapterConfig `yaml:"stateless,omitempty"`
 	BrokerIngressAdapterConfig    *BrokerAdapterConfig    `yaml:"broker,omitempty"`
+	StatefulIngressAdapterConfig  *StatefulAdapterConfig  `yaml:"stateful,omitempty"`
 	Steps                         []Step                  `yaml:"steps" validate:"required"`
 }
 
@@ -25,4 +26,3 @@ type EgressAdapterConfig struct {
 	BrokerEgressAdapterConfig    *BrokerAdapterConfig    `yaml:"broker,omitempty"`
 	Id                           *string                 `yaml:"id,omitempty"`
 }
-
