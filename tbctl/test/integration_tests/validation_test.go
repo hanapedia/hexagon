@@ -19,15 +19,15 @@ func TestDirctoryNestedValidation(t *testing.T) {
 }
 
 func TestDirctoryInvalidFieldRejection(t *testing.T) {
-	err := validation.ValidateFile("./testdata/invalid_field/service-invalid.yaml")
-	if len(err) == 0 {
+	sufe, aef := validation.ValidateFile("./testdata/invalid_field/service-invalid.yaml")
+	if len(sufe) == 0 && len(aef) == 0 {
 		t.Errorf("The function did not return an error")
-	} 
+	}
 }
 
 func TestDirctoryInvalidMappingRejection(t *testing.T) {
 	err := validation.ValidateDirectory("./testdata/invalid_mapping/")
 	if len(err.MappingErrors) == 0 {
 		t.Errorf("The function did not return an error")
-	} 
+	}
 }

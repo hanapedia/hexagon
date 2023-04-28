@@ -33,13 +33,18 @@ var validateCmd = &cobra.Command{
 
 		if fileInfo.IsDir() {
 			err := validation.ValidateDirectory(filePath)
-			if len(err.FieldErrors) > 0 || len(err.MappingErrors) > 0{
-                log.Fatalf("Validation failed with %v field errors and %v mapping errors.", len(err.FieldErrors), len(err.MappingErrors))
+			if len(err.ServiceUnitFieldErrors) > 0 || len(err.AdapterFieldErrors) > 0 || len(err.MappingErrors) > 0 {
+				log.Fatalf(
+					"Validation failed with %v service unit field errors, %v adapter field errors, and %v mapping errors.",
+					len(err.ServiceUnitFieldErrors),
+					len(err.AdapterFieldErrors),
+					len(err.MappingErrors),
+				)
 			}
 		} else {
-			err := validation.ValidateFile(filePath)
-			if len(err) > 0 {
-                log.Fatalf("Validation failed with %v field errors.", len(err))
+			sufe, aef := validation.ValidateFile(filePath)
+			if len(sufe) > 0 || len(aef) > 0 {
+				log.Fatalf("Validation failed with %v service unit field errors and %v adapter field errors.", len(sufe), len(aef))
 			}
 		}
 	},
