@@ -15,8 +15,14 @@ func TestServiceConfigsValidation(t *testing.T) {
 		getServiceUnitConfig("./testdata/service-c.yaml"),
 	}
 	errs := model.ValidateServiceUnitConfigs(serviceUnitConfigs)
-	if len(errs.FieldErrors) > 0 {
-		for _, fe := range errs.FieldErrors {
+	if len(errs.ServiceUnitFieldErrors) > 0 {
+		for _, fe := range errs.ServiceUnitFieldErrors {
+			log.Println(fe.Error())
+		}
+		t.Fail()
+	}
+	if len(errs.AdapterFieldErrors) > 0 {
+		for _, fe := range errs.AdapterFieldErrors {
 			log.Println(fe.Error())
 		}
 		t.Fail()
@@ -32,9 +38,33 @@ func TestServiceConfigsValidation(t *testing.T) {
 func TestServiceConfigValidation(t *testing.T) {
 	serviceUnitConfig := getServiceUnitConfig("./testdata/service-c.yaml")
 	
-	errs := model.ValidateServiceUnitConfigFields(serviceUnitConfig)
-	if len(errs) > 0 {
-		for _, fe := range errs {
+	sufe, afe := model.ValidateServiceUnitConfigFields(serviceUnitConfig)
+	if len(sufe) > 0 {
+		for _, fe := range sufe {
+			log.Println(fe.Error())
+		}
+		t.Fail()
+	}
+	if len(afe) > 0 {
+		for _, fe := range afe {
+			log.Println(fe.Error())
+		}
+		t.Fail()
+	}
+}
+
+func TestInvalidServiceConfigValidation(t *testing.T) {
+	serviceUnitConfig := getServiceUnitConfig("./testdata/invalid/invalidIngressAdapter.yaml")
+	
+	sufe, afe := model.ValidateServiceUnitConfigFields(serviceUnitConfig)
+	if len(sufe) > 0 {
+		for _, fe := range sufe {
+			log.Println(fe.Error())
+		}
+		t.Fail()
+	}
+	if len(afe) > 0 {
+		for _, fe := range afe {
 			log.Println(fe.Error())
 		}
 		t.Fail()

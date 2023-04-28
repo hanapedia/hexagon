@@ -3,35 +3,48 @@ package model
 import "log"
 
 func ValidateServiceUnitConfigs(serviceUnitConfigs []ServiceUnitConfig) ConfigValidationError {
+	// add missing fields
 	addServieNameToAdapters(&serviceUnitConfigs)
-	fieldErrors := validateServiceUnitConfigsFields(serviceUnitConfigs)
+
+	// validate service unit and adapters fields
+	serviceUnitFieldErrors, adapterFieldErrors := validateAdapterFields(serviceUnitConfigs)
 	mappingErrors := validateAdapterMapping(serviceUnitConfigs)
-	return ConfigValidationError{FieldErrors: fieldErrors, MappingErrors: mappingErrors}
+	return ConfigValidationError{
+		ServiceUnitFieldErrors: serviceUnitFieldErrors,
+		AdapterFieldErrors:     adapterFieldErrors,
+		MappingErrors:          mappingErrors,
+	}
 }
 
 // validate all the field values
-func validateServiceUnitConfigsFields(serviceUnitConfigs []ServiceUnitConfig) []InvalidFieldValueError {
-	var fieldErrors []InvalidFieldValueError
+func validateAdapterFields(serviceUnitConfigs []ServiceUnitConfig) ([]InvalidServiceUnitFieldValueError, []InvalidAdapterFieldValueError) {
+	var serviceUnitFieldErrors []InvalidServiceUnitFieldValueError
+	var adapterFieldErrors []InvalidAdapterFieldValueError
 	for _, serviceUnitConfig := range serviceUnitConfigs {
-		fieldErrors = append(fieldErrors, ValidateServiceUnitConfigFields(serviceUnitConfig)...)
+		sufe, afe := ValidateServiceUnitConfigFields(serviceUnitConfig)
+		serviceUnitFieldErrors = append(serviceUnitFieldErrors, sufe...)
+		adapterFieldErrors = append(adapterFieldErrors, afe...)
 	}
-	return fieldErrors
+	return serviceUnitFieldErrors, adapterFieldErrors
 }
 
 // validate fields for service config
-func ValidateServiceUnitConfigFields(serviceUnitConfig ServiceUnitConfig) []InvalidFieldValueError {
-	var fieldErrors []InvalidFieldValueError
+func ValidateServiceUnitConfigFields(serviceUnitConfig ServiceUnitConfig) ([]InvalidServiceUnitFieldValueError, []InvalidAdapterFieldValueError) {
+	var serviceUnitFieldErrors []InvalidServiceUnitFieldValueError
+	serviceUnitFieldErrors = append(serviceUnitFieldErrors, serviceUnitConfig.Validate()...)
+
+	var adapterFieldErrors []InvalidAdapterFieldValueError
 	for i := range serviceUnitConfig.IngressAdapterConfigs {
 		if serviceUnitConfig.IngressAdapterConfigs[i].StatelessIngressAdapterConfig != nil {
 			serviceUnitConfig.IngressAdapterConfigs[i].StatelessIngressAdapterConfig.Service = serviceUnitConfig.Name
 		}
-		fieldErrors = append(fieldErrors, validateIngressAdapterConfig(&serviceUnitConfig.IngressAdapterConfigs[i])...)
+		adapterFieldErrors = append(adapterFieldErrors, validateIngressAdapterConfig(&serviceUnitConfig.IngressAdapterConfigs[i])...)
 		for _, step := range serviceUnitConfig.IngressAdapterConfigs[i].Steps {
-			fieldErrors = append(fieldErrors, validateEgressAdapterConfig(step.EgressAdapterConfig)...)
+			adapterFieldErrors = append(adapterFieldErrors, validateEgressAdapterConfig(step.EgressAdapterConfig)...)
 		}
 	}
 
-	return fieldErrors
+	return serviceUnitFieldErrors, adapterFieldErrors
 }
 
 func validateAdapterMapping(serviceUnitConfigs []ServiceUnitConfig) []InvalidAdapterMappingError {
@@ -94,8 +107,8 @@ func generateEgressAdapterId(egressAdapterConfig EgressAdapterConfig) string {
 }
 
 // Validate the fields of the ingress adapter configuration
-func validateIngressAdapterConfig(ingressAdapterConfig *IngressAdapterConfig) []InvalidFieldValueError {
-	var errs []InvalidFieldValueError
+func validateIngressAdapterConfig(ingressAdapterConfig *IngressAdapterConfig) []InvalidAdapterFieldValueError {
+	var errs []InvalidAdapterFieldValueError
 	if ingressAdapterConfig.StatelessIngressAdapterConfig != nil {
 		errs = validateAdapter(ingressAdapterConfig.StatelessIngressAdapterConfig)
 	}
@@ -116,8 +129,8 @@ func validateIngressAdapterConfig(ingressAdapterConfig *IngressAdapterConfig) []
 }
 
 // Validate the fields of the egress adapter configuration
-func validateEgressAdapterConfig(egressAdapterConfig EgressAdapterConfig) []InvalidFieldValueError {
-	var errs []InvalidFieldValueError
+func validateEgressAdapterConfig(egressAdapterConfig EgressAdapterConfig) []InvalidAdapterFieldValueError {
+	var errs []InvalidAdapterFieldValueError
 	if egressAdapterConfig.StatelessEgressAdapterConfig != nil {
 		errs = validateAdapter(*egressAdapterConfig.StatelessEgressAdapterConfig)
 	}
