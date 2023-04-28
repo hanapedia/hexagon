@@ -6,6 +6,7 @@ handler:
     flow:
       - adapter:
           stateful:
+            name: test
             variant: mongo
             action: read
             size: small
@@ -15,6 +16,7 @@ handler:
     flow:
       - adapter:
           stateful:
+            name: test
             variant: mongo
             action: write
             size: large
