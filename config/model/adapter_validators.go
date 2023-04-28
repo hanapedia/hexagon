@@ -48,7 +48,7 @@ func (sac StatefulAdapterConfig) GetId() string {
 	return fmt.Sprintf(
 		"%s.%s.%s",
 		sac.Variant,
-		sac.Action,
+		sac.Name,
 		sac.Size,
 	)
 }
@@ -91,7 +91,7 @@ func mapInvalidFieldValueErrors(err error, adapter Adapter) []InvalidFieldValueE
 	var errs []InvalidFieldValueError
 	if validationErrors, ok := err.(validator.ValidationErrors); ok {
 		for _, fieldError := range validationErrors {
-			errs = append(errs, NewInvalidFieldValueError(fieldError.StructField(), adapter))
+			errs = append(errs, NewInvalidFieldValueError(fieldError.StructField(), adapter, fieldError.Error()))
 		}
 	}
 	return errs

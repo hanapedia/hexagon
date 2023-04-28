@@ -10,8 +10,8 @@ func (e *InvalidFieldValueError) Error() string {
 	return e.message
 }
 
-func NewInvalidFieldValueError(key string, adapter Adapter) InvalidFieldValueError {
-	return InvalidFieldValueError{message: fmt.Sprintf("Invalid value in: %v found for key: %s", adapter, key)}
+func NewInvalidFieldValueError(key string, adapter Adapter, message string) InvalidFieldValueError {
+	return InvalidFieldValueError{message: fmt.Sprintf("Invalid value in: %v found for key: %s. %s", adapter.GetId(), key, message)}
 }
 
 type InvalidAdapterMappingError struct {
@@ -27,6 +27,6 @@ func NewInvalidEgressAdapterError(id string) InvalidAdapterMappingError {
 }
 
 type ConfigValidationError struct {
-    FieldErrors []InvalidFieldValueError
-    MappingErrors []InvalidAdapterMappingError
+	FieldErrors   []InvalidFieldValueError
+	MappingErrors []InvalidAdapterMappingError
 }
