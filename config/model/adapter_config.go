@@ -15,7 +15,7 @@ type StatefulAdapterConfig struct {
 	Name    string                           `yaml:"name" validate:"required"`
 	Variant constants.StatefulAdapterVariant `yaml:"variant" validate:"required,oneof=mongo postgre"`
 	Action  constants.Action                 `yaml:"action" validate:"omitempty,oneof=read write"`
-	Size    string                           `yaml:"size" validate:"required,oneof=small medium large"`
+	Size    string                           `yaml:"size" validate:"omitempty,oneof=small medium large"`
 }
 
 // Config fields for Brokers

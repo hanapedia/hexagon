@@ -46,10 +46,9 @@ func (sac StatefulAdapterConfig) Validate() []InvalidAdapterFieldValueError {
 
 func (sac StatefulAdapterConfig) GetId() string {
 	return fmt.Sprintf(
-		"%s.%s.%s",
+		"%s.%s",
 		sac.Variant,
 		sac.Name,
-		sac.Size,
 	)
 }
 
