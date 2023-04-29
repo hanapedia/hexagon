@@ -6,7 +6,7 @@ services:
     ports:
       - "8081:8080"
     volumes:
-      - ./client/service-unit.yaml:/app/config/service-unit.yaml
+      - ./mongo/client/service-unit.yaml:/app/config/service-unit.yaml
 
   stateful-unit-mongo:
     image: hiroki11hanada/stateful-unit-mongo:v1.0
@@ -17,4 +17,4 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password
       MONGO_INITDB_DATABASE: mongo
     volumes:
-      - ./data/db/:/data/db
+      - ./mongo/data/db/:/data/db

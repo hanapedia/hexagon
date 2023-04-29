@@ -1,5 +1,5 @@
-name: client
-handler:
-  - name: get
-    protocol: rest
-    action: read
+name: test
+ingressAdapters:
+- stateful:
+    variant: mongo
+    name: test

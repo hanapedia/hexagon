@@ -1,6 +1,6 @@
 name: consumer
-handler:
-  - name: consume
-    protocol: kafka
-    action: topic1
-    flow: []
+ingressAdapters:
+- broker:
+    variant: kafka
+    topic: topic1
+  steps: []
