@@ -13,38 +13,43 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var filePath string
+var validateFilePath string
 
 // validateCmd represents the validate command
 var validateCmd = &cobra.Command{
 	Use:   "validate",
 	Short: "Validate service unit configs from a YAML file or directory containing YAML files.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if strings.TrimSpace(filePath) == "" {
+		if strings.TrimSpace(validateFilePath) == "" {
 			fmt.Println("Error: Missing -f flag or empty file path")
 			return
 		}
 
-		fileInfo, err := os.Stat(filePath)
+		fileInfo, err := os.Stat(validateFilePath)
 		if err != nil {
 			fmt.Println("Error:", err)
 			return
 		}
 
 		if fileInfo.IsDir() {
-			err := validation.ValidateDirectory(filePath)
-			if len(err.ServiceUnitFieldErrors) > 0 || len(err.AdapterFieldErrors) > 0 || len(err.MappingErrors) > 0 {
+			errs := validation.ValidateDirectory(validateFilePath)
+			if errs.Exist() {
+				errs.Print()
 				log.Fatalf(
 					"Validation failed with %v service unit field errors, %v adapter field errors, and %v mapping errors.",
-					len(err.ServiceUnitFieldErrors),
-					len(err.AdapterFieldErrors),
-					len(err.MappingErrors),
+					len(errs.ServiceUnitFieldErrors),
+					len(errs.AdapterFieldErrors),
+					len(errs.MappingErrors),
 				)
 			}
 		} else {
-			sufe, aef := validation.ValidateFile(filePath)
-			if len(sufe) > 0 || len(aef) > 0 {
-				log.Fatalf("Validation failed with %v service unit field errors and %v adapter field errors.", len(sufe), len(aef))
+			errs := validation.ValidateFile(validateFilePath)
+			if errs.Exist() {
+				log.Fatalf(
+					"Validation failed with %v service unit field errors and %v adapter field errors.",
+					len(errs.ServiceUnitFieldErrors),
+					len(errs.AdapterFieldErrors),
+				)
 			}
 		}
 	},
@@ -52,7 +57,7 @@ var validateCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(validateCmd)
-	validateCmd.PersistentFlags().StringVarP(&filePath, "file", "f", "", "YAML file or directory to validate")
+	validateCmd.PersistentFlags().StringVarP(&validateFilePath, "file", "f", "", "YAML file or directory to validate")
 
 	// Here you will define your flags and configuration settings.
 

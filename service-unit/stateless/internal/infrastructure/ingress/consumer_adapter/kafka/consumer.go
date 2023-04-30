@@ -6,8 +6,8 @@ import (
 	"reflect"
 
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/common"
-	"github.com/hanapedia/the-bench/config/constants"
 	"github.com/segmentio/kafka-go"
 )
 
@@ -23,12 +23,12 @@ type KafkaConsumer struct {
 
 func NewKafkaConsumerAdapter(topic string) KafkaConsumerAdapter {
 	kafkaConsumer := NewKafkaConsumer(topic)
-	return KafkaConsumerAdapter{addr: constants.KafkaBrokerAddr, kafkaConsumer: kafkaConsumer}
+	return KafkaConsumerAdapter{addr: config.GetKafkaBrokerAddr(), kafkaConsumer: kafkaConsumer}
 }
 
 func NewKafkaConsumer(topic string) *KafkaConsumer {
 	reader := kafka.NewReader(kafka.ReaderConfig{
-		Brokers:     []string{constants.KafkaBrokerAddr},
+		Brokers:     []string{config.GetKafkaBrokerAddr()},
 		Topic:       topic,
 		StartOffset: kafka.FirstOffset,
 	})

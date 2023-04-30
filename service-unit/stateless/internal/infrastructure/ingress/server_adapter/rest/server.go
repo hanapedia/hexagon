@@ -11,6 +11,7 @@ import (
 	"github.com/hanapedia/the-bench/config/constants"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/contract"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/common"
 	"github.com/hanapedia/the-bench/service-unit/stateless/pkg/utils"
 )
@@ -25,7 +26,7 @@ func NewRestServerAdapter() RestServerAdapter {
 	app := fiber.New()
 	app.Use(logger.New())
 
-	return RestServerAdapter{addr: constants.RestServerAddr, server: app}
+	return RestServerAdapter{addr: config.GetRestServerAddr(), server: app}
 }
 
 func (rsa RestServerAdapter) Serve() error {
