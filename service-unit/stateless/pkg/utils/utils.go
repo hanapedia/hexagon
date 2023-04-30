@@ -9,7 +9,7 @@ import (
 	"github.com/hanapedia/the-bench/config/constants"
 )
 
-func GenerateRandomString(kbSize int) (string, error) {
+func GenerateRandomString(kbSize constants.RepositoryEntrySize) (string, error) {
 	byteSize := kbSize * 1024
 	rawByteSize := byteSize * 3 / 4
 	bytes := make([]byte, rawByteSize)
@@ -27,11 +27,11 @@ func GeneratePayloadWithRepositorySize(entrySize constants.RepositoryEntryVarian
 	var err error
 	switch entrySize {
 	case constants.SMALL:
-		payload, err = GenerateRandomString(int(constants.SMALLSIZE))
+		payload, err = GenerateRandomString(constants.SMALLSIZE)
 	case constants.MEDIUM:
-		payload, err = GenerateRandomString(int(constants.MEDIUMSIZE))
+		payload, err = GenerateRandomString(constants.MEDIUMSIZE)
 	case constants.LARGE:
-		payload, err = GenerateRandomString(int(constants.LARGESIZE))
+		payload, err = GenerateRandomString(constants.LARGESIZE)
 	}
 	return payload, err
 }

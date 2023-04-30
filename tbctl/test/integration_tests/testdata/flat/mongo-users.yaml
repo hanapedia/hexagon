@@ -3,4 +3,3 @@ ingressAdapters:
   - stateful:
       name: users
       variant: mongo
-      size: small

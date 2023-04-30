@@ -9,6 +9,7 @@ import (
 	"github.com/hanapedia/the-bench/config/constants"
 	"github.com/hanapedia/the-bench/config/model"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/egress/producer_adapter/kafka"
 )
 
@@ -32,7 +33,7 @@ func upsertBrokerEgressConnection(adapterConfig model.BrokerAdapterConfig, conne
 	}
 	switch adapterConfig.Variant {
 	case constants.KAFKA:
-		kafkaConnection := kafka.NewKafkaConnection(constants.KafkaBrokerAddr, adapterConfig.Topic)
+		kafkaConnection := kafka.NewKafkaConnection(config.GetKafkaBrokerAddr(), adapterConfig.Topic)
 		log.Printf("created new connection %v", reflect.TypeOf(kafkaConnection))
 
 		(*connections)[key] = kafkaConnection

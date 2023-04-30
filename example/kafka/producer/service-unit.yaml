@@ -1,18 +1,11 @@
 name: producer
-handler:
-  - name: get
-    protocol: rest
+ingressAdapters:
+- stateless:
     action: read
-    flow:
-      - adapter:
-          broker:
-            variant: kafka
-            topic: topic1
-  - name: post
-    protocol: rest
-    action: write
-    flow:
-      - adapter:
-          broker:
-            variant: kafka
-            topic: topic2
+    variant: rest
+    route: get
+  steps:
+  - egressAdapter:
+      broker:
+        variant: kafka
+        topic: topic1

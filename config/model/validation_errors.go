@@ -48,6 +48,22 @@ type ConfigValidationError struct {
 	MappingErrors          []InvalidAdapterMappingError
 }
 
+func (cve ConfigValidationError) Print() {
+	for err := range cve.ServiceUnitFieldErrors {
+		fmt.Println(err)
+	}
+	for err := range cve.AdapterFieldErrors {
+		fmt.Println(err)
+	}
+	for err := range cve.MappingErrors {
+		fmt.Println(err)
+	}
+}
+
+func (cve ConfigValidationError) Exist() bool {
+	return len(cve.ServiceUnitFieldErrors) > 0 || len(cve.AdapterFieldErrors) > 0 || len(cve.MappingErrors) > 0
+}
+
 func mapInvalidServiceUnitFieldValueErrors(err error, serviceUnitConfig ServiceUnitConfig) []InvalidServiceUnitFieldValueError {
 	var errs []InvalidServiceUnitFieldValueError
 	if validationErrors, ok := err.(validator.ValidationErrors); ok {

@@ -6,14 +6,14 @@ services:
     ports:
       - "8081:8080"
     volumes:
-      - ./producer/service-unit.yaml:/app/config/service-unit.yaml
+      - ./kafka/producer/service-unit.yaml:/app/config/service-unit.yaml
 
   consumer:
     image: hiroki11hanada/service-unit:v1.0
     ports:
       - "8082:8080"
     volumes:
-      - ./consumer/service-unit.yaml:/app/config/service-unit.yaml
+      - ./kafka/consumer/service-unit.yaml:/app/config/service-unit.yaml
 
   zookeeper:
     image: bitnami/zookeeper:3.8.1

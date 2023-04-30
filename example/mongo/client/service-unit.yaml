@@ -1,22 +1,24 @@
 name: client
-handler:
-  - name: get
-    protocol: rest
+ingressAdapters:
+- stateless: 
+    route: get
+    variant: rest
     action: read
-    flow:
-      - adapter:
-          stateful:
-            name: test
-            variant: mongo
-            action: read
-            size: small
-  - name: post
-    protocol: rest
+  steps:
+  - adapter:
+      stateful:
+        name: test
+        variant: mongo
+        action: read
+        size: small
+- stateless:
+    route: post
+    variant: rest
     action: write
-    flow:
-      - adapter:
-          stateful:
-            name: test
-            variant: mongo
-            action: write
-            size: large
+  steps:
+  - adapter:
+      stateful:
+        name: test
+        variant: mongo
+        action: write
+        size: large

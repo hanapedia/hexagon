@@ -1,22 +1,12 @@
 name: chain3
-handler:
-  - name: get
-    protocol: rest
+ingressAdapters:
+- stateless:
     action: read
-    flow:
-      - adapter:
-          stateless:
-            variant: rest
-            service: chain4
-            action: read
-            route: get
-  - name: post
-    protocol: rest
+    variant: rest
+    route: get
+  steps: []
+- stateless:
     action: write
-    flow:
-      - adapter:
-          stateless:
-            variant: rest
-            service: chain4
-            action: write
-            route: post
+    variant: rest
+    route: post
+  steps: []
