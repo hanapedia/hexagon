@@ -1,12 +1,5 @@
 package constants
 
-const (
-	ServiceNameIndex = 0
-	ProtocolIndex    = 1
-	ActionIndex      = 2
-	AdapterNameIndex = 3
-)
-
 type StatelessAdapterVariant string
 type BrokerAdapterVariant string
 type StatefulAdapterVariant string
@@ -28,16 +21,6 @@ const (
 	WRITE Action = "write"
 )
 
-const (
-	PayloadSize = 16
-)
-
-const (
-	RestServerAddr  = ":8080"
-	KafkaBrokerAddr = "kafka:9092"
-	MongoURIAddr    = "mongodb://root:password@stateful-unit-mongo:27017/mongo?authSource=admin"
-)
-
 type RepositoryEntryVariant string
 type RepositoryEntrySize int
 
@@ -49,6 +32,11 @@ const (
 	MEDIUMSIZE RepositoryEntrySize    = 4        // 1kb entries
 	LARGESIZE  RepositoryEntrySize    = 16       // 1kb entries
 )
+
+const (
+	PayloadSize = LARGESIZE
+)
+
 
 const (
 	NumInitialEntries = 100

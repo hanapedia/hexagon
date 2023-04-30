@@ -7,29 +7,29 @@ func ValidateServiceUnitConfigs(serviceUnitConfigs []ServiceUnitConfig) ConfigVa
 	addServieNameToAdapters(&serviceUnitConfigs)
 
 	// validate service unit and adapters fields
-	serviceUnitFieldErrors, adapterFieldErrors := validateAdapterFields(serviceUnitConfigs)
+	configValidationError := validateAdapterFields(serviceUnitConfigs)
 	mappingErrors := validateAdapterMapping(serviceUnitConfigs)
 	return ConfigValidationError{
-		ServiceUnitFieldErrors: serviceUnitFieldErrors,
-		AdapterFieldErrors:     adapterFieldErrors,
+		ServiceUnitFieldErrors: configValidationError.ServiceUnitFieldErrors,
+		AdapterFieldErrors:     configValidationError.AdapterFieldErrors,
 		MappingErrors:          mappingErrors,
 	}
 }
 
 // validate all the field values
-func validateAdapterFields(serviceUnitConfigs []ServiceUnitConfig) ([]InvalidServiceUnitFieldValueError, []InvalidAdapterFieldValueError) {
+func validateAdapterFields(serviceUnitConfigs []ServiceUnitConfig) ConfigValidationError {
 	var serviceUnitFieldErrors []InvalidServiceUnitFieldValueError
 	var adapterFieldErrors []InvalidAdapterFieldValueError
 	for _, serviceUnitConfig := range serviceUnitConfigs {
-		sufe, afe := ValidateServiceUnitConfigFields(serviceUnitConfig)
-		serviceUnitFieldErrors = append(serviceUnitFieldErrors, sufe...)
-		adapterFieldErrors = append(adapterFieldErrors, afe...)
+		configValidationError := ValidateServiceUnitConfigFields(serviceUnitConfig)
+		serviceUnitFieldErrors = append(serviceUnitFieldErrors, configValidationError.ServiceUnitFieldErrors...)
+		adapterFieldErrors = append(adapterFieldErrors, configValidationError.AdapterFieldErrors...)
 	}
-	return serviceUnitFieldErrors, adapterFieldErrors
+	return ConfigValidationError{ServiceUnitFieldErrors: serviceUnitFieldErrors, AdapterFieldErrors: adapterFieldErrors}
 }
 
 // validate fields for service config
-func ValidateServiceUnitConfigFields(serviceUnitConfig ServiceUnitConfig) ([]InvalidServiceUnitFieldValueError, []InvalidAdapterFieldValueError) {
+func ValidateServiceUnitConfigFields(serviceUnitConfig ServiceUnitConfig) ConfigValidationError {
 	var serviceUnitFieldErrors []InvalidServiceUnitFieldValueError
 	serviceUnitFieldErrors = append(serviceUnitFieldErrors, serviceUnitConfig.Validate()...)
 
@@ -44,7 +44,10 @@ func ValidateServiceUnitConfigFields(serviceUnitConfig ServiceUnitConfig) ([]Inv
 		}
 	}
 
-	return serviceUnitFieldErrors, adapterFieldErrors
+	return ConfigValidationError{
+		ServiceUnitFieldErrors: serviceUnitFieldErrors,
+		AdapterFieldErrors:     adapterFieldErrors,
+	}
 }
 
 func validateAdapterMapping(serviceUnitConfigs []ServiceUnitConfig) []InvalidAdapterMappingError {
