@@ -60,6 +60,10 @@ func (cve ConfigValidationError) Print() {
 	}
 }
 
+func (cve ConfigValidationError) Exist() bool {
+	return len(cve.ServiceUnitFieldErrors) > 0 || len(cve.AdapterFieldErrors) > 0 || len(cve.MappingErrors) > 0
+}
+
 func mapInvalidServiceUnitFieldValueErrors(err error, serviceUnitConfig ServiceUnitConfig) []InvalidServiceUnitFieldValueError {
 	var errs []InvalidServiceUnitFieldValueError
 	if validationErrors, ok := err.(validator.ValidationErrors); ok {
