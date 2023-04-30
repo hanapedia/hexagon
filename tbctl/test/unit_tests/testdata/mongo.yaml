@@ -1,5 +1,5 @@
-name: mongo-users
+name: stateful
 ingressAdapters:
   - stateful:
-      name: users
+      name: test
       variant: mongo

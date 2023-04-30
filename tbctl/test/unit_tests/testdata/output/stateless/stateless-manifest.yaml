@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stateless
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stateless
+  template:
+    metadata:
+      labels:
+        app: stateless
+    spec:
+      containers:
+      - name: stateless
+        image: hiroki11hanada/service-unit:v1.0
+        envFrom:
+        - configMapRef:
+            name: stateless-env-configMap
+        resources:
+          limits:
+            cpu: 125m
+            memory: 128Mi
+          requests:
+            cpu: 250m
+            memory: 64Mi
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 9090
+          name: grpc
+        volumeMounts:
+        - name: config
+          mountPath: /config/service-unit.yaml
+      volumes:
+      - name: config
+        configMap:
+          name: stateless-config-file-configMap
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stateless
+  namespace: default
+spec:
+  selector:
+    app: stateless
+  ports:
+  - name: http
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+  - name: grpc
+    protocol: TCP
+    port: 9090
+    targetPort: 9090
+  type: ClusterIP
