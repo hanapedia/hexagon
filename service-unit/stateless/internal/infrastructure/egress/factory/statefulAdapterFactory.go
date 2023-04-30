@@ -8,6 +8,7 @@ import (
 	"github.com/hanapedia/the-bench/config/constants"
 	"github.com/hanapedia/the-bench/config/model"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/egress/repository_adapter/mongo"
 )
 
@@ -31,7 +32,8 @@ func upsertStatefulEgressConnection(adapterConfig model.StatefulAdapterConfig, c
 	}
 	switch adapterConfig.Variant {
 	case constants.MONGO:
-		mongoConnection := mongo.NewMongoConnection(constants.MongoURIAddr)
+		connectionUri := config.GetMongoConnectionUri(adapterConfig)
+		mongoConnection := mongo.NewMongoConnection(connectionUri)
 		log.Printf("created new connection %v", reflect.TypeOf(mongoConnection))
 
 		(*connections)[key] = mongoConnection
@@ -41,3 +43,4 @@ func upsertStatefulEgressConnection(adapterConfig model.StatefulAdapterConfig, c
 	}
 	return connection
 }
+
