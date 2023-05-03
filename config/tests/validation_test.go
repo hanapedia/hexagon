@@ -4,6 +4,7 @@ import (
 	"log"
 	"testing"
 
+	"github.com/hanapedia/the-bench/config/logger"
 	"github.com/hanapedia/the-bench/config/model"
 	"github.com/hanapedia/the-bench/config/validation"
 	"github.com/hanapedia/the-bench/config/yaml"
@@ -18,7 +19,7 @@ func TestServiceConfigsValidation(t *testing.T) {
 		getServiceUnitConfig("./testdata/valid/mongo.yaml"),
 	}
 	errs := validation.ValidateServiceUnitConfigs(&serviceUnitConfigs)
-	validation.PrintErrors(errs)
+	logger.PrintErrors(errs)
 	if errs.Exist() {
 		t.Fail()
 	}
@@ -32,7 +33,7 @@ func TestInvalidServiceConfigsValidation(t *testing.T) {
 		getServiceUnitConfig("./testdata/invalid/mapping/mongo.yaml"),
 	}
 	errs := validation.ValidateServiceUnitConfigs(&serviceUnitConfigs)
-	validation.PrintErrors(errs)
+	logger.PrintErrors(errs)
 	if errs.Exist() {
 		t.Fail()
 	}
@@ -43,7 +44,7 @@ func TestServiceConfigValidation(t *testing.T) {
 	serviceUnitConfig := getServiceUnitConfig("./testdata/valid/service-c.yaml")
 
 	errs := validation.ValidateServiceUnitConfigFields(&serviceUnitConfig)
-	validation.PrintErrors(errs)
+	logger.PrintErrors(errs)
 	if errs.Exist() {
 		t.Fail()
 	}
@@ -54,7 +55,7 @@ func TestInvalidServiceConfigValidation(t *testing.T) {
 	serviceUnitConfig := getServiceUnitConfig("./testdata/invalid/service_unit/invalidIngressAdapter.yaml")
 
 	errs := validation.ValidateServiceUnitConfigFields(&serviceUnitConfig)
-	validation.PrintErrors(errs)
+	logger.PrintErrors(errs)
 	if errs.Exist() {
 		t.Fail()
 	}
@@ -65,7 +66,7 @@ func TestInvalidAdapterConfigValidation(t *testing.T) {
 	serviceUnitConfig := getServiceUnitConfig("./testdata/invalid/adapter/egress-adapter.yaml")
 
 	errs := validation.ValidateServiceUnitConfigFields(&serviceUnitConfig)
-	validation.PrintErrors(errs)
+	logger.PrintErrors(errs)
 	if errs.Exist() {
 		t.Fail()
 	}
@@ -76,7 +77,7 @@ func TestServiceNameUnmatch(t *testing.T) {
 	serviceUnitConfig := getServiceUnitConfig("./testdata/invalid/mapping/matching-name.yaml")
 
 	errs := validation.ValidateServiceUnitConfigFields(&serviceUnitConfig)
-	validation.PrintErrors(errs)
+	logger.PrintErrors(errs)
 	if errs.Exist() {
 		t.Fail()
 	}
@@ -87,7 +88,7 @@ func TestMultipleStatefulServiceDefinitionValidation(t *testing.T) {
 	serviceUnitConfig := getServiceUnitConfig("./testdata/invalid/service_unit/multipleStatefulAdapter.yaml")
 
 	errs := validation.ValidateServiceUnitConfigFields(&serviceUnitConfig)
-	validation.PrintErrors(errs)
+	logger.PrintErrors(errs)
 	if errs.Exist() {
 		t.Fail()
 	}
