@@ -5,29 +5,29 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var logger *logrus.Logger
+var Logger *logrus.Logger
 
 func init() {
-	logger = logrus.New()
+	Logger = logrus.New()
 
 	// Set log formatting to use the text formatter with timestamps
-	logger.SetFormatter(&logrus.TextFormatter{
+	Logger.SetFormatter(&logrus.TextFormatter{
 		DisableTimestamp: true,
 	})
 
 	// Set log level to show all log levels
-	logger.SetLevel(logrus.TraceLevel)
+	Logger.SetLevel(logrus.TraceLevel)
 }
 
 func PrintErrors(cve model.ConfigValidationError) {
 	for _, err := range cve.ServiceUnitFieldErrors {
-		logger.Errorf(err.Error())
+		Logger.Errorf(err.Error())
 	}
 	for _, err := range cve.AdapterFieldErrors {
-		logger.Errorf(err.Error())
+		Logger.Errorf(err.Error())
 	}
 	for _, err := range cve.MappingErrors {
-		logger.Errorf(err.Error())
+		Logger.Errorf(err.Error())
 	}
 
 }

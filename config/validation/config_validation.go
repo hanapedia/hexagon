@@ -57,7 +57,7 @@ func validateServiceUnitConfigFields(serviceUnitConfig *model.ServiceUnitConfig)
 			break
 		}
 		if statefulIngressAdapterConfig != nil {
-			logger.Warnf("Stateful ingress adapter found, ignoring other ingress adapter definitions.\n")
+			Logger.Warnf("Stateful ingress adapter found, ignoring other ingress adapter definitions.\n")
 			serviceUnitConfig.IngressAdapterConfigs = []model.IngressAdapterConfig{
 				{
 					StatefulIngressAdapterConfig: statefulIngressAdapterConfig,
@@ -92,13 +92,13 @@ func validateServieNameOnAdapters(ingressAdapterConfig model.IngressAdapterConfi
 func addServieNameToStatelessAdapters(statelessIngressAdapterConfig *model.StatelessAdapterConfig, serviceName string) {
 	if statelessIngressAdapterConfig.Service == "" {
 		statelessIngressAdapterConfig.Service = serviceName
-		logger.Infof(
+		Logger.Infof(
 			"Service field is undefined on stateless ingress adapter %s. Using Service Config service name.\n",
 			statelessIngressAdapterConfig.GetId(),
 		)
 	} else if statelessIngressAdapterConfig.Service != serviceName {
 		statelessIngressAdapterConfig.Service = serviceName
-		logger.Warnf(
+		Logger.Warnf(
 			"Service Config service name and ingress adapter does not match for ingress adapter %s. Resorting to Service Config service name for consistecy.\n",
 			statelessIngressAdapterConfig.GetId(),
 		)
@@ -109,7 +109,7 @@ func addServieNameToStatelessAdapters(statelessIngressAdapterConfig *model.State
 func validateServiceNamOnStatefulAdapter(statefulIngressAdapterConfig *model.StatefulAdapterConfig, serviceName string) {
 	if statefulIngressAdapterConfig.Name != serviceName {
 		statefulIngressAdapterConfig.Name = serviceName
-		logger.Warnf(
+		Logger.Warnf(
 			"Service Config service name and ingress adapter does not match for ingress adapter %s. Resorting to Service Config service name for consistecy.\n",
 			statefulIngressAdapterConfig.GetId(),
 		)
@@ -176,7 +176,7 @@ func validateIngressAdapterConfig(ingressAdapterConfig *model.IngressAdapterConf
 	if ingressAdapterConfig.StatefulIngressAdapterConfig != nil {
 		if len(ingressAdapterConfig.Steps) > 0 {
 			ingressAdapterConfig.Steps = []model.Step{} // makes sure that stateful service unit config have no steps defined
-			logger.Warnf(
+			Logger.Warnf(
 				"Steps definition found on stateful ingress config for %s. These Steps will be ignored.\n",
 				ingressAdapterConfig.StatefulIngressAdapterConfig.Name,
 			)
