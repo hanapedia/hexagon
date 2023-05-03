@@ -1,0 +1,5 @@
+name: test
+ingressAdapters:
+  - stateful:
+      variant: mongo
+      name: test2

@@ -3,10 +3,11 @@ ingressAdapters:
   - stateless:
       action: write
       variant: rest
-      route: updateUser
+      route: foo
     steps:
       - egressAdapter:
           stateful:
             variant: mongo
+            name: test
             action: write
             size: small
