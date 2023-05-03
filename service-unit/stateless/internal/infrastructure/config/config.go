@@ -1,14 +1,15 @@
 package config
 
 import (
-	"log"
-
+	"github.com/hanapedia/the-bench/config/loader"
 	"github.com/hanapedia/the-bench/config/model"
+	"github.com/hanapedia/the-bench/config/validation"
+	"github.com/hanapedia/the-bench/config/logger"
 	"github.com/hanapedia/the-bench/config/yaml"
 )
 
-func newConfigLoader(format string) model.ConfigLoader {
-	var configLoader model.ConfigLoader
+func newConfigLoader(format string) loader.ConfigLoader {
+	var configLoader loader.ConfigLoader
 	switch format {
 	case "yaml":
 		configLoader = yaml.YamlConfigLoader{Path: "./config/service-unit.yaml"}
@@ -23,12 +24,12 @@ func GetConfig(format string) model.ServiceUnitConfig {
 	configLoader := newConfigLoader(format)
 	config, err := configLoader.Load()
 	if err != nil {
-		log.Fatalf("Error loading config: %v", err)
+		logger.Logger.Fatalf("Error loading config: %v", err)
 	}
 
-	errs := model.ValidateServiceUnitConfigFields(config)
-    errs.Print()
-    log.Fatalln("Validation failed. Aborted.")
+	errs := validation.ValidateServiceUnitConfigFields(&config)
+    logger.PrintErrors(errs)
+    logger.Logger.Fatalln("Validation failed. Aborted.")
 	return config
 }
 

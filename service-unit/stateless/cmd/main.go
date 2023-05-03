@@ -1,9 +1,9 @@
 package main
 
 import (
-	"log"
 	"reflect"
 
+	"github.com/hanapedia/the-bench/config/logger"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/app/usecases"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
 )
@@ -11,7 +11,7 @@ import (
 func main() {
 	serviceUnitConfig := usecases.GetConfig("yaml")
 	serviceUnit := usecases.NewServiceUnit(serviceUnitConfig)
-	log.Println("Service unit successfully loaded.")
+	logger.Logger.Println("Service unit successfully loaded.")
 
 	serviceUnit.Setup()
 
@@ -19,5 +19,5 @@ func main() {
 	serviceUnit.Start(errChan)
 
 	serverAdapterError := <-errChan
-	log.Fatalf("%s failed: %s", reflect.TypeOf(serverAdapterError.IngressAdapter).Elem().Name(), serverAdapterError.Error)
+	logger.Logger.Fatalf("%s failed: %s", reflect.TypeOf(serverAdapterError.IngressAdapter).Elem().Name(), serverAdapterError.Error)
 }

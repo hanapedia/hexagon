@@ -2,10 +2,10 @@ package factory
 
 import (
 	"errors"
-	"log"
 	"reflect"
 
 	"github.com/hanapedia/the-bench/config/constants"
+	"github.com/hanapedia/the-bench/config/logger"
 	"github.com/hanapedia/the-bench/config/model"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
@@ -27,19 +27,19 @@ func upsertStatefulEgressConnection(adapterConfig model.StatefulAdapterConfig, c
 	key := string(adapterConfig.Variant)
 	connection, ok := (*connections)[key]
 	if ok {
-		log.Printf("connection already exists reusing %v", reflect.TypeOf(connection))
+		logger.Logger.Infof("connection already exists reusing %v", reflect.TypeOf(connection))
 		return connection
 	}
 	switch adapterConfig.Variant {
 	case constants.MONGO:
 		connectionUri := config.GetMongoConnectionUri(adapterConfig)
 		mongoConnection := mongo.NewMongoConnection(connectionUri)
-		log.Printf("created new connection %v", reflect.TypeOf(mongoConnection))
+		logger.Logger.Infof("created new connection %v", reflect.TypeOf(mongoConnection))
 
 		(*connections)[key] = mongoConnection
 		return mongoConnection
 	default:
-		log.Fatalf("invalid protocol")
+		logger.Logger.Fatalf("invalid protocol")
 	}
 	return connection
 }

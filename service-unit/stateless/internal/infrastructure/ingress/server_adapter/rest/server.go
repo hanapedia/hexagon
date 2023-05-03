@@ -3,12 +3,12 @@ package rest
 import (
 	"errors"
 	"fmt"
-	"log"
 	"reflect"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/logger"
+	fiber_logger "github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/hanapedia/the-bench/config/constants"
+	"github.com/hanapedia/the-bench/config/logger"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/contract"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
@@ -24,7 +24,7 @@ type RestServerAdapter struct {
 
 func NewRestServerAdapter() RestServerAdapter {
 	app := fiber.New()
-	app.Use(logger.New())
+	app.Use(fiber_logger.New())
 
 	return RestServerAdapter{addr: config.GetRestServerAddr(), server: app}
 }
@@ -44,7 +44,7 @@ func (rsa RestServerAdapter) Register(handler *core.IngressAdapterHandler) error
 		rsa.server.Get("/"+handler.StatelessIngressAdapterConfig.Service, func(c *fiber.Ctx) error {
 			egressAdapterErrors := common.TaskSetHandler(handler.TaskSets)
 			for _, egressAdapterError := range egressAdapterErrors {
-				log.Printf("Invocating %s failed: %s",
+				logger.Logger.Errorf("Invocating %s failed: %s",
 					reflect.TypeOf(egressAdapterError.EgressAdapter).Elem().Name(),
 					egressAdapterError.Error,
 				)
@@ -64,7 +64,7 @@ func (rsa RestServerAdapter) Register(handler *core.IngressAdapterHandler) error
 		rsa.server.Post("/"+handler.StatelessIngressAdapterConfig.Service, func(c *fiber.Ctx) error {
 			egressAdapterErrors := common.TaskSetHandler(handler.TaskSets)
 			for _, egressAdapterError := range egressAdapterErrors {
-				log.Printf("Invocating %s failed: %s",
+				logger.Logger.Errorf("Invocating %s failed: %s",
 					reflect.TypeOf(egressAdapterError.EgressAdapter).Elem().Name(),
 					egressAdapterError.Error,
 				)

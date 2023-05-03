@@ -2,9 +2,9 @@ package kafka
 
 import (
 	"context"
-	"log"
 	"reflect"
 
+	"github.com/hanapedia/the-bench/config/logger"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/common"
@@ -42,10 +42,10 @@ func (kca KafkaConsumerAdapter) Serve() error {
 		if err != nil {
 			break
 		}
-		log.Printf("message at offset %d: %s = %s", message.Offset, string(message.Key), string(message.Value))
+		logger.Logger.Tracef("message at offset %d: %s = %s", message.Offset, string(message.Key), string(message.Value))
 		egressAdapterErrors := common.TaskSetHandler(kca.kafkaConsumer.handler.TaskSets)
 		for _, egressAdapterError := range egressAdapterErrors {
-			log.Printf("Invocating %s failed: %s",
+			logger.Logger.Errorf("Invocating %s failed: %s",
 				reflect.TypeOf(egressAdapterError.EgressAdapter).Elem().Name(),
 				egressAdapterError.Error,
 			)
