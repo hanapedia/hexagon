@@ -5,7 +5,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
@@ -32,25 +31,9 @@ var validateCmd = &cobra.Command{
 		}
 
 		if fileInfo.IsDir() {
-			errs := validation.ValidateDirectory(validateFilePath)
-			if errs.Exist() {
-				errs.Print()
-				log.Fatalf(
-					"Validation failed with %v service unit field errors, %v adapter field errors, and %v mapping errors.",
-					len(errs.ServiceUnitFieldErrors),
-					len(errs.AdapterFieldErrors),
-					len(errs.MappingErrors),
-				)
-			}
+			_ = validation.ValidateDirectory(validateFilePath)
 		} else {
-			errs := validation.ValidateFile(validateFilePath)
-			if errs.Exist() {
-				log.Fatalf(
-					"Validation failed with %v service unit field errors and %v adapter field errors.",
-					len(errs.ServiceUnitFieldErrors),
-					len(errs.AdapterFieldErrors),
-				)
-			}
+			_ = validation.ValidateFile(validateFilePath)
 		}
 	},
 }

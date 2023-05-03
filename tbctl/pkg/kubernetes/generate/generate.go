@@ -1,8 +1,7 @@
 package generate
 
 import (
-	"log"
-
+	"github.com/hanapedia/the-bench/config/logger"
 	"github.com/hanapedia/the-bench/config/model"
 	"github.com/hanapedia/the-bench/tbctl/pkg/loader"
 )
@@ -12,14 +11,14 @@ func GenerateFromFile(input string, output string) {
 	errs := GenerateManifest(input, output, serviceUnitConfig)
     errs.Print()
 	if errs.Exist() {
-		log.Fatal("Failed generating manifests.")
+		logger.Logger.Fatal("Failed generating manifests.")
 	}
 }
 
 func GenerateFromDirectory(input string, output string) {
 	paths, err := loader.GetYAMLFiles(input)
 	if err != nil {
-		log.Fatalf("Error reading from directory %s. %s", input, err)
+		logger.Logger.Fatalf("Error reading from directory %s. %s", input, err)
 	}
 
 	for _, input = range paths {
