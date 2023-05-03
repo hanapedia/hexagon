@@ -83,9 +83,9 @@ func (iac InternalAdapterConfig) Validate() []InvalidAdapterFieldValueError {
 }
 
 func (iac InternalAdapterConfig) GetId() string {
-	return iac.Name 
+	return iac.Name
 }
 
-func validateAdapter[T Adapter](adapter T) []InvalidAdapterFieldValueError {
+func ValidateAdapter[T Adapter](adapter T) []InvalidAdapterFieldValueError {
 	return adapter.Validate()
 }
