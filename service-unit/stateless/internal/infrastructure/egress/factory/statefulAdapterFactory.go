@@ -17,7 +17,7 @@ func statefulEgressAdapterFactory(adapterConfig model.StatefulAdapterConfig, con
 	case constants.MONGO:
 		return mongoEgressAdapterFactory(adapterConfig, connection)
 	default:
-		err := errors.New("No matching protocol found")
+		err := errors.New("No matching protocol found when creating stateful egress adapter.")
 		return nil, err
 	}
 

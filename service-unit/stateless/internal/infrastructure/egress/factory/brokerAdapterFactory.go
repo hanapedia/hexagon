@@ -18,7 +18,7 @@ func brokerEgressAdapterFactory(adapterConfig model.BrokerAdapterConfig, connect
 	case constants.KAFKA:
 		return kafkaEgressAdapterFactory(adapterConfig, connection)
 	default:
-		err := errors.New("No matching protocol found")
+		err := errors.New("No matching protocol found when creating broker egress adapter.")
 		return nil, err
 	}
 

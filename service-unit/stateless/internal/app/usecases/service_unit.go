@@ -142,7 +142,7 @@ func (su *ServiceUnit) mapHandlersToIngressAdapters() {
 func (su ServiceUnit) mapTaskSet(steps []model.Step) *[]core.TaskSet {
 	tasksets := make([]core.TaskSet, len(steps))
 	for i, step := range steps {
-		egressAdapter, err := egressAdapterFactory.NewEgressAdapter(step.EgressAdapterConfig, su.EgressConnections)
+		egressAdapter, err := egressAdapterFactory.NewEgressAdapter(*step.EgressAdapterConfig, su.EgressConnections)
 		if err != nil {
 			logger.Logger.Infof("Skipped interface: %s", err)
 			continue

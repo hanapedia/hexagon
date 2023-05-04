@@ -28,8 +28,10 @@ func GetConfig(format string) model.ServiceUnitConfig {
 	}
 
 	errs := validation.ValidateServiceUnitConfigFields(&config)
-    logger.PrintErrors(errs)
-    logger.Logger.Fatalln("Validation failed. Aborted.")
+	if errs.Exist() {
+		logger.PrintErrors(errs)
+		logger.Logger.Fatalln("Validation failed. Aborted.")
+	}
 	return config
 }
 

@@ -1,7 +1,7 @@
 # Variables
 DOCKER_HUB_USERNAME := hiroki11hanada
 REPOSITORY_NAME := service-unit
-TAG ?= v1.0
+TAG ?= v1.2
 IMAGE_NAME := $(DOCKER_HUB_USERNAME)/$(REPOSITORY_NAME):$(TAG)
 
 # Targets

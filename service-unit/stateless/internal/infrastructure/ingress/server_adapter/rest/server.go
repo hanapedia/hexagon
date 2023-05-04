@@ -41,7 +41,7 @@ func (rsa RestServerAdapter) Register(handler *core.IngressAdapterHandler) error
 	var err error
 	switch handler.StatelessIngressAdapterConfig.Action {
 	case "read":
-		rsa.server.Get("/"+handler.StatelessIngressAdapterConfig.Service, func(c *fiber.Ctx) error {
+		rsa.server.Get("/"+handler.StatelessIngressAdapterConfig.Route, func(c *fiber.Ctx) error {
 			egressAdapterErrors := common.TaskSetHandler(handler.TaskSets)
 			for _, egressAdapterError := range egressAdapterErrors {
 				logger.Logger.Errorf("Invocating %s failed: %s",
@@ -61,7 +61,7 @@ func (rsa RestServerAdapter) Register(handler *core.IngressAdapterHandler) error
 			return c.Status(fiber.StatusOK).JSON(restResponse)
 		})
 	case "write":
-		rsa.server.Post("/"+handler.StatelessIngressAdapterConfig.Service, func(c *fiber.Ctx) error {
+		rsa.server.Post("/"+handler.StatelessIngressAdapterConfig.Route, func(c *fiber.Ctx) error {
 			egressAdapterErrors := common.TaskSetHandler(handler.TaskSets)
 			for _, egressAdapterError := range egressAdapterErrors {
 				logger.Logger.Errorf("Invocating %s failed: %s",

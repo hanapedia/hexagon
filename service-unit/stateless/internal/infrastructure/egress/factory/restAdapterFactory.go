@@ -23,7 +23,7 @@ func restEgressAdapterFactory(adapterConfig model.StatelessAdapterConfig) (core.
 	case constants.WRITE:
 		restEgressAdapter = rest.RestWriteAdapter{URL: fmt.Sprintf("http://%s:%s/%s", adapterConfig.Service, port, adapterConfig.Route)}
 	default:
-		err = errors.New("No matching protocol found")
+		err = errors.New("No matching protocol found when creating rest egress adapter.")
 	}
 	return restEgressAdapter, err
 }
