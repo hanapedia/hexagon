@@ -1,6 +1,7 @@
 package usecases
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/hanapedia/the-bench/config/constants"
@@ -104,6 +105,9 @@ func getConsumerKey(brokerIngressAdapterConfig model.BrokerAdapterConfig) string
 
 // Handler configuration can omit the serivce name so the service name needs to be assigned for better logging
 func assignServicename(service string, statelessAdapterConfig *model.StatelessAdapterConfig) *model.StatelessAdapterConfig {
+	if statelessAdapterConfig == nil {
+		return statelessAdapterConfig
+	}
 	if statelessAdapterConfig.Service == "" {
 		statelessAdapterConfig.Service = service
 	}
@@ -114,10 +118,9 @@ func assignServicename(service string, statelessAdapterConfig *model.StatelessAd
 func (su *ServiceUnit) mapHandlersToIngressAdapters() {
 	for _, ingressAdapterConfig := range su.Config.IngressAdapterConfigs {
 		taskSets := su.mapTaskSet(ingressAdapterConfig.Steps)
-		handler := core.IngressAdapterHandler{
-			StatelessIngressAdapterConfig: assignServicename(su.Name, ingressAdapterConfig.StatelessIngressAdapterConfig),
-			BrokerIngressAdapterConfig:    ingressAdapterConfig.BrokerIngressAdapterConfig,
-			TaskSets:                      *taskSets,
+		handler, err := su.createIngressAdapterHandler(ingressAdapterConfig, taskSets)
+		if err != nil {
+			logger.Logger.Fatalf("Error creating handler: %v", err)
 		}
 
 		var ingressAdapter *core.IngressAdapter
@@ -130,12 +133,28 @@ func (su *ServiceUnit) mapHandlersToIngressAdapters() {
 		}
 		logger.Logger.Tracef("registering handler %s", handler.GetId())
 
-		err := ingressAdapterFactory.RegiserHandlerToIngressAdapter(ingressAdapter, &handler)
+		err = ingressAdapterFactory.RegiserHandlerToIngressAdapter(ingressAdapter, &handler)
 		if err != nil {
 			logger.Logger.Fatalf("Error registering handler to server adapter: %v", err)
 		}
 		logger.Logger.Infof("Successfully mapped '%s' handler.", handler.GetId())
 	}
+}
+
+func (su ServiceUnit) createIngressAdapterHandler(ingressAdapterConfig model.IngressAdapterConfig, taskSets *[]core.TaskSet) (core.IngressAdapterHandler, error) {
+	if ingressAdapterConfig.StatelessIngressAdapterConfig != nil {
+		return core.IngressAdapterHandler{
+			StatelessIngressAdapterConfig: assignServicename(su.Name, ingressAdapterConfig.StatelessIngressAdapterConfig),
+			TaskSets:                      *taskSets,
+		}, nil
+	}
+	if ingressAdapterConfig.BrokerIngressAdapterConfig != nil {
+		return core.IngressAdapterHandler{
+			BrokerIngressAdapterConfig: ingressAdapterConfig.BrokerIngressAdapterConfig,
+			TaskSets:                   *taskSets,
+		}, nil
+	}
+	return core.IngressAdapterHandler{}, errors.New("Failed to create ingress adapter handler. No adapter config found.")
 }
 
 // Create task set from config
