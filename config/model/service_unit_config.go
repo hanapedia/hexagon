@@ -13,7 +13,7 @@ type IngressAdapterConfig struct {
 }
 
 type Step struct {
-	EgressAdapterConfig EgressAdapterConfig `yaml:"egressAdapter" validate:"required"`
+	EgressAdapterConfig *EgressAdapterConfig `yaml:"egressAdapter" validate:"required"`
 	Concurrent          bool                `yaml:"concurrent,omitempty"`
 }
 

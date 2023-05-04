@@ -14,4 +14,7 @@ func PrintErrors(cve model.ConfigValidationError) {
 	for _, err := range cve.MappingErrors {
 		Logger.Errorf(err.Error())
 	}
+	for _, err := range cve.StepFieldErrors {
+		Logger.Errorf(err.Error())
+	}
 }
