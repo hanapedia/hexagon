@@ -2,13 +2,13 @@ version: "3.9"
 
 services:
   client:
-    image: hiroki11hanada/service-unit:v1.0
+    image: hiroki11hanada/service-unit:v1.4
     ports:
       - "8081:8080"
     volumes:
       - ./mongo/client/service-unit.yaml:/app/config/service-unit.yaml
 
-  stateful-unit-mongo:
+  test:
     image: hiroki11hanada/stateful-unit-mongo:v1.0
     ports:
       - "27017:27017"

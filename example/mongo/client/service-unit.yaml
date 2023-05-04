@@ -1,11 +1,11 @@
 name: client
 ingressAdapters:
-- stateless: 
+- stateless:
     route: get
     variant: rest
     action: read
   steps:
-  - adapter:
+  - egressAdapter:
       stateful:
         name: test
         variant: mongo
@@ -16,7 +16,7 @@ ingressAdapters:
     variant: rest
     action: write
   steps:
-  - adapter:
+  - egressAdapter:
       stateful:
         name: test
         variant: mongo
