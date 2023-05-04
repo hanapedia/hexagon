@@ -3,14 +3,15 @@ package loader
 import (
 	"fmt"
 	"io/fs"
-	"log"
 	"path/filepath"
 
+	"github.com/hanapedia/the-bench/config/loader"
+	"github.com/hanapedia/the-bench/config/logger"
 	"github.com/hanapedia/the-bench/config/model"
 	"github.com/hanapedia/the-bench/config/yaml"
 )
 
-func newConfigLoader(path string) model.ConfigLoader {
+func newConfigLoader(path string) loader.ConfigLoader {
 	return yaml.YamlConfigLoader{Path: path}
 }
 
@@ -19,7 +20,7 @@ func GetConfig(path string) model.ServiceUnitConfig {
 	configLoader := newConfigLoader(path)
 	config, err := configLoader.Load()
 	if err != nil {
-		log.Fatalf("Error loading config: %v", err)
+		logger.Logger.Fatalf("Error loading config: %v", err)
 	}
 	return config
 }

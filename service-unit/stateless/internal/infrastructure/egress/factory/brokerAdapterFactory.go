@@ -3,10 +3,10 @@ package factory
 import (
 	"errors"
 	"fmt"
-	"log"
 	"reflect"
 
 	"github.com/hanapedia/the-bench/config/constants"
+	"github.com/hanapedia/the-bench/config/logger"
 	"github.com/hanapedia/the-bench/config/model"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
@@ -18,7 +18,7 @@ func brokerEgressAdapterFactory(adapterConfig model.BrokerAdapterConfig, connect
 	case constants.KAFKA:
 		return kafkaEgressAdapterFactory(adapterConfig, connection)
 	default:
-		err := errors.New("No matching protocol found")
+		err := errors.New("No matching protocol found when creating broker egress adapter.")
 		return nil, err
 	}
 
@@ -28,18 +28,18 @@ func upsertBrokerEgressConnection(adapterConfig model.BrokerAdapterConfig, conne
 	key := fmt.Sprintf("%s.%s", adapterConfig.Variant, adapterConfig.Topic)
 	connection, ok := (*connections)[key]
 	if ok {
-		log.Printf("connection already exists reusing %v", reflect.TypeOf(connection))
+		logger.Logger.Infof("connection already exists reusing %v", reflect.TypeOf(connection))
 		return connection
 	}
 	switch adapterConfig.Variant {
 	case constants.KAFKA:
 		kafkaConnection := kafka.NewKafkaConnection(config.GetKafkaBrokerAddr(), adapterConfig.Topic)
-		log.Printf("created new connection %v", reflect.TypeOf(kafkaConnection))
+		logger.Logger.Infof("created new connection %v", reflect.TypeOf(kafkaConnection))
 
 		(*connections)[key] = kafkaConnection
 		return kafkaConnection
 	default:
-		log.Fatalf("invalid protocol")
+		logger.Logger.Fatalf("invalid protocol")
 	}
 	return connection
 }

@@ -42,26 +42,37 @@ func NewInvalidEgressAdapterError(id string) InvalidAdapterMappingError {
 	return InvalidAdapterMappingError{message: fmt.Sprintf("No matching ingress adapter found for egress adapter with id: %s", id)}
 }
 
+type InvalidStepFieldValueError struct {
+	message string
+}
+
+func (e *InvalidStepFieldValueError) Error() string {
+	return e.message
+}
+
+func NewInvalidStepFieldValueError(id string) InvalidStepFieldValueError {
+	return InvalidStepFieldValueError{message: fmt.Sprintf("No egress adapter config found on one of steps on ingress adapter with id: %s.", id)}
+}
+
 type ConfigValidationError struct {
 	ServiceUnitFieldErrors []InvalidServiceUnitFieldValueError
 	AdapterFieldErrors     []InvalidAdapterFieldValueError
 	MappingErrors          []InvalidAdapterMappingError
-}
-
-func (cve ConfigValidationError) Print() {
-	for err := range cve.ServiceUnitFieldErrors {
-		fmt.Println(err)
-	}
-	for err := range cve.AdapterFieldErrors {
-		fmt.Println(err)
-	}
-	for err := range cve.MappingErrors {
-		fmt.Println(err)
-	}
+	StepFieldErrors        []InvalidStepFieldValueError
 }
 
 func (cve ConfigValidationError) Exist() bool {
-	return len(cve.ServiceUnitFieldErrors) > 0 || len(cve.AdapterFieldErrors) > 0 || len(cve.MappingErrors) > 0
+	return (len(cve.ServiceUnitFieldErrors) > 0 ||
+		len(cve.AdapterFieldErrors) > 0 ||
+		len(cve.MappingErrors) > 0 ||
+		len(cve.StepFieldErrors) > 0)
+}
+
+func (cve *ConfigValidationError) Extend(other ConfigValidationError) {
+	cve.ServiceUnitFieldErrors = append(cve.ServiceUnitFieldErrors, other.ServiceUnitFieldErrors...)
+	cve.AdapterFieldErrors = append(cve.AdapterFieldErrors, other.AdapterFieldErrors...)
+	cve.MappingErrors = append(cve.MappingErrors, other.MappingErrors...)
+	cve.StepFieldErrors = append(cve.StepFieldErrors, other.StepFieldErrors...)
 }
 
 func mapInvalidServiceUnitFieldValueErrors(err error, serviceUnitConfig ServiceUnitConfig) []InvalidServiceUnitFieldValueError {

@@ -8,7 +8,7 @@ type KafkaTopicTemplateArgs struct {
 	Replicas    int
 }
 
-const KafkaTopicTemplate = `
+const KafkaTopicTemplate = `---
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
 metadata:

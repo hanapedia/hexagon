@@ -4,57 +4,92 @@ import (
 	"log"
 	"testing"
 
+	"github.com/hanapedia/the-bench/config/logger"
 	"github.com/hanapedia/the-bench/config/model"
+	"github.com/hanapedia/the-bench/config/validation"
 	"github.com/hanapedia/the-bench/config/yaml"
 )
 
+// test multiple valid config
 func TestServiceConfigsValidation(t *testing.T) {
 	serviceUnitConfigs := []model.ServiceUnitConfig{
-		getServiceUnitConfig("./testdata/service-a.yaml"),
-		getServiceUnitConfig("./testdata/service-b.yaml"),
-		getServiceUnitConfig("./testdata/service-c.yaml"),
+		getServiceUnitConfig("./testdata/valid/service-a.yaml"),
+		getServiceUnitConfig("./testdata/valid/service-b.yaml"),
+		getServiceUnitConfig("./testdata/valid/service-c.yaml"),
+		getServiceUnitConfig("./testdata/valid/mongo.yaml"),
 	}
-	errs := model.ValidateServiceUnitConfigs(serviceUnitConfigs)
-	errs.Print()
-	if len(errs.ServiceUnitFieldErrors) > 0 {
-		t.Fail()
-	}
-	if len(errs.AdapterFieldErrors) > 0 {
-		t.Fail()
-	}
-	if len(errs.MappingErrors) > 0 {
+	errs := validation.ValidateServiceUnitConfigs(&serviceUnitConfigs)
+	logger.PrintErrors(errs)
+	if errs.Exist() {
 		t.Fail()
 	}
 }
 
+func TestInvalidServiceConfigsValidation(t *testing.T) {
+	serviceUnitConfigs := []model.ServiceUnitConfig{
+		getServiceUnitConfig("./testdata/invalid/mapping/service-a.yaml"),
+		getServiceUnitConfig("./testdata/invalid/mapping/service-b.yaml"),
+		getServiceUnitConfig("./testdata/invalid/mapping/service-c.yaml"),
+		getServiceUnitConfig("./testdata/invalid/mapping/mongo.yaml"),
+	}
+	errs := validation.ValidateServiceUnitConfigs(&serviceUnitConfigs)
+	logger.PrintErrors(errs)
+	if errs.Exist() {
+		t.Fail()
+	}
+}
+
+// test single valid config's fields
 func TestServiceConfigValidation(t *testing.T) {
-	serviceUnitConfig := getServiceUnitConfig("./testdata/service-c.yaml")
+	serviceUnitConfig := getServiceUnitConfig("./testdata/valid/service-c.yaml")
 
-	errs := model.ValidateServiceUnitConfigFields(serviceUnitConfig)
-	errs.Print()
-	if len(errs.ServiceUnitFieldErrors) > 0 {
-		t.Fail()
-	}
-	if len(errs.AdapterFieldErrors) > 0 {
-		t.Fail()
-	}
-	if len(errs.MappingErrors) > 0 {
+	errs := validation.ValidateServiceUnitConfigFields(&serviceUnitConfig)
+	logger.PrintErrors(errs)
+	if errs.Exist() {
 		t.Fail()
 	}
 }
 
+// test invalid service unit config fields
 func TestInvalidServiceConfigValidation(t *testing.T) {
-	serviceUnitConfig := getServiceUnitConfig("./testdata/invalid/invalidIngressAdapter.yaml")
+	serviceUnitConfig := getServiceUnitConfig("./testdata/invalid/service_unit/invalidIngressAdapter.yaml")
 
-	errs := model.ValidateServiceUnitConfigFields(serviceUnitConfig)
-	errs.Print()
-	if len(errs.ServiceUnitFieldErrors) > 0 {
+	errs := validation.ValidateServiceUnitConfigFields(&serviceUnitConfig)
+	logger.PrintErrors(errs)
+	if errs.Exist() {
 		t.Fail()
 	}
-	if len(errs.AdapterFieldErrors) > 0 {
+}
+
+// test invalid service unit config fields
+func TestInvalidAdapterConfigValidation(t *testing.T) {
+	serviceUnitConfig := getServiceUnitConfig("./testdata/invalid/adapter/egress-adapter.yaml")
+
+	errs := validation.ValidateServiceUnitConfigFields(&serviceUnitConfig)
+	logger.PrintErrors(errs)
+	if errs.Exist() {
 		t.Fail()
 	}
-	if len(errs.MappingErrors) > 0 {
+}
+
+// test unmatching service name on stateful service
+func TestServiceNameUnmatch(t *testing.T) {
+	serviceUnitConfig := getServiceUnitConfig("./testdata/invalid/mapping/matching-name.yaml")
+
+	errs := validation.ValidateServiceUnitConfigFields(&serviceUnitConfig)
+	logger.PrintErrors(errs)
+	if errs.Exist() {
+		t.Fail()
+	}
+}
+
+
+func TestMultipleStatefulServiceDefinitionValidation(t *testing.T) {
+	serviceUnitConfig := getServiceUnitConfig("./testdata/invalid/service_unit/multipleStatefulAdapter.yaml")
+
+	errs := validation.ValidateServiceUnitConfigFields(&serviceUnitConfig)
+	logger.PrintErrors(errs)
+	if errs.Exist() {
 		t.Fail()
 	}
 }

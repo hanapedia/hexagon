@@ -37,7 +37,7 @@ spec:
           name: mongo
         envFrom:
         - configMapRef:
-            name: {{ .Name }}-env-configmap
+            name: {{ .Name }}-env
 ---
 apiVersion: v1
 kind: Service

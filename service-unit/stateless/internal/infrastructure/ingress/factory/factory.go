@@ -1,12 +1,11 @@
 package factory
 
 import (
-	"log"
-
+	"github.com/hanapedia/the-bench/config/constants"
+	"github.com/hanapedia/the-bench/config/logger"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/consumer_adapter/kafka"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/server_adapter/rest"
-	"github.com/hanapedia/the-bench/config/constants"
 )
 
 func NewServerAdapter(serverAdapterProtocol constants.StatelessAdapterVariant) *core.IngressAdapter {
@@ -16,7 +15,7 @@ func NewServerAdapter(serverAdapterProtocol constants.StatelessAdapterVariant) *
 	case constants.REST:
 		serverAdapter = rest.NewRestServerAdapter()
 	default:
-		log.Fatal("Adapter currently unsupported.")
+		logger.Logger.Fatal("Adapter currently unsupported.")
 	}
 
 	return &serverAdapter
@@ -29,7 +28,7 @@ func NewConsumerAdapter(protocol constants.BrokerAdapterVariant, action string) 
 	case constants.KAFKA:
 		consumerAdapter = kafka.NewKafkaConsumerAdapter(action)
 	default:
-		log.Fatal("Adapter currently unsupported.")
+		logger.Logger.Fatal("Adapter currently unsupported.")
 	}
 
 	return &consumerAdapter

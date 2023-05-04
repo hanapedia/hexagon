@@ -25,7 +25,7 @@ func mongoEgressAdapterFactory(adapterConfig model.StatefulAdapterConfig, connec
 				Collection: constants.RepositoryEntryVariant(adapterConfig.Size),
 			}
 		default:
-			err = errors.New("No matching protocol found")
+			err = errors.New("No matching action found when creating mongo egress adapter.")
 		}
 	} else {
 		err = errors.New("Unmatched connection instance")

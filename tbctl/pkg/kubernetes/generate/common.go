@@ -15,13 +15,14 @@ func GenerateConfigManifest(dir string, serviceUnitConfig model.ServiceUnitConfi
 		return err
 	}
 	config := templates.ConfigConfigMap{
+		Name: serviceUnitConfig.Name,
 		Namespace: NAMESPACE,
 		Config:    string(configData),
 	}
 
 	err = RenderAndSave(
 		dir,
-		fmt.Sprintf("%s-config-configMap", serviceUnitConfig.Name),
+		fmt.Sprintf("%s-config-config-map", serviceUnitConfig.Name),
 		templates.ConfigConfigMapTemplate,
 		config,
 	)
@@ -38,7 +39,7 @@ func GenerateEnvManifest(dir string, serviceUnitConfig model.ServiceUnitConfig, 
 
 	err := RenderAndSave(
 		dir,
-		fmt.Sprintf("%s-env-configMap", serviceUnitConfig.Name),
+		fmt.Sprintf("%s-env-config-map", serviceUnitConfig.Name),
 		templates.EnvConfigMapTemplate,
 		config,
 	)

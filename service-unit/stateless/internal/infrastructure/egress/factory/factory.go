@@ -19,7 +19,7 @@ func NewEgressAdapter(egressAdapterConfig model.EgressAdapterConfig, connections
 		connection := upsertBrokerEgressConnection(*egressAdapterConfig.BrokerEgressAdapterConfig, connections)
 		return brokerEgressAdapterFactory(*egressAdapterConfig.BrokerEgressAdapterConfig, connection)
 	}
-	err := errors.New("No matching protocol found")
+	err := errors.New("No matching protocol found when making egress adapter.")
 
 	return nil, err
 }

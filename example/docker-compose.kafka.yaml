@@ -2,18 +2,22 @@ version: "3.9"
 
 services:
   producer:
-    image: hiroki11hanada/service-unit:v1.0
+    image: hiroki11hanada/service-unit:v1.4
     ports:
       - "8081:8080"
     volumes:
       - ./kafka/producer/service-unit.yaml:/app/config/service-unit.yaml
+    environment:
+      - DEP_ENV=docker
 
   consumer:
-    image: hiroki11hanada/service-unit:v1.0
+    image: hiroki11hanada/service-unit:v1.4
     ports:
       - "8082:8080"
     volumes:
       - ./kafka/consumer/service-unit.yaml:/app/config/service-unit.yaml
+    environment:
+      - DEP_ENV=docker
 
   zookeeper:
     image: bitnami/zookeeper:3.8.1
