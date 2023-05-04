@@ -11,10 +11,11 @@ const ConfigConfigMapTemplate = `---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Name }}-config-configMap
+  name: {{ .Name }}-config
   namespace: {{ .Namespace }}
 data:
-{{ indent .Config 2 }}
+  rawYAMLContent: |
+{{ indent .Config 4 }}
 `
 
 type EnvConfigMap struct {
@@ -27,9 +28,9 @@ const EnvConfigMapTemplate = `---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Name }}-env-configMap
+  name: {{ .Name }}-env
   namespace: {{ .Namespace }}
 data:
-  fromEnvFile: |-
+  fromEnvFile: |
 {{ indent .Envs 4 }}
 `

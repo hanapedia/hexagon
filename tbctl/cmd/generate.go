@@ -41,8 +41,8 @@ var generateCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(generateCmd)
-	validateCmd.PersistentFlags().StringVarP(&generateFilePath, "file", "f", "", "YAML file or directory to validate")
-	validateCmd.PersistentFlags().StringVarP(&generateOutPath, "out", "o", "", "output directory for generated files")
+	generateCmd.PersistentFlags().StringVarP(&generateFilePath, "file", "f", "", "YAML file or directory to validate")
+	generateCmd.PersistentFlags().StringVarP(&generateOutPath, "out", "o", "", "output directory for generated files")
 
 	// Here you will define your flags and configuration settings.
 

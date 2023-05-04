@@ -32,9 +32,6 @@ spec:
       containers:
       - name: {{ .Name }}
         image: {{ .Image }}
-        envFrom:
-        - configMapRef:
-            name: {{ .Name }}-env-configMap
         resources:
           limits:
             cpu: {{ .ResourceLimitsCPU }}
@@ -49,11 +46,14 @@ spec:
           name: grpc
         volumeMounts:
         - name: config
-          mountPath: /config/service-unit.yaml
+          mountPath: /app/config/
       volumes:
       - name: config
         configMap:
-          name: {{ .Name }}-config-file-configMap
+          name: {{ .Name }}-config
+          items:
+          - key: rawYAMLContent
+            path: service-unit.yaml
 ---
 apiVersion: v1
 kind: Service
