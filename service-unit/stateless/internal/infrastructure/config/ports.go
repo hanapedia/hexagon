@@ -13,7 +13,13 @@ func GetRestServerAddr() string {
 
 func GetKafkaBrokerAddr() string {
 	port := GetEnvs().KAFKA_PORT
-	return fmt.Sprintf("kafka:%s", port)
+	clusterName := GetEnvs().KAFKA_CLUSTER_NAME
+	clusterNamespace := GetEnvs().KAFKA_CLUSTER_NAMESPACE
+	depEnv := GetEnvs().DEP_ENV
+	if depEnv == "docker" {
+		return fmt.Sprintf("kafka:%s", port)
+	}
+	return fmt.Sprintf("%s-kafka-bootstrap.%s.svc.cluster.local:%s", clusterName, clusterNamespace, port)
 }
 
 func GetMongoConnectionUri(adapterConfig model.StatefulAdapterConfig) string {
