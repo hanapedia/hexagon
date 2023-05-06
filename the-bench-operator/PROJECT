@@ -5,6 +5,16 @@
 domain: the-bench.hanapedia.link
 layout:
 - go.kubebuilder.io/v4
-projectName: operator
+projectName: the-bench-operator
 repo: github.com/hanapedia/the-bench/operator
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: the-bench.hanapedia.link
+  group: service-unit
+  kind: ServiceUnit
+  path: github.com/hanapedia/the-bench/operator/api/v1
+  version: v1
 version: "3"
