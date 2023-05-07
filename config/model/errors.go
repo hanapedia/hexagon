@@ -26,8 +26,8 @@ func (e *InvalidAdapterFieldValueError) Error() string {
 	return e.message
 }
 
-func NewInvalidAdapterFieldValueError(key string, adapter Adapter, message string) InvalidAdapterFieldValueError {
-	return InvalidAdapterFieldValueError{message: fmt.Sprintf("Invalid value in adapter: %v for key: %s. %s", adapter.GetId(), key, message)}
+func NewInvalidAdapterFieldValueError(key string, adapterId string, message string) InvalidAdapterFieldValueError {
+	return InvalidAdapterFieldValueError{message: fmt.Sprintf("Invalid value in adapter: %v for key: %s. %s", adapterId, key, message)}
 }
 
 type InvalidAdapterMappingError struct {
@@ -85,11 +85,11 @@ func mapInvalidServiceUnitFieldValueErrors(err error, serviceUnitConfig ServiceU
 	return errs
 }
 
-func mapInvalidAdapterFieldValueErrors(err error, adapter Adapter) []InvalidAdapterFieldValueError {
+func mapInvalidAdapterFieldValueErrors(err error, adapterId string) []InvalidAdapterFieldValueError {
 	var errs []InvalidAdapterFieldValueError
 	if validationErrors, ok := err.(validator.ValidationErrors); ok {
 		for _, fieldError := range validationErrors {
-			errs = append(errs, NewInvalidAdapterFieldValueError(fieldError.StructField(), adapter, fieldError.Error()))
+			errs = append(errs, NewInvalidAdapterFieldValueError(fieldError.StructField(), adapterId, fieldError.Error()))
 		}
 	}
 	return errs

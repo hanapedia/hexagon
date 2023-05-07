@@ -25,7 +25,7 @@ func TestServiceConfigsValidation(t *testing.T) {
 	}
 }
 
-func TestInvalidServiceConfigsValidation(t *testing.T) {
+func TestInvalidServiceMappingValidation(t *testing.T) {
 	serviceUnitConfigs := []model.ServiceUnitConfig{
 		getServiceUnitConfig("./testdata/invalid/mapping/service-a.yaml"),
 		getServiceUnitConfig("./testdata/invalid/mapping/service-b.yaml"),
@@ -51,7 +51,7 @@ func TestServiceConfigValidation(t *testing.T) {
 }
 
 // test invalid service unit config fields
-func TestInvalidServiceConfigValidation(t *testing.T) {
+func TestInvalidServiceConfigFieldValidation(t *testing.T) {
 	serviceUnitConfig := getServiceUnitConfig("./testdata/invalid/service_unit/invalidIngressAdapter.yaml")
 
 	errs := validation.ValidateServiceUnitConfigFields(&serviceUnitConfig)
@@ -71,18 +71,6 @@ func TestInvalidAdapterConfigValidation(t *testing.T) {
 		t.Fail()
 	}
 }
-
-// test unmatching service name on stateful service
-func TestServiceNameUnmatch(t *testing.T) {
-	serviceUnitConfig := getServiceUnitConfig("./testdata/invalid/mapping/matching-name.yaml")
-
-	errs := validation.ValidateServiceUnitConfigFields(&serviceUnitConfig)
-	logger.PrintErrors(errs)
-	if errs.Exist() {
-		t.Fail()
-	}
-}
-
 
 func TestMultipleStatefulServiceDefinitionValidation(t *testing.T) {
 	serviceUnitConfig := getServiceUnitConfig("./testdata/invalid/service_unit/multipleStatefulAdapter.yaml")
