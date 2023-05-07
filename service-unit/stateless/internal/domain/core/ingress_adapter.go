@@ -4,8 +4,6 @@
 package core
 
 import (
-	"fmt"
-
 	"github.com/hanapedia/the-bench/config/model"
 )
 
@@ -19,7 +17,7 @@ import (
 // not the services themselves; hence the name `EgressAdapter`
 type IngressAdapter interface {
 	Serve() error
-	Register(*IngressAdapterHandler) error
+	Register(string, *IngressAdapterHandler) error
 }
 
 type IngressAdapterError struct {
@@ -29,8 +27,8 @@ type IngressAdapterError struct {
 
 // either StatelessAdapterConfig or BrokerAdapterConfig must be defined
 type IngressAdapterHandler struct {
-	StatelessIngressAdapterConfig *model.StatelessAdapterConfig
-	BrokerIngressAdapterConfig    *model.BrokerAdapterConfig
+	StatelessIngressAdapterConfig *model.StatelessIngressAdapterConfig
+	BrokerIngressAdapterConfig    *model.BrokerIngressAdapterConfig
 	TaskSets                      []TaskSet
 }
 
@@ -39,23 +37,13 @@ type TaskSet struct {
 	Concurrent    bool
 }
 
-func (iah IngressAdapterHandler) GetId() string {
+func (iah IngressAdapterHandler) GetId(serviceName string) string {
 	var id string
 	if iah.StatelessIngressAdapterConfig != nil {
-		id = fmt.Sprintf(
-			"%s.%s.%s.%s",
-			iah.StatelessIngressAdapterConfig.Service,
-			iah.StatelessIngressAdapterConfig.Variant,
-			iah.StatelessIngressAdapterConfig.Action,
-			iah.StatelessIngressAdapterConfig.Route,
-		)
+		id = iah.StatelessIngressAdapterConfig.GetId(serviceName)
 	}
 	if iah.BrokerIngressAdapterConfig != nil {
-		id = fmt.Sprintf(
-			"%s.%s",
-			iah.BrokerIngressAdapterConfig.Variant,
-			iah.BrokerIngressAdapterConfig.Topic,
-		)
+		id = iah.BrokerIngressAdapterConfig.GetId(serviceName)
 	}
 	return id
 }

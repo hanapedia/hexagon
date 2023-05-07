@@ -33,9 +33,9 @@ func (rsa RestServerAdapter) Serve() error {
 	return rsa.server.Listen(rsa.addr)
 }
 
-func (rsa RestServerAdapter) Register(handler *core.IngressAdapterHandler) error {
+func (rsa RestServerAdapter) Register(serviceName string, handler *core.IngressAdapterHandler) error {
 	if handler.StatelessIngressAdapterConfig == nil {
-		return errors.New(fmt.Sprintf("Invalid configuartion for handler %s.", handler.GetId()))
+		return errors.New(fmt.Sprintf("Invalid configuartion for handler %s.", handler.GetId(serviceName)))
 	}
 
 	var err error
@@ -55,7 +55,7 @@ func (rsa RestServerAdapter) Register(handler *core.IngressAdapterHandler) error
 				return err
 			}
 			restResponse := contract.RestResponseBody{
-				Message: fmt.Sprintf("Successfully ran %s, sending %vKB.", handler.GetId(), constants.PayloadSize),
+				Message: fmt.Sprintf("Successfully ran %s, sending %vKB.", handler.GetId(serviceName), constants.PayloadSize),
 				Payload: &payload,
 			}
 			return c.Status(fiber.StatusOK).JSON(restResponse)
@@ -71,7 +71,7 @@ func (rsa RestServerAdapter) Register(handler *core.IngressAdapterHandler) error
 			}
 
 			restResponse := contract.RestResponseBody{
-				Message: fmt.Sprintf("Successfully ran %s.", handler.GetId()),
+				Message: fmt.Sprintf("Successfully ran %s.", handler.GetId(serviceName)),
 			}
 			return c.Status(fiber.StatusOK).JSON(restResponse)
 		})
