@@ -29,7 +29,7 @@ func GenerateBrokerManifests(dir string, serviceUnitConfig model.ServiceUnitConf
 	return ManifestErrors{broker: brokerManifestErrors}
 }
 
-func generateKafkaTopicManifest(dir string, brokerAdapterConfig model.BrokerAdapterConfig) error {
+func generateKafkaTopicManifest(dir string, brokerAdapterConfig model.BrokerIngressAdapterConfig) error {
 	kafkaTopicTemplateArgs := templates.KafkaTopicTemplateArgs{
 		Topic:       brokerAdapterConfig.Topic,
 		ClusterName: KAFKA_CLUSTER_NAME,

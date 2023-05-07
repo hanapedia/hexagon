@@ -6,23 +6,23 @@ type ServiceUnitConfig struct {
 }
 
 type IngressAdapterConfig struct {
-	StatelessIngressAdapterConfig *StatelessAdapterConfig `yaml:"stateless,omitempty"`
-	BrokerIngressAdapterConfig    *BrokerAdapterConfig    `yaml:"broker,omitempty"`
-	StatefulIngressAdapterConfig  *StatefulAdapterConfig  `yaml:"stateful,omitempty"`
-	Steps                         []Step                  `yaml:"steps" validate:"required"`
+	StatelessIngressAdapterConfig *StatelessIngressAdapterConfig `yaml:"stateless,omitempty"`
+	BrokerIngressAdapterConfig    *BrokerIngressAdapterConfig    `yaml:"broker,omitempty"`
+	StatefulIngressAdapterConfig  *StatefulIngressAdapterConfig  `yaml:"stateful,omitempty"`
+	Steps                         []Step                         `yaml:"steps" validate:"required"`
 }
 
 type Step struct {
 	EgressAdapterConfig *EgressAdapterConfig `yaml:"egressAdapter" validate:"required"`
-	Concurrent          bool                `yaml:"concurrent,omitempty"`
+	Concurrent          bool                 `yaml:"concurrent,omitempty"`
 }
 
 // one of the adapter type must be provided
 // Id can be used for short definition if
 type EgressAdapterConfig struct {
-	StatelessEgressAdapterConfig *StatelessAdapterConfig `yaml:"stateless,omitempty"`
-	StatefulEgressAdapterConfig  *StatefulAdapterConfig  `yaml:"stateful,omitempty"`
-	InternalEgressAdapterConfig  *InternalAdapterConfig  `yaml:"internal,omitempty"`
-	BrokerEgressAdapterConfig    *BrokerAdapterConfig    `yaml:"broker,omitempty"`
-	Id                           *string                 `yaml:"id,omitempty"`
+	StatelessEgressAdapterConfig *StatelessEgressAdapterConfig `yaml:"stateless,omitempty"`
+	StatefulEgressAdapterConfig  *StatefulEgressAdapterConfig  `yaml:"stateful,omitempty"`
+	InternalEgressAdapterConfig  *InternalAdapterConfig        `yaml:"internal,omitempty"`
+	BrokerEgressAdapterConfig    *BrokerEgressAdapterConfig    `yaml:"broker,omitempty"`
+	Id                           *string                       `yaml:"id,omitempty"`
 }

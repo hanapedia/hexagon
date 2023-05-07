@@ -3,7 +3,7 @@ module github.com/hanapedia/the-bench/tbctl
 go 1.20
 
 require (
-	github.com/hanapedia/the-bench/config v0.1.1
+	github.com/hanapedia/the-bench/config v0.1.2
 	github.com/spf13/cobra v1.7.0
 )
 

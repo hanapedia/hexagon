@@ -12,7 +12,7 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/egress/repository_adapter/mongo"
 )
 
-func statefulEgressAdapterFactory(adapterConfig model.StatefulAdapterConfig, connection core.EgressConnection) (core.EgressAdapter, error) {
+func statefulEgressAdapterFactory(adapterConfig model.StatefulEgressAdapterConfig, connection core.EgressConnection) (core.EgressAdapter, error) {
 	switch adapterConfig.Variant {
 	case constants.MONGO:
 		return mongoEgressAdapterFactory(adapterConfig, connection)
@@ -23,7 +23,7 @@ func statefulEgressAdapterFactory(adapterConfig model.StatefulAdapterConfig, con
 
 }
 
-func upsertStatefulEgressConnection(adapterConfig model.StatefulAdapterConfig, connections *map[string]core.EgressConnection) core.EgressConnection {
+func upsertStatefulEgressConnection(adapterConfig model.StatefulEgressAdapterConfig, connections *map[string]core.EgressConnection) core.EgressConnection {
 	key := string(adapterConfig.Variant)
 	connection, ok := (*connections)[key]
 	if ok {

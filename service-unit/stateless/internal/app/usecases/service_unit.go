@@ -77,7 +77,7 @@ func (su *ServiceUnit) initializeIngressAdapters() {
 }
 
 // Prepare server adapters
-func (su *ServiceUnit) initializeServerAdapter(statelessAdapterConfig model.StatelessAdapterConfig) {
+func (su *ServiceUnit) initializeServerAdapter(statelessAdapterConfig model.StatelessIngressAdapterConfig) {
 	serverKey := getServerKey(statelessAdapterConfig)
 	_, ok := (*su.ServerAdapters)[serverKey]
 	if !ok {
@@ -86,12 +86,12 @@ func (su *ServiceUnit) initializeServerAdapter(statelessAdapterConfig model.Stat
 }
 
 // get server key
-func getServerKey(statelessAdapterConfig model.StatelessAdapterConfig) constants.StatelessAdapterVariant {
+func getServerKey(statelessAdapterConfig model.StatelessIngressAdapterConfig) constants.StatelessAdapterVariant {
 	return statelessAdapterConfig.Variant
 }
 
 // Prepare consumer adapters
-func (su *ServiceUnit) initializeConsumerAdapter(brokerIngressAdapterConfig model.BrokerAdapterConfig) {
+func (su *ServiceUnit) initializeConsumerAdapter(brokerIngressAdapterConfig model.BrokerIngressAdapterConfig) {
 	consumerKey := getConsumerKey(brokerIngressAdapterConfig)
 	_, ok := (*su.ConsumerAdapters)[consumerKey]
 	if !ok {
@@ -99,19 +99,8 @@ func (su *ServiceUnit) initializeConsumerAdapter(brokerIngressAdapterConfig mode
 	}
 }
 
-func getConsumerKey(brokerIngressAdapterConfig model.BrokerAdapterConfig) string {
+func getConsumerKey(brokerIngressAdapterConfig model.BrokerIngressAdapterConfig) string {
 	return fmt.Sprintf("%s.%s", brokerIngressAdapterConfig.Variant, brokerIngressAdapterConfig.Topic)
-}
-
-// Handler configuration can omit the serivce name so the service name needs to be assigned for better logging
-func assignServicename(service string, statelessAdapterConfig *model.StatelessAdapterConfig) *model.StatelessAdapterConfig {
-	if statelessAdapterConfig == nil {
-		return statelessAdapterConfig
-	}
-	if statelessAdapterConfig.Service == "" {
-		statelessAdapterConfig.Service = service
-	}
-	return statelessAdapterConfig
 }
 
 // Map handlers to ingress adapters
@@ -131,20 +120,20 @@ func (su *ServiceUnit) mapHandlersToIngressAdapters() {
 			consumerKey := getConsumerKey(*ingressAdapterConfig.BrokerIngressAdapterConfig)
 			ingressAdapter = (*su.ConsumerAdapters)[consumerKey]
 		}
-		logger.Logger.Tracef("registering handler %s", handler.GetId())
+		logger.Logger.Tracef("registering handler %s", handler.GetId(su.Name))
 
-		err = ingressAdapterFactory.RegiserHandlerToIngressAdapter(ingressAdapter, &handler)
+		err = ingressAdapterFactory.RegiserHandlerToIngressAdapter(su.Name, ingressAdapter, &handler)
 		if err != nil {
 			logger.Logger.Fatalf("Error registering handler to server adapter: %v", err)
 		}
-		logger.Logger.Infof("Successfully mapped '%s' handler.", handler.GetId())
+		logger.Logger.Infof("Successfully mapped '%s' handler.", handler.GetId(su.Name))
 	}
 }
 
 func (su ServiceUnit) createIngressAdapterHandler(ingressAdapterConfig model.IngressAdapterConfig, taskSets *[]core.TaskSet) (core.IngressAdapterHandler, error) {
 	if ingressAdapterConfig.StatelessIngressAdapterConfig != nil {
 		return core.IngressAdapterHandler{
-			StatelessIngressAdapterConfig: assignServicename(su.Name, ingressAdapterConfig.StatelessIngressAdapterConfig),
+			StatelessIngressAdapterConfig: ingressAdapterConfig.StatelessIngressAdapterConfig,
 			TaskSets:                      *taskSets,
 		}, nil
 	}

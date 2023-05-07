@@ -3,7 +3,7 @@ package generate
 // temploral constants. will be replaced
 const (
 	NAMESPACE          = "default"
-	SERVICE_UNIT_IMAGE = "hiroki11hanada/service-unit:v1.4"
+	SERVICE_UNIT_IMAGE = "hiroki11hanada/service-unit:v1.5"
 	MONGO_IMAGE        = "hiroki11hanada/stateful-unit-mongo:v1.0"
 	POSTGRE_IMAGE      = "hiroki11hanada/stateful-unit-postgre:v1.0"
 	REPLICAS           = 1

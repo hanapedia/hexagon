@@ -13,25 +13,25 @@ func (suc ServiceUnitConfig) Validate() []InvalidServiceUnitFieldValueError {
 	return errs
 }
 
-func (step Step) Validate(ingressAdapterConfig IngressAdapterConfig) []InvalidStepFieldValueError {
+func (step Step) Validate(serviceName string, ingressAdapterConfig IngressAdapterConfig) []InvalidStepFieldValueError {
 	var stepFieldErrors []InvalidStepFieldValueError
 	if step.EgressAdapterConfig == nil {
-		stepFieldErrors = append(stepFieldErrors, NewInvalidStepFieldValueError(ingressAdapterConfig.GetId()))
+		stepFieldErrors = append(stepFieldErrors, NewInvalidStepFieldValueError(ingressAdapterConfig.GetId(serviceName)))
 	}
 
 	return stepFieldErrors
 }
 
-func (iac IngressAdapterConfig) GetId() string {
+func (iac IngressAdapterConfig) GetId(serviceName string) string {
 	var id string
 	if iac.StatelessIngressAdapterConfig != nil {
-		id = iac.StatelessIngressAdapterConfig.GetId()
+		id = iac.StatelessIngressAdapterConfig.GetId(serviceName)
 	}
 	if iac.BrokerIngressAdapterConfig != nil {
-		id = iac.BrokerIngressAdapterConfig.GetId()
+		id = iac.BrokerIngressAdapterConfig.GetId(serviceName)
 	}
 	if iac.StatefulIngressAdapterConfig != nil {
-		id = iac.StatefulIngressAdapterConfig.GetId()
+		id = iac.StatefulIngressAdapterConfig.GetId(serviceName)
 	}
 	return id
 }

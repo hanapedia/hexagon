@@ -29,9 +29,7 @@ func ValidateServiceUnitConfigFields(serviceUnitConfig *model.ServiceUnitConfig)
 	configValidationError.Extend(validateServiceUnitConfigFields(serviceUnitConfig))
 
 	for i := range serviceUnitConfig.IngressAdapterConfigs {
-		serviceUnitConfig.IngressAdapterConfigs[i] = validateServieNameOnAdapters(serviceUnitConfig.IngressAdapterConfigs[i], serviceUnitConfig.Name)
-
-		configValidationError.Extend(validateIngressAdapterConfig(&serviceUnitConfig.IngressAdapterConfigs[i]))
+		configValidationError.Extend(validateIngressAdapterConfig(serviceUnitConfig, &serviceUnitConfig.IngressAdapterConfigs[i]))
 		for _, step := range serviceUnitConfig.IngressAdapterConfigs[i].Steps {
 			// ensure that egressAdapter is defined
 			if step.EgressAdapterConfig == nil {
@@ -46,7 +44,7 @@ func ValidateServiceUnitConfigFields(serviceUnitConfig *model.ServiceUnitConfig)
 
 func validateServiceUnitConfigFields(serviceUnitConfig *model.ServiceUnitConfig) model.ConfigValidationError {
 	if len(serviceUnitConfig.IngressAdapterConfigs) > 1 {
-		var statefulIngressAdapterConfig *model.StatefulAdapterConfig
+		var statefulIngressAdapterConfig *model.StatefulIngressAdapterConfig
 		for _, ingressAdapterConfig := range serviceUnitConfig.IngressAdapterConfigs {
 			if ingressAdapterConfig.StatefulIngressAdapterConfig == nil {
 				continue
@@ -67,53 +65,6 @@ func validateServiceUnitConfigFields(serviceUnitConfig *model.ServiceUnitConfig)
 	return model.ConfigValidationError{ServiceUnitFieldErrors: serviceUnitConfig.Validate()}
 }
 
-// add service name to stateless ingress adapters if it does not exist
-func validateServieNameOnAdapters(ingressAdapterConfig model.IngressAdapterConfig, serviceName string) model.IngressAdapterConfig {
-	// ensure the service name consistecy for stateless ingress adapters
-	if ingressAdapterConfig.StatelessIngressAdapterConfig != nil {
-		addServieNameToStatelessAdapters(
-			ingressAdapterConfig.StatelessIngressAdapterConfig,
-			serviceName,
-		)
-	}
-	// ensure the service name consistecy for stateful ingress adapters
-	if ingressAdapterConfig.StatefulIngressAdapterConfig != nil {
-		validateServiceNamOnStatefulAdapter(
-			ingressAdapterConfig.StatefulIngressAdapterConfig,
-			serviceName,
-		)
-	}
-	return ingressAdapterConfig
-}
-
-// add service name to stateless ingress adapters if it does not exist
-func addServieNameToStatelessAdapters(statelessIngressAdapterConfig *model.StatelessAdapterConfig, serviceName string) {
-	if statelessIngressAdapterConfig.Service == "" {
-		statelessIngressAdapterConfig.Service = serviceName
-		logger.Logger.Infof(
-			"Service field is undefined on stateless ingress adapter %s. Using Service Config service name.\n",
-			statelessIngressAdapterConfig.GetId(),
-		)
-	} else if statelessIngressAdapterConfig.Service != serviceName {
-		statelessIngressAdapterConfig.Service = serviceName
-		logger.Logger.Warnf(
-			"Service Config service name and ingress adapter does not match for ingress adapter %s. Resorting to Service Config service name for consistecy.\n",
-			statelessIngressAdapterConfig.GetId(),
-		)
-	}
-}
-
-// ensure that the service name in Service unit config is identical to the service name in stateful ingress adapter
-func validateServiceNamOnStatefulAdapter(statefulIngressAdapterConfig *model.StatefulAdapterConfig, serviceName string) {
-	if statefulIngressAdapterConfig.Name != serviceName {
-		statefulIngressAdapterConfig.Name = serviceName
-		logger.Logger.Warnf(
-			"Service Config service name and ingress adapter does not match for ingress adapter %s. Resorting to Service Config service name for consistecy.\n",
-			statefulIngressAdapterConfig.GetId(),
-		)
-	}
-}
-
 func validateAdapterMapping(serviceUnitConfigs *[]model.ServiceUnitConfig) model.ConfigValidationError {
 	serviceAdapterIds := mapIngressAdapters(serviceUnitConfigs)
 	mappingErrors := mapEgressAdapters(serviceAdapterIds, serviceUnitConfigs)
@@ -125,35 +76,35 @@ func mapIngressAdapters(serviceUnitConfigs *[]model.ServiceUnitConfig) []string 
 	var serviceAdapterIds []string
 	for _, serviceUnitConfig := range *serviceUnitConfigs {
 		for _, ingressAdapterConfig := range serviceUnitConfig.IngressAdapterConfigs {
-			serviceAdapterIds = append(serviceAdapterIds, ingressAdapterConfig.GetId())
+			serviceAdapterIds = append(serviceAdapterIds, ingressAdapterConfig.GetId(serviceUnitConfig.Name))
 		}
 	}
 	return serviceAdapterIds
 }
 
 // Validate the fields of the ingress adapter configuration
-func validateIngressAdapterConfig(ingressAdapterConfig *model.IngressAdapterConfig) model.ConfigValidationError {
+func validateIngressAdapterConfig(serviceUnitConfig *model.ServiceUnitConfig, ingressAdapterConfig *model.IngressAdapterConfig) model.ConfigValidationError {
 	var adapterFieldErrors []model.InvalidAdapterFieldValueError
 	if ingressAdapterConfig.StatelessIngressAdapterConfig != nil {
-		adapterFieldErrors = model.ValidateAdapter(ingressAdapterConfig.StatelessIngressAdapterConfig)
+		adapterFieldErrors = model.ValidateIngressAdapter(serviceUnitConfig.Name, ingressAdapterConfig.StatelessIngressAdapterConfig)
 	}
 	if ingressAdapterConfig.BrokerIngressAdapterConfig != nil {
-		adapterFieldErrors = model.ValidateAdapter(ingressAdapterConfig.BrokerIngressAdapterConfig)
+		adapterFieldErrors = model.ValidateIngressAdapter(serviceUnitConfig.Name, ingressAdapterConfig.BrokerIngressAdapterConfig)
 	}
 	if ingressAdapterConfig.StatefulIngressAdapterConfig != nil {
 		if len(ingressAdapterConfig.Steps) > 0 {
 			ingressAdapterConfig.Steps = []model.Step{} // makes sure that stateful service unit config have no steps defined
 			logger.Logger.Warnf(
 				"Steps definition found on stateful ingress config for %s. These Steps will be ignored.\n",
-				ingressAdapterConfig.StatefulIngressAdapterConfig.Name,
+				serviceUnitConfig.Name,
 			)
 		}
-		adapterFieldErrors = model.ValidateAdapter(ingressAdapterConfig.StatefulIngressAdapterConfig)
+		adapterFieldErrors = model.ValidateIngressAdapter(serviceUnitConfig.Name, ingressAdapterConfig.StatefulIngressAdapterConfig)
 	}
 
 	var stepFieldErrors []model.InvalidStepFieldValueError
 	for _, step := range ingressAdapterConfig.Steps {
-		stepFieldErrors = append(stepFieldErrors, step.Validate(*ingressAdapterConfig)...)
+		stepFieldErrors = append(stepFieldErrors, step.Validate(serviceUnitConfig.Name, *ingressAdapterConfig)...)
 	}
 	return model.ConfigValidationError{AdapterFieldErrors: adapterFieldErrors, StepFieldErrors: stepFieldErrors}
 }
@@ -162,13 +113,13 @@ func validateIngressAdapterConfig(ingressAdapterConfig *model.IngressAdapterConf
 func validateEgressAdapterConfig(egressAdapterConfig model.EgressAdapterConfig) model.ConfigValidationError {
 	var errs []model.InvalidAdapterFieldValueError
 	if egressAdapterConfig.StatelessEgressAdapterConfig != nil {
-		errs = model.ValidateAdapter(*egressAdapterConfig.StatelessEgressAdapterConfig)
+		errs = model.ValidateEgressAdapter(*egressAdapterConfig.StatelessEgressAdapterConfig)
 	}
 	if egressAdapterConfig.BrokerEgressAdapterConfig != nil {
-		errs = model.ValidateAdapter(*egressAdapterConfig.BrokerEgressAdapterConfig)
+		errs = model.ValidateEgressAdapter(*egressAdapterConfig.BrokerEgressAdapterConfig)
 	}
 	if egressAdapterConfig.StatefulEgressAdapterConfig != nil {
-		errs = model.ValidateAdapter(*egressAdapterConfig.StatefulEgressAdapterConfig)
+		errs = model.ValidateEgressAdapter(*egressAdapterConfig.StatefulEgressAdapterConfig)
 	}
 	return model.ConfigValidationError{AdapterFieldErrors: errs}
 }

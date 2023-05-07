@@ -54,7 +54,7 @@ func (kca KafkaConsumerAdapter) Serve() error {
 	return err
 }
 
-func (kca KafkaConsumerAdapter) Register(handler *core.IngressAdapterHandler) error {
+func (kca KafkaConsumerAdapter) Register(serviceName string, handler *core.IngressAdapterHandler) error {
 	kca.kafkaConsumer.handler = handler
 	return nil
 }
