@@ -1,4 +1,4 @@
-module github.com/hanapedia/the-bench/operator
+module github.com/hanapedia/the-bench/the-bench-operator
 
 go 1.19
 

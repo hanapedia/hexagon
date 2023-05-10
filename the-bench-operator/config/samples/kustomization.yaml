@@ -1,4 +1,5 @@
 ## Append samples of your project ##
 resources:
-- service-unit_v1_serviceunit.yaml
+- the-bench_v1_serviceunit.yaml
+- the-bench_v1_ingressadapter.yaml
 #+kubebuilder:scaffold:manifestskustomizesamples

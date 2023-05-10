@@ -6,15 +6,24 @@ domain: the-bench.hanapedia.link
 layout:
 - go.kubebuilder.io/v4
 projectName: the-bench-operator
-repo: github.com/hanapedia/the-bench/operator
+repo: github.com/hanapedia/the-bench/the-bench-operator
 resources:
 - api:
     crdVersion: v1
     namespaced: true
   controller: true
   domain: the-bench.hanapedia.link
-  group: service-unit
+  group: the-bench
   kind: ServiceUnit
-  path: github.com/hanapedia/the-bench/operator/api/v1
+  path: github.com/hanapedia/the-bench/the-bench-operator/api/v1
+  version: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: the-bench.hanapedia.link
+  group: the-bench
+  kind: IngressAdapter
+  path: github.com/hanapedia/the-bench/the-bench-operator/api/v1
   version: v1
 version: "3"
