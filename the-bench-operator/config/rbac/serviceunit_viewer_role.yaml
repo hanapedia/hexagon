@@ -1,0 +1,27 @@
+# permissions for end users to view serviceunits.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/name: clusterrole
+    app.kubernetes.io/instance: serviceunit-viewer-role
+    app.kubernetes.io/component: rbac
+    app.kubernetes.io/created-by: the-bench-operator
+    app.kubernetes.io/part-of: the-bench-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: serviceunit-viewer-role
+rules:
+- apiGroups:
+  - the-bench.the-bench.hanapedia.link
+  resources:
+  - serviceunits
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - the-bench.the-bench.hanapedia.link
+  resources:
+  - serviceunits/status
+  verbs:
+  - get
