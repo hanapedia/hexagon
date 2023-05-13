@@ -1,4 +1,4 @@
-apiVersion: the-bench.the-bench.hanapedia.link/v1
+apiVersion: the-bench.hanapedia.link/v1
 kind: IngressAdapter
 metadata:
   labels:

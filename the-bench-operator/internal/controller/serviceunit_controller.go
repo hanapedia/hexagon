@@ -33,9 +33,9 @@ type ServiceUnitReconciler struct {
 	Scheme *runtime.Scheme
 }
 
-//+kubebuilder:rbac:groups=the-bench.the-bench.hanapedia.link,resources=serviceunits,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=the-bench.the-bench.hanapedia.link,resources=serviceunits/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=the-bench.the-bench.hanapedia.link,resources=serviceunits/finalizers,verbs=update
+//+kubebuilder:rbac:groups=the-bench.hanapedia.link,resources=serviceunits,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=the-bench.hanapedia.link,resources=serviceunits/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=the-bench.hanapedia.link,resources=serviceunits/finalizers,verbs=update
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
