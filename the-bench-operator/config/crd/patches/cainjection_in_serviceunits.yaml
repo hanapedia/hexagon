@@ -4,4 +4,4 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     cert-manager.io/inject-ca-from: CERTIFICATE_NAMESPACE/CERTIFICATE_NAME
-  name: serviceunits.the-bench.the-bench.hanapedia.link
+  name: serviceunits.the-bench.hanapedia.link

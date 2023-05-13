@@ -12,7 +12,7 @@ metadata:
   name: serviceunit-viewer-role
 rules:
 - apiGroups:
-  - the-bench.the-bench.hanapedia.link
+  - the-bench.hanapedia.link
   resources:
   - serviceunits
   verbs:
@@ -20,7 +20,7 @@ rules:
   - list
   - watch
 - apiGroups:
-  - the-bench.the-bench.hanapedia.link
+  - the-bench.hanapedia.link
   resources:
   - serviceunits/status
   verbs:
