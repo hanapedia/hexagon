@@ -1,0 +1,12 @@
+apiVersion: the-bench.hanapedia.link/v1
+kind: IngressAdapter
+metadata:
+  labels:
+    app.kubernetes.io/name: ingressadapter
+    app.kubernetes.io/instance: ingressadapter-sample
+    app.kubernetes.io/part-of: the-bench-operator
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: the-bench-operator
+  name: ingressadapter-sample
+spec:
+  # TODO(user): Add fields here
