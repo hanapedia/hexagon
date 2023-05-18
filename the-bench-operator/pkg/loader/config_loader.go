@@ -1,6 +1,8 @@
 package loader
 
-import "github.com/hanapedia/the-bench/config/model"
+import (
+	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
+)
 
 type ConfigLoader interface {
 	Load() (model.ServiceUnitConfig, error)

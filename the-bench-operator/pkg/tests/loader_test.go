@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	// "github.com/hanapedia/the-bench/config/model"
-	"github.com/hanapedia/the-bench/config/yaml"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/yaml"
 )
 
 func TestYamlConfigLoader_InvalidIngressAdapter(t *testing.T) {

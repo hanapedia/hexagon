@@ -37,7 +37,6 @@ const (
 	PayloadSize = LARGESIZE
 )
 
-
 const (
 	NumInitialEntries = 100
 )

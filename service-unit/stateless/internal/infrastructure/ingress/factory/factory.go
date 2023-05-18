@@ -1,8 +1,8 @@
 package factory
 
 import (
-	"github.com/hanapedia/the-bench/config/constants"
-	"github.com/hanapedia/the-bench/config/logger"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/consumer_adapter/kafka"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/server_adapter/rest"

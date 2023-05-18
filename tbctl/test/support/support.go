@@ -1,7 +1,7 @@
 package support
 
 import (
-	"github.com/hanapedia/the-bench/config/model"
+	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 	"github.com/hanapedia/the-bench/tbctl/pkg/loader"
 )
 

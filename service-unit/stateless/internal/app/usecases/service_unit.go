@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/hanapedia/the-bench/config/constants"
-	"github.com/hanapedia/the-bench/config/logger"
-	"github.com/hanapedia/the-bench/config/model"
+	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
 	egressAdapterFactory "github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/egress/factory"
 	ingressAdapterFactory "github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/factory"
@@ -130,7 +130,7 @@ func (su *ServiceUnit) mapHandlersToIngressAdapters() {
 	}
 }
 
-func (su ServiceUnit) createIngressAdapterHandler(ingressAdapterConfig model.IngressAdapterConfig, taskSets *[]core.TaskSet) (core.IngressAdapterHandler, error) {
+func (su ServiceUnit) createIngressAdapterHandler(ingressAdapterConfig model.IngressAdapterSpec, taskSets *[]core.TaskSet) (core.IngressAdapterHandler, error) {
 	if ingressAdapterConfig.StatelessIngressAdapterConfig != nil {
 		return core.IngressAdapterHandler{
 			StatelessIngressAdapterConfig: ingressAdapterConfig.StatelessIngressAdapterConfig,

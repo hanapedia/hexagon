@@ -3,8 +3,9 @@ package yaml
 import (
 	"os"
 
-	"github.com/hanapedia/the-bench/config/model"
 	"gopkg.in/yaml.v3"
+
+	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 )
 
 type YamlConfigLoader struct {

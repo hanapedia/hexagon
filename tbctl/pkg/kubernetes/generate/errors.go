@@ -3,7 +3,7 @@ package generate
 import (
 	"fmt"
 
-	"github.com/hanapedia/the-bench/config/model"
+	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 )
 
 type ManifestErrors struct {
