@@ -7,10 +7,10 @@ IMAGE_NAME := $(DOCKER_HUB_USERNAME)/$(REPOSITORY_NAME):$(TAG)
 # Targets
 .PHONY: build
 build:
-	go mod edit -dropreplace=github.com/hanapedia/the-bench/config
+	go mod edit -dropreplace=github.com/hanapedia/the-bench/the-bench-operator
 	go mod tidy
 	docker build -t $(IMAGE_NAME) .
-	go mod edit -replace=github.com/hanapedia/the-bench/config=../../config
+	go mod edit -replace=github.com/hanapedia/the-bench/the-bench-operator=../../the-bench-operator
 
 .PHONY: push
 push: build

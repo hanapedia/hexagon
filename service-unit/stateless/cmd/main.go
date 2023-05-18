@@ -3,7 +3,7 @@ package main
 import (
 	"reflect"
 
-	"github.com/hanapedia/the-bench/config/logger"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/app/usecases"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
 )

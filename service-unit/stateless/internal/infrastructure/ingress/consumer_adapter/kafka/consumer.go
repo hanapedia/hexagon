@@ -4,7 +4,7 @@ import (
 	"context"
 	"reflect"
 
-	"github.com/hanapedia/the-bench/config/logger"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/common"
