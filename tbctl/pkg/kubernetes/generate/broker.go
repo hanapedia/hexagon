@@ -3,8 +3,8 @@ package generate
 import (
 	"fmt"
 
-	"github.com/hanapedia/the-bench/config/constants"
-	"github.com/hanapedia/the-bench/config/model"
+	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 	"github.com/hanapedia/the-bench/tbctl/pkg/kubernetes/templates"
 )
 

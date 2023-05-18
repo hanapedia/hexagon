@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/hanapedia/the-bench/config/constants"
-	"github.com/hanapedia/the-bench/config/model"
+	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 	"github.com/hanapedia/the-bench/tbctl/pkg/kubernetes/templates"
 )
 
@@ -59,7 +59,7 @@ func GenerateStatefulManifests(dir string, serviceUnitConfig model.ServiceUnitCo
 	return ManifestErrors{stateful: statefulManifestErrors, common: commonManifestErrors}
 }
 
-func getVariantDetails(ingressAdapterConfigs []model.IngressAdapterConfig) (StatefulVaraintDetails, error) {
+func getVariantDetails(ingressAdapterConfigs []model.IngressAdapterSpec) (StatefulVaraintDetails, error) {
 	for _, ingresingressAdapterConfig := range ingressAdapterConfigs {
 		if ingresingressAdapterConfig.StatefulIngressAdapterConfig != nil {
 			switch ingresingressAdapterConfig.StatefulIngressAdapterConfig.Variant {

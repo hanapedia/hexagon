@@ -1,24 +1,24 @@
 package validation
 
 import (
-	"github.com/hanapedia/the-bench/config/model"
-	"github.com/hanapedia/the-bench/config/logger"
-	validator "github.com/hanapedia/the-bench/config/validation"
 	"github.com/hanapedia/the-bench/tbctl/pkg/loader"
+	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
+	v1validator "github.com/hanapedia/the-bench/the-bench-operator/pkg/validation"
 )
 
-func ValidateFile(path string) model.ConfigValidationError {
+func ValidateFile(path string) v1validator.ConfigValidationError {
 	serviceUnitConfig := loader.GetConfig(path)
-	errs := validator.ValidateServiceUnitConfigFields(&serviceUnitConfig)
+	errs := v1validator.ValidateServiceUnitConfigFields(&serviceUnitConfig)
 	if errs.Exist() {
-		logger.PrintErrors(errs)
+		errs.Print()
 	} else {
 		logger.Logger.Infof("No validation error found.")
 	}
 	return errs
 }
 
-func ValidateDirectory(path string) model.ConfigValidationError {
+func ValidateDirectory(path string) v1validator.ConfigValidationError {
 	paths, err := loader.GetYAMLFiles(path)
 	if err != nil {
 		logger.Logger.Errorf("Error reading from directory %s. %s", path, err)
@@ -28,9 +28,9 @@ func ValidateDirectory(path string) model.ConfigValidationError {
 	for _, path = range paths {
 		serviceUnitConfigs = append(serviceUnitConfigs, loader.GetConfig(path))
 	}
-	errs := validator.ValidateServiceUnitConfigs(&serviceUnitConfigs)
+	errs := v1validator.ValidateServiceUnitConfigs(&serviceUnitConfigs)
 	if errs.Exist() {
-		logger.PrintErrors(errs)
+		errs.Print()
 	} else {
 		logger.Logger.Infof("No validation error found. Validated %v service configs.", len(serviceUnitConfigs))
 	}

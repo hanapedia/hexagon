@@ -1,8 +1,8 @@
 package generate
 
 import (
-	"github.com/hanapedia/the-bench/config/logger"
-	"github.com/hanapedia/the-bench/config/model"
+	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 	"github.com/hanapedia/the-bench/tbctl/pkg/loader"
 )
 
@@ -40,7 +40,7 @@ func GenerateManifest(input string, output string, serviceUnitConfig model.Servi
 	return manfiestErrors
 }
 
-func hasStatefulAdapter(ingressAdapterConfigs []model.IngressAdapterConfig) bool {
+func hasStatefulAdapter(ingressAdapterConfigs []model.IngressAdapterSpec) bool {
 	for _, ingresingressAdapterConfig := range ingressAdapterConfigs {
 		if ingresingressAdapterConfig.StatefulIngressAdapterConfig != nil {
 			return true
@@ -49,7 +49,7 @@ func hasStatefulAdapter(ingressAdapterConfigs []model.IngressAdapterConfig) bool
 	return false
 }
 
-func hasBrokerAdapter(ingressAdapterConfigs []model.IngressAdapterConfig) bool {
+func hasBrokerAdapter(ingressAdapterConfigs []model.IngressAdapterSpec) bool {
 	for _, ingresingressAdapterConfig := range ingressAdapterConfigs {
 		if ingresingressAdapterConfig.BrokerIngressAdapterConfig != nil {
 			return true
