@@ -24,22 +24,31 @@ import (
 // NOTE: json tags are required.  Any new fields you add must have json tags for the fields to be serialized.
 
 // IngressAdapterSpec defines the desired state of IngressAdapter
-type IngressAdapterSpec struct {
-	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
-	// Important: Run "make" to regenerate code after modifying this file
+// defintion moved `./ingress_adapter_spec.go`
+// type IngressAdapterSpec struct {
+// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of IngressAdapter. Edit ingressadapter_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
-}
+// Foo is an example field of IngressAdapter. Edit ingressadapter_types.go to remove/update
+// Foo string `json:"foo,omitempty"`
+// }
 
 // IngressAdapterStatus defines the observed state of IngressAdapter
 type IngressAdapterStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+
+	// +kubebuilder:validation:Enum=Ready;Pending
+	Status IngressAdapterStatusTypes `json:"statuss,omitempty"`
+
+	// +kubebuilder:validation:Enum=Ready;Pending
+	// given in the format of num ready / num all
+	Dependencies string `json:"dependencies,omitempty"`
 }
 
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+//+kubebuilder:resource:path=ingressadapters,shortName=ia,categories=thebench
 
 // IngressAdapter is the Schema for the ingressadapters API
 type IngressAdapter struct {

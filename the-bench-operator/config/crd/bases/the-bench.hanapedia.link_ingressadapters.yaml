@@ -1,0 +1,143 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.11.3
+  creationTimestamp: null
+  name: ingressadapters.the-bench.hanapedia.link
+spec:
+  group: the-bench.hanapedia.link
+  names:
+    categories:
+    - thebench
+    kind: IngressAdapter
+    listKind: IngressAdapterList
+    plural: ingressadapters
+    shortNames:
+    - ia
+    singular: ingressadapter
+  scope: Namespaced
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        description: IngressAdapter is the Schema for the ingressadapters API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            properties:
+              broker:
+                description: Config fields for Brokers
+                properties:
+                  topic:
+                    type: string
+                  variant:
+                    type: string
+                type: object
+              stateful:
+                description: Config fields for stateful services
+                properties:
+                  variant:
+                    type: string
+                type: object
+              stateless:
+                description: Config fields for stateful services
+                properties:
+                  action:
+                    type: string
+                  route:
+                    type: string
+                  variant:
+                    type: string
+                type: object
+              steps:
+                items:
+                  properties:
+                    concurrent:
+                      type: boolean
+                    egressAdapter:
+                      description: one of the adapter type must be provided Id can
+                        be used for short definition if
+                      properties:
+                        broker:
+                          description: Config fields for Brokers
+                          properties:
+                            topic:
+                              type: string
+                            variant:
+                              type: string
+                          type: object
+                        id:
+                          type: string
+                        internal:
+                          description: Config fields for Internal services
+                          properties:
+                            duration:
+                              type: string
+                            load:
+                              type: string
+                            name:
+                              type: string
+                            resource:
+                              type: string
+                          type: object
+                        stateful:
+                          description: Config fields for stateful services
+                          properties:
+                            action:
+                              type: string
+                            name:
+                              type: string
+                            size:
+                              type: string
+                            variant:
+                              type: string
+                          type: object
+                        stateless:
+                          description: Config fields for stateful services
+                          properties:
+                            action:
+                              type: string
+                            route:
+                              type: string
+                            service:
+                              type: string
+                            variant:
+                              type: string
+                          type: object
+                      type: object
+                  type: object
+                type: array
+            type: object
+          status:
+            description: IngressAdapterStatus defines the observed state of IngressAdapter
+            properties:
+              dependencies:
+                description: given in the format of num ready / num all
+                enum:
+                - Ready
+                - Pending
+                type: string
+              statuss:
+                enum:
+                - Ready
+                - Pending
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
