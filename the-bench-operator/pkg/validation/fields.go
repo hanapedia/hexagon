@@ -2,6 +2,7 @@ package validation
 
 import (
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
 // validate fields for a single service config
@@ -36,7 +37,7 @@ func validateServiceUnitConfigFields(serviceUnitConfig *model.ServiceUnitConfig)
 			break
 		}
 		if statefulIngressAdapterConfig != nil {
-			Logger.Warnf("Stateful ingress adapter found, ignoring other ingress adapter definitions.\n")
+			logger.Logger.Warnf("Stateful ingress adapter found, ignoring other ingress adapter definitions.\n")
 			serviceUnitConfig.IngressAdapterConfigs = []model.IngressAdapterSpec{
 				{
 					StatefulIngressAdapterConfig: statefulIngressAdapterConfig,
@@ -44,7 +45,7 @@ func validateServiceUnitConfigFields(serviceUnitConfig *model.ServiceUnitConfig)
 			}
 		}
 	}
-	return ConfigValidationError{ServiceUnitFieldErrors: ValidateServiceUnitConfigFields(serviceUnitConfig)}
+	return ValidateServiceUnitConfigFields(serviceUnitConfig)
 }
 
 // Validate the fields of the ingress adapter configuration
@@ -65,7 +66,7 @@ func validateIngressAdapterConfigFields(serviceUnitConfig *model.ServiceUnitConf
 	if ingressAdapterConfig.StatefulIngressAdapterConfig != nil {
 		if len(ingressAdapterConfig.Steps) > 0 {
 			ingressAdapterConfig.Steps = []model.Step{} // makes sure that stateful service unit config have no steps defined
-			Logger.Warnf(
+			logger.Logger.Warnf(
 				"Steps definition found on stateful ingress config for %s. These Steps will be ignored.\n",
 				serviceUnitConfig.Name,
 			)

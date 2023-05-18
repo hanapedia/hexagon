@@ -1,9 +1,8 @@
-package v1
+package constants
 
 type StatelessAdapterVariant string
 type BrokerAdapterVariant string
 type StatefulAdapterVariant string
-
 const (
 	REST StatelessAdapterVariant = "rest"
 	GRPC StatelessAdapterVariant = "grpc"
@@ -17,7 +16,6 @@ const (
 )
 
 type Action string
-
 const (
 	READ  Action = "read"
 	WRITE Action = "write"

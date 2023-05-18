@@ -6,6 +6,7 @@ import (
 	"github.com/go-playground/validator/v10"
 
 	thebenchv1 "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
 // An object to hold all the errors of different types
@@ -48,16 +49,16 @@ func (cve *ConfigValidationError) Extend(other ConfigValidationError) {
 
 func (cve ConfigValidationError) Print() {
 	for _, err := range cve.ServiceUnitFieldErrors {
-		Logger.Errorf(err.Error())
+		logger.Logger.Errorf(err.Error())
 	}
 	for _, err := range cve.AdapterFieldErrors {
-		Logger.Errorf(err.Error())
+		logger.Logger.Errorf(err.Error())
 	}
 	for _, err := range cve.MappingErrors {
-		Logger.Errorf(err.Error())
+		logger.Logger.Errorf(err.Error())
 	}
 	for _, err := range cve.StepFieldErrors {
-		Logger.Errorf(err.Error())
+		logger.Logger.Errorf(err.Error())
 	}
 }
 

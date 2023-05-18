@@ -1,0 +1,10 @@
+name: multiple
+ingressAdapters:
+  - stateless:
+      action: read
+      variant: rest
+      route: getUser
+    steps: []
+  - stateful:
+      variant: mongo
+      name: test1
