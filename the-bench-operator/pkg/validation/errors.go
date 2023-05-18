@@ -8,59 +8,28 @@ import (
 	thebenchv1 "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 )
 
+// An object to hold all the errors of different types
+type ConfigValidationError struct {
+	ServiceUnitFieldErrors []InvalidServiceUnitFieldValueError
+	AdapterFieldErrors     []InvalidAdapterFieldValueError
+	MappingErrors          []InvalidAdapterMappingError
+	StepFieldErrors        []InvalidStepFieldValueError
+}
+
 type InvalidServiceUnitFieldValueError struct {
 	message string
-}
-
-func (e *InvalidServiceUnitFieldValueError) Error() string {
-	return e.message
-}
-
-func NewInvalidServiceUnitFieldValueError(key string, serviceUnitConfig thebenchv1.ServiceUnitConfig, message string) InvalidServiceUnitFieldValueError {
-	return InvalidServiceUnitFieldValueError{message: fmt.Sprintf("Invalid value in service unit definition: %v for key: %s. %s", serviceUnitConfig.Name, key, message)}
 }
 
 type InvalidAdapterFieldValueError struct {
 	message string
 }
 
-func (e *InvalidAdapterFieldValueError) Error() string {
-	return e.message
-}
-
-func NewInvalidAdapterFieldValueError(key string, adapterId string, message string) InvalidAdapterFieldValueError {
-	return InvalidAdapterFieldValueError{message: fmt.Sprintf("Invalid value in adapter: %v for key: %s. %s", adapterId, key, message)}
-}
-
 type InvalidAdapterMappingError struct {
 	message string
 }
 
-func (e *InvalidAdapterMappingError) Error() string {
-	return e.message
-}
-
-func NewInvalidEgressAdapterError(id string) InvalidAdapterMappingError {
-	return InvalidAdapterMappingError{message: fmt.Sprintf("No matching ingress adapter found for egress adapter with id: %s", id)}
-}
-
 type InvalidStepFieldValueError struct {
 	message string
-}
-
-func (e *InvalidStepFieldValueError) Error() string {
-	return e.message
-}
-
-func NewInvalidStepFieldValueError(id string) InvalidStepFieldValueError {
-	return InvalidStepFieldValueError{message: fmt.Sprintf("No egress adapter config found on one of steps on ingress adapter with id: %s.", id)}
-}
-
-type ConfigValidationError struct {
-	ServiceUnitFieldErrors []InvalidServiceUnitFieldValueError
-	AdapterFieldErrors     []InvalidAdapterFieldValueError
-	MappingErrors          []InvalidAdapterMappingError
-	StepFieldErrors        []InvalidStepFieldValueError
 }
 
 func (cve ConfigValidationError) Exist() bool {
@@ -75,6 +44,53 @@ func (cve *ConfigValidationError) Extend(other ConfigValidationError) {
 	cve.AdapterFieldErrors = append(cve.AdapterFieldErrors, other.AdapterFieldErrors...)
 	cve.MappingErrors = append(cve.MappingErrors, other.MappingErrors...)
 	cve.StepFieldErrors = append(cve.StepFieldErrors, other.StepFieldErrors...)
+}
+
+func (cve ConfigValidationError) Print() {
+	for _, err := range cve.ServiceUnitFieldErrors {
+		Logger.Errorf(err.Error())
+	}
+	for _, err := range cve.AdapterFieldErrors {
+		Logger.Errorf(err.Error())
+	}
+	for _, err := range cve.MappingErrors {
+		Logger.Errorf(err.Error())
+	}
+	for _, err := range cve.StepFieldErrors {
+		Logger.Errorf(err.Error())
+	}
+}
+
+func (e *InvalidServiceUnitFieldValueError) Error() string {
+	return e.message
+}
+
+func (e *InvalidAdapterFieldValueError) Error() string {
+	return e.message
+}
+
+func (e *InvalidAdapterMappingError) Error() string {
+	return e.message
+}
+
+func (e *InvalidStepFieldValueError) Error() string {
+	return e.message
+}
+
+func NewInvalidServiceUnitFieldValueError(key string, serviceUnitConfig thebenchv1.ServiceUnitConfig, message string) InvalidServiceUnitFieldValueError {
+	return InvalidServiceUnitFieldValueError{message: fmt.Sprintf("Invalid value in service unit definition: %v for key: %s. %s", serviceUnitConfig.Name, key, message)}
+}
+
+func NewInvalidAdapterFieldValueError(key string, adapterId string, message string) InvalidAdapterFieldValueError {
+	return InvalidAdapterFieldValueError{message: fmt.Sprintf("Invalid value in adapter: %v for key: %s. %s", adapterId, key, message)}
+}
+
+func NewInvalidEgressAdapterError(id string) InvalidAdapterMappingError {
+	return InvalidAdapterMappingError{message: fmt.Sprintf("No matching ingress adapter found for egress adapter with id: %s", id)}
+}
+
+func NewInvalidStepFieldValueError(id string) InvalidStepFieldValueError {
+	return InvalidStepFieldValueError{message: fmt.Sprintf("No egress adapter config found on one of steps on ingress adapter with id: %s.", id)}
 }
 
 func mapInvalidServiceUnitFieldValueErrors(err error, serviceUnitConfig thebenchv1.ServiceUnitConfig) []InvalidServiceUnitFieldValueError {

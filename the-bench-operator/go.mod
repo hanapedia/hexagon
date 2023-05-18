@@ -5,9 +5,9 @@ go 1.19
 require (
 	github.com/go-playground/validator/v10 v10.13.0
 	github.com/hanapedia/the-bench/config v0.1.2
-	github.com/neo4j/neo4j-go-driver/v4 v4.4.7
 	github.com/onsi/ginkgo/v2 v2.6.0
 	github.com/onsi/gomega v1.24.1
+	github.com/sirupsen/logrus v1.9.0
 	k8s.io/apimachinery v0.26.1
 	k8s.io/client-go v0.26.1
 	sigs.k8s.io/controller-runtime v0.14.4

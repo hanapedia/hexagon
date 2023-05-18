@@ -19,6 +19,21 @@ type IngressAdapterSpec struct {
 	Selector *metav1.LabelSelector `json:"selector,omitempty"`
 }
 
+
+func (ias IngressAdapterSpec) GetId(serviceName string) string {
+	var id string
+	if ias.StatelessIngressAdapterConfig != nil {
+		id = ias.StatelessIngressAdapterConfig.GetId(serviceName)
+	}
+	if ias.BrokerIngressAdapterConfig != nil {
+		id = ias.BrokerIngressAdapterConfig.GetId(serviceName)
+	}
+	if ias.StatefulIngressAdapterConfig != nil {
+		id = ias.StatefulIngressAdapterConfig.GetId(serviceName)
+	}
+	return id
+}
+
 // A task to be performed in a single step
 type Step struct {
 	EgressAdapterConfig *EgressAdapterConfig `json:"egressAdapter,omitempty" yaml:"egressAdapter,omitempty" validate:"required"`
@@ -35,6 +50,20 @@ type EgressAdapterConfig struct {
 	Id                           *string                       `json:"id,omitempty" yaml:"id,omitempty"`
 }
 
+
+func (eac EgressAdapterConfig) GetId() string {
+	var id string
+	if eac.StatelessEgressAdapterConfig != nil {
+		id = eac.StatelessEgressAdapterConfig.GetId()
+	}
+	if eac.BrokerEgressAdapterConfig != nil {
+		id = eac.BrokerEgressAdapterConfig.GetId()
+	}
+	if eac.StatefulEgressAdapterConfig != nil {
+		id = eac.StatefulEgressAdapterConfig.GetId()
+	}
+	return id
+}
 // Config fields for stateful services
 type StatelessIngressAdapterConfig struct {
 	Variant constants.StatelessAdapterVariant `json:"variant,omitempty" yaml:"variant,omitempty" validate:"required,oneof=rest grpc"`

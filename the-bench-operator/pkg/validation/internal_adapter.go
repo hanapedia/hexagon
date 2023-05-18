@@ -6,7 +6,7 @@ import (
 	thebenchv1 "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 )
 
-func ValidateInternalAdapterConfig(iac thebenchv1.InternalAdapterConfig) []InvalidAdapterFieldValueError {
+func ValidateInternalAdapterConfigFields(iac thebenchv1.InternalAdapterConfig) []InvalidAdapterFieldValueError {
 	validate := validator.New()
 	var errs []InvalidAdapterFieldValueError
 	err := validate.Struct(iac)
