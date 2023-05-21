@@ -4,7 +4,6 @@ go 1.19
 
 require (
 	github.com/go-playground/validator/v10 v10.13.0
-	github.com/hanapedia/the-bench/config v0.1.2
 	github.com/onsi/ginkgo/v2 v2.6.0
 	github.com/onsi/gomega v1.24.1
 	github.com/sirupsen/logrus v1.9.0

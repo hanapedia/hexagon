@@ -4,4 +4,5 @@ package v1
 type ServiceUnitConfig struct {
 	Name                  string               `yaml:"name,omitempty" validate:"required"`
 	IngressAdapterConfigs []IngressAdapterSpec `yaml:"ingressAdapters,omitempty" validate:"required"`
+	Gateway               bool                 `yaml:"gateway,omitempty"`
 }
