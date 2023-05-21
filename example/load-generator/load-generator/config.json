@@ -1,5 +1,5 @@
 {
     "vus": 10,
-    "duration": "30s",
+    "duration": "1h",
     "urlPrefix": "http://gateway:8080/"
 }
