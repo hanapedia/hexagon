@@ -1,0 +1,24 @@
+name: gateway
+ingressAdapters:
+- stateless:
+    action: read
+    variant: rest
+    route: get
+  steps:
+  - egressAdapter:
+      stateless:
+        variant: rest
+        service: chain1
+        action: read
+        route: get
+- stateless:
+    action: write
+    variant: rest
+    route: post
+  steps:
+  - egressAdapter:
+      stateless:
+        variant: rest
+        service: chain1
+        action: write
+        route: post
