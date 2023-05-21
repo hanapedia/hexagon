@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  gateway:
+    image: hiroki11hanada/service-unit:v1.6
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./load-generator/gateway/service-unit.yaml:/app/config/service-unit.yaml
+
+  chain1:
+    image: hiroki11hanada/service-unit:v1.6
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./load-generator/chain1/service-unit.yaml:/app/config/service-unit.yaml
+
+  load-generator:
+    image: hiroki11hanada/tb-load-generator:v1.1
+    volumes:
+      - ./load-generator/load-generator/:/data
+    ports:
+      - "6565:6565"
+    command: ["run", "/scripts/script.js"]
