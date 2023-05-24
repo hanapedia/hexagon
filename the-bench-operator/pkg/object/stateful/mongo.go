@@ -3,7 +3,6 @@ package stateful
 import (
 	"fmt"
 
-	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/object/factory"
 
 	appsv1 "k8s.io/api/apps/v1"
@@ -11,9 +10,9 @@ import (
 )
 
 // CreateServiceUnitDeployment creates deployment for service unit
-func CreateMongoDeployment(serviceUnitConfig *model.ServiceUnitConfig) *appsv1.Deployment {
+func CreateMongoDeployment(name string) *appsv1.Deployment {
 	deploymentArgs := factory.DeploymentArgs{
-		Name:                   serviceUnitConfig.Name,
+		Name:                   name,
 		Namespace:              factory.NAMESPACE,
 		Image:                  factory.MONGO_IMAGE,
 		Replicas:               factory.REPLICAS,
@@ -30,7 +29,7 @@ func CreateMongoDeployment(serviceUnitConfig *model.ServiceUnitConfig) *appsv1.D
 		// 	},
 		// },
 		EnvVolume: &factory.ConfigMapVolumeArgs{
-			Name: fmt.Sprintf("%s-env", serviceUnitConfig.Name),
+			Name: fmt.Sprintf("%s-env", name),
 			Items: map[string]string{
 				"env": ".env",
 			},
@@ -41,9 +40,9 @@ func CreateMongoDeployment(serviceUnitConfig *model.ServiceUnitConfig) *appsv1.D
 }
 
 // CreateServiceUnitService creates service for service unit
-func CreateMongoService(serviceUnitConfig *model.ServiceUnitConfig) *corev1.Service {
+func CreateMongoService(name string) *corev1.Service {
 	serviceArgs := factory.ServiceArgs{
-		Name:      serviceUnitConfig.Name,
+		Name:      name,
 		Namespace: factory.NAMESPACE,
 		Ports:     map[string]int32{"mongo": factory.MONGO_PORT},
 	}

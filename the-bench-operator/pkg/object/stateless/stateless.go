@@ -3,7 +3,6 @@ package stateless
 import (
 	"fmt"
 
-	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/object/factory"
 
 	appsv1 "k8s.io/api/apps/v1"
@@ -11,9 +10,9 @@ import (
 )
 
 // CreateServiceUnitDeployment creates deployment for service unit
-func CreateStatelessUnitDeployment(serviceUnitConfig *model.ServiceUnitConfig) *appsv1.Deployment {
+func CreateStatelessUnitDeployment(name string) *appsv1.Deployment {
 	deploymentArgs := factory.DeploymentArgs{
-		Name:                   serviceUnitConfig.Name,
+		Name:                   name,
 		Namespace:              factory.NAMESPACE,
 		Image:                  factory.SERVICE_UNIT_IMAGE,
 		Replicas:               factory.REPLICAS,
@@ -24,7 +23,7 @@ func CreateStatelessUnitDeployment(serviceUnitConfig *model.ServiceUnitConfig) *
 		Ports:                  map[string]int32{"http": factory.HTTP_PORT},
 		VolumeMounts:           map[string]string{"config": "/app/config/"},
 		ConfigVolume: &factory.ConfigMapVolumeArgs{
-			Name: fmt.Sprintf("%s-config", serviceUnitConfig.Name),
+			Name: fmt.Sprintf("%s-config", name),
 			Items: map[string]string{
 				"config": "service-unit.yaml",
 			},
@@ -41,9 +40,9 @@ func CreateStatelessUnitDeployment(serviceUnitConfig *model.ServiceUnitConfig) *
 }
 
 // CreateServiceUnitService creates service for service unit
-func CreateStatelessUnitService(serviceUnitConfig *model.ServiceUnitConfig) *corev1.Service {
+func CreateStatelessUnitService(name string) *corev1.Service {
 	serviceArgs := factory.ServiceArgs{
-		Name:      serviceUnitConfig.Name,
+		Name:      name,
 		Namespace: factory.NAMESPACE,
 		Ports:     map[string]int32{"http": factory.HTTP_PORT},
 	}
