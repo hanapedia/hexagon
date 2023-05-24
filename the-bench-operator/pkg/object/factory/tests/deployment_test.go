@@ -21,9 +21,13 @@ func TestDeploymentFactory(t *testing.T) {
 		ResourceRequestsMemory: "128Mi",
 		Ports:                  map[string]int32{"http": 8080},
 		VolumeMounts:           map[string]string{"config": "/config"},
-		ConfigMapMounts: factory.ConfigMapMounts{
+		ConfigVolume: &factory.ConfigMapVolumeArgs{
 			Name:  "config",
 			Items: map[string]string{"config": "config.txt"},
+		},
+		EnvVolume: &factory.ConfigMapVolumeArgs{
+			Name:  "env",
+			Items: map[string]string{"env": ".env"},
 		},
 	}
 	deployment := factory.DeploymentFactory(&args)

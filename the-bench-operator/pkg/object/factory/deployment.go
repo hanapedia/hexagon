@@ -19,10 +19,11 @@ type DeploymentArgs struct {
 	ResourceRequestsMemory string
 	Ports                  map[string]int32
 	VolumeMounts           map[string]string
-	ConfigMapMounts        ConfigMapMounts
+	ConfigVolume           *ConfigMapVolumeArgs
+	EnvVolume              *ConfigMapVolumeArgs
 }
 
-type ConfigMapMounts struct {
+type ConfigMapVolumeArgs struct {
 	Name  string
 	Items map[string]string
 }
@@ -58,7 +59,7 @@ func PodTemplateFactory(args *DeploymentArgs) corev1.PodTemplateSpec {
 func PodSpecFactory(args *DeploymentArgs) corev1.PodSpec {
 	return corev1.PodSpec{
 		Containers: ContainerFactory(args),
-		Volumes:    ConfigMapVolumeFactory(&args.ConfigMapMounts),
+		Volumes:    VolumeFactory(args.ConfigVolume, args.EnvVolume),
 	}
 }
 
@@ -66,26 +67,54 @@ func PodSpecFactory(args *DeploymentArgs) corev1.PodSpec {
 func ContainerFactory(args *DeploymentArgs) []corev1.Container {
 	return []corev1.Container{
 		{
-			Name:  args.Name,
-			Image: args.Image,
-			Resources: corev1.ResourceRequirements{
-				Limits: corev1.ResourceList{
-					corev1.ResourceCPU:    resource.MustParse(args.ResourceLimitsCPU),
-					corev1.ResourceMemory: resource.MustParse(args.ResourceLimitsMemory),
-				},
-				Requests: corev1.ResourceList{
-					corev1.ResourceCPU:    resource.MustParse(args.ResourceRequestsCPU),
-					corev1.ResourceMemory: resource.MustParse(args.ResourceRequestsMemory),
-				},
-			},
+			Name:         args.Name,
+			Image:        args.Image,
+			Resources:    ContainerResourcesFactory(args),
 			Ports:        ContainerPortFactory(args.Ports),
 			VolumeMounts: VolumeMountFactory(args.VolumeMounts),
+			EnvFrom:      ContainerEnvFactory(args),
 		},
 	}
 }
 
-// ConfigMapVolumeFactory create volume
-func ConfigMapVolumeFactory(arg *ConfigMapMounts) []corev1.Volume {
+// ContainerResourcesFactory creates resource requiremnts definition
+func ContainerResourcesFactory(args *DeploymentArgs) corev1.ResourceRequirements {
+	return corev1.ResourceRequirements{
+		Limits: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse(args.ResourceLimitsCPU),
+			corev1.ResourceMemory: resource.MustParse(args.ResourceLimitsMemory),
+		},
+		Requests: corev1.ResourceList{
+			corev1.ResourceCPU:    resource.MustParse(args.ResourceRequestsCPU),
+			corev1.ResourceMemory: resource.MustParse(args.ResourceRequestsMemory),
+		},
+	}
+}
+
+// ContainerEnvFactory creates container env from source
+func ContainerEnvFactory(args *DeploymentArgs) []corev1.EnvFromSource {
+	envFromSource := corev1.EnvFromSource{
+		ConfigMapRef: &corev1.ConfigMapEnvSource{
+			LocalObjectReference: *LocalObjectReferenceFactory("env"),
+		},
+	}
+	return []corev1.EnvFromSource{envFromSource}
+}
+
+// VolumeFactory create volume
+func VolumeFactory(configVolumeArgs, envVolumeArgs *ConfigMapVolumeArgs) []corev1.Volume {
+	var volumes []corev1.Volume
+	if configVolumeArgs != nil {
+		volumes = append(volumes, GetConfigMapVolume(configVolumeArgs))
+	}
+	if configVolumeArgs != nil {
+		volumes = append(volumes, GetConfigMapVolume(envVolumeArgs))
+	}
+	return volumes
+}
+
+// GetConfigMapVolume creates the cofigmap volume entry
+func GetConfigMapVolume(arg *ConfigMapVolumeArgs) corev1.Volume {
 	var items []corev1.KeyToPath
 	for key, path := range arg.Items {
 		item := corev1.KeyToPath{
@@ -102,7 +131,7 @@ func ConfigMapVolumeFactory(arg *ConfigMapMounts) []corev1.Volume {
 			},
 		},
 	}
-	return []corev1.Volume{volume}
+	return volume
 }
 
 // ContainerPortFactory create container port slice
