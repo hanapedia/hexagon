@@ -1,42 +1,58 @@
 package generate
 
 import (
+	"github.com/hanapedia/the-bench/tbctl/pkg/loader"
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
-	"github.com/hanapedia/the-bench/tbctl/pkg/loader"
 )
 
-func GenerateFromFile(input string, output string) {
-	serviceUnitConfig := loader.GetConfig(input)
-	errs := GenerateManifest(input, output, serviceUnitConfig)
-    errs.Print()
+type ManifestGenerator struct {
+	Input             string
+	Output            string
+	ServiceUnitConfig model.ServiceUnitConfig
+}
+
+func NewManifestGenerator(input string, output string) ManifestGenerator {
+	return ManifestGenerator{
+		Input:             input,
+		Output:            output,
+		ServiceUnitConfig: loader.GetConfig(input),
+	}
+}
+
+func (mg ManifestGenerator) GenerateFromFile() {
+	errs := mg.GenerateManifest()
+	errs.Print()
 	if errs.Exist() {
 		logger.Logger.Fatal("Failed generating manifests.")
 	}
 }
 
-func GenerateFromDirectory(input string, output string) {
-	paths, err := loader.GetYAMLFiles(input)
+func (mg ManifestGenerator) GenerateFromDirectory() {
+	paths, err := loader.GetYAMLFiles(mg.Input)
 	if err != nil {
-		logger.Logger.Fatalf("Error reading from directory %s. %s", input, err)
+		logger.Logger.Fatalf("Error reading from directory %s. %s", mg.Input, err)
 	}
 
-	for _, input = range paths {
-		GenerateFromFile(input, output)
+	for _, mg.Input = range paths {
+		mg.GenerateFromFile()
 	}
 
 }
 
-func GenerateManifest(input string, output string, serviceUnitConfig model.ServiceUnitConfig) ManifestErrors {
+func (mg ManifestGenerator) GenerateManifest() ManifestErrors {
 	var manfiestErrors ManifestErrors
-	if hasStatefulAdapter(serviceUnitConfig.IngressAdapterConfigs) {
-		manfiestErrors.Extend(GenerateStatefulManifests(output, serviceUnitConfig))
+	if hasStatefulAdapter(mg.ServiceUnitConfig.IngressAdapterConfigs) {
+		manfiestErrors.Extend(mg.GenerateStatefulManifests())
 		return manfiestErrors
 	}
-	if hasBrokerAdapter(serviceUnitConfig.IngressAdapterConfigs) {
-		manfiestErrors.Extend(GenerateBrokerManifests(output, serviceUnitConfig))
+	brokerAdapters := getBrokerAdapters(mg.ServiceUnitConfig.IngressAdapterConfigs)
+	if len(brokerAdapters) > 0 {
+		for _, config := range brokerAdapters {
+			manfiestErrors.Extend(mg.GenerateBrokerManifests(config))
+		}
 	}
-	manfiestErrors.Extend(GenerateStatelessManifests(input, output, serviceUnitConfig))
+	manfiestErrors.Extend(mg.GenerateStatelessManifests())
 	return manfiestErrors
 }
 
@@ -49,11 +65,12 @@ func hasStatefulAdapter(ingressAdapterConfigs []model.IngressAdapterSpec) bool {
 	return false
 }
 
-func hasBrokerAdapter(ingressAdapterConfigs []model.IngressAdapterSpec) bool {
+func getBrokerAdapters(ingressAdapterConfigs []model.IngressAdapterSpec) []model.BrokerIngressAdapterConfig {
+	var configs []model.BrokerIngressAdapterConfig
 	for _, ingresingressAdapterConfig := range ingressAdapterConfigs {
 		if ingresingressAdapterConfig.BrokerIngressAdapterConfig != nil {
-			return true
+			configs = append(configs, *ingresingressAdapterConfig.BrokerIngressAdapterConfig)
 		}
 	}
-	return false
+	return configs
 }

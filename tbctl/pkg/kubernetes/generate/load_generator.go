@@ -7,8 +7,8 @@ import (
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/yaml"
 )
 
-// GenerateStatelessManifests generates stateless manifest
-func (mg ManifestGenerator) GenerateStatelessManifests() ManifestErrors {
+// GenerateLoadGeneratorManifests generates loadgenerator manifest
+func (mg ManifestGenerator) GenerateLoadGeneratorManifests() ManifestErrors {
 	// Open the manifestFile in append mode and with write-only permissions
 	manifestFile, err := createFile(mg.Output)
 	if err != nil {
@@ -62,3 +62,4 @@ func (mg ManifestGenerator) GenerateStatelessManifests() ManifestErrors {
 	}
 	return ManifestErrors{}
 }
+

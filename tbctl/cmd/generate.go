@@ -12,37 +12,38 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var generateFilePath string
-var generateOutPath string
+var inputPath string
+var outputPath string
 
 // generateCmd represents the generate command
 var generateCmd = &cobra.Command{
 	Use:   "generate",
 	Short: "generate Kubernetes manifests for given service unit configuration.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if strings.TrimSpace(generateFilePath) == "" {
+		if strings.TrimSpace(inputPath) == "" {
 			fmt.Println("Error: Missing -f flag or empty file path")
 			return
 		}
 
-		fileInfo, err := os.Stat(generateFilePath)
+		fileInfo, err := os.Stat(inputPath)
 		if err != nil {
 			fmt.Println("Error:", err)
 			return
 		}
+		manifestGenerator := generate.NewManifestGenerator(inputPath, outputPath)
 
 		if fileInfo.IsDir() {
-			generate.GenerateFromDirectory(generateFilePath, generateOutPath)
+			manifestGenerator.GenerateFromDirectory()
 		} else {
-			generate.GenerateFromFile(generateFilePath, generateOutPath)
+			manifestGenerator.GenerateFromFile()
 		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(generateCmd)
-	generateCmd.PersistentFlags().StringVarP(&generateFilePath, "file", "f", "", "YAML file or directory to validate")
-	generateCmd.PersistentFlags().StringVarP(&generateOutPath, "out", "o", "", "output directory for generated files")
+	generateCmd.PersistentFlags().StringVarP(&inputPath, "file", "f", "", "YAML file or directory to validate")
+	generateCmd.PersistentFlags().StringVarP(&outputPath, "out", "o", "", "output directory for generated files")
 
 	// Here you will define your flags and configuration settings.
 
