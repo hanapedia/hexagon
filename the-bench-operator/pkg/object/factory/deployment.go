@@ -72,7 +72,7 @@ func ContainerFactory(args *DeploymentArgs) []corev1.Container {
 			Resources:    ContainerResourcesFactory(args),
 			Ports:        ContainerPortFactory(args.Ports),
 			VolumeMounts: VolumeMountFactory(args.VolumeMounts),
-			EnvFrom:      ContainerEnvFactory(args),
+			// EnvFrom:      ContainerEnvFactory(args),
 		},
 	}
 }
@@ -105,16 +105,16 @@ func ContainerEnvFactory(args *DeploymentArgs) []corev1.EnvFromSource {
 func VolumeFactory(configVolumeArgs, envVolumeArgs *ConfigMapVolumeArgs) []corev1.Volume {
 	var volumes []corev1.Volume
 	if configVolumeArgs != nil {
-		volumes = append(volumes, GetConfigMapVolume(configVolumeArgs))
+		volumes = append(volumes, GetConfigMapVolume("config", configVolumeArgs))
 	}
-	if configVolumeArgs != nil {
-		volumes = append(volumes, GetConfigMapVolume(envVolumeArgs))
+	if envVolumeArgs != nil {
+		volumes = append(volumes, GetConfigMapVolume("env", envVolumeArgs))
 	}
 	return volumes
 }
 
 // GetConfigMapVolume creates the cofigmap volume entry
-func GetConfigMapVolume(arg *ConfigMapVolumeArgs) corev1.Volume {
+func GetConfigMapVolume(key string, arg *ConfigMapVolumeArgs) corev1.Volume {
 	var items []corev1.KeyToPath
 	for key, path := range arg.Items {
 		item := corev1.KeyToPath{
@@ -124,9 +124,10 @@ func GetConfigMapVolume(arg *ConfigMapVolumeArgs) corev1.Volume {
 		items = append(items, item)
 	}
 	volume := corev1.Volume{
-		Name: arg.Name,
+		Name: key,
 		VolumeSource: corev1.VolumeSource{
 			ConfigMap: &corev1.ConfigMapVolumeSource{
+				LocalObjectReference: *LocalObjectReferenceFactory(arg.Name),
 				Items: items,
 			},
 		},
