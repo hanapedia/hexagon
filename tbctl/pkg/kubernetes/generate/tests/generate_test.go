@@ -37,3 +37,12 @@ func TestGenearateKafkaTopic(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestGenearateLoadGenerator(t *testing.T) {
+	manifestGenerator := generate.NewManifestGenerator("./data/load_generator.yaml", "./data/output/load_generator.yaml")
+	errs := manifestGenerator.GenerateLoadGeneratorManifests()
+	if errs.Exist() {
+		errs.Print()
+		t.Fatal("Failed to generate manifests.")
+	}
+}

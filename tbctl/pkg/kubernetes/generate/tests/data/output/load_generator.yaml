@@ -3,23 +3,23 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   creationTimestamp: null
-  name: stateless
+  name: gateway
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: stateless
+      app: gateway
   strategy: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: stateless
+        app: gateway
     spec:
       containers:
-      - image: hiroki11hanada/service-unit:v1.5
-        name: stateless
+      - image: hiroki11hanada/tb-load-generator:v1.3
+        name: gateway
         ports:
         - containerPort: 8080
           name: http
@@ -31,14 +31,16 @@ spec:
             cpu: 125m
             memory: 64Mi
         volumeMounts:
-        - mountPath: /app/config/
+        - mountPath: /data/
           name: config
       volumes:
       - configMap:
           items:
           - key: config
-            path: service-unit.yaml
-          name: stateless-config
+            path: config.json
+          - key: routes
+            path: routes.json
+          name: gateway-lg-config
         name: config
 status: {}
 
@@ -47,7 +49,7 @@ apiVersion: v1
 kind: Service
 metadata:
   creationTimestamp: null
-  name: stateless
+  name: gateway
   namespace: default
 spec:
   ports:
@@ -56,25 +58,18 @@ spec:
     protocol: TCP
     targetPort: 0
   selector:
-    app: stateless
+    app: gateway
 status:
   loadBalancer: {}
 
 ---
 apiVersion: v1
 data:
-  config: |+
-    name: stateless
-    ingressAdapters:
-      - stateless:
-          action: read
-          variant: rest
-          route: get
-        steps: []
-
+  config: '{"vus":10,"duration":"60m","urlPrefix":"http://gateway:8080"}'
+  routes: '[{"route":"get","method":"GET","weight":1},{"route":"post","method":"POST","weight":2}]'
 kind: ConfigMap
 metadata:
   creationTimestamp: null
-  name: stateless-config
+  name: gateway-lg-config
   namespace: default
 

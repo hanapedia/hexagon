@@ -50,7 +50,7 @@ func (mg ManifestGenerator) GenerateStatelessManifests() ManifestErrors {
 			},
 		}
 	}
-	configMap := stateless.CreateStatelessUnitConfigConfigMap(mg.ServiceUnitConfig.Name, string(data))
+	configMap := stateless.CreateStatelessUnitYamlConfigMap(mg.ServiceUnitConfig.Name, string(data))
 	configMapYAML := yaml.GenerateManifest(configMap)
 	_, err = manifestFile.WriteString(formatManifest(configMapYAML))
 	if err != nil {

@@ -1,9 +1,11 @@
 package generate
 
 import (
-	"os"
+	"encoding/json"
+	"errors"
 
-	"github.com/hanapedia/the-bench/the-bench-operator/pkg/object/stateless"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/object/load_generator"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/yaml"
 )
 
@@ -13,44 +15,58 @@ func (mg ManifestGenerator) GenerateLoadGeneratorManifests() ManifestErrors {
 	manifestFile, err := createFile(mg.Output)
 	if err != nil {
 		return ManifestErrors{
-			stateless: []StatelessManifestError{
-				NewStatelessManifestError(mg.ServiceUnitConfig, "Unable to open output file."),
+			loadGenerator: []LoadGeneratorManifestError{
+				NewLoadGeneratorManifestError(mg.ServiceUnitConfig, "Unable to open output file."),
 			},
 		}
 	}
 	defer manifestFile.Close()
 
-	deployment := stateless.CreateStatelessUnitDeployment(mg.ServiceUnitConfig.Name)
+	deployment := loadgenerator.CreateLoadGeneratorDeployment(mg.ServiceUnitConfig.Name)
 	deploymentYAML := yaml.GenerateManifest(deployment)
 	_, err = manifestFile.WriteString(formatManifest(deploymentYAML))
 	if err != nil {
 		return ManifestErrors{
-			stateless: []StatelessManifestError{
-				NewStatelessManifestError(mg.ServiceUnitConfig, "Failed to write deployment manifest"),
+			loadGenerator: []LoadGeneratorManifestError{
+				NewLoadGeneratorManifestError(mg.ServiceUnitConfig, "Failed to write deployment manifest"),
 			},
 		}
 	}
 
-	service := stateless.CreateStatelessUnitService(mg.ServiceUnitConfig.Name)
+	service := loadgenerator.CreateLoadGeneratorService(mg.ServiceUnitConfig.Name)
 	serviceYAML := yaml.GenerateManifest(service)
 	_, err = manifestFile.WriteString(formatManifest(serviceYAML))
 	if err != nil {
 		return ManifestErrors{
-			stateless: []StatelessManifestError{
-				NewStatelessManifestError(mg.ServiceUnitConfig, "Failed to write service manifest"),
+			loadGenerator: []LoadGeneratorManifestError{
+				NewLoadGeneratorManifestError(mg.ServiceUnitConfig, "Failed to write service manifest"),
 			},
 		}
 	}
 
-	data, err := os.ReadFile(mg.Input)
+	rawConfig, err := mg.GenerateConfigJson()
 	if err != nil {
 		return ManifestErrors{
-			stateless: []StatelessManifestError{
-				NewStatelessManifestError(mg.ServiceUnitConfig, "Unable to read config file."),
+			loadGenerator: []LoadGeneratorManifestError{
+				NewLoadGeneratorManifestError(mg.ServiceUnitConfig, "Failed to create config json"),
 			},
 		}
 	}
-	configMap := stateless.CreateStatelessUnitConfigConfigMap(mg.ServiceUnitConfig.Name, string(data))
+
+	rawRoutes, err := mg.GenerateRoutesJson()
+	if err != nil {
+		return ManifestErrors{
+			loadGenerator: []LoadGeneratorManifestError{
+				NewLoadGeneratorManifestError(mg.ServiceUnitConfig, "Failed to create routes json"),
+			},
+		}
+	}
+
+	configMap := loadgenerator.CreateLoadGeneratorYamlConfigMap(
+		mg.ServiceUnitConfig.Name,
+		string(rawConfig),
+		string(rawRoutes),
+	)
 	configMapYAML := yaml.GenerateManifest(configMap)
 	_, err = manifestFile.WriteString(formatManifest(configMapYAML))
 	if err != nil {
@@ -63,3 +79,38 @@ func (mg ManifestGenerator) GenerateLoadGeneratorManifests() ManifestErrors {
 	return ManifestErrors{}
 }
 
+// GenerateConfigJson generate json content for config
+func (mg ManifestGenerator) GenerateConfigJson() ([]byte, error) {
+	if mg.ServiceUnitConfig.Gateway == nil {
+		return nil, errors.New("Gateway config not found")
+	}
+	config := loadgenerator.CreateLoadGeneratorConfig(
+		mg.ServiceUnitConfig.Gateway.VirtualUsers,
+		mg.ServiceUnitConfig.Gateway.Duration,
+		mg.ServiceUnitConfig.Name,
+	)
+	return json.Marshal(config)
+}
+
+// GenerateConfigJson generate json content for config
+func (mg ManifestGenerator) GenerateRoutesJson() ([]byte, error) {
+	if mg.ServiceUnitConfig.Gateway == nil {
+		return nil, errors.New("Gateway config not found")
+	}
+	var routes []loadgenerator.Route
+	for _, ingressAdapter := range mg.ServiceUnitConfig.IngressAdapterConfigs {
+		if ingressAdapter.StatelessIngressAdapterConfig != nil {
+			var weight int32 = 1
+			if ingressAdapter.StatelessIngressAdapterConfig.Weight != nil {
+				weight = *ingressAdapter.StatelessIngressAdapterConfig.Weight
+			}
+			route := loadgenerator.CreateLoadGeneratorRoutes(
+				ingressAdapter.StatelessIngressAdapterConfig.Route,
+				constants.GetHttpMethodFromAction(ingressAdapter.StatelessIngressAdapterConfig.Action),
+				weight,
+			)
+			routes = append(routes, route)
+		}
+	}
+	return json.Marshal(routes)
+}
