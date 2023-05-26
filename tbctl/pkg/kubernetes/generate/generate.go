@@ -7,7 +7,11 @@ import (
 )
 
 type ManifestGenerator struct {
+	// Input is the path to directory or file containing the servcie unit config yaml
 	Input             string
+
+	// Output is the path to the output directory for the kubernetes manifests
+	// NOTE: not file name. file names are automatically assigned by service name
 	Output            string
 	ServiceUnitConfig model.ServiceUnitConfig
 }

@@ -12,7 +12,8 @@ import (
 // GenerateLoadGeneratorManifests generates loadgenerator manifest
 func (mg ManifestGenerator) GenerateLoadGeneratorManifests() ManifestErrors {
 	// Open the manifestFile in append mode and with write-only permissions
-	manifestFile, err := createFile(mg.Output)
+	outPath := mg.getFilePath(mg.ServiceUnitConfig.Name, "load-generator")
+	manifestFile, err := createFile(outPath)
 	if err != nil {
 		return ManifestErrors{
 			loadGenerator: []LoadGeneratorManifestError{

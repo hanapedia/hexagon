@@ -9,7 +9,8 @@ import (
 // GenerateBrokerManifests generates manifest file for kafka topic
 func (mg ManifestGenerator) GenerateBrokerManifests(config model.BrokerIngressAdapterConfig) ManifestErrors {
 	// Open the manifestFile in append mode and with write-only permissions
-	manifestFile, err := createFile(mg.Output)
+	outPath := mg.getFilePath(config.Topic, "kafka-topic")
+	manifestFile, err := createFile(outPath)
 	if err != nil {
 		return ManifestErrors{
 			broker: []BrokerManifestError{

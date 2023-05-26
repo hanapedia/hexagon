@@ -10,7 +10,8 @@ import (
 // GenerateStatelessManifests generates stateless manifest
 func (mg ManifestGenerator) GenerateStatelessManifests() ManifestErrors {
 	// Open the manifestFile in append mode and with write-only permissions
-	manifestFile, err := createFile(mg.Output)
+	outPath := mg.getFilePath(mg.ServiceUnitConfig.Name, "stateless")
+	manifestFile, err := createFile(outPath)
 	if err != nil {
 		return ManifestErrors{
 			stateless: []StatelessManifestError{

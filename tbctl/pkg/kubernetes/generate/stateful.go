@@ -9,7 +9,8 @@ import (
 // currently only Mongo is supported
 func (mg ManifestGenerator) GenerateStatefulManifests() ManifestErrors {
 	// Open the manifestFile in append mode and with write-only permissions
-	manifestFile, err := createFile(mg.Output)
+	outPath := mg.getFilePath(mg.ServiceUnitConfig.Name, "stateful")
+	manifestFile, err := createFile(outPath)
 	if err != nil {
 		return ManifestErrors{
 			stateful: []StatefulManifestError{
