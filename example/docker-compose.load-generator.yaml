@@ -16,9 +16,8 @@ services:
       - ./load-generator/chain1/service-unit.yaml:/app/config/service-unit.yaml
 
   load-generator:
-    image: hiroki11hanada/tb-load-generator:v1.1
+    image: hiroki11hanada/tb-load-generator:v1.3
     volumes:
       - ./load-generator/load-generator/:/data
     ports:
       - "6565:6565"
-    command: ["run", "/scripts/script.js"]

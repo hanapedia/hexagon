@@ -1,44 +1,65 @@
 package generate
 
 import (
-	"fmt"
+	"os"
 
-	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
-	"github.com/hanapedia/the-bench/tbctl/pkg/kubernetes/templates"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/object/stateless"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/yaml"
 )
 
-func GenerateStatelessManifests(input string, dir string, serviceUnitConfig model.ServiceUnitConfig) ManifestErrors {
-	var statelessManifestErrors []StatelessManifestError
-	templateArgs := templates.StatelessManifestTemplateArgs{
-		Name:                   serviceUnitConfig.Name,
-		Namespace:              NAMESPACE,
-		Image:                  SERVICE_UNIT_IMAGE,
-		Replicas:               REPLICAS,
-		ResourceLimitsCPU:      LIMIT_CPU,
-		ResourceLimitsMemory:   LIMIT_MEM,
-		ResourceRequestsCPU:    REQUEST_CPU,
-		ResourceRequestsMemory: REQUEST_MEM,
-		HTTPPort:               HTTP_PORT,
-		GRPCPort:               GRPC_PORT,
-	}
-	err := RenderAndSave(
-		dir,
-		fmt.Sprintf("%s-manifest", serviceUnitConfig.Name),
-		templates.StatelessManifestTemplates,
-		templateArgs,
-	)
+// GenerateStatelessManifests generates stateless manifest
+func (mg ManifestGenerator) GenerateStatelessManifests() ManifestErrors {
+	// Open the manifestFile in append mode and with write-only permissions
+	outPath := mg.getFilePath(mg.ServiceUnitConfig.Name, "stateless")
+	manifestFile, err := createFile(outPath)
 	if err != nil {
-		statelessManifestErrors = append(
-			statelessManifestErrors,
-			NewStatelessManifestError(serviceUnitConfig, err.Error()),
-		)
+		return ManifestErrors{
+			stateless: []StatelessManifestError{
+				NewStatelessManifestError(mg.ServiceUnitConfig, "Unable to open output file."),
+			},
+		}
+	}
+	defer manifestFile.Close()
+
+	deployment := stateless.CreateStatelessUnitDeployment(mg.ServiceUnitConfig.Name)
+	deploymentYAML := yaml.GenerateManifest(deployment)
+	_, err = manifestFile.WriteString(formatManifest(deploymentYAML))
+	if err != nil {
+		return ManifestErrors{
+			stateless: []StatelessManifestError{
+				NewStatelessManifestError(mg.ServiceUnitConfig, "Failed to write deployment manifest"),
+			},
+		}
 	}
 
-	var commonManifestErrors []CommonManifestError
-	configErrs := GenerateConfigManifest(dir, serviceUnitConfig, input)
-	if configErrs != nil {
-		commonManifestErrors = append(commonManifestErrors, NewCommonManifestError(serviceUnitConfig, configErrs.Error()))
+	service := stateless.CreateStatelessUnitService(mg.ServiceUnitConfig.Name)
+	serviceYAML := yaml.GenerateManifest(service)
+	_, err = manifestFile.WriteString(formatManifest(serviceYAML))
+	if err != nil {
+		return ManifestErrors{
+			stateless: []StatelessManifestError{
+				NewStatelessManifestError(mg.ServiceUnitConfig, "Failed to write service manifest"),
+			},
+		}
 	}
 
-	return ManifestErrors{stateless: statelessManifestErrors, common: commonManifestErrors}
+	data, err := os.ReadFile(mg.Input)
+	if err != nil {
+		return ManifestErrors{
+			stateless: []StatelessManifestError{
+				NewStatelessManifestError(mg.ServiceUnitConfig, "Unable to read config file."),
+			},
+		}
+	}
+	configMap := stateless.CreateStatelessUnitYamlConfigMap(mg.ServiceUnitConfig.Name, string(data))
+	configMapYAML := yaml.GenerateManifest(configMap)
+	_, err = manifestFile.WriteString(formatManifest(configMapYAML))
+	if err != nil {
+		return ManifestErrors{
+			stateless: []StatelessManifestError{
+				NewStatelessManifestError(mg.ServiceUnitConfig, "Failed to write configmap manifest"),
+			},
+		}
+	}
+	return ManifestErrors{}
 }

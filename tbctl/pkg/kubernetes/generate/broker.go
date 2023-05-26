@@ -1,47 +1,34 @@
 package generate
 
 import (
-	"fmt"
-
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
-	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
-	"github.com/hanapedia/the-bench/tbctl/pkg/kubernetes/templates"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/object/broker"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/yaml"
 )
 
-func GenerateBrokerManifests(dir string, serviceUnitConfig model.ServiceUnitConfig) ManifestErrors {
-	var brokerManifestErrors []BrokerManifestError
-	for _, ingressAdapter := range serviceUnitConfig.IngressAdapterConfigs {
-		if ingressAdapter.BrokerIngressAdapterConfig == nil {
-			continue
-		}
-		// generate kafka topic manifest
-		if ingressAdapter.BrokerIngressAdapterConfig.Variant == constants.KAFKA {
-			err := generateKafkaTopicManifest(dir, *ingressAdapter.BrokerIngressAdapterConfig)
-			if err != nil {
-				brokerManifestErrors = append(
-					brokerManifestErrors,
-					NewBrokerManifestError(*ingressAdapter.BrokerIngressAdapterConfig, err.Error()),
-				)
-			}
-			continue
+// GenerateBrokerManifests generates manifest file for kafka topic
+func (mg ManifestGenerator) GenerateBrokerManifests(config model.BrokerIngressAdapterConfig) ManifestErrors {
+	// Open the manifestFile in append mode and with write-only permissions
+	outPath := mg.getFilePath(config.Topic, "kafka-topic")
+	manifestFile, err := createFile(outPath)
+	if err != nil {
+		return ManifestErrors{
+			broker: []BrokerManifestError{
+				NewBrokerManifestError(config, "Unable to open output file."),
+			},
 		}
 	}
-	return ManifestErrors{broker: brokerManifestErrors}
-}
+	defer manifestFile.Close()
 
-func generateKafkaTopicManifest(dir string, brokerAdapterConfig model.BrokerIngressAdapterConfig) error {
-	kafkaTopicTemplateArgs := templates.KafkaTopicTemplateArgs{
-		Topic:       brokerAdapterConfig.Topic,
-		ClusterName: KAFKA_CLUSTER_NAME,
-		Namespace:   KAFKA_NAMESPACE,
-		Partitions:  KAFKA_PARTITIONS,
-		Replicas:    KAFKA_REPLICATIONS,
+	deployment := broker.CreateKafkaTopic(config.Topic)
+	deploymentYAML := yaml.GenerateManifest(deployment)
+	_, err = manifestFile.WriteString(formatManifest(deploymentYAML))
+	if err != nil {
+		return ManifestErrors{
+			broker: []BrokerManifestError{
+				NewBrokerManifestError(config, "Failed to write deployment manifest"),
+			},
+		}
 	}
-	err := RenderAndSave(
-		dir,
-		fmt.Sprintf("%s-kafka-topic", brokerAdapterConfig.Topic),
-		templates.KafkaTopicTemplate,
-		kafkaTopicTemplateArgs,
-	)
-	return err
+	return ManifestErrors{}
 }

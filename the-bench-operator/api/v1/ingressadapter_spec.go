@@ -32,7 +32,8 @@ type StatelessIngressAdapterConfig struct {
 	Route   string                            `json:"route,omitempty" yaml:"route,omitempty" validate:"required"`
 	// applies to only gateway service
 	// refers to the weight applied to the route
-	Weight  int                               `json:"weight,omitempty" yaml:"weight,omitempty"`
+	// intentionally a pointer to destinguish 0
+	Weight  *int32                               `json:"weight,omitempty" yaml:"weight,omitempty"`
 }
 
 // Config fields for stateful services

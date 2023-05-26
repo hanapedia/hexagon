@@ -25,6 +25,7 @@ func GetConfig(path string) model.ServiceUnitConfig {
 	return config
 }
 
+// GetYAMLFiles retrieves all the yaml files under given directory recursively
 func GetYAMLFiles(dir string) ([]string, error) {
 	yamlFiles := []string{}
 

@@ -4,14 +4,14 @@ package v1
 type ServiceUnitConfig struct {
 	Name                  string               `yaml:"name,omitempty" validate:"required"`
 	IngressAdapterConfigs []IngressAdapterSpec `yaml:"ingressAdapters,omitempty" validate:"required"`
-	Gateway               *Gateway              `yaml:"gateway,omitempty"`
+	Gateway               *Gateway             `yaml:"gateway,omitempty"`
 }
 
 // Gateway contains config information about loadgenerator
 type Gateway struct {
 	// VirtualUsers is the number of virtual users simulated.
-	VirtualUsers int `yaml:"virtualUsers,omitempty"`
+	VirtualUsers int32 `yaml:"virtualUsers,omitempty"`
 
 	// Duration given in minutes
-	Duration int `yaml:"duration,omitempty"`
+	Duration int32 `yaml:"duration,omitempty"`
 }
