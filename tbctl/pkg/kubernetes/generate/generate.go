@@ -8,7 +8,7 @@ import (
 
 type ManifestGenerator struct {
 	// Input is the path to directory or file containing the servcie unit config yaml
-	Input             string
+	Input string
 
 	// Output is the path to the output directory for the kubernetes manifests
 	// NOTE: not file name. file names are automatically assigned by service name
@@ -16,7 +16,7 @@ type ManifestGenerator struct {
 	ServiceUnitConfig model.ServiceUnitConfig
 }
 
-func NewManifestGenerator(input string, output string) ManifestGenerator {
+func NewManifestGenerator(input, output string) ManifestGenerator {
 	return ManifestGenerator{
 		Input:             input,
 		Output:            output,
@@ -32,13 +32,14 @@ func (mg ManifestGenerator) GenerateFromFile() {
 	}
 }
 
-func (mg ManifestGenerator) GenerateFromDirectory() {
-	paths, err := loader.GetYAMLFiles(mg.Input)
+func GenerateFromDirectory(input, output string) {
+	paths, err := loader.GetYAMLFiles(input)
 	if err != nil {
-		logger.Logger.Fatalf("Error reading from directory %s. %s", mg.Input, err)
+		logger.Logger.Fatalf("Error reading from directory %s. %s", input, err)
 	}
 
-	for _, mg.Input = range paths {
+	for _, inputFile := range paths {
+		mg := NewManifestGenerator(inputFile, output)
 		mg.GenerateFromFile()
 	}
 

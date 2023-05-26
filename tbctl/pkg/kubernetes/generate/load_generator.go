@@ -3,6 +3,7 @@ package generate
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/object/load_generator"
@@ -23,7 +24,9 @@ func (mg ManifestGenerator) GenerateLoadGeneratorManifests() ManifestErrors {
 	}
 	defer manifestFile.Close()
 
-	deployment := loadgenerator.CreateLoadGeneratorDeployment(mg.ServiceUnitConfig.Name)
+	loadGeneratorName := fmt.Sprintf("%s-lg", mg.ServiceUnitConfig.Name)
+
+	deployment := loadgenerator.CreateLoadGeneratorDeployment(loadGeneratorName)
 	deploymentYAML := yaml.GenerateManifest(deployment)
 	_, err = manifestFile.WriteString(formatManifest(deploymentYAML))
 	if err != nil {
@@ -34,7 +37,7 @@ func (mg ManifestGenerator) GenerateLoadGeneratorManifests() ManifestErrors {
 		}
 	}
 
-	service := loadgenerator.CreateLoadGeneratorService(mg.ServiceUnitConfig.Name)
+	service := loadgenerator.CreateLoadGeneratorService(loadGeneratorName)
 	serviceYAML := yaml.GenerateManifest(service)
 	_, err = manifestFile.WriteString(formatManifest(serviceYAML))
 	if err != nil {
@@ -64,7 +67,7 @@ func (mg ManifestGenerator) GenerateLoadGeneratorManifests() ManifestErrors {
 	}
 
 	configMap := loadgenerator.CreateLoadGeneratorYamlConfigMap(
-		mg.ServiceUnitConfig.Name,
+		loadGeneratorName,
 		string(rawConfig),
 		string(rawRoutes),
 	)

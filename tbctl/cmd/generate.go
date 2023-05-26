@@ -30,11 +30,10 @@ var generateCmd = &cobra.Command{
 			fmt.Println("Error:", err)
 			return
 		}
-		manifestGenerator := generate.NewManifestGenerator(inputPath, outputPath)
-
 		if fileInfo.IsDir() {
-			manifestGenerator.GenerateFromDirectory()
+			generate.GenerateFromDirectory(inputPath, outputPath)
 		} else {
+			manifestGenerator := generate.NewManifestGenerator(inputPath, outputPath)
 			manifestGenerator.GenerateFromFile()
 		}
 	},
