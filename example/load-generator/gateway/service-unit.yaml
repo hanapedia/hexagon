@@ -1,9 +1,13 @@
 name: gateway
+gateway: # load generator specific
+  virtualUsers: 10
+  duration: 60
 ingressAdapters:
 - stateless:
     action: read
     variant: rest
     route: get
+    weight: 1 # load generator specific
   steps:
   - egressAdapter:
       stateless:
@@ -15,6 +19,7 @@ ingressAdapters:
     action: write
     variant: rest
     route: post
+    weight: 2 # load generator specific
   steps:
   - egressAdapter:
       stateless:
