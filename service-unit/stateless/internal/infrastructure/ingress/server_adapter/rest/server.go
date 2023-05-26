@@ -7,8 +7,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	fiber_logger "github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/hanapedia/the-bench/config/constants"
-	"github.com/hanapedia/the-bench/config/logger"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/contract"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"

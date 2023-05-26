@@ -3,7 +3,7 @@ package mongo
 import (
 	"context"
 
-	"github.com/hanapedia/the-bench/config/logger"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

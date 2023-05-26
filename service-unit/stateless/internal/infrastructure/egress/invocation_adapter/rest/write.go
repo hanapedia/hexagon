@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/contract"
-	"github.com/hanapedia/the-bench/config/constants"
 	"github.com/hanapedia/the-bench/service-unit/stateless/pkg/utils"
 )
 

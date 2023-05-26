@@ -3,10 +3,10 @@ package validation
 import (
 	"github.com/go-playground/validator/v10"
 
-	thebenchv1 "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
+	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 )
 
-func ValidateStatelessEgressAdapterFields(sac thebenchv1.StatelessEgressAdapterConfig) []InvalidAdapterFieldValueError {
+func ValidateStatelessEgressAdapterFields(sac model.StatelessEgressAdapterConfig) []InvalidAdapterFieldValueError {
 	validate := validator.New()
 	var errs []InvalidAdapterFieldValueError
 	err := validate.Struct(sac)
@@ -17,7 +17,7 @@ func ValidateStatelessEgressAdapterFields(sac thebenchv1.StatelessEgressAdapterC
 	return errs
 }
 
-func ValidateStatefulEgressAdapterFields(sac thebenchv1.StatefulEgressAdapterConfig) []InvalidAdapterFieldValueError {
+func ValidateStatefulEgressAdapterFields(sac model.StatefulEgressAdapterConfig) []InvalidAdapterFieldValueError {
 	validate := validator.New()
 	var errs []InvalidAdapterFieldValueError
 	err := validate.Struct(sac)
@@ -28,7 +28,7 @@ func ValidateStatefulEgressAdapterFields(sac thebenchv1.StatefulEgressAdapterCon
 	return errs
 }
 
-func ValidateBrokerEgressAdapterFields(bac thebenchv1.BrokerEgressAdapterConfig) []InvalidAdapterFieldValueError {
+func ValidateBrokerEgressAdapterFields(bac model.BrokerEgressAdapterConfig) []InvalidAdapterFieldValueError {
 	validate := validator.New()
 	var errs []InvalidAdapterFieldValueError
 	err := validate.Struct(bac)

@@ -5,7 +5,8 @@ import (
 
 	"github.com/go-playground/validator/v10"
 
-	thebenchv1 "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
+	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
 // An object to hold all the errors of different types
@@ -48,16 +49,16 @@ func (cve *ConfigValidationError) Extend(other ConfigValidationError) {
 
 func (cve ConfigValidationError) Print() {
 	for _, err := range cve.ServiceUnitFieldErrors {
-		Logger.Errorf(err.Error())
+		logger.Logger.Errorf(err.Error())
 	}
 	for _, err := range cve.AdapterFieldErrors {
-		Logger.Errorf(err.Error())
+		logger.Logger.Errorf(err.Error())
 	}
 	for _, err := range cve.MappingErrors {
-		Logger.Errorf(err.Error())
+		logger.Logger.Errorf(err.Error())
 	}
 	for _, err := range cve.StepFieldErrors {
-		Logger.Errorf(err.Error())
+		logger.Logger.Errorf(err.Error())
 	}
 }
 
@@ -77,7 +78,7 @@ func (e *InvalidStepFieldValueError) Error() string {
 	return e.message
 }
 
-func NewInvalidServiceUnitFieldValueError(key string, serviceUnitConfig thebenchv1.ServiceUnitConfig, message string) InvalidServiceUnitFieldValueError {
+func NewInvalidServiceUnitFieldValueError(key string, serviceUnitConfig model.ServiceUnitConfig, message string) InvalidServiceUnitFieldValueError {
 	return InvalidServiceUnitFieldValueError{message: fmt.Sprintf("Invalid value in service unit definition: %v for key: %s. %s", serviceUnitConfig.Name, key, message)}
 }
 
@@ -93,7 +94,7 @@ func NewInvalidStepFieldValueError(id string) InvalidStepFieldValueError {
 	return InvalidStepFieldValueError{message: fmt.Sprintf("No egress adapter config found on one of steps on ingress adapter with id: %s.", id)}
 }
 
-func mapInvalidServiceUnitFieldValueErrors(err error, serviceUnitConfig thebenchv1.ServiceUnitConfig) []InvalidServiceUnitFieldValueError {
+func mapInvalidServiceUnitFieldValueErrors(err error, serviceUnitConfig model.ServiceUnitConfig) []InvalidServiceUnitFieldValueError {
 	var errs []InvalidServiceUnitFieldValueError
 	if validationErrors, ok := err.(validator.ValidationErrors); ok {
 		for _, fieldError := range validationErrors {

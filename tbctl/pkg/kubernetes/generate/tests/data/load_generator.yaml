@@ -1,0 +1,30 @@
+name: gateway
+gateway: # load generator specific
+  virtualUsers: 10
+  duration: 60
+ingressAdapters:
+- stateless:
+    action: read
+    variant: rest
+    route: get
+    weight: 1 # load generator specific
+  steps:
+  - egressAdapter:
+      stateless:
+        variant: rest
+        service: chain1
+        action: read
+        route: get
+- stateless:
+    action: write
+    variant: rest
+    route: post
+    weight: 2 # load generator specific
+  steps:
+  - egressAdapter:
+      stateless:
+        variant: rest
+        service: chain1
+        action: write
+        route: post
+

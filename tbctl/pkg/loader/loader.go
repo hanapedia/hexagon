@@ -5,10 +5,10 @@ import (
 	"io/fs"
 	"path/filepath"
 
-	"github.com/hanapedia/the-bench/config/loader"
-	"github.com/hanapedia/the-bench/config/logger"
-	"github.com/hanapedia/the-bench/config/model"
-	"github.com/hanapedia/the-bench/config/yaml"
+	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/loader"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/yaml"
 )
 
 func newConfigLoader(path string) loader.ConfigLoader {
@@ -25,6 +25,7 @@ func GetConfig(path string) model.ServiceUnitConfig {
 	return config
 }
 
+// GetYAMLFiles retrieves all the yaml files under given directory recursively
 func GetYAMLFiles(dir string) ([]string, error) {
 	yamlFiles := []string{}
 

@@ -1,11 +1,11 @@
 package config
 
 import (
-	"github.com/hanapedia/the-bench/config/loader"
-	"github.com/hanapedia/the-bench/config/model"
-	"github.com/hanapedia/the-bench/config/validation"
-	"github.com/hanapedia/the-bench/config/logger"
-	"github.com/hanapedia/the-bench/config/yaml"
+	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/loader"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/validation"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/yaml"
 )
 
 func newConfigLoader(format string) loader.ConfigLoader {
@@ -29,9 +29,8 @@ func GetConfig(format string) model.ServiceUnitConfig {
 
 	errs := validation.ValidateServiceUnitConfigFields(&config)
 	if errs.Exist() {
-		logger.PrintErrors(errs)
+		errs.Print()
 		logger.Logger.Fatalln("Validation failed. Aborted.")
 	}
 	return config
 }
-

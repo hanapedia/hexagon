@@ -3,14 +3,15 @@ package generate
 import (
 	"fmt"
 
-	"github.com/hanapedia/the-bench/config/model"
+	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 )
 
 type ManifestErrors struct {
-	stateless []StatelessManifestError
-	broker    []BrokerManifestError
-	stateful  []StatefulManifestError
-	common    []CommonManifestError
+	stateless     []StatelessManifestError
+	broker        []BrokerManifestError
+	stateful      []StatefulManifestError
+	common        []CommonManifestError
+	loadGenerator []LoadGeneratorManifestError
 }
 
 func (me ManifestErrors) Print() {
@@ -26,6 +27,9 @@ func (me ManifestErrors) Print() {
 	for _, err := range me.common {
 		fmt.Println(err.message)
 	}
+	for _, err := range me.loadGenerator {
+		fmt.Println(err.message)
+	}
 }
 
 func (me *ManifestErrors) Extend(other ManifestErrors) {
@@ -33,10 +37,34 @@ func (me *ManifestErrors) Extend(other ManifestErrors) {
 	me.broker = append(me.broker, other.broker...)
 	me.stateful = append(me.stateful, other.stateful...)
 	me.common = append(me.common, other.common...)
+	me.loadGenerator = append(me.loadGenerator, other.loadGenerator...)
 }
 
 func (me ManifestErrors) Exist() bool {
-	return len(me.stateless) > 0 || len(me.broker) > 0 || len(me.stateful) > 0 || len(me.common) > 0
+	return (len(me.stateless) > 0 ||
+		len(me.broker) > 0 ||
+		len(me.stateful) > 0 ||
+		len(me.common) > 0 ||
+		len(me.loadGenerator) > 0)
+}
+
+// stateless error
+type LoadGeneratorManifestError struct {
+	message string
+}
+
+func (e *LoadGeneratorManifestError) Error() string {
+	return e.message
+}
+
+func NewLoadGeneratorManifestError(serviceUnitConfig model.ServiceUnitConfig, message string) LoadGeneratorManifestError {
+	return LoadGeneratorManifestError{
+		message: fmt.Sprintf(
+			"Error generating config map manifest for %s: %s",
+			serviceUnitConfig.Name,
+			message,
+		),
+	}
 }
 
 // stateless error
