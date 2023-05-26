@@ -18,13 +18,13 @@ func CreateLoadGeneratorDeployment(name string) *appsv1.Deployment {
 		Image:                  factory.LOAD_GENERATOR_IMAGE,
 		Replicas:               factory.REPLICAS,
 		ResourceLimitsCPU:      factory.LIMIT_CPU,
-		ResourceLimitsMemory:   factory.LIMIT_MEM,
+		ResourceLimitsMemory:   factory.LIMIT_MEM_LG,
 		ResourceRequestsCPU:    factory.REQUEST_CPU,
 		ResourceRequestsMemory: factory.REQUEST_MEM,
 		Ports:                  map[string]int32{"http": factory.HTTP_PORT},
 		VolumeMounts:           map[string]string{"config": "/data/"},
 		ConfigVolume: &factory.ConfigMapVolumeArgs{
-			Name: fmt.Sprintf("%s-lg-config", name),
+			Name: fmt.Sprintf("%s-config", name),
 			Items: map[string]string{
 				"config": "config.json",
 				"routes": "routes.json",
@@ -49,7 +49,7 @@ func CreateLoadGeneratorService(name string) *corev1.Service {
 // CreateServiceUnitConfigMap creates config config map for service unit
 func CreateLoadGeneratorYamlConfigMap(name, rawConfig, rawRoutes string) *corev1.ConfigMap {
 	configMapArgs := factory.ConfigMapArgs{
-		Name:      fmt.Sprintf("%s-lg-config", name),
+		Name:      fmt.Sprintf("%s-config", name),
 		Namespace: factory.NAMESPACE,
 		Data: map[string]string{
 			"config": rawConfig,
@@ -65,7 +65,7 @@ func CreateLoadGeneratorConfig(vus, duration int32, targetName string) Config {
 	return Config{
 		Vus:       vus,
 		Duration:  fmt.Sprintf("%vm", duration),
-		UrlPrefix: fmt.Sprintf("http://%s:%v", targetName, factory.HTTP_PORT),
+		UrlPrefix: fmt.Sprintf("http://%s:%v/", targetName, factory.HTTP_PORT),
 	}
 }
 
