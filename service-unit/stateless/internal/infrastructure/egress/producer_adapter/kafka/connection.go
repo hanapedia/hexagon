@@ -5,20 +5,20 @@ import (
 	"github.com/segmentio/kafka-go"
 )
 
-type KafkaProducerConnection struct {
-	Connection *kafka.Writer
+type KafkaProducerClient struct {
+	Client *kafka.Writer
 }
 
-// Only cosumer connection is included for Kafka
-func NewKafkaConnection(addr string, topic string) core.EgressConnection {
-	connection := kafka.Writer{
+// Only cosumer client is included for Kafka
+func NewKafkaClient(addr string, topic string) core.EgressClient {
+	client := kafka.Writer{
 		Addr:     kafka.TCP(addr),
 		Topic:    topic,
 		Balancer: &kafka.RoundRobin{},
 	}
-	return KafkaProducerConnection{Connection: &connection}
+	return KafkaProducerClient{Client: &client}
 }
 
-func (kafkaProducerConnection KafkaProducerConnection) Close() {
-	kafkaProducerConnection.Connection.Close()
+func (kafkaProducerClient KafkaProducerClient) Close() {
+	kafkaProducerClient.Client.Close()
 }

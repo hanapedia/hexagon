@@ -7,17 +7,18 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
 )
 
-func NewEgressAdapter(egressAdapterConfig model.EgressAdapterConfig, connections *map[string]core.EgressConnection) (core.EgressAdapter, error) {
+func NewEgressAdapter(egressAdapterConfig model.EgressAdapterConfig, client *map[string]core.EgressClient) (core.EgressAdapter, error) {
 	if egressAdapterConfig.StatelessEgressAdapterConfig != nil {
-		return statelesEgressAdapterFactory(*egressAdapterConfig.StatelessEgressAdapterConfig)
+		client := getOrCreateStatelessEgressClient(*egressAdapterConfig.StatelessEgressAdapterConfig, client)
+		return statelesEgressAdapterFactory(*egressAdapterConfig.StatelessEgressAdapterConfig, client)
 	}
 	if egressAdapterConfig.StatefulEgressAdapterConfig != nil {
-		connection := upsertStatefulEgressConnection(*egressAdapterConfig.StatefulEgressAdapterConfig, connections)
-		return statefulEgressAdapterFactory(*egressAdapterConfig.StatefulEgressAdapterConfig, connection)
+		client := getOrCreateStatefulEgressClient(*egressAdapterConfig.StatefulEgressAdapterConfig, client)
+		return statefulEgressAdapterFactory(*egressAdapterConfig.StatefulEgressAdapterConfig, client)
 	}
 	if egressAdapterConfig.BrokerEgressAdapterConfig != nil {
-		connection := upsertBrokerEgressConnection(*egressAdapterConfig.BrokerEgressAdapterConfig, connections)
-		return brokerEgressAdapterFactory(*egressAdapterConfig.BrokerEgressAdapterConfig, connection)
+		client := getOrCreateBrokerEgressClient(*egressAdapterConfig.BrokerEgressAdapterConfig, client)
+		return brokerEgressAdapterFactory(*egressAdapterConfig.BrokerEgressAdapterConfig, client)
 	}
 	err := errors.New("No matching protocol found when making egress adapter.")
 

@@ -11,13 +11,13 @@ import (
 )
 
 type MongoReadAdapter struct {
-	Connection *mongo.Client
+	Client *mongo.Client
 	Collection constants.RepositoryEntryVariant
 }
 
 // Read the document in the intial set of data
 func (mra MongoReadAdapter) Call() (string, error) {
-	db := mra.Connection.Database("mongo")
+	db := mra.Client.Database("mongo")
 	collection := db.Collection(string(mra.Collection))
 	// Find a document
 	var foundRecord contract.MongoRecord

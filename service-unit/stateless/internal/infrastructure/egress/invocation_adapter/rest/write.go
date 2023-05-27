@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"time"
 
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/contract"
@@ -16,13 +15,10 @@ import (
 
 type RestWriteAdapter struct {
 	URL string
+	Client *http.Client
 }
 
 func (rwa RestWriteAdapter) Call() (string, error) {
-	client := http.Client{
-		Timeout: time.Millisecond * 500,
-	}
-
 	payload, err := utils.GenerateRandomString(constants.PayloadSize)
 	if err != nil {
 		return "", err
@@ -37,7 +33,7 @@ func (rwa RestWriteAdapter) Call() (string, error) {
 		return "", err
 	}
 
-	resp, err := client.Post(rwa.URL, "application/json", bytes.NewReader(jsonRestRequestBody))
+	resp, err := rwa.Client.Post(rwa.URL, "application/json", bytes.NewReader(jsonRestRequestBody))
 	if err != nil {
 		return "", err
 	}

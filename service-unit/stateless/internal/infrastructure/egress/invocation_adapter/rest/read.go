@@ -5,21 +5,17 @@ import (
 	"errors"
 	"io/ioutil"
 	"net/http"
-	"time"
 
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/contract"
 )
 
 type RestReadAdapter struct {
 	URL string
+	Client *http.Client
 }
 
 func (rga RestReadAdapter) Call() (string, error) {
-	client := http.Client{
-		Timeout: time.Millisecond * 500,
-	}
-
-	resp, err := client.Get(rga.URL)
+	resp, err := rga.Client.Get(rga.URL)
 	if err != nil {
 		return "", err
 	}

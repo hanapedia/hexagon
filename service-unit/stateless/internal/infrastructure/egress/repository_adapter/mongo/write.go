@@ -11,13 +11,13 @@ import (
 )
 
 type MongoWriteAdapter struct {
-	Connection *mongo.Client
+	Client *mongo.Client
 	Collection constants.RepositoryEntryVariant
 }
 
 // Update or insert to random id in range from number of initial data to twice the size of the initial data
 func (mra MongoWriteAdapter) Call() (string, error) {
-	db := mra.Connection.Database("mongo")
+	db := mra.Client.Database("mongo")
 	collection := db.Collection(string(mra.Collection))
 
 	payload, err := utils.GeneratePayloadWithRepositorySize(mra.Collection)

@@ -13,14 +13,14 @@ type EgressAdapter interface {
 	Call() (string, error)
 }
 
-// Used to reuse connections to other serivces
-// Wrapper interface, so the struct to implement this should have pointer to actual connection
-// types to implement this interface should have some sort of pointer to connections 
-type EgressConnection interface {
+// Used to reuse clients to other serivces
+// Wrapper interface, so the struct to implement this should have pointer to actual client
+// types to implement this interface should have some sort of pointer to clients
+type EgressClient interface {
 	Close()
 }
 
 type EgressAdapterError struct {
 	EgressAdapter *EgressAdapter
-	Error             error
+	Error         error
 }
