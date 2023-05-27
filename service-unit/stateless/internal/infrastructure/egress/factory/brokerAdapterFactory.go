@@ -2,8 +2,6 @@ package factory
 
 import (
 	"errors"
-	"fmt"
-	"reflect"
 
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
@@ -25,16 +23,16 @@ func brokerEgressAdapterFactory(adapterConfig model.BrokerEgressAdapterConfig, c
 }
 
 func getOrCreateBrokerEgressClient(adapterConfig model.BrokerEgressAdapterConfig, clients *map[string]core.EgressClient) core.EgressClient {
-	key := fmt.Sprintf("%s.%s", adapterConfig.Variant, adapterConfig.Topic)
+	key := adapterConfig.GetId()
 	client, ok := (*clients)[key]
 	if ok {
-		logger.Logger.Infof("client already exists reusing %v", reflect.TypeOf(client))
+		logger.Logger.Infof("client already exists reusing %v", key)
 		return client
 	}
 	switch adapterConfig.Variant {
 	case constants.KAFKA:
 		kafkaClient := kafka.NewKafkaClient(config.GetKafkaBrokerAddr(), adapterConfig.Topic)
-		logger.Logger.Infof("created new client %v", reflect.TypeOf(kafkaClient))
+		logger.Logger.Infof("created new client %s", key)
 
 		(*clients)[key] = kafkaClient
 		return kafkaClient

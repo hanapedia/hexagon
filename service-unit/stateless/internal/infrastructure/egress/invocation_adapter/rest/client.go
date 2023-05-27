@@ -1,9 +1,22 @@
 package rest
 
-import "net/http"
+import (
+	"net/http"
+	"time"
+)
 
-func NewHttpClient() http.Client {
-	return http.Client{
+type RestClient struct {
+	Client *http.Client
+}
 
+func NewRestClient() RestClient {
+	return RestClient{
+		Client: &http.Client{
+			Timeout: time.Duration(time.Millisecond * 50),
+		},
 	}
+}
+
+func (restClient RestClient) Close() {
+	restClient.Client.CloseIdleConnections()
 }

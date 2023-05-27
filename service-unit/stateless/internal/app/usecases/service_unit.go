@@ -29,7 +29,13 @@ func NewServiceUnit(serviceUnitConfig model.ServiceUnitConfig) ServiceUnit {
 
 	egressClients := make(map[string]core.EgressClient)
 
-	return ServiceUnit{Config: &serviceUnitConfig, ServerAdapters: &serverAdapters, ConsumerAdapters: &consumerAdapters, EgressClients: &egressClients}
+	return ServiceUnit{
+		Name:             serviceUnitConfig.Name,
+		Config:           &serviceUnitConfig,
+		ServerAdapters:   &serverAdapters,
+		ConsumerAdapters: &consumerAdapters,
+		EgressClients:    &egressClients,
+	}
 }
 
 // Start ingress adapters
@@ -126,7 +132,7 @@ func (su *ServiceUnit) mapHandlersToIngressAdapters() {
 		if err != nil {
 			logger.Logger.Fatalf("Error registering handler to server adapter: %v", err)
 		}
-		logger.Logger.Infof("Successfully mapped '%s' handler.", handler.GetId(su.Name))
+		logger.Logger.Infof("Successfully mapped '%s' handler", handler.GetId(su.Name))
 	}
 }
 

@@ -2,7 +2,6 @@ package factory
 
 import (
 	"errors"
-	"reflect"
 
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
@@ -25,17 +24,17 @@ func statefulEgressAdapterFactory(adapterConfig model.StatefulEgressAdapterConfi
 
 // getOrCreateStatefulEgressClient creates new client to stateful service if it does not exist
 func getOrCreateStatefulEgressClient(adapterConfig model.StatefulEgressAdapterConfig, clients *map[string]core.EgressClient) core.EgressClient {
-	key := string(adapterConfig.Variant)
+	key := adapterConfig.GetId()
 	client, ok := (*clients)[key]
 	if ok {
-		logger.Logger.Infof("Client already exists reusing %v", reflect.TypeOf(client))
+		logger.Logger.Infof("Client already exists reusing %s", key)
 		return client
 	}
 	switch adapterConfig.Variant {
 	case constants.MONGO:
 		connectionUri := config.GetMongoConnectionUri(adapterConfig)
 		mongoClient := mongo.NewMongoClient(connectionUri)
-		logger.Logger.Infof("created new client %v", reflect.TypeOf(mongoClient))
+		logger.Logger.Infof("created new client %s", key)
 
 		(*clients)[key] = mongoClient
 		return mongoClient
