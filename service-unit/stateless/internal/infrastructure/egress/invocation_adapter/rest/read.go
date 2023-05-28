@@ -1,8 +1,9 @@
 package rest
 
 import (
+	"context"
 	"encoding/json"
-	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -14,27 +15,33 @@ type RestReadAdapter struct {
 	Client *http.Client
 }
 
-func (rga RestReadAdapter) Call() (string, error) {
-	resp, err := rga.Client.Get(rga.URL)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
+func (rga RestReadAdapter) Call(ctx context.Context) (string, error) {
+    req, err := http.NewRequestWithContext(ctx, "GET", rga.URL, nil)
+    if err != nil {
+        return "", err
+    }
 
-	if resp.StatusCode != http.StatusOK {
-		return "", errors.New("unexpected status code calling:" + rga.URL)
-	}
+    resp, err := rga.Client.Do(req)
+    if err != nil {
+        return "", err
+    }
+    defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
+    if resp.StatusCode != http.StatusOK {
+        return "", fmt.Errorf("unexpected status code %v calling: %s", resp.StatusCode, rga.URL)
+    }
 
-	var restResponse contract.RestResponseBody
-	err = json.Unmarshal(body, &restResponse)
-	if err != nil {
-		return "", err
-	}
+    body, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        return "", err
+    }
 
-	return restResponse.Message, nil
+    var restResponse contract.RestResponseBody
+    err = json.Unmarshal(body, &restResponse)
+    if err != nil {
+        return "", err
+    }
+
+    return restResponse.Message, nil
 }
+
