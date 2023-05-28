@@ -16,11 +16,15 @@ func mongoEgressAdapterFactory(adapterConfig model.StatefulEgressAdapterConfig, 
 		switch adapterConfig.Action {
 		case constants.READ:
 			mongoEgressAdapter = mongo.MongoReadAdapter{
+				Name: adapterConfig.Name,
+				Database: string(adapterConfig.Variant),
 				Client: mongoClient.Client,
 				Collection: constants.RepositoryEntryVariant(adapterConfig.Size),
 			}
 		case constants.WRITE:
 			mongoEgressAdapter = mongo.MongoWriteAdapter{
+				Name: adapterConfig.Name,
+				Database: string(adapterConfig.Variant),
 				Client: mongoClient.Client,
 				Collection: constants.RepositoryEntryVariant(adapterConfig.Size),
 			}
