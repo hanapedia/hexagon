@@ -23,6 +23,21 @@ func GetKafkaBrokerAddr() string {
 }
 
 func GetMongoConnectionUri(adapterConfig model.StatefulEgressAdapterConfig) string {
+	user := GetEnvs().MONGO_USER
+	password := GetEnvs().MONGO_PASSWORD
 	port := GetEnvs().MONGO_PORT
-	return fmt.Sprintf("mongodb://root:password@%s:%s/mongo?authSource=admin", adapterConfig.Name, port)
+	return fmt.Sprintf("mongodb://%s:%s@%s:%s/mongo?authSource=admin", user, password, adapterConfig.Name, port)
+}
+
+func GetOtelCollectorUrl() string {
+	depEnv := GetEnvs().DEP_ENV
+	if depEnv == "docker" {
+		return fmt.Sprintf("otelcollector:%s", GetEnvs().OTEL_COLLECTOR_PORT)
+	}
+	return fmt.Sprintf(
+		"http://%s.%s.svc.cluster.local:%s",
+		GetEnvs().OTEL_COLLECTOR_NAME,
+		GetEnvs().OTEL_COLLECTOR_NAMESPACE,
+		GetEnvs().OTEL_COLLECTOR_PORT,
+	)
 }
