@@ -2,6 +2,7 @@ package config
 
 import (
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/defaults"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/loader"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/validation"
@@ -20,12 +21,13 @@ func newConfigLoader(format string) loader.ConfigLoader {
 }
 
 func GetConfig(format string) model.ServiceUnitConfig {
-
 	configLoader := newConfigLoader(format)
 	config, err := configLoader.Load()
 	if err != nil {
 		logger.Logger.Fatalf("Error loading config: %v", err)
 	}
+
+	defaults.SetDefauls(&config)
 
 	errs := validation.ValidateServiceUnitConfigFields(&config)
 	if errs.Exist() {
