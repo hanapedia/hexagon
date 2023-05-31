@@ -10,11 +10,11 @@ import (
 )
 
 // CreateServiceUnitDeployment creates deployment for service unit
-func CreateStatelessUnitDeployment(name string) *appsv1.Deployment {
+func CreateStatelessUnitDeployment(name, version string) *appsv1.Deployment {
 	deploymentArgs := factory.DeploymentArgs{
 		Name:                   name,
 		Namespace:              factory.NAMESPACE,
-		Image:                  factory.SERVICE_UNIT_IMAGE,
+		Image:                  fmt.Sprintf("%s:%s", factory.SERVICE_UNIT_IMAGE_NAME, version),
 		Replicas:               factory.REPLICAS,
 		ResourceLimitsCPU:      factory.LIMIT_CPU,
 		ResourceLimitsMemory:   factory.LIMIT_MEM,

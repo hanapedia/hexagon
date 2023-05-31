@@ -11,11 +11,11 @@ import (
 )
 
 // CreateServiceUnitDeployment creates deployment for service unit
-func CreateLoadGeneratorDeployment(name string) *appsv1.Deployment {
+func CreateLoadGeneratorDeployment(name, version string) *appsv1.Deployment {
 	deploymentArgs := factory.DeploymentArgs{
 		Name:                   name,
 		Namespace:              factory.NAMESPACE,
-		Image:                  factory.LOAD_GENERATOR_IMAGE,
+		Image:                  fmt.Sprintf("%s:%s", factory.LOAD_GENERATOR_IMAGE_NAME, version),
 		Replicas:               factory.REPLICAS,
 		ResourceLimitsCPU:      factory.LIMIT_CPU,
 		ResourceLimitsMemory:   factory.LIMIT_MEM_LG,
