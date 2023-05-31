@@ -16,7 +16,6 @@ func newConfigLoader(path string) loader.ConfigLoader {
 }
 
 func GetConfig(path string) model.ServiceUnitConfig {
-
 	configLoader := newConfigLoader(path)
 	config, err := configLoader.Load()
 	if err != nil {
