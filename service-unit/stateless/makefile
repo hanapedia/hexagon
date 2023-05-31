@@ -1,7 +1,7 @@
 # Variables
 DOCKER_HUB_USERNAME := hiroki11hanada
 REPOSITORY_NAME := service-unit
-TAG ?= v1.2
+TAG ?= v0.0.2
 ENGINE ?= podman
 IMAGE_NAME := $(DOCKER_HUB_USERNAME)/$(REPOSITORY_NAME):$(TAG)
 
