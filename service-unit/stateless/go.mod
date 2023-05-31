@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/gofiber/contrib/otelfiber v1.0.7
 	github.com/gofiber/fiber/v2 v2.46.0
-	github.com/hanapedia/the-bench/the-bench-operator v0.0.2
+	github.com/hanapedia/the-bench/the-bench-operator v0.0.3
 	github.com/segmentio/kafka-go v0.4.39
 	go.mongodb.org/mongo-driver v1.11.4
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.42.0
