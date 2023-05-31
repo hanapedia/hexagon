@@ -45,7 +45,7 @@ func loadEnvVariables() *EnvVars {
 	mongoPassword := "password"
 	mongoPort := "27017"
 	postgrePort := "5432"
-	otelCollectorName := "otelcollector"
+	otelCollectorName := "otelcollector-collector"
 	otelCollectorNamespace := "observability"
 	otelCollectorPort := "4317"
 

@@ -35,7 +35,7 @@ func GetOtelCollectorUrl() string {
 		return fmt.Sprintf("otelcollector:%s", GetEnvs().OTEL_COLLECTOR_PORT)
 	}
 	return fmt.Sprintf(
-		"http://%s.%s.svc.cluster.local:%s",
+		"%s.%s.svc.cluster.local:%s",
 		GetEnvs().OTEL_COLLECTOR_NAME,
 		GetEnvs().OTEL_COLLECTOR_NAMESPACE,
 		GetEnvs().OTEL_COLLECTOR_PORT,

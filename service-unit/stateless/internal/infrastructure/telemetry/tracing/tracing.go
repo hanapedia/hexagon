@@ -2,7 +2,9 @@ package tracing
 
 import (
 	"context"
+	"time"
 
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
@@ -16,7 +18,8 @@ import (
 )
 
 func InitTracer(name, collectorUrl string) *sdktrace.TracerProvider {
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	conn, err := grpc.DialContext(ctx, collectorUrl,
 		// Note the use of insecure transport here. TLS is recommended in production.
@@ -24,7 +27,9 @@ func InitTracer(name, collectorUrl string) *sdktrace.TracerProvider {
 		grpc.WithBlock(),
 	)
 	if err != nil {
-		logger.Logger.Fatalf("failed to create gRPC connection to collector: %w", err)
+		logger.Logger.Errorf("failed to create gRPC connection to collector: %w, setting TRACING=false", err)
+		config.GetEnvs().TRACING = false
+		return nil
 	}
 
 	traceExporter, err := otlptracegrpc.New(ctx, otlptracegrpc.WithGRPCConn(conn))

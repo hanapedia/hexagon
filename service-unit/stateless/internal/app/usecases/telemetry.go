@@ -10,5 +10,6 @@ func InitTelemetry(name string) {
 		return
 	}
 	collectorUrl := config.GetOtelCollectorUrl()
-	tracing.InitTracer(name, collectorUrl)
+	_ = tracing.InitTracer(name, collectorUrl)
+	return
 }
