@@ -58,5 +58,5 @@ func InitTracer(name, collectorUrl string) *sdktrace.TracerProvider {
 
 // get the default tracer for creating original spans
 func GetTracer() trace.Tracer {
-	return otel.Tracer("the-bench")
+	return otel.Tracer("github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/telemetry/tracing")
 }
