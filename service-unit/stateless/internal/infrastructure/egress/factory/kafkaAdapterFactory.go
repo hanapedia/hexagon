@@ -8,13 +8,13 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/egress/producer_adapter/kafka"
 )
 
-func kafkaEgressAdapterFactory(adapterConfig model.BrokerEgressAdapterConfig, connection core.EgressConnection) (core.EgressAdapter, error) {
+func kafkaEgressAdapterFactory(adapterConfig model.BrokerEgressAdapterConfig, client core.EgressClient) (core.EgressAdapter, error) {
 	var kafkaEgressAdapter core.EgressAdapter
 	var err error
-	if kafkaProducerConnection, ok := (connection).(kafka.KafkaProducerConnection); ok {
-		kafkaEgressAdapter = kafka.KafkaProducerAdapter{Writer: kafkaProducerConnection.Connection}
+	if kafkaProducerClient, ok := (client).(kafka.KafkaProducerClient); ok {
+		kafkaEgressAdapter = kafka.KafkaProducerAdapter{Writer: kafkaProducerClient.Client}
 	} else {
-		err = errors.New("Unmatched connection instance")
+		err = errors.New("Unmatched client instance")
 	}
 	return kafkaEgressAdapter, err
 }

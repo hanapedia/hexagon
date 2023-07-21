@@ -1,10 +1,10 @@
 package factory
 
 const (
-	NAMESPACE            = "default"
-	SERVICE_UNIT_IMAGE   = "hiroki11hanada/service-unit:v1.5"
-	MONGO_IMAGE          = "hiroki11hanada/stateful-unit-mongo:v1.0"
-	LOAD_GENERATOR_IMAGE = "hiroki11hanada/tb-load-generator:v1.5"
+	NAMESPACE                 = "default"
+	SERVICE_UNIT_IMAGE_NAME   = "hiroki11hanada/service-unit"
+	MONGO_IMAGE_NAME          = "hiroki11hanada/stateful-unit-mongo"
+	LOAD_GENERATOR_IMAGE_NAME = "hiroki11hanada/tb-load-generator"
 	// POSTGRE_IMAGE      = "hiroki11hanada/stateful-unit-postgre:v1.0"
 	REPLICAS     = 1
 	REQUEST_CPU  = "125m"

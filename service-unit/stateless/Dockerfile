@@ -9,11 +9,11 @@ RUN go mod download
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o main ./cmd/main.go
+RUN CGO_ENABLED=0 go build -o main ./cmd/main.go
 
 # Runner
 FROM alpine:latest
- 
+
 WORKDIR /app
 
 RUN apk --no-cache add ca-certificates

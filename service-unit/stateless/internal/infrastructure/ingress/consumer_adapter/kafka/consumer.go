@@ -2,12 +2,11 @@ package kafka
 
 import (
 	"context"
-	"reflect"
 
-	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/common"
+	tracing "github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/telemetry/tracing/kafka"
 	"github.com/segmentio/kafka-go"
 )
 
@@ -42,14 +41,18 @@ func (kca KafkaConsumerAdapter) Serve() error {
 		if err != nil {
 			break
 		}
-		logger.Logger.Tracef("message at offset %d: %s = %s", message.Offset, string(message.Key), string(message.Value))
-		egressAdapterErrors := common.TaskSetHandler(kca.kafkaConsumer.handler.TaskSets)
-		for _, egressAdapterError := range egressAdapterErrors {
-			logger.Logger.Errorf("Invocating %s failed: %s",
-				reflect.TypeOf(egressAdapterError.EgressAdapter).Elem().Name(),
-				egressAdapterError.Error,
-			)
+
+		ctx := context.Background()
+
+		// propagate trace header if tracing is enabled
+		if config.GetEnvs().TRACING {
+			span := tracing.CreateKafkaConsumerSpan(message)
+			defer span.End()
 		}
+
+		// call tasks
+		egressAdapterErrors := common.TaskSetHandler(ctx, kca.kafkaConsumer.handler.TaskSets)
+		core.LogEgressAdapterErrors(&egressAdapterErrors)
 	}
 	return err
 }

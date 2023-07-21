@@ -2,27 +2,23 @@ package rest
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"time"
 
-	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/contract"
 	"github.com/hanapedia/the-bench/service-unit/stateless/pkg/utils"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 )
 
 type RestWriteAdapter struct {
 	URL string
+	Client *http.Client
 }
 
-func (rwa RestWriteAdapter) Call() (string, error) {
-	client := http.Client{
-		Timeout: time.Millisecond * 500,
-	}
-
+func (rwa RestWriteAdapter) Call(ctx context.Context) (string, error) {
 	payload, err := utils.GenerateRandomString(constants.PayloadSize)
 	if err != nil {
 		return "", err
@@ -37,14 +33,20 @@ func (rwa RestWriteAdapter) Call() (string, error) {
 		return "", err
 	}
 
-	resp, err := client.Post(rwa.URL, "application/json", bytes.NewReader(jsonRestRequestBody))
+	req, err := http.NewRequestWithContext(ctx, "POST", rwa.URL, bytes.NewReader(jsonRestRequestBody))
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := rwa.Client.Do(req)
 	if err != nil {
 		return "", err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", errors.New("unexpected status code" + rwa.URL)
+		return "", fmt.Errorf("unexpected status code %v: %s", resp.StatusCode, rwa.URL)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
@@ -60,3 +62,4 @@ func (rwa RestWriteAdapter) Call() (string, error) {
 
 	return restResponse.Message, nil
 }
+

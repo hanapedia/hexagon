@@ -26,7 +26,7 @@ func (mg ManifestGenerator) GenerateLoadGeneratorManifests() ManifestErrors {
 
 	loadGeneratorName := fmt.Sprintf("%s-lg", mg.ServiceUnitConfig.Name)
 
-	deployment := loadgenerator.CreateLoadGeneratorDeployment(loadGeneratorName)
+	deployment := loadgenerator.CreateLoadGeneratorDeployment(loadGeneratorName, mg.ServiceUnitConfig.Version)
 	deploymentYAML := yaml.GenerateManifest(deployment)
 	_, err = manifestFile.WriteString(formatManifest(deploymentYAML))
 	if err != nil {

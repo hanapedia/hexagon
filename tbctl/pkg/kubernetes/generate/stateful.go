@@ -20,7 +20,7 @@ func (mg ManifestGenerator) GenerateStatefulManifests() ManifestErrors {
 	}
 	defer manifestFile.Close()
 
-	deployment := stateful.CreateMongoDeployment(mg.ServiceUnitConfig.Name)
+	deployment := stateful.CreateMongoDeployment(mg.ServiceUnitConfig.Name, mg.ServiceUnitConfig.Version)
 	deploymentYAML := yaml.GenerateManifest(deployment)
 	_, err = manifestFile.WriteString(formatManifest(deploymentYAML))
 	if err != nil {

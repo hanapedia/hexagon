@@ -21,7 +21,7 @@ func (mg ManifestGenerator) GenerateStatelessManifests() ManifestErrors {
 	}
 	defer manifestFile.Close()
 
-	deployment := stateless.CreateStatelessUnitDeployment(mg.ServiceUnitConfig.Name)
+	deployment := stateless.CreateStatelessUnitDeployment(mg.ServiceUnitConfig.Name, mg.ServiceUnitConfig.Version)
 	deploymentYAML := yaml.GenerateManifest(deployment)
 	_, err = manifestFile.WriteString(formatManifest(deploymentYAML))
 	if err != nil {

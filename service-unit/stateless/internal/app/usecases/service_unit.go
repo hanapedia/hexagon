@@ -4,32 +4,38 @@ import (
 	"errors"
 	"fmt"
 
-	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
-	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
-	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
 	egressAdapterFactory "github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/egress/factory"
 	ingressAdapterFactory "github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/factory"
+	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
 // ServerAdapters hold the adapters for server processes from REST, gRPC
 // ConsumerAdapters hold the adapters for consumer processes from Kafka, RabbitMQ, Pular, etc
-// EgressConnections hold the persistent connections for egress adapters
+// EgressClients hold the persistent clients for egress adapters
 type ServiceUnit struct {
-	Name              string
-	Config            *model.ServiceUnitConfig
-	ServerAdapters    *map[constants.StatelessAdapterVariant]*core.IngressAdapter
-	ConsumerAdapters  *map[string]*core.IngressAdapter
-	EgressConnections *map[string]core.EgressConnection
+	Name             string
+	Config           *model.ServiceUnitConfig
+	ServerAdapters   *map[constants.StatelessAdapterVariant]*core.IngressAdapter
+	ConsumerAdapters *map[string]*core.IngressAdapter
+	EgressClients    *map[string]core.EgressClient
 }
 
 func NewServiceUnit(serviceUnitConfig model.ServiceUnitConfig) ServiceUnit {
 	serverAdapters := make(map[constants.StatelessAdapterVariant]*core.IngressAdapter)
 	consumerAdapters := make(map[string]*core.IngressAdapter)
 
-	egressConnections := make(map[string]core.EgressConnection)
+	egressClients := make(map[string]core.EgressClient)
 
-	return ServiceUnit{Config: &serviceUnitConfig, ServerAdapters: &serverAdapters, ConsumerAdapters: &consumerAdapters, EgressConnections: &egressConnections}
+	return ServiceUnit{
+		Name:             serviceUnitConfig.Name,
+		Config:           &serviceUnitConfig,
+		ServerAdapters:   &serverAdapters,
+		ConsumerAdapters: &consumerAdapters,
+		EgressClients:    &egressClients,
+	}
 }
 
 // Start ingress adapters
@@ -126,7 +132,7 @@ func (su *ServiceUnit) mapHandlersToIngressAdapters() {
 		if err != nil {
 			logger.Logger.Fatalf("Error registering handler to server adapter: %v", err)
 		}
-		logger.Logger.Infof("Successfully mapped '%s' handler.", handler.GetId(su.Name))
+		logger.Logger.Infof("Successfully mapped '%s' handler", handler.GetId(su.Name))
 	}
 }
 
@@ -150,7 +156,7 @@ func (su ServiceUnit) createIngressAdapterHandler(ingressAdapterConfig model.Ing
 func (su ServiceUnit) mapTaskSet(steps []model.Step) *[]core.TaskSet {
 	tasksets := make([]core.TaskSet, len(steps))
 	for i, step := range steps {
-		egressAdapter, err := egressAdapterFactory.NewEgressAdapter(*step.EgressAdapterConfig, su.EgressConnections)
+		egressAdapter, err := egressAdapterFactory.NewEgressAdapter(*step.EgressAdapterConfig, su.EgressClients)
 		if err != nil {
 			logger.Logger.Infof("Skipped interface: %s", err)
 			continue
