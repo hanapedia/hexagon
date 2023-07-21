@@ -2,21 +2,19 @@ package factory
 
 import (
 	"errors"
-	"fmt"
-	"reflect"
 
-	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
-	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
-	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/egress/producer_adapter/kafka"
+	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
-func brokerEgressAdapterFactory(adapterConfig model.BrokerEgressAdapterConfig, connection core.EgressConnection) (core.EgressAdapter, error) {
+func brokerEgressAdapterFactory(adapterConfig model.BrokerEgressAdapterConfig, client core.EgressClient) (core.EgressAdapter, error) {
 	switch adapterConfig.Variant {
 	case constants.KAFKA:
-		return kafkaEgressAdapterFactory(adapterConfig, connection)
+		return kafkaEgressAdapterFactory(adapterConfig, client)
 	default:
 		err := errors.New("No matching protocol found when creating broker egress adapter.")
 		return nil, err
@@ -24,22 +22,22 @@ func brokerEgressAdapterFactory(adapterConfig model.BrokerEgressAdapterConfig, c
 
 }
 
-func upsertBrokerEgressConnection(adapterConfig model.BrokerEgressAdapterConfig, connections *map[string]core.EgressConnection) core.EgressConnection {
-	key := fmt.Sprintf("%s.%s", adapterConfig.Variant, adapterConfig.Topic)
-	connection, ok := (*connections)[key]
+func getOrCreateBrokerEgressClient(adapterConfig model.BrokerEgressAdapterConfig, clients *map[string]core.EgressClient) core.EgressClient {
+	key := adapterConfig.GetId()
+	client, ok := (*clients)[key]
 	if ok {
-		logger.Logger.Infof("connection already exists reusing %v", reflect.TypeOf(connection))
-		return connection
+		logger.Logger.Infof("client already exists reusing %v", key)
+		return client
 	}
 	switch adapterConfig.Variant {
 	case constants.KAFKA:
-		kafkaConnection := kafka.NewKafkaConnection(config.GetKafkaBrokerAddr(), adapterConfig.Topic)
-		logger.Logger.Infof("created new connection %v", reflect.TypeOf(kafkaConnection))
+		kafkaClient := kafka.NewKafkaClient(config.GetKafkaBrokerAddr(), adapterConfig.Topic)
+		logger.Logger.Infof("created new client %s", key)
 
-		(*connections)[key] = kafkaConnection
-		return kafkaConnection
+		(*clients)[key] = kafkaClient
+		return kafkaClient
 	default:
 		logger.Logger.Fatalf("invalid protocol")
 	}
-	return connection
+	return client
 }

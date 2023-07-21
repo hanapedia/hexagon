@@ -3,17 +3,16 @@ package rest
 import (
 	"errors"
 	"fmt"
-	"reflect"
 
+	"github.com/gofiber/contrib/otelfiber"
 	"github.com/gofiber/fiber/v2"
 	fiber_logger "github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
-	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/contract"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/common"
 	"github.com/hanapedia/the-bench/service-unit/stateless/pkg/utils"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 )
 
 // must implement core.ServerAdapter
@@ -25,6 +24,11 @@ type RestServerAdapter struct {
 func NewRestServerAdapter() RestServerAdapter {
 	app := fiber.New()
 	app.Use(fiber_logger.New())
+
+	// enable tracing
+	if config.GetEnvs().TRACING {
+		app.Use(otelfiber.Middleware())
+	}
 
 	return RestServerAdapter{addr: config.GetRestServerAddr(), server: app}
 }
@@ -42,14 +46,12 @@ func (rsa RestServerAdapter) Register(serviceName string, handler *core.IngressA
 	switch handler.StatelessIngressAdapterConfig.Action {
 	case "read":
 		rsa.server.Get("/"+handler.StatelessIngressAdapterConfig.Route, func(c *fiber.Ctx) error {
-			egressAdapterErrors := common.TaskSetHandler(handler.TaskSets)
-			for _, egressAdapterError := range egressAdapterErrors {
-				logger.Logger.Errorf("Invocating %s failed: %s",
-					reflect.TypeOf(egressAdapterError.EgressAdapter).Elem().Name(),
-					egressAdapterError.Error,
-				)
-			}
+			// call tasks
+			egressAdapterErrors := common.TaskSetHandler(c.Context(), handler.TaskSets)
+			core.LogEgressAdapterErrors(&egressAdapterErrors)
 
+
+			// write response
 			payload, err := utils.GenerateRandomString(constants.PayloadSize)
 			if err != nil {
 				return err
@@ -62,14 +64,11 @@ func (rsa RestServerAdapter) Register(serviceName string, handler *core.IngressA
 		})
 	case "write":
 		rsa.server.Post("/"+handler.StatelessIngressAdapterConfig.Route, func(c *fiber.Ctx) error {
-			egressAdapterErrors := common.TaskSetHandler(handler.TaskSets)
-			for _, egressAdapterError := range egressAdapterErrors {
-				logger.Logger.Errorf("Invocating %s failed: %s",
-					reflect.TypeOf(egressAdapterError.EgressAdapter).Elem().Name(),
-					egressAdapterError.Error,
-				)
-			}
+			// call tasks
+			egressAdapterErrors := common.TaskSetHandler(c.Context() ,handler.TaskSets)
+			core.LogEgressAdapterErrors(&egressAdapterErrors)
 
+			// write response
 			restResponse := contract.RestResponseBody{
 				Message: fmt.Sprintf("Successfully ran %s.", handler.GetId(serviceName)),
 			}

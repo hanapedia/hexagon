@@ -1,8 +1,12 @@
 package common
 
-import "github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
+import (
+	"context"
 
-func TaskSetHandler(taskSets []core.TaskSet) []core.EgressAdapterError {
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
+)
+
+func TaskSetHandler(ctx context.Context, taskSets []core.TaskSet) []core.EgressAdapterError {
 	done := make(chan bool, len(taskSets))
 	errCh := make(chan core.EgressAdapterError, len(taskSets))
 
@@ -10,11 +14,11 @@ func TaskSetHandler(taskSets []core.TaskSet) []core.EgressAdapterError {
 		if task.Concurrent {
 			go func(task core.TaskSet) {
 				defer func() { done <- true }()
-				_, err := task.EgressAdapter.Call()
+				_, err := task.EgressAdapter.Call(ctx)
 				errCh <- core.EgressAdapterError{EgressAdapter: &task.EgressAdapter, Error: err}
 			}(task)
 		} else {
-			_, err := task.EgressAdapter.Call()
+			_, err := task.EgressAdapter.Call(ctx)
 			errCh <- core.EgressAdapterError{EgressAdapter: &task.EgressAdapter, Error: err}
             done <- true
 		}

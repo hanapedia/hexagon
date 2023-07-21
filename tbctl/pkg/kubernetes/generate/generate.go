@@ -3,6 +3,7 @@ package generate
 import (
 	"github.com/hanapedia/the-bench/tbctl/pkg/loader"
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/defaults"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
@@ -17,10 +18,13 @@ type ManifestGenerator struct {
 }
 
 func NewManifestGenerator(input, output string) ManifestGenerator {
+	config := loader.GetConfig(input)
+	defaults.SetDefauls(&config)
+
 	return ManifestGenerator{
 		Input:             input,
 		Output:            output,
-		ServiceUnitConfig: loader.GetConfig(input),
+		ServiceUnitConfig: config,
 	}
 }
 
