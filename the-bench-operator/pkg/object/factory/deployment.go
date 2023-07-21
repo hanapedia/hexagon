@@ -32,7 +32,7 @@ type ConfigMapVolumeArgs struct {
 func DeploymentFactory(args *DeploymentArgs) appsv1.Deployment {
 	return appsv1.Deployment{
 		TypeMeta:   TypeMetaFactory("Deployment", "apps/v1"),
-		ObjectMeta: ObjectMetaFactory(args.Name, args.Namespace, map[string]string{}),
+		ObjectMeta: ObjectMetaFactory(ObjectMetaOptions{Name: args.Name, Namespace: args.Namespace}),
 		Spec:       DeploymentSpecFactory(args),
 	}
 }
@@ -50,7 +50,7 @@ func DeploymentSpecFactory(args *DeploymentArgs) appsv1.DeploymentSpec {
 // PodTemplateFactory create pod template
 func PodTemplateFactory(args *DeploymentArgs) corev1.PodTemplateSpec {
 	return corev1.PodTemplateSpec{
-		ObjectMeta: ObjectMetaFactory("", "", map[string]string{"app": args.Name}),
+		ObjectMeta: ObjectMetaFactory(ObjectMetaOptions{Labels: map[string]string{"app": args.Name}}),
 		Spec:       PodSpecFactory(args),
 	}
 }
@@ -128,7 +128,7 @@ func GetConfigMapVolume(key string, arg *ConfigMapVolumeArgs) corev1.Volume {
 		VolumeSource: corev1.VolumeSource{
 			ConfigMap: &corev1.ConfigMapVolumeSource{
 				LocalObjectReference: *LocalObjectReferenceFactory(arg.Name),
-				Items: items,
+				Items:                items,
 			},
 		},
 	}

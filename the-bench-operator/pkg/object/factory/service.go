@@ -15,7 +15,7 @@ type ServiceArgs struct {
 func SerivceFactory(args *ServiceArgs) corev1.Service {
 	return corev1.Service{
 		TypeMeta:   TypeMetaFactory("Service", "v1"),
-		ObjectMeta: ObjectMetaFactory(args.Name, args.Namespace, map[string]string{}),
+		ObjectMeta: ObjectMetaFactory(ObjectMetaOptions{Name: args.Name, Namespace: args.Namespace}),
 		Spec: corev1.ServiceSpec{
 			Selector: map[string]string{"app": args.Name},
 			Ports:    ServicePortFactory(args.Ports),
