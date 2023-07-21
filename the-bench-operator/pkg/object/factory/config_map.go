@@ -13,8 +13,8 @@ type ConfigMapArgs struct {
 // ConfigMapFactory create config map
 func ConfigMapFactory(args *ConfigMapArgs) corev1.ConfigMap {
 	return corev1.ConfigMap{
-		TypeMeta: TypeMetaFactory("ConfigMap", "v1"),
-		ObjectMeta: ObjectMetaFactory(args.Name, args.Namespace, map[string]string{}),
-		Data: args.Data,
+		TypeMeta:   TypeMetaFactory("ConfigMap", "v1"),
+		ObjectMeta: ObjectMetaFactory(ObjectMetaOptions{Name: args.Name, Namespace: args.Namespace}),
+		Data:       args.Data,
 	}
 }

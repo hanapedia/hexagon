@@ -30,16 +30,17 @@ type KafkaTopicArgs struct {
 func KafkaTopicFactory(args *KafkaTopicArgs) KafkaTopic {
 	return KafkaTopic{
 		TypeMeta: TypeMetaFactory("KafkaTopic", "kafka.strimzi.io/v1beta2"),
-		ObjectMeta: ObjectMetaFactory(
-			args.Topic,
-			args.Namespace,
-			map[string]string{
+		ObjectMeta: ObjectMetaFactory(ObjectMetaOptions{
+			Name:      args.Topic,
+			Namespace: args.Namespace,
+			Labels: map[string]string{
 				"strimzi.io/cluster": args.ClusterName,
 			},
+		},
 		),
 		Spec: KafkaTopicSpec{
 			Partitions: args.Partitions,
-			Replicas: args.Replicas,
+			Replicas:   args.Replicas,
 		},
 	}
 }
