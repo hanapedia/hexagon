@@ -5,6 +5,13 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+type ObjectMetaOptions struct {
+	Name        string
+	Namespace   string
+	Labels      map[string]string
+	Annotations map[string]string
+}
+
 // TypeMetaFactory create type meta for all kubernetes objects.
 func TypeMetaFactory(kind string, apiVersion string) metav1.TypeMeta {
 	return metav1.TypeMeta{
@@ -14,11 +21,12 @@ func TypeMetaFactory(kind string, apiVersion string) metav1.TypeMeta {
 }
 
 // ObjectMetaFactory object meta data with name and namespace
-func ObjectMetaFactory(name string, namespace string, label map[string]string) metav1.ObjectMeta {
+func ObjectMetaFactory(options ObjectMetaOptions) metav1.ObjectMeta {
 	return metav1.ObjectMeta{
-		Name:      name,
-		Namespace: namespace,
-		Labels:    label,
+		Name:        options.Name,
+		Namespace:   options.Namespace,
+		Labels:      options.Labels,
+		Annotations: options.Annotations,
 	}
 }
 

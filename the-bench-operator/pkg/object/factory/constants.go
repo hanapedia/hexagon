@@ -1,7 +1,7 @@
 package factory
 
 const (
-	NAMESPACE                 = "default"
+	NAMESPACE                 = "the-bench"
 	SERVICE_UNIT_IMAGE_NAME   = "hiroki11hanada/service-unit"
 	MONGO_IMAGE_NAME          = "hiroki11hanada/stateful-unit-mongo"
 	LOAD_GENERATOR_IMAGE_NAME = "hiroki11hanada/tb-load-generator"

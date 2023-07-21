@@ -65,6 +65,7 @@ func (mg ManifestGenerator) GenerateManifest() ManifestErrors {
 		manfiestErrors.Extend(mg.GenerateLoadGeneratorManifests())
 	}
 	manfiestErrors.Extend(mg.GenerateStatelessManifests())
+	manfiestErrors.Extend(mg.GenerateNamespaceManifests())
 	return manfiestErrors
 }
 
