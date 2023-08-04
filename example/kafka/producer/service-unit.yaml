@@ -1,4 +1,8 @@
+version: v0.0.3
 name: producer
+gateway: # load generator specific
+  virtualUsers: 10
+  duration: 60
 ingressAdapters:
 - stateless:
     action: read
