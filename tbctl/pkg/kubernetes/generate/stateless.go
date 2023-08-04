@@ -3,7 +3,7 @@ package generate
 import (
 	"os"
 
-	"github.com/hanapedia/the-bench/the-bench-operator/pkg/object/stateless"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/object/usecases"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/yaml"
 )
 
@@ -21,7 +21,7 @@ func (mg ManifestGenerator) GenerateStatelessManifests() ManifestErrors {
 	}
 	defer manifestFile.Close()
 
-	deployment := stateless.CreateStatelessUnitDeployment(mg.ServiceUnitConfig.Name, mg.ServiceUnitConfig.Version)
+	deployment := usecases.CreateStatelessUnitDeployment(mg.ServiceUnitConfig.Name, mg.ServiceUnitConfig.Version)
 	deploymentYAML := yaml.GenerateManifest(deployment)
 	_, err = manifestFile.WriteString(formatManifest(deploymentYAML))
 	if err != nil {
@@ -32,7 +32,7 @@ func (mg ManifestGenerator) GenerateStatelessManifests() ManifestErrors {
 		}
 	}
 
-	service := stateless.CreateStatelessUnitService(mg.ServiceUnitConfig.Name)
+	service := usecases.CreateStatelessUnitService(mg.ServiceUnitConfig.Name)
 	serviceYAML := yaml.GenerateManifest(service)
 	_, err = manifestFile.WriteString(formatManifest(serviceYAML))
 	if err != nil {
@@ -51,7 +51,7 @@ func (mg ManifestGenerator) GenerateStatelessManifests() ManifestErrors {
 			},
 		}
 	}
-	configMap := stateless.CreateStatelessUnitYamlConfigMap(mg.ServiceUnitConfig.Name, string(data))
+	configMap := usecases.CreateStatelessUnitYamlConfigMap(mg.ServiceUnitConfig.Name, string(data))
 	configMapYAML := yaml.GenerateManifest(configMap)
 	_, err = manifestFile.WriteString(formatManifest(configMapYAML))
 	if err != nil {

@@ -1,4 +1,4 @@
-package stateless
+package usecases
 
 import (
 	"fmt"

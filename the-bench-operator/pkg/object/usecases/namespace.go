@@ -1,4 +1,4 @@
-package cluster
+package usecases
 
 import (
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/object/factory"

@@ -2,7 +2,7 @@ package generate
 
 import (
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
-	"github.com/hanapedia/the-bench/the-bench-operator/pkg/object/broker"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/object/usecases"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/yaml"
 )
 
@@ -20,7 +20,7 @@ func (mg ManifestGenerator) GenerateBrokerManifests(config model.BrokerIngressAd
 	}
 	defer manifestFile.Close()
 
-	deployment := broker.CreateKafkaTopic(config.Topic)
+	deployment := usecases.CreateKafkaTopic(config.Topic)
 	deploymentYAML := yaml.GenerateManifest(deployment)
 	_, err = manifestFile.WriteString(formatManifest(deploymentYAML))
 	if err != nil {

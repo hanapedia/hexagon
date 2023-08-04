@@ -1,4 +1,4 @@
-package loadgenerator
+package usecases
 
 import "github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 
