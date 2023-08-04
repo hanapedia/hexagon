@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
-	"github.com/hanapedia/the-bench/the-bench-operator/pkg/object/load_generator"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/object/usecases"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/yaml"
 )
 
@@ -26,7 +26,7 @@ func (mg ManifestGenerator) GenerateLoadGeneratorManifests() ManifestErrors {
 
 	loadGeneratorName := fmt.Sprintf("%s-lg", mg.ServiceUnitConfig.Name)
 
-	deployment := loadgenerator.CreateLoadGeneratorDeployment(loadGeneratorName, mg.ServiceUnitConfig.Version)
+	deployment := usecases.CreateLoadGeneratorDeployment(loadGeneratorName, mg.ServiceUnitConfig.Version)
 	deploymentYAML := yaml.GenerateManifest(deployment)
 	_, err = manifestFile.WriteString(formatManifest(deploymentYAML))
 	if err != nil {
@@ -37,7 +37,7 @@ func (mg ManifestGenerator) GenerateLoadGeneratorManifests() ManifestErrors {
 		}
 	}
 
-	service := loadgenerator.CreateLoadGeneratorService(loadGeneratorName)
+	service := usecases.CreateLoadGeneratorService(loadGeneratorName)
 	serviceYAML := yaml.GenerateManifest(service)
 	_, err = manifestFile.WriteString(formatManifest(serviceYAML))
 	if err != nil {
@@ -66,7 +66,7 @@ func (mg ManifestGenerator) GenerateLoadGeneratorManifests() ManifestErrors {
 		}
 	}
 
-	configMap := loadgenerator.CreateLoadGeneratorYamlConfigMap(
+	configMap := usecases.CreateLoadGeneratorYamlConfigMap(
 		loadGeneratorName,
 		string(rawConfig),
 		string(rawRoutes),
@@ -88,7 +88,7 @@ func (mg ManifestGenerator) GenerateConfigJson() ([]byte, error) {
 	if mg.ServiceUnitConfig.Gateway == nil {
 		return nil, errors.New("Gateway config not found")
 	}
-	config := loadgenerator.CreateLoadGeneratorConfig(
+	config := usecases.CreateLoadGeneratorConfig(
 		mg.ServiceUnitConfig.Gateway.VirtualUsers,
 		mg.ServiceUnitConfig.Gateway.Duration,
 		mg.ServiceUnitConfig.Name,
@@ -101,14 +101,14 @@ func (mg ManifestGenerator) GenerateRoutesJson() ([]byte, error) {
 	if mg.ServiceUnitConfig.Gateway == nil {
 		return nil, errors.New("Gateway config not found")
 	}
-	var routes []loadgenerator.Route
+	var routes []usecases.Route
 	for _, ingressAdapter := range mg.ServiceUnitConfig.IngressAdapterConfigs {
 		if ingressAdapter.StatelessIngressAdapterConfig != nil {
 			var weight int32 = 1
 			if ingressAdapter.StatelessIngressAdapterConfig.Weight != nil {
 				weight = *ingressAdapter.StatelessIngressAdapterConfig.Weight
 			}
-			route := loadgenerator.CreateLoadGeneratorRoutes(
+			route := usecases.CreateLoadGeneratorRoutes(
 				ingressAdapter.StatelessIngressAdapterConfig.Route,
 				constants.GetHttpMethodFromAction(ingressAdapter.StatelessIngressAdapterConfig.Action),
 				weight,

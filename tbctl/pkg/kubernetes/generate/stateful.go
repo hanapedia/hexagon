@@ -1,7 +1,7 @@
 package generate
 
 import (
-	"github.com/hanapedia/the-bench/the-bench-operator/pkg/object/stateful"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/object/usecases"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/yaml"
 )
 
@@ -20,7 +20,7 @@ func (mg ManifestGenerator) GenerateStatefulManifests() ManifestErrors {
 	}
 	defer manifestFile.Close()
 
-	deployment := stateful.CreateMongoDeployment(mg.ServiceUnitConfig.Name, mg.ServiceUnitConfig.Version)
+	deployment := usecases.CreateMongoDeployment(mg.ServiceUnitConfig.Name, mg.ServiceUnitConfig.Version)
 	deploymentYAML := yaml.GenerateManifest(deployment)
 	_, err = manifestFile.WriteString(formatManifest(deploymentYAML))
 	if err != nil {
@@ -31,7 +31,7 @@ func (mg ManifestGenerator) GenerateStatefulManifests() ManifestErrors {
 		}
 	}
 
-	service := stateful.CreateMongoService(mg.ServiceUnitConfig.Name)
+	service := usecases.CreateMongoService(mg.ServiceUnitConfig.Name)
 	serviceYAML := yaml.GenerateManifest(service)
 	_, err = manifestFile.WriteString(formatManifest(serviceYAML))
 	if err != nil {
@@ -42,7 +42,7 @@ func (mg ManifestGenerator) GenerateStatefulManifests() ManifestErrors {
 		}
 	}
 
-	configMap := stateful.CreateMongoEnvConfigMap(mg.ServiceUnitConfig.Name, MongoEnvs)
+	configMap := usecases.CreateMongoEnvConfigMap(mg.ServiceUnitConfig.Name, MongoEnvs)
 	configMapYAML := yaml.GenerateManifest(configMap)
 	_, err = manifestFile.WriteString(formatManifest(configMapYAML))
 	if err != nil {
