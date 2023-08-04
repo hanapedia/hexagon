@@ -1,4 +1,4 @@
-package loadgenerator
+package usecases
 
 import (
 	"fmt"
