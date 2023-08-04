@@ -64,8 +64,15 @@ func (mg ManifestGenerator) GenerateManifest() ManifestErrors {
 	if mg.ServiceUnitConfig.Gateway != nil {
 		manfiestErrors.Extend(mg.GenerateLoadGeneratorManifests())
 	}
+
+	// generate stateless manifest
 	manfiestErrors.Extend(mg.GenerateStatelessManifests())
+
+	// generate namespace
 	manfiestErrors.Extend(mg.GenerateNamespaceManifests())
+
+	// generate fault injection manifest
+	manfiestErrors.Extend(mg.GenerateFaultInjectionManifests())
 	return manfiestErrors
 }
 

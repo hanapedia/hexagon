@@ -1,22 +1,6 @@
 package factory
 
-import (
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-)
-
-// CustomResource represents a custom Kubernetes resource.
-type KafkaTopic struct {
-	metav1.TypeMeta   `json:",inline"`
-	metav1.ObjectMeta `json:"metadata,omitempty"`
-
-	Spec KafkaTopicSpec `json:"spec,omitempty"`
-}
-
-// KafkaTopicSpec represents the spec of the custom resource.
-type KafkaTopicSpec struct {
-	Partitions int32 `json:"partitions,omitempty"`
-	Replicas   int32 `json:"replicas,omitempty"`
-}
+import "github.com/hanapedia/the-bench/the-bench-operator/pkg/object/crd"
 
 type KafkaTopicArgs struct {
 	Topic       string
@@ -27,8 +11,8 @@ type KafkaTopicArgs struct {
 }
 
 // KafkaTopicFactory creates kafka topic custom resource defined by strimzi.io
-func KafkaTopicFactory(args *KafkaTopicArgs) KafkaTopic {
-	return KafkaTopic{
+func KafkaTopicFactory(args *KafkaTopicArgs) crd.KafkaTopic {
+	return crd.KafkaTopic{
 		TypeMeta: TypeMetaFactory("KafkaTopic", "kafka.strimzi.io/v1beta2"),
 		ObjectMeta: ObjectMetaFactory(ObjectMetaOptions{
 			Name:      args.Topic,
@@ -38,7 +22,7 @@ func KafkaTopicFactory(args *KafkaTopicArgs) KafkaTopic {
 			},
 		},
 		),
-		Spec: KafkaTopicSpec{
+		Spec: crd.KafkaTopicSpec{
 			Partitions: args.Partitions,
 			Replicas:   args.Replicas,
 		},

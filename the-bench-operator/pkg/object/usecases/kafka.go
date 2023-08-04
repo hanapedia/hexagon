@@ -1,11 +1,12 @@
-package broker
+package usecases
 
 import (
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/object/crd"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/object/factory"
 )
 
 // CreateKafkaTopic creates kafka topic
-func CreateKafkaTopic(topic string) *factory.KafkaTopic {
+func CreateKafkaTopic(topic string) *crd.KafkaTopic {
 	kafkaTopicArgs := factory.KafkaTopicArgs{
 		Topic:       topic,
 		Namespace:   factory.KAFKA_NAMESPACE,
