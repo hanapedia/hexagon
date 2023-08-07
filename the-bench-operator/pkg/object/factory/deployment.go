@@ -11,6 +11,7 @@ import (
 type DeploymentArgs struct {
 	Name                   string
 	Namespace              string
+	Annotations            map[string]string
 	Image                  string
 	Replicas               int32
 	ResourceLimitsCPU      string
@@ -32,7 +33,7 @@ type ConfigMapVolumeArgs struct {
 func DeploymentFactory(args *DeploymentArgs) appsv1.Deployment {
 	return appsv1.Deployment{
 		TypeMeta:   TypeMetaFactory("Deployment", "apps/v1"),
-		ObjectMeta: ObjectMetaFactory(ObjectMetaOptions{Name: args.Name, Namespace: args.Namespace}),
+		ObjectMeta: ObjectMetaFactory(ObjectMetaOptions{Name: args.Name, Namespace: args.Namespace, Annotations: args.Annotations}),
 		Spec:       DeploymentSpecFactory(args),
 	}
 }

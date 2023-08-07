@@ -72,7 +72,7 @@ func (mg ManifestGenerator) GenerateManifest() ManifestErrors {
 	manfiestErrors.Extend(mg.GenerateNamespaceManifests())
 
 	// generate fault injection manifest
-	manfiestErrors.Extend(mg.GenerateFaultInjectionManifests())
+	// manfiestErrors.Extend(mg.GenerateFaultInjectionManifests())
 	return manfiestErrors
 }
 
