@@ -15,7 +15,7 @@ type RestClient struct {
 func NewRestClient() RestClient {
 	client := RestClient{
 		Client: &http.Client{
-			Timeout: time.Duration(time.Millisecond * 50),
+			Timeout: time.Duration(time.Second * 5),
 		},
 	}
 
