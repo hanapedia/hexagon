@@ -69,7 +69,7 @@ func (mg ManifestGenerator) GenerateManifest() ManifestErrors {
 	manfiestErrors.Extend(mg.GenerateStatelessManifests())
 
 	// generate namespace
-	manfiestErrors.Extend(mg.GenerateNamespaceManifests())
+	// manfiestErrors.Extend(mg.GenerateNamespaceManifests())
 
 	// generate fault injection manifest
 	// manfiestErrors.Extend(mg.GenerateFaultInjectionManifests())
