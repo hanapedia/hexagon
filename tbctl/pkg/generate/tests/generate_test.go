@@ -3,7 +3,7 @@ package tests
 import (
 	"testing"
 
-	"github.com/hanapedia/the-bench/tbctl/pkg/kubernetes/generate"
+	"github.com/hanapedia/the-bench/tbctl/pkg/generate"
 )
 
 func TestGenearateStatelessManifest(t *testing.T) {

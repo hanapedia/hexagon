@@ -10,7 +10,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-
+var inputPath string
+var outputPath string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{

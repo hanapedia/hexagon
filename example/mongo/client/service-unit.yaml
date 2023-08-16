@@ -1,9 +1,13 @@
+version: v0.0.3
 name: client
+gateway: # load generator specific
+  virtualUsers: 10
+  duration: 60
 ingressAdapters:
 - stateless:
-    route: get
-    variant: rest
     action: read
+    variant: rest
+    route: get
   steps:
   - egressAdapter:
       stateful:
