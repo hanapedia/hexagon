@@ -22,7 +22,6 @@ func (kpa KafkaProducerAdapter) Call(ctx context.Context) (string, error) {
 	}
 	message := kafka.Message{
 		Value: []byte(payload),
-		Topic: kpa.Writer.Topic,
 	}
 
 	// add trace context if tracing is enabled
