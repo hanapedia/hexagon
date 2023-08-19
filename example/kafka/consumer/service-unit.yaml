@@ -1,4 +1,4 @@
-version: v0.0.3
+version: v0.0.5
 name: consumer
 ingressAdapters:
 - broker:

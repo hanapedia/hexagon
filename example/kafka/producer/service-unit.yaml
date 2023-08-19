@@ -1,4 +1,4 @@
-version: v0.0.3
+version: v0.0.5
 name: producer
 gateway: # load generator specific
   virtualUsers: 10
