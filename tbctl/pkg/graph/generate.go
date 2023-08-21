@@ -93,7 +93,7 @@ func addEdge(graph *graphml.Graph, source, destination, edgeLabel string) error 
 	case "publish":
 		err = graph.SetNodeData(destination, "type", "broker")
 	case "subscribe":
-		err = graph.SetNodeData(destination, "type", "broker")
+		err = graph.SetNodeData(source, "type", "broker")
 	}
 	if err != nil {
 		if err == graphml.ErrNodeDataAlreadySet {
