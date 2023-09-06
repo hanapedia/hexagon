@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+	// load config from yaml
 	serviceUnitConfig := usecases.GetConfig("yaml")
 
 	// init telemetry
@@ -17,8 +18,10 @@ func main() {
 	serviceUnit := usecases.NewServiceUnit(serviceUnitConfig)
 	logger.Logger.Println("Service unit successfully loaded.")
 
+	// setup service unit
 	serviceUnit.Setup()
 
+	// create error channel and start service unit
 	errChan := make(chan core.IngressAdapterError)
 	serviceUnit.Start(errChan)
 

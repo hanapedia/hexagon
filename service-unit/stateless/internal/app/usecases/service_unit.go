@@ -12,17 +12,18 @@ import (
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
-// ServerAdapters hold the adapters for server processes from REST, gRPC
-// ConsumerAdapters hold the adapters for consumer processes from Kafka, RabbitMQ, Pular, etc
-// EgressClients hold the persistent clients for egress adapters
 type ServiceUnit struct {
 	Name             string
 	Config           *model.ServiceUnitConfig
+	// ServerAdapters hold the adapters for server processes from REST, gRPC
 	ServerAdapters   *map[constants.StatelessAdapterVariant]*core.IngressAdapter
+	// ConsumerAdapters hold the adapters for consumer processes from Kafka, RabbitMQ, Pular, etc
 	ConsumerAdapters *map[string]*core.IngressAdapter
+	// EgressClients hold the persistent clients for egress adapters
 	EgressClients    *map[string]core.EgressClient
 }
 
+// NewServiceUnit initializes service unit object
 func NewServiceUnit(serviceUnitConfig model.ServiceUnitConfig) ServiceUnit {
 	serverAdapters := make(map[constants.StatelessAdapterVariant]*core.IngressAdapter)
 	consumerAdapters := make(map[string]*core.IngressAdapter)
@@ -61,13 +62,13 @@ func (su *ServiceUnit) Start(errChan chan core.IngressAdapterError) {
 	}
 }
 
-// Prepares ingress adapters and maps handlers to them
+// Setup prepares ingress adapters and maps handlers to them
 func (su *ServiceUnit) Setup() {
 	su.initializeIngressAdapters()
 	su.mapHandlersToIngressAdapters()
 }
 
-// Prepare ingress adapters
+// initializeIngressAdapters prepare ingress adapters
 func (su *ServiceUnit) initializeIngressAdapters() {
 	for _, ingressAdapterConfig := range su.Config.IngressAdapterConfigs {
 		if ingressAdapterConfig.StatelessIngressAdapterConfig != nil {
@@ -82,7 +83,7 @@ func (su *ServiceUnit) initializeIngressAdapters() {
 	}
 }
 
-// Prepare server adapters
+// initializeServerAdapter prepare server adapters
 func (su *ServiceUnit) initializeServerAdapter(statelessAdapterConfig model.StatelessIngressAdapterConfig) {
 	serverKey := getServerKey(statelessAdapterConfig)
 	_, ok := (*su.ServerAdapters)[serverKey]
@@ -91,12 +92,12 @@ func (su *ServiceUnit) initializeServerAdapter(statelessAdapterConfig model.Stat
 	}
 }
 
-// get server key
+// getServerKey retrieves server key from Stateless Ingress Adatper
 func getServerKey(statelessAdapterConfig model.StatelessIngressAdapterConfig) constants.StatelessAdapterVariant {
 	return statelessAdapterConfig.Variant
 }
 
-// Prepare consumer adapters
+// initializeConsumerAdapter prepare consumer adapters
 func (su *ServiceUnit) initializeConsumerAdapter(brokerIngressAdapterConfig model.BrokerIngressAdapterConfig) {
 	consumerKey := getConsumerKey(brokerIngressAdapterConfig)
 	_, ok := (*su.ConsumerAdapters)[consumerKey]
@@ -105,11 +106,12 @@ func (su *ServiceUnit) initializeConsumerAdapter(brokerIngressAdapterConfig mode
 	}
 }
 
+// getConsumerKey gets cosumer key from broker ingress adapter
 func getConsumerKey(brokerIngressAdapterConfig model.BrokerIngressAdapterConfig) string {
 	return fmt.Sprintf("%s.%s", brokerIngressAdapterConfig.Variant, brokerIngressAdapterConfig.Topic)
 }
 
-// Map handlers to ingress adapters
+// mapHandlersToIngressAdapters map egress adapter to ingress adapter
 func (su *ServiceUnit) mapHandlersToIngressAdapters() {
 	for _, ingressAdapterConfig := range su.Config.IngressAdapterConfigs {
 		taskSets := su.mapTaskSet(ingressAdapterConfig.Steps)
@@ -136,6 +138,7 @@ func (su *ServiceUnit) mapHandlersToIngressAdapters() {
 	}
 }
 
+// createIngressAdapterHandler builds ingress adapter with given task set
 func (su ServiceUnit) createIngressAdapterHandler(ingressAdapterConfig model.IngressAdapterSpec, taskSets *[]core.TaskSet) (core.IngressAdapterHandler, error) {
 	if ingressAdapterConfig.StatelessIngressAdapterConfig != nil {
 		return core.IngressAdapterHandler{
@@ -152,7 +155,7 @@ func (su ServiceUnit) createIngressAdapterHandler(ingressAdapterConfig model.Ing
 	return core.IngressAdapterHandler{}, errors.New("Failed to create ingress adapter handler. No adapter config found.")
 }
 
-// Create task set from config
+// mapTaskSet creates task set from config
 func (su ServiceUnit) mapTaskSet(steps []model.Step) *[]core.TaskSet {
 	tasksets := make([]core.TaskSet, len(steps))
 	for i, step := range steps {
