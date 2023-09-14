@@ -1,26 +1,26 @@
-package factory
+package invocation
 
 import (
 	"errors"
 
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/egress/invocation_adapter/rest"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure_new/adapters/secondary/invocation/rest"
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
-func statelesEgressAdapterFactory(adapterConfig model.StatelessEgressAdapterConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+func NewSecondaryAdapter(adapterConfig model.StatelessEgressAdapterConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
 	switch adapterConfig.Variant {
 	case constants.REST:
-		return restEgressAdapterFactory(adapterConfig, client)
+		return rest.RestEgressAdapterFactory(adapterConfig, client)
 	default:
 		err := errors.New("No matching protocol found")
 		return nil, err
 	}
 }
 
-func getOrCreateStatelessEgressClient(adapterConfig model.StatelessEgressAdapterConfig, clients *map[string]ports.SecondaryAdapter) ports.SecondaryAdapter {
+func GetOrCreateClient(adapterConfig model.StatelessEgressAdapterConfig, clients *map[string]ports.SecondaryAdapter) ports.SecondaryAdapter {
 	var client rest.RestClient
 	switch adapterConfig.Variant {
 	case constants.REST:

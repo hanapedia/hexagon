@@ -1,4 +1,4 @@
-package factory
+package mongo
 
 import (
 	"errors"
@@ -6,23 +6,22 @@ import (
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/egress/repository_adapter/mongo"
 )
 
-func mongoEgressAdapterFactory(adapterConfig model.StatefulEgressAdapterConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+func MongoEgressAdapterFactory(adapterConfig model.StatefulEgressAdapterConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
 	var mongoEgressAdapter ports.SecodaryPort
 	var err error
-	if mongoClient, ok := (client).(mongo.MongoClient); ok {
+	if mongoClient, ok := (client).(MongoClient); ok {
 		switch adapterConfig.Action {
 		case constants.READ:
-			mongoEgressAdapter = mongo.MongoReadAdapter{
+			mongoEgressAdapter = MongoReadAdapter{
 				Name: adapterConfig.Name,
 				Database: string(adapterConfig.Variant),
 				Client: mongoClient.Client,
 				Collection: constants.RepositoryEntryVariant(adapterConfig.Size),
 			}
 		case constants.WRITE:
-			mongoEgressAdapter = mongo.MongoWriteAdapter{
+			mongoEgressAdapter = MongoWriteAdapter{
 				Name: adapterConfig.Name,
 				Database: string(adapterConfig.Variant),
 				Client: mongoClient.Client,

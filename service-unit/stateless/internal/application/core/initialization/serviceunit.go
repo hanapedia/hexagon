@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
-	egressAdapterFactory "github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/egress/factory"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure_new/adapters/secondary"
 	ingressAdapterFactory "github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/factory"
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
@@ -159,7 +159,7 @@ func (su ServiceUnit) createIngressAdapterHandler(ingressAdapterConfig model.Ing
 func (su ServiceUnit) mapTaskSet(steps []model.Step) *[]ports.TaskSet {
 	tasksets := make([]ports.TaskSet, len(steps))
 	for i, step := range steps {
-		egressAdapter, err := egressAdapterFactory.NewEgressAdapter(*step.EgressAdapterConfig, su.EgressClients)
+		egressAdapter, err := secondary.NewSecondaryAdapter(*step.EgressAdapterConfig, su.EgressClients)
 		if err != nil {
 			logger.Logger.Infof("Skipped interface: %s", err)
 			continue

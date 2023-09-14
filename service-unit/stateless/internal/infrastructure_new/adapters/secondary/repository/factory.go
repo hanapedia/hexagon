@@ -1,20 +1,20 @@
-package factory
+package repository
 
 import (
 	"errors"
 
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure_new/adapters/secondary/config"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/egress/repository_adapter/mongo"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure_new/adapters/secondary/repository/mongo"
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
-func statefulEgressAdapterFactory(adapterConfig model.StatefulEgressAdapterConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+func NewSecondaryAdapter(adapterConfig model.StatefulEgressAdapterConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
 	switch adapterConfig.Variant {
 	case constants.MONGO:
-		return mongoEgressAdapterFactory(adapterConfig, client)
+		return mongo.MongoEgressAdapterFactory(adapterConfig, client)
 	default:
 		err := errors.New("No matching protocol found when creating stateful egress adapter.")
 		return nil, err
@@ -22,8 +22,8 @@ func statefulEgressAdapterFactory(adapterConfig model.StatefulEgressAdapterConfi
 
 }
 
-// getOrCreateStatefulEgressClient creates new client to stateful service if it does not exist
-func getOrCreateStatefulEgressClient(adapterConfig model.StatefulEgressAdapterConfig, clients *map[string]ports.SecondaryAdapter) ports.SecondaryAdapter {
+// GetOrCreateClient creates new client to stateful service if it does not exist
+func GetOrCreateClient(adapterConfig model.StatefulEgressAdapterConfig, clients *map[string]ports.SecondaryAdapter) ports.SecondaryAdapter {
 	key := adapterConfig.GetId()
 	client, ok := (*clients)[key]
 	if ok {

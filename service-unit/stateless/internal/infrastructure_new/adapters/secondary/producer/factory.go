@@ -1,20 +1,20 @@
-package factory
+package producer
 
 import (
 	"errors"
 
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure_new/adapters/secondary/config"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/egress/producer_adapter/kafka"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure_new/adapters/secondary/producer/kafka"
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
-func brokerEgressAdapterFactory(adapterConfig model.BrokerEgressAdapterConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+func NewSecondaryAdapter(adapterConfig model.BrokerEgressAdapterConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
 	switch adapterConfig.Variant {
 	case constants.KAFKA:
-		return kafkaEgressAdapterFactory(adapterConfig, client)
+		return kafka.KafkaEgressAdapterFactory(adapterConfig, client)
 	default:
 		err := errors.New("No matching protocol found when creating broker egress adapter.")
 		return nil, err
@@ -22,7 +22,7 @@ func brokerEgressAdapterFactory(adapterConfig model.BrokerEgressAdapterConfig, c
 
 }
 
-func getOrCreateBrokerEgressClient(adapterConfig model.BrokerEgressAdapterConfig, clients *map[string]ports.SecondaryAdapter) ports.SecondaryAdapter {
+func GetOrCreateClient(adapterConfig model.BrokerEgressAdapterConfig, clients *map[string]ports.SecondaryAdapter) ports.SecondaryAdapter {
 	key := adapterConfig.GetId()
 	client, ok := (*clients)[key]
 	if ok {
