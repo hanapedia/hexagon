@@ -1,12 +1,13 @@
-name: fanout2
+version: v0.0.5
+name: chain1
 ingressAdapters:
 - stateless:
     action: read
     variant: rest
     route: get
-    steps: []
+  steps: []
 - stateless:
     action: write
     variant: rest
     route: post
-    steps: []
+  steps: []
