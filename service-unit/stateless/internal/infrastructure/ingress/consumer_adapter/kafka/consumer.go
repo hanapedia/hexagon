@@ -5,7 +5,7 @@ import (
 
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/common"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/core/runtime"
 	tracing "github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/telemetry/tracing/kafka"
 	"github.com/segmentio/kafka-go"
 )
@@ -51,7 +51,7 @@ func (kca KafkaConsumerAdapter) Serve() error {
 		}
 
 		// call tasks
-		egressAdapterErrors := common.TaskSetHandler(ctx, kca.kafkaConsumer.handler.TaskSets)
+		egressAdapterErrors := runtime.TaskSetHandler(ctx, kca.kafkaConsumer.handler.TaskSets)
 		ports.LogSecondaryPortErrors(&egressAdapterErrors)
 	}
 	return err

@@ -10,7 +10,7 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/contract"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/common"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/core/runtime"
 	"github.com/hanapedia/the-bench/service-unit/stateless/pkg/utils"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 )
@@ -47,7 +47,7 @@ func (rsa RestServerAdapter) Register(serviceName string, handler *ports.Primary
 	case "read":
 		rsa.server.Get("/"+handler.StatelessIngressAdapterConfig.Route, func(c *fiber.Ctx) error {
 			// call tasks
-			egressAdapterErrors := common.TaskSetHandler(c.Context(), handler.TaskSets)
+			egressAdapterErrors := runtime.TaskSetHandler(c.Context(), handler.TaskSets)
 			ports.LogSecondaryPortErrors(&egressAdapterErrors)
 
 
@@ -65,7 +65,7 @@ func (rsa RestServerAdapter) Register(serviceName string, handler *ports.Primary
 	case "write":
 		rsa.server.Post("/"+handler.StatelessIngressAdapterConfig.Route, func(c *fiber.Ctx) error {
 			// call tasks
-			egressAdapterErrors := common.TaskSetHandler(c.Context() ,handler.TaskSets)
+			egressAdapterErrors := runtime.TaskSetHandler(c.Context() ,handler.TaskSets)
 			ports.LogSecondaryPortErrors(&egressAdapterErrors)
 
 			// write response
