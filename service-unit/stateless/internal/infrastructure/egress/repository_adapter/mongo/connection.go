@@ -3,7 +3,7 @@ package mongo
 import (
 	"context"
 
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -15,7 +15,7 @@ type MongoClient struct {
 }
 
 // Client client for mongo
-func NewMongoClient(addr string) core.EgressClient {
+func NewMongoClient(addr string) ports.EgressClient {
 	ctx := context.Background()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(addr))
 	if err != nil {

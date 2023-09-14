@@ -1,4 +1,4 @@
-package core
+package ports
 
 import (
 	"context"

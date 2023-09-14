@@ -8,14 +8,14 @@ import (
 	"github.com/gofiber/fiber/v2"
 	fiber_logger "github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/contract"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/common"
 	"github.com/hanapedia/the-bench/service-unit/stateless/pkg/utils"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 )
 
-// must implement core.ServerAdapter
+// must implement ports.ServerAdapter
 type RestServerAdapter struct {
 	addr   string
 	server *fiber.App
@@ -37,7 +37,7 @@ func (rsa RestServerAdapter) Serve() error {
 	return rsa.server.Listen(rsa.addr)
 }
 
-func (rsa RestServerAdapter) Register(serviceName string, handler *core.IngressAdapterHandler) error {
+func (rsa RestServerAdapter) Register(serviceName string, handler *ports.IngressAdapterHandler) error {
 	if handler.StatelessIngressAdapterConfig == nil {
 		return errors.New(fmt.Sprintf("Invalid configuartion for handler %s.", handler.GetId(serviceName)))
 	}
@@ -48,7 +48,7 @@ func (rsa RestServerAdapter) Register(serviceName string, handler *core.IngressA
 		rsa.server.Get("/"+handler.StatelessIngressAdapterConfig.Route, func(c *fiber.Ctx) error {
 			// call tasks
 			egressAdapterErrors := common.TaskSetHandler(c.Context(), handler.TaskSets)
-			core.LogEgressAdapterErrors(&egressAdapterErrors)
+			ports.LogEgressAdapterErrors(&egressAdapterErrors)
 
 
 			// write response
@@ -66,7 +66,7 @@ func (rsa RestServerAdapter) Register(serviceName string, handler *core.IngressA
 		rsa.server.Post("/"+handler.StatelessIngressAdapterConfig.Route, func(c *fiber.Ctx) error {
 			// call tasks
 			egressAdapterErrors := common.TaskSetHandler(c.Context() ,handler.TaskSets)
-			core.LogEgressAdapterErrors(&egressAdapterErrors)
+			ports.LogEgressAdapterErrors(&egressAdapterErrors)
 
 			// write response
 			restResponse := contract.RestResponseBody{

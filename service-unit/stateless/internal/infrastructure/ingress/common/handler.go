@@ -3,28 +3,28 @@ package common
 import (
 	"context"
 
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 )
 
-func TaskSetHandler(ctx context.Context, taskSets []core.TaskSet) []core.EgressAdapterError {
+func TaskSetHandler(ctx context.Context, taskSets []ports.TaskSet) []ports.EgressAdapterError {
 	done := make(chan bool, len(taskSets))
-	errCh := make(chan core.EgressAdapterError, len(taskSets))
+	errCh := make(chan ports.EgressAdapterError, len(taskSets))
 
 	for _, task := range taskSets {
 		if task.Concurrent {
-			go func(task core.TaskSet) {
+			go func(task ports.TaskSet) {
 				defer func() { done <- true }()
 				_, err := task.EgressAdapter.Call(ctx)
-				errCh <- core.EgressAdapterError{EgressAdapter: &task.EgressAdapter, Error: err}
+				errCh <- ports.EgressAdapterError{EgressAdapter: &task.EgressAdapter, Error: err}
 			}(task)
 		} else {
 			_, err := task.EgressAdapter.Call(ctx)
-			errCh <- core.EgressAdapterError{EgressAdapter: &task.EgressAdapter, Error: err}
+			errCh <- ports.EgressAdapterError{EgressAdapter: &task.EgressAdapter, Error: err}
             done <- true
 		}
 	}
 
-	var egressAdapterErrors []core.EgressAdapterError
+	var egressAdapterErrors []ports.EgressAdapterError
 	for i := 0; i < len(taskSets); i++ {
 		<-done
 		invocationAdapterError := <-errCh

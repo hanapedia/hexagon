@@ -1,4 +1,4 @@
-package usecases
+package initialization
 
 import (
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"

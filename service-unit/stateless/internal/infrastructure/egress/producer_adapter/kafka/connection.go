@@ -1,7 +1,7 @@
 package kafka
 
 import (
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 	"github.com/segmentio/kafka-go"
 )
 
@@ -10,7 +10,7 @@ type KafkaProducerClient struct {
 }
 
 // Only cosumer client is included for Kafka
-func NewKafkaClient(addr string, topic string) core.EgressClient {
+func NewKafkaClient(addr string, topic string) ports.EgressClient {
 	client := kafka.Writer{
 		Addr:     kafka.TCP(addr),
 		Topic:    topic,

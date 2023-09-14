@@ -1,7 +1,7 @@
 // A ingress Adapter can have multiple handlers
 // A handler can have multiple tasks sets
 // A task have a single egress adapter
-package core
+package ports
 
 import (
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"

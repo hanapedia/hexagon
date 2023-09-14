@@ -1,4 +1,4 @@
-package usecases
+package initialization
 
 import (
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"

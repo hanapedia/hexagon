@@ -3,7 +3,7 @@ package kafka
 import (
 	"context"
 
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/common"
 	tracing "github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/telemetry/tracing/kafka"
@@ -17,7 +17,7 @@ type KafkaConsumerAdapter struct {
 
 type KafkaConsumer struct {
 	reader  *kafka.Reader
-	handler *core.IngressAdapterHandler
+	handler *ports.IngressAdapterHandler
 }
 
 func NewKafkaConsumerAdapter(topic string) KafkaConsumerAdapter {
@@ -52,12 +52,12 @@ func (kca KafkaConsumerAdapter) Serve() error {
 
 		// call tasks
 		egressAdapterErrors := common.TaskSetHandler(ctx, kca.kafkaConsumer.handler.TaskSets)
-		core.LogEgressAdapterErrors(&egressAdapterErrors)
+		ports.LogEgressAdapterErrors(&egressAdapterErrors)
 	}
 	return err
 }
 
-func (kca KafkaConsumerAdapter) Register(serviceName string, handler *core.IngressAdapterHandler) error {
+func (kca KafkaConsumerAdapter) Register(serviceName string, handler *ports.IngressAdapterHandler) error {
 	kca.kafkaConsumer.handler = handler
 	return nil
 }

@@ -1,10 +1,10 @@
-package usecases
+package initialization
 
 import (
 	"errors"
 	"fmt"
 
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 	egressAdapterFactory "github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/egress/factory"
 	ingressAdapterFactory "github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/factory"
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
@@ -16,19 +16,19 @@ type ServiceUnit struct {
 	Name             string
 	Config           *model.ServiceUnitConfig
 	// ServerAdapters hold the adapters for server processes from REST, gRPC
-	ServerAdapters   *map[constants.StatelessAdapterVariant]*core.IngressAdapter
+	ServerAdapters   *map[constants.StatelessAdapterVariant]*ports.IngressAdapter
 	// ConsumerAdapters hold the adapters for consumer processes from Kafka, RabbitMQ, Pular, etc
-	ConsumerAdapters *map[string]*core.IngressAdapter
+	ConsumerAdapters *map[string]*ports.IngressAdapter
 	// EgressClients hold the persistent clients for egress adapters
-	EgressClients    *map[string]core.EgressClient
+	EgressClients    *map[string]ports.EgressClient
 }
 
 // NewServiceUnit initializes service unit object
 func NewServiceUnit(serviceUnitConfig model.ServiceUnitConfig) ServiceUnit {
-	serverAdapters := make(map[constants.StatelessAdapterVariant]*core.IngressAdapter)
-	consumerAdapters := make(map[string]*core.IngressAdapter)
+	serverAdapters := make(map[constants.StatelessAdapterVariant]*ports.IngressAdapter)
+	consumerAdapters := make(map[string]*ports.IngressAdapter)
 
-	egressClients := make(map[string]core.EgressClient)
+	egressClients := make(map[string]ports.EgressClient)
 
 	return ServiceUnit{
 		Name:             serviceUnitConfig.Name,
@@ -40,13 +40,13 @@ func NewServiceUnit(serviceUnitConfig model.ServiceUnitConfig) ServiceUnit {
 }
 
 // Start ingress adapters
-func (su *ServiceUnit) Start(errChan chan core.IngressAdapterError) {
+func (su *ServiceUnit) Start(errChan chan ports.IngressAdapterError) {
 	for protocol, serverAdapter := range *su.ServerAdapters {
 		serverAdapterCopy := serverAdapter
 		logger.Logger.Infof("Serving '%s' server.", protocol)
 		go func() {
 			if err := (*serverAdapterCopy).Serve(); err != nil {
-				errChan <- core.IngressAdapterError{IngressAdapter: serverAdapterCopy, Error: err}
+				errChan <- ports.IngressAdapterError{IngressAdapter: serverAdapterCopy, Error: err}
 			}
 		}()
 	}
@@ -56,7 +56,7 @@ func (su *ServiceUnit) Start(errChan chan core.IngressAdapterError) {
 		logger.Logger.Infof("Consumer '%s' started.", protocolAndAction)
 		go func() {
 			if err := (*consumerAdapterCopy).Serve(); err != nil {
-				errChan <- core.IngressAdapterError{IngressAdapter: consumerAdapterCopy, Error: err}
+				errChan <- ports.IngressAdapterError{IngressAdapter: consumerAdapterCopy, Error: err}
 			}
 		}()
 	}
@@ -120,7 +120,7 @@ func (su *ServiceUnit) mapHandlersToIngressAdapters() {
 			logger.Logger.Fatalf("Error creating handler: %v", err)
 		}
 
-		var ingressAdapter *core.IngressAdapter
+		var ingressAdapter *ports.IngressAdapter
 		if ingressAdapterConfig.StatelessIngressAdapterConfig != nil {
 			ingressAdapter = (*su.ServerAdapters)[ingressAdapterConfig.StatelessIngressAdapterConfig.Variant]
 		}
@@ -139,32 +139,32 @@ func (su *ServiceUnit) mapHandlersToIngressAdapters() {
 }
 
 // createIngressAdapterHandler builds ingress adapter with given task set
-func (su ServiceUnit) createIngressAdapterHandler(ingressAdapterConfig model.IngressAdapterSpec, taskSets *[]core.TaskSet) (core.IngressAdapterHandler, error) {
+func (su ServiceUnit) createIngressAdapterHandler(ingressAdapterConfig model.IngressAdapterSpec, taskSets *[]ports.TaskSet) (ports.IngressAdapterHandler, error) {
 	if ingressAdapterConfig.StatelessIngressAdapterConfig != nil {
-		return core.IngressAdapterHandler{
+		return ports.IngressAdapterHandler{
 			StatelessIngressAdapterConfig: ingressAdapterConfig.StatelessIngressAdapterConfig,
 			TaskSets:                      *taskSets,
 		}, nil
 	}
 	if ingressAdapterConfig.BrokerIngressAdapterConfig != nil {
-		return core.IngressAdapterHandler{
+		return ports.IngressAdapterHandler{
 			BrokerIngressAdapterConfig: ingressAdapterConfig.BrokerIngressAdapterConfig,
 			TaskSets:                   *taskSets,
 		}, nil
 	}
-	return core.IngressAdapterHandler{}, errors.New("Failed to create ingress adapter handler. No adapter config found.")
+	return ports.IngressAdapterHandler{}, errors.New("Failed to create ingress adapter handler. No adapter config found.")
 }
 
 // mapTaskSet creates task set from config
-func (su ServiceUnit) mapTaskSet(steps []model.Step) *[]core.TaskSet {
-	tasksets := make([]core.TaskSet, len(steps))
+func (su ServiceUnit) mapTaskSet(steps []model.Step) *[]ports.TaskSet {
+	tasksets := make([]ports.TaskSet, len(steps))
 	for i, step := range steps {
 		egressAdapter, err := egressAdapterFactory.NewEgressAdapter(*step.EgressAdapterConfig, su.EgressClients)
 		if err != nil {
 			logger.Logger.Infof("Skipped interface: %s", err)
 			continue
 		}
-		tasksets[i] = core.TaskSet{EgressAdapter: egressAdapter, Concurrent: step.Concurrent}
+		tasksets[i] = ports.TaskSet{EgressAdapter: egressAdapter, Concurrent: step.Concurrent}
 	}
 
 	return &tasksets

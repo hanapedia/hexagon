@@ -3,11 +3,11 @@ package factory
 import (
 	"errors"
 
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 )
 
-func NewEgressAdapter(egressAdapterConfig model.EgressAdapterConfig, clients *map[string]core.EgressClient) (core.EgressAdapter, error) {
+func NewEgressAdapter(egressAdapterConfig model.EgressAdapterConfig, clients *map[string]ports.EgressClient) (ports.EgressAdapter, error) {
 	if egressAdapterConfig.StatelessEgressAdapterConfig != nil {
 		client := getOrCreateStatelessEgressClient(*egressAdapterConfig.StatelessEgressAdapterConfig, clients)
 		return statelesEgressAdapterFactory(*egressAdapterConfig.StatelessEgressAdapterConfig, client)

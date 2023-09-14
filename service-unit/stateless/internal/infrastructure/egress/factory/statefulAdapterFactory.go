@@ -3,7 +3,7 @@ package factory
 import (
 	"errors"
 
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/egress/repository_adapter/mongo"
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
@@ -11,7 +11,7 @@ import (
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
-func statefulEgressAdapterFactory(adapterConfig model.StatefulEgressAdapterConfig, client core.EgressClient) (core.EgressAdapter, error) {
+func statefulEgressAdapterFactory(adapterConfig model.StatefulEgressAdapterConfig, client ports.EgressClient) (ports.EgressAdapter, error) {
 	switch adapterConfig.Variant {
 	case constants.MONGO:
 		return mongoEgressAdapterFactory(adapterConfig, client)
@@ -23,7 +23,7 @@ func statefulEgressAdapterFactory(adapterConfig model.StatefulEgressAdapterConfi
 }
 
 // getOrCreateStatefulEgressClient creates new client to stateful service if it does not exist
-func getOrCreateStatefulEgressClient(adapterConfig model.StatefulEgressAdapterConfig, clients *map[string]core.EgressClient) core.EgressClient {
+func getOrCreateStatefulEgressClient(adapterConfig model.StatefulEgressAdapterConfig, clients *map[string]ports.EgressClient) ports.EgressClient {
 	key := adapterConfig.GetId()
 	client, ok := (*clients)[key]
 	if ok {

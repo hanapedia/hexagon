@@ -5,12 +5,12 @@ import (
 
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/egress/repository_adapter/mongo"
 )
 
-func mongoEgressAdapterFactory(adapterConfig model.StatefulEgressAdapterConfig, client core.EgressClient) (core.EgressAdapter, error) {
-	var mongoEgressAdapter core.EgressAdapter
+func mongoEgressAdapterFactory(adapterConfig model.StatefulEgressAdapterConfig, client ports.EgressClient) (ports.EgressAdapter, error) {
+	var mongoEgressAdapter ports.EgressAdapter
 	var err error
 	if mongoClient, ok := (client).(mongo.MongoClient); ok {
 		switch adapterConfig.Action {

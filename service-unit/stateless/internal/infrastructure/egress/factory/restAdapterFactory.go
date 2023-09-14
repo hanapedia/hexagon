@@ -4,15 +4,15 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/egress/invocation_adapter/rest"
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 )
 
-func restEgressAdapterFactory(adapterConfig model.StatelessEgressAdapterConfig, client core.EgressClient) (core.EgressAdapter, error) {
-	var restEgressAdapter core.EgressAdapter
+func restEgressAdapterFactory(adapterConfig model.StatelessEgressAdapterConfig, client ports.EgressClient) (ports.EgressAdapter, error) {
+	var restEgressAdapter ports.EgressAdapter
 	var err error
 
 	if restClient, ok := (client).(rest.RestClient); ok {
