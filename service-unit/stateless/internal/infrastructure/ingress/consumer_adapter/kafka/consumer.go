@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure_new/adapters/secondary/config"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/core/runtime"
 	tracing "github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/telemetry/tracing/kafka"
 	"github.com/segmentio/kafka-go"

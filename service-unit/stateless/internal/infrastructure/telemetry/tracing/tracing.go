@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure_new/adapters/secondary/config"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
