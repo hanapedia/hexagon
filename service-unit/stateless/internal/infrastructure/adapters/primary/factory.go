@@ -8,7 +8,7 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/primary/server/rest"
 )
 
-func NewServerAdapter(serverAdapterProtocol constants.StatelessAdapterVariant) *ports.PrimaryPort {
+func NewServerAdapter(serverAdapterProtocol constants.SeverAdapterVariant) *ports.PrimaryPort {
 	var serverAdapter ports.PrimaryPort
 
 	switch serverAdapterProtocol {
@@ -21,7 +21,7 @@ func NewServerAdapter(serverAdapterProtocol constants.StatelessAdapterVariant) *
 	return &serverAdapter
 }
 
-func NewConsumerAdapter(protocol constants.BrokerAdapterVariant, action string) *ports.PrimaryPort {
+func NewConsumerAdapter(protocol constants.BrokerVariant, action string) *ports.PrimaryPort {
 	var consumerAdapter ports.PrimaryPort
 
 	switch protocol {

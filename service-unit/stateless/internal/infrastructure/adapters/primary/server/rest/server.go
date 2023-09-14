@@ -7,10 +7,10 @@ import (
 	"github.com/gofiber/contrib/otelfiber"
 	"github.com/gofiber/fiber/v2"
 	fiber_logger "github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/contract"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/secondary/config"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/core/runtime"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/contract"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/secondary/config"
 	"github.com/hanapedia/the-bench/service-unit/stateless/pkg/utils"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 )
@@ -38,18 +38,17 @@ func (rsa RestServerAdapter) Serve() error {
 }
 
 func (rsa RestServerAdapter) Register(serviceName string, handler *ports.PrimaryHandler) error {
-	if handler.StatelessPrimaryAdapterConfig == nil {
+	if handler.ServerConfig == nil {
 		return errors.New(fmt.Sprintf("Invalid configuartion for handler %s.", handler.GetId(serviceName)))
 	}
 
 	var err error
-	switch handler.StatelessPrimaryAdapterConfig.Action {
+	switch handler.ServerConfig.Action {
 	case "read":
-		rsa.server.Get("/"+handler.StatelessPrimaryAdapterConfig.Route, func(c *fiber.Ctx) error {
+		rsa.server.Get("/"+handler.ServerConfig.Route, func(c *fiber.Ctx) error {
 			// call tasks
-			egressAdapterErrors := runtime.TaskSetHandler(c.Context(), handler.TaskSets)
-			ports.LogSecondaryPortErrors(&egressAdapterErrors)
-
+			secondaryAdapterErrors := runtime.TaskSetHandler(c.Context(), handler.TaskSets)
+			ports.LogSecondaryPortErrors(&secondaryAdapterErrors)
 
 			// write response
 			payload, err := utils.GenerateRandomString(constants.PayloadSize)
@@ -63,10 +62,10 @@ func (rsa RestServerAdapter) Register(serviceName string, handler *ports.Primary
 			return c.Status(fiber.StatusOK).JSON(restResponse)
 		})
 	case "write":
-		rsa.server.Post("/"+handler.StatelessPrimaryAdapterConfig.Route, func(c *fiber.Ctx) error {
+		rsa.server.Post("/"+handler.ServerConfig.Route, func(c *fiber.Ctx) error {
 			// call tasks
-			egressAdapterErrors := runtime.TaskSetHandler(c.Context() ,handler.TaskSets)
-			ports.LogSecondaryPortErrors(&egressAdapterErrors)
+			secondaryAdapterErrors := runtime.TaskSetHandler(c.Context(), handler.TaskSets)
+			ports.LogSecondaryPortErrors(&secondaryAdapterErrors)
 
 			// write response
 			restResponse := contract.RestResponseBody{

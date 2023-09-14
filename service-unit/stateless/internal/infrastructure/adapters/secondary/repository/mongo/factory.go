@@ -8,30 +8,30 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 )
 
-func MongoEgressAdapterFactory(adapterConfig model.StatefulEgressAdapterConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
-	var mongoEgressAdapter ports.SecodaryPort
+func MongoClientAdapterFactory(adapterConfig model.RepositoryClientConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+	var mongoAdapter ports.SecodaryPort
 	var err error
 	if mongoClient, ok := (client).(MongoClient); ok {
 		switch adapterConfig.Action {
 		case constants.READ:
-			mongoEgressAdapter = MongoReadAdapter{
+			mongoAdapter = MongoReadAdapter{
 				Name: adapterConfig.Name,
 				Database: string(adapterConfig.Variant),
 				Client: mongoClient.Client,
 				Collection: constants.RepositoryEntryVariant(adapterConfig.Size),
 			}
 		case constants.WRITE:
-			mongoEgressAdapter = MongoWriteAdapter{
+			mongoAdapter = MongoWriteAdapter{
 				Name: adapterConfig.Name,
 				Database: string(adapterConfig.Variant),
 				Client: mongoClient.Client,
 				Collection: constants.RepositoryEntryVariant(adapterConfig.Size),
 			}
 		default:
-			err = errors.New("No matching action found when creating mongo egress adapter.")
+			err = errors.New("No matching action found when creating mongo client adapter.")
 		}
 	} else {
 		err = errors.New("Unmatched client instance")
 	}
-	return mongoEgressAdapter, err
+	return mongoAdapter, err
 }

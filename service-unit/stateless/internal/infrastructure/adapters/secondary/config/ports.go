@@ -22,7 +22,7 @@ func GetKafkaBrokerAddr() string {
 	return fmt.Sprintf("%s-kafka-bootstrap.%s.svc.cluster.local:%s", clusterName, clusterNamespace, port)
 }
 
-func GetMongoConnectionUri(adapterConfig model.StatefulEgressAdapterConfig) string {
+func GetMongoConnectionUri(adapterConfig model.RepositoryClientConfig) string {
 	user := GetEnvs().MONGO_USER
 	password := GetEnvs().MONGO_PASSWORD
 	port := GetEnvs().MONGO_PORT

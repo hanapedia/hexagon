@@ -18,14 +18,14 @@ type PrimaryPort interface {
 
 type PrimaryPortError struct {
 	PrimaryPort *PrimaryPort
-	Error          error
+	Error       error
 }
 
 // either StatelessAdapterConfig or BrokerAdapterConfig must be defined
 type PrimaryHandler struct {
-	StatelessPrimaryAdapterConfig *model.StatelessIngressAdapterConfig
-	BrokerPrimaryAdapterConfig    *model.BrokerIngressAdapterConfig
-	TaskSets                      []TaskSet
+	ServerConfig   *model.ServerConfig
+	ConsumerConfig *model.ConsumerConfig
+	TaskSets       []TaskSet
 }
 
 type TaskSet struct {
@@ -35,11 +35,11 @@ type TaskSet struct {
 
 func (iah PrimaryHandler) GetId(serviceName string) string {
 	var id string
-	if iah.StatelessPrimaryAdapterConfig != nil {
-		id = iah.StatelessPrimaryAdapterConfig.GetId(serviceName)
+	if iah.ServerConfig != nil {
+		id = iah.ServerConfig.GetId(serviceName)
 	}
-	if iah.BrokerPrimaryAdapterConfig != nil {
-		id = iah.BrokerPrimaryAdapterConfig.GetId(serviceName)
+	if iah.ConsumerConfig != nil {
+		id = iah.ConsumerConfig.GetId(serviceName)
 	}
 	return id
 }

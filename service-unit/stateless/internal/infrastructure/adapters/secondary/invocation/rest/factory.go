@@ -10,8 +10,8 @@ import (
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 )
 
-func RestEgressAdapterFactory(adapterConfig model.StatelessEgressAdapterConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
-	var restEgressAdapter ports.SecodaryPort
+func RestInvocationAdapterFactory(adapterConfig model.InvocationConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+	var restAdapter ports.SecodaryPort
 	var err error
 
 	if restClient, ok := (client).(RestClient); ok {
@@ -19,20 +19,20 @@ func RestEgressAdapterFactory(adapterConfig model.StatelessEgressAdapterConfig, 
 
 		switch adapterConfig.Action {
 		case constants.READ:
-			restEgressAdapter = RestReadAdapter{
+			restAdapter = RestReadAdapter{
 				URL:    fmt.Sprintf("http://%s:%s/%s", adapterConfig.Service, port, adapterConfig.Route),
 				Client: restClient.Client,
 			}
 		case constants.WRITE:
-			restEgressAdapter = RestWriteAdapter{
+			restAdapter = RestWriteAdapter{
 				URL:    fmt.Sprintf("http://%s:%s/%s", adapterConfig.Service, port, adapterConfig.Route),
 				Client: restClient.Client,
 			}
 		default:
-			err = errors.New("No matching protocol found when creating rest egress adapter.")
+			err = errors.New("No matching protocol found when creating rest secondary adapter.")
 		}
 	} else {
 		err = errors.New("Unmatched client instance")
 	}
-	return restEgressAdapter, err
+	return restAdapter, err
 }

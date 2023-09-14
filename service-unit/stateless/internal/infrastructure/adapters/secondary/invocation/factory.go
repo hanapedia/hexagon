@@ -10,17 +10,17 @@ import (
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
-func NewSecondaryAdapter(adapterConfig model.StatelessEgressAdapterConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+func NewSecondaryAdapter(adapterConfig model.InvocationConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
 	switch adapterConfig.Variant {
 	case constants.REST:
-		return rest.RestEgressAdapterFactory(adapterConfig, client)
+		return rest.RestInvocationAdapterFactory(adapterConfig, client)
 	default:
 		err := errors.New("No matching protocol found")
 		return nil, err
 	}
 }
 
-func GetOrCreateClient(adapterConfig model.StatelessEgressAdapterConfig, clients *map[string]ports.SecondaryAdapter) ports.SecondaryAdapter {
+func GetOrCreateClient(adapterConfig model.InvocationConfig, clients *map[string]ports.SecondaryAdapter) ports.SecondaryAdapter {
 	var client rest.RestClient
 	switch adapterConfig.Variant {
 	case constants.REST:

@@ -11,19 +11,19 @@ import (
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
-func NewSecondaryAdapter(adapterConfig model.StatefulEgressAdapterConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+func NewSecondaryAdapter(adapterConfig model.RepositoryClientConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
 	switch adapterConfig.Variant {
 	case constants.MONGO:
-		return mongo.MongoEgressAdapterFactory(adapterConfig, client)
+		return mongo.MongoClientAdapterFactory(adapterConfig, client)
 	default:
-		err := errors.New("No matching protocol found when creating stateful egress adapter.")
+		err := errors.New("No matching protocol found when creating repository client adapter.")
 		return nil, err
 	}
 
 }
 
 // GetOrCreateClient creates new client to stateful service if it does not exist
-func GetOrCreateClient(adapterConfig model.StatefulEgressAdapterConfig, clients *map[string]ports.SecondaryAdapter) ports.SecondaryAdapter {
+func GetOrCreateClient(adapterConfig model.RepositoryClientConfig, clients *map[string]ports.SecondaryAdapter) ports.SecondaryAdapter {
 	key := adapterConfig.GetId()
 	client, ok := (*clients)[key]
 	if ok {

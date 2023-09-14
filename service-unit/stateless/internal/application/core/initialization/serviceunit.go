@@ -16,7 +16,7 @@ type ServiceUnit struct {
 	Name   string
 	Config *model.ServiceUnitConfig
 	// ServerAdapters hold the adapters for server processes from REST, gRPC
-	ServerAdapters *map[constants.StatelessAdapterVariant]*ports.PrimaryPort
+	ServerAdapters *map[constants.SeverAdapterVariant]*ports.PrimaryPort
 	// ConsumerAdapters hold the adapters for consumer processes from Kafka, RabbitMQ, Pular, etc
 	ConsumerAdapters *map[string]*ports.PrimaryPort
 	// SecondaryAdapters hold the persistent clients for secondary adapters
@@ -25,7 +25,7 @@ type ServiceUnit struct {
 
 // NewServiceUnit initializes service unit object
 func NewServiceUnit(serviceUnitConfig model.ServiceUnitConfig) ServiceUnit {
-	serverAdapters := make(map[constants.StatelessAdapterVariant]*ports.PrimaryPort)
+	serverAdapters := make(map[constants.SeverAdapterVariant]*ports.PrimaryPort)
 	consumerAdapters := make(map[string]*ports.PrimaryPort)
 
 	secondaryAdapters := make(map[string]ports.SecondaryAdapter)
@@ -70,13 +70,13 @@ func (su *ServiceUnit) Setup() {
 
 // initializePrimaryAdapters prepare primary adapters
 func (su *ServiceUnit) initializePrimaryAdapters() {
-	for _, primaryConfig := range su.Config.IngressAdapterConfigs {
-		if primaryConfig.StatelessIngressAdapterConfig != nil {
-			su.initializeServerAdapter(*primaryConfig.StatelessIngressAdapterConfig)
+	for _, primaryConfig := range su.Config.AdapterConfigs {
+		if primaryConfig.ServerConfig != nil {
+			su.initializeServerAdapter(*primaryConfig.ServerConfig)
 			continue
 		}
-		if primaryConfig.BrokerIngressAdapterConfig != nil {
-			su.initializeConsumerAdapter(*primaryConfig.BrokerIngressAdapterConfig)
+		if primaryConfig.ConsumerConfig != nil {
+			su.initializeConsumerAdapter(*primaryConfig.ConsumerConfig)
 			continue
 		}
 		logger.Logger.Fatal("Invalid primary adapter config.")
@@ -84,7 +84,7 @@ func (su *ServiceUnit) initializePrimaryAdapters() {
 }
 
 // initializeServerAdapter prepare server adapters
-func (su *ServiceUnit) initializeServerAdapter(config model.StatelessIngressAdapterConfig) {
+func (su *ServiceUnit) initializeServerAdapter(config model.ServerConfig) {
 	serverKey := getServerKey(config)
 	_, ok := (*su.ServerAdapters)[serverKey]
 	if !ok {
@@ -93,12 +93,12 @@ func (su *ServiceUnit) initializeServerAdapter(config model.StatelessIngressAdap
 }
 
 // getServerKey retrieves server key from Stateless primary Adatper
-func getServerKey(config model.StatelessIngressAdapterConfig) constants.StatelessAdapterVariant {
+func getServerKey(config model.ServerConfig) constants.SeverAdapterVariant {
 	return config.Variant
 }
 
 // initializeConsumerAdapter prepare consumer adapters
-func (su *ServiceUnit) initializeConsumerAdapter(config model.BrokerIngressAdapterConfig) {
+func (su *ServiceUnit) initializeConsumerAdapter(config model.ConsumerConfig) {
 	consumerKey := getConsumerKey(config)
 	_, ok := (*su.ConsumerAdapters)[consumerKey]
 	if !ok {
@@ -107,13 +107,13 @@ func (su *ServiceUnit) initializeConsumerAdapter(config model.BrokerIngressAdapt
 }
 
 // getConsumerKey gets cosumer key from broker primary adapter
-func getConsumerKey(config model.BrokerIngressAdapterConfig) string {
+func getConsumerKey(config model.ConsumerConfig) string {
 	return fmt.Sprintf("%s.%s", config.Variant, config.Topic)
 }
 
 // mapSecondaryToPrimary map secondary adapter to primary adapter
 func (su *ServiceUnit) mapSecondaryToPrimary() {
-	for _, primaryConfig := range su.Config.IngressAdapterConfigs {
+	for _, primaryConfig := range su.Config.AdapterConfigs {
 		taskSet := su.newTaskSet(primaryConfig.Steps)
 		handler, err := su.newPrimaryAdapterHandler(primaryConfig, taskSet)
 		if err != nil {
@@ -121,11 +121,11 @@ func (su *ServiceUnit) mapSecondaryToPrimary() {
 		}
 
 		var primaryAdapter *ports.PrimaryPort
-		if primaryConfig.StatelessIngressAdapterConfig != nil {
-			primaryAdapter = (*su.ServerAdapters)[primaryConfig.StatelessIngressAdapterConfig.Variant]
+		if primaryConfig.ServerConfig != nil {
+			primaryAdapter = (*su.ServerAdapters)[primaryConfig.ServerConfig.Variant]
 		}
-		if primaryConfig.BrokerIngressAdapterConfig != nil {
-			consumerKey := getConsumerKey(*primaryConfig.BrokerIngressAdapterConfig)
+		if primaryConfig.ConsumerConfig != nil {
+			consumerKey := getConsumerKey(*primaryConfig.ConsumerConfig)
 			primaryAdapter = (*su.ConsumerAdapters)[consumerKey]
 		}
 		logger.Logger.Tracef("registering handler %s", handler.GetId(su.Name))
@@ -138,28 +138,28 @@ func (su *ServiceUnit) mapSecondaryToPrimary() {
 	}
 }
 
-// newPrimaryAdapterHandler builds ingress adapter with given task set
-func (su ServiceUnit) newPrimaryAdapterHandler(primaryConfig model.IngressAdapterSpec, taskSet *[]ports.TaskSet) (ports.PrimaryHandler, error) {
-	if primaryConfig.StatelessIngressAdapterConfig != nil {
+// newPrimaryAdapterHandler builds primary adapter with given task set
+func (su ServiceUnit) newPrimaryAdapterHandler(primaryConfig model.PrimaryAdapterSpec, taskSet *[]ports.TaskSet) (ports.PrimaryHandler, error) {
+	if primaryConfig.ServerConfig != nil {
 		return ports.PrimaryHandler{
-			StatelessPrimaryAdapterConfig: primaryConfig.StatelessIngressAdapterConfig,
-			TaskSets:                      *taskSet,
+			ServerConfig: primaryConfig.ServerConfig,
+			TaskSets:     *taskSet,
 		}, nil
 	}
-	if primaryConfig.BrokerIngressAdapterConfig != nil {
+	if primaryConfig.ConsumerConfig != nil {
 		return ports.PrimaryHandler{
-			BrokerPrimaryAdapterConfig: primaryConfig.BrokerIngressAdapterConfig,
-			TaskSets:                   *taskSet,
+			ConsumerConfig: primaryConfig.ConsumerConfig,
+			TaskSets:       *taskSet,
 		}, nil
 	}
-	return ports.PrimaryHandler{}, errors.New("Failed to create ingress adapter handler. No adapter config found.")
+	return ports.PrimaryHandler{}, errors.New("Failed to create primary adapter handler. No adapter config found.")
 }
 
 // newTaskSet creates task set from config
 func (su ServiceUnit) newTaskSet(steps []model.Step) *[]ports.TaskSet {
 	tasksets := make([]ports.TaskSet, len(steps))
 	for i, step := range steps {
-		secondaryAdapter, err := secondary.NewSecondaryAdapter(*step.EgressAdapterConfig, su.SecondaryAdapters)
+		secondaryAdapter, err := secondary.NewSecondaryAdapter(*step.AdapterConfig, su.SecondaryAdapters)
 		if err != nil {
 			logger.Logger.Infof("Skipped interface: %s", err)
 			continue

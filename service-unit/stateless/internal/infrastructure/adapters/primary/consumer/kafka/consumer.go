@@ -51,8 +51,8 @@ func (kca KafkaConsumerAdapter) Serve() error {
 		}
 
 		// call tasks
-		egressAdapterErrors := runtime.TaskSetHandler(ctx, kca.kafkaConsumer.handler.TaskSets)
-		ports.LogSecondaryPortErrors(&egressAdapterErrors)
+		secondaryAdapterErrors := runtime.TaskSetHandler(ctx, kca.kafkaConsumer.handler.TaskSets)
+		ports.LogSecondaryPortErrors(&secondaryAdapterErrors)
 	}
 	return err
 }

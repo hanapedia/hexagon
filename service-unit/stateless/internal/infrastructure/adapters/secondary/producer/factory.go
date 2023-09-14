@@ -11,18 +11,18 @@ import (
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
-func NewSecondaryAdapter(adapterConfig model.BrokerEgressAdapterConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+func NewSecondaryAdapter(adapterConfig model.ProducerConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
 	switch adapterConfig.Variant {
 	case constants.KAFKA:
-		return kafka.KafkaEgressAdapterFactory(adapterConfig, client)
+		return kafka.KafkaProducerAdapterFactory(adapterConfig, client)
 	default:
-		err := errors.New("No matching protocol found when creating broker egress adapter.")
+		err := errors.New("No matching protocol found when creating producer adapter.")
 		return nil, err
 	}
 
 }
 
-func GetOrCreateClient(adapterConfig model.BrokerEgressAdapterConfig, clients *map[string]ports.SecondaryAdapter) ports.SecondaryAdapter {
+func GetOrCreateClient(adapterConfig model.ProducerConfig, clients *map[string]ports.SecondaryAdapter) ports.SecondaryAdapter {
 	key := adapterConfig.GetId()
 	client, ok := (*clients)[key]
 	if ok {

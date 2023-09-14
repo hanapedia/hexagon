@@ -10,20 +10,20 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/secondary/producer"
 )
 
-func NewSecondaryAdapter(config model.EgressAdapterConfig, clients *map[string]ports.SecondaryAdapter) (ports.SecodaryPort, error) {
-	if config.StatelessEgressAdapterConfig != nil {
-		client := invocation.GetOrCreateClient(*config.StatelessEgressAdapterConfig, clients)
-		return invocation.NewSecondaryAdapter(*config.StatelessEgressAdapterConfig, client)
+func NewSecondaryAdapter(config model.SecondaryAdapterConfig, clients *map[string]ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+	if config.InvocationConfig != nil {
+		client := invocation.GetOrCreateClient(*config.InvocationConfig, clients)
+		return invocation.NewSecondaryAdapter(*config.InvocationConfig, client)
 	}
-	if config.StatefulEgressAdapterConfig != nil {
-		client := repository.GetOrCreateClient(*config.StatefulEgressAdapterConfig, clients)
-		return repository.NewSecondaryAdapter(*config.StatefulEgressAdapterConfig, client)
+	if config.RepositoryConfig != nil {
+		client := repository.GetOrCreateClient(*config.RepositoryConfig, clients)
+		return repository.NewSecondaryAdapter(*config.RepositoryConfig, client)
 	}
-	if config.BrokerEgressAdapterConfig != nil {
-		client := producer.GetOrCreateClient(*config.BrokerEgressAdapterConfig, clients)
-		return producer.NewSecondaryAdapter(*config.BrokerEgressAdapterConfig, client)
+	if config.ProducerConfig != nil {
+		client := producer.GetOrCreateClient(*config.ProducerConfig, clients)
+		return producer.NewSecondaryAdapter(*config.ProducerConfig, client)
 	}
-	err := errors.New("No matching protocol found when making egress adapter.")
+	err := errors.New("No matching protocol found when making secondary adapter.")
 
 	return nil, err
 }
