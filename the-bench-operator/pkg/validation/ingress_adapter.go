@@ -6,7 +6,7 @@ import (
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 )
 
-func ValidateStatelessIngressAdapterFields(sac *model.StatelessIngressAdapterConfig, serviceName string) []InvalidAdapterFieldValueError {
+func ValidateServerFields(sac *model.ServerConfig, serviceName string) []InvalidAdapterFieldValueError {
 	validate := validator.New()
 	var errs []InvalidAdapterFieldValueError
 	err := validate.Struct(sac)
@@ -17,7 +17,7 @@ func ValidateStatelessIngressAdapterFields(sac *model.StatelessIngressAdapterCon
 	return errs
 }
 
-func ValidateStatefulIngressAdapterFields(sac *model.StatefulIngressAdapterConfig, serviceName string) []InvalidAdapterFieldValueError {
+func ValidateRepositoryFields(sac *model.RepositoryConfig, serviceName string) []InvalidAdapterFieldValueError {
 	validate := validator.New()
 	var errs []InvalidAdapterFieldValueError
 	err := validate.Struct(sac)
@@ -28,7 +28,7 @@ func ValidateStatefulIngressAdapterFields(sac *model.StatefulIngressAdapterConfi
 	return errs
 }
 
-func ValidateBrokerIngressAdapterFields(bac *model.BrokerIngressAdapterConfig, serviceName string) []InvalidAdapterFieldValueError {
+func ValidateConsumerFields(bac *model.ConsumerConfig, serviceName string) []InvalidAdapterFieldValueError {
 	validate := validator.New()
 	var errs []InvalidAdapterFieldValueError
 	err := validate.Struct(bac)

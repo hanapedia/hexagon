@@ -55,7 +55,7 @@ type IngressAdapter struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   IngressAdapterSpec   `json:"spec,omitempty"`
+	Spec   PrimaryAdapterSpec   `json:"spec,omitempty"`
 	Status IngressAdapterStatus `json:"status,omitempty"`
 }
 

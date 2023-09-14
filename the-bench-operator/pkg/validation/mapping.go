@@ -7,30 +7,30 @@ import (
 // Validate adapter mapping across service unit configs
 // serviceUnitConfigs: an array of serviceUnitConfig
 func validateMapping(serviceUnitConfigs *[]model.ServiceUnitConfig) ConfigValidationError {
-	serviceAdapterIds := mapIngressAdapters(serviceUnitConfigs)
-	mappingErrors := mapEgressAdapters(serviceAdapterIds, serviceUnitConfigs)
+	serviceAdapterIds := mapPrimaryAdapters(serviceUnitConfigs)
+	mappingErrors := mapSecondaryAdapters(serviceAdapterIds, serviceUnitConfigs)
 	return ConfigValidationError{MappingErrors: mappingErrors}
 }
 
-// map ingress adapters to services
-// returns the list of ids of ingress adapter
-func mapIngressAdapters(serviceUnitConfigs *[]model.ServiceUnitConfig) []string {
+// map primary adapters to services
+// returns the list of ids of primary adapter
+func mapPrimaryAdapters(serviceUnitConfigs *[]model.ServiceUnitConfig) []string {
 	var serviceAdapterIds []string
 	for _, serviceUnitConfig := range *serviceUnitConfigs {
-		for _, ingressAdapterConfig := range serviceUnitConfig.IngressAdapterConfigs {
-			serviceAdapterIds = append(serviceAdapterIds, ingressAdapterConfig.GetId(serviceUnitConfig.Name))
+		for _, primaryAdapterConfig := range serviceUnitConfig.AdapterConfigs {
+			serviceAdapterIds = append(serviceAdapterIds, primaryAdapterConfig.GetId(serviceUnitConfig.Name))
 		}
 	}
 	return serviceAdapterIds
 }
 
-// map egress adapters to ingress adapters of services
-// check if the id of egress adapter is found in the list of ids of ingress adapters
-func mapEgressAdapters(serviceAdapterIds []string, serviceUnitConfigs *[]model.ServiceUnitConfig) []InvalidAdapterMappingError {
+// map secondary adapters to primary adapters of services
+// check if the id of secondary adapter is found in the list of ids of primary adapters
+func mapSecondaryAdapters(serviceAdapterIds []string, serviceUnitConfigs *[]model.ServiceUnitConfig) []InvalidAdapterMappingError {
 	var mappingErrors []InvalidAdapterMappingError
 	for _, serviceUnitConfig := range *serviceUnitConfigs {
-		for _, ingressAdapterConfig := range serviceUnitConfig.IngressAdapterConfigs {
-			errs := mapAdapters(serviceAdapterIds, ingressAdapterConfig)
+		for _, primaryAdapterConfig := range serviceUnitConfig.AdapterConfigs {
+			errs := mapAdapters(serviceAdapterIds, primaryAdapterConfig)
 			if len(errs) != 0 {
 				mappingErrors = append(mappingErrors, errs...)
 				continue
@@ -40,29 +40,29 @@ func mapEgressAdapters(serviceAdapterIds []string, serviceUnitConfigs *[]model.S
 	return mappingErrors
 }
 
-// map egress adapters to ingress adapters of services
+// map secondary adapters to primary adapters of services
 // conditionally handle the adapters
-func mapAdapters(serviceAdapterIds []string, ingressAdapterConfig model.IngressAdapterSpec) []InvalidAdapterMappingError {
+func mapAdapters(serviceAdapterIds []string, primaryAdapterConfig model.PrimaryAdapterSpec) []InvalidAdapterMappingError {
 	var mappingErrors []InvalidAdapterMappingError
-	for _, step := range ingressAdapterConfig.Steps {
-		// ensure that egressAdapter is defined
-		if step.EgressAdapterConfig == nil {
+	for _, step := range primaryAdapterConfig.Steps {
+		// ensure that secondaryAdapter is defined
+		if step.AdapterConfig == nil {
 			continue
 		}
-		if step.EgressAdapterConfig.InternalEgressAdapterConfig != nil {
-			continue
-		}
-		if ok := searchAdapterIds(serviceAdapterIds, *step.EgressAdapterConfig); !ok {
-			mappingErrors = append(mappingErrors, NewInvalidEgressAdapterError(step.EgressAdapterConfig.GetId()))
+		// if step.SecondaryAdapterConfig.InternalEgressAdapterConfig != nil {
+		// 	continue
+		// }
+		if ok := searchAdapterIds(serviceAdapterIds, *step.AdapterConfig); !ok {
+			mappingErrors = append(mappingErrors, NewInvalidSecondaryAdapterError(step.AdapterConfig.GetId()))
 		}
 	}
 	return mappingErrors
 }
 
 // perform the id search
-func searchAdapterIds(serviceAdapterIds []string, egressAdapterConfig model.EgressAdapterConfig) bool {
+func searchAdapterIds(serviceAdapterIds []string, secondaryAdapterConfig model.SecondaryAdapterConfig) bool {
 	for _, id := range serviceAdapterIds {
-		if id == egressAdapterConfig.GetId() {
+		if id == secondaryAdapterConfig.GetId() {
 			return true
 		}
 	}

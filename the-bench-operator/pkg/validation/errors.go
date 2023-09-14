@@ -86,12 +86,12 @@ func NewInvalidAdapterFieldValueError(key string, adapterId string, message stri
 	return InvalidAdapterFieldValueError{message: fmt.Sprintf("Invalid value in adapter: %v for key: %s. %s", adapterId, key, message)}
 }
 
-func NewInvalidEgressAdapterError(id string) InvalidAdapterMappingError {
-	return InvalidAdapterMappingError{message: fmt.Sprintf("No matching ingress adapter found for egress adapter with id: %s", id)}
+func NewInvalidSecondaryAdapterError(id string) InvalidAdapterMappingError {
+	return InvalidAdapterMappingError{message: fmt.Sprintf("No matching primary adapter found for secondary adapter with id: %s", id)}
 }
 
 func NewInvalidStepFieldValueError(id string) InvalidStepFieldValueError {
-	return InvalidStepFieldValueError{message: fmt.Sprintf("No egress adapter config found on one of steps on ingress adapter with id: %s.", id)}
+	return InvalidStepFieldValueError{message: fmt.Sprintf("No secondary adapter config found on one of steps on primary adapter with id: %s.", id)}
 }
 
 func mapInvalidServiceUnitFieldValueErrors(err error, serviceUnitConfig model.ServiceUnitConfig) []InvalidServiceUnitFieldValueError {
