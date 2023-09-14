@@ -102,15 +102,15 @@ func (mg ManifestGenerator) GenerateRoutesJson() ([]byte, error) {
 		return nil, errors.New("Gateway config not found")
 	}
 	var routes []usecases.Route
-	for _, ingressAdapter := range mg.ServiceUnitConfig.IngressAdapterConfigs {
-		if ingressAdapter.StatelessIngressAdapterConfig != nil {
+	for _, primaryAdapter := range mg.ServiceUnitConfig.AdapterConfigs {
+		if primaryAdapter.ServerConfig != nil {
 			var weight int32 = 1
-			if ingressAdapter.StatelessIngressAdapterConfig.Weight != nil {
-				weight = *ingressAdapter.StatelessIngressAdapterConfig.Weight
+			if primaryAdapter.ServerConfig.Weight != nil {
+				weight = *primaryAdapter.ServerConfig.Weight
 			}
 			route := usecases.CreateLoadGeneratorRoutes(
-				ingressAdapter.StatelessIngressAdapterConfig.Route,
-				constants.GetHttpMethodFromAction(ingressAdapter.StatelessIngressAdapterConfig.Action),
+				primaryAdapter.ServerConfig.Route,
+				constants.GetHttpMethodFromAction(primaryAdapter.ServerConfig.Action),
 				weight,
 			)
 			routes = append(routes, route)

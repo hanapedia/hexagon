@@ -26,8 +26,8 @@ func TestGenearateMongoManifest(t *testing.T) {
 
 func TestGenearateKafkaTopic(t *testing.T) {
 	manifestGenerator := generate.NewManifestGenerator("./data/kafka.yaml", "./data/output/kafka.yaml")
-	if manifestGenerator.ServiceUnitConfig.IngressAdapterConfigs[0].BrokerIngressAdapterConfig != nil {
-		config := manifestGenerator.ServiceUnitConfig.IngressAdapterConfigs[0].BrokerIngressAdapterConfig
+	if manifestGenerator.ServiceUnitConfig.AdapterConfigs[0].ConsumerConfig != nil {
+		config := manifestGenerator.ServiceUnitConfig.AdapterConfigs[0].ConsumerConfig
 		errs := manifestGenerator.GenerateBrokerManifests(*config)
 		if errs.Exist() {
 			errs.Print()

@@ -114,7 +114,7 @@ func (e *BrokerManifestError) Error() string {
 	return e.message
 }
 
-func NewBrokerManifestError(brokerAdapterConfig model.BrokerIngressAdapterConfig, message string) BrokerManifestError {
+func NewBrokerManifestError(brokerAdapterConfig model.ConsumerConfig, message string) BrokerManifestError {
 	return BrokerManifestError{
 		message: fmt.Sprintf(
 			"Error generating broker manifest for %s for topic %s: %s",

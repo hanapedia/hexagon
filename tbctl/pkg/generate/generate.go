@@ -51,11 +51,11 @@ func GenerateFromDirectory(input, output string) {
 
 func (mg ManifestGenerator) GenerateManifest() ManifestErrors {
 	var manfiestErrors ManifestErrors
-	if hasStatefulAdapter(mg.ServiceUnitConfig.IngressAdapterConfigs) {
+	if hasRepositoryAdapter(mg.ServiceUnitConfig.AdapterConfigs) {
 		manfiestErrors.Extend(mg.GenerateStatefulManifests())
 		return manfiestErrors
 	}
-	brokerAdapters := getBrokerAdapters(mg.ServiceUnitConfig.IngressAdapterConfigs)
+	brokerAdapters := getBrokerAdapters(mg.ServiceUnitConfig.AdapterConfigs)
 	if len(brokerAdapters) > 0 {
 		for _, config := range brokerAdapters {
 			manfiestErrors.Extend(mg.GenerateBrokerManifests(config))
@@ -76,20 +76,20 @@ func (mg ManifestGenerator) GenerateManifest() ManifestErrors {
 	return manfiestErrors
 }
 
-func hasStatefulAdapter(ingressAdapterConfigs []model.IngressAdapterSpec) bool {
-	for _, ingresingressAdapterConfig := range ingressAdapterConfigs {
-		if ingresingressAdapterConfig.StatefulIngressAdapterConfig != nil {
+func hasRepositoryAdapter(primaryAdapterConfigs []model.PrimaryAdapterSpec) bool {
+	for _, primaryAdapterConfig := range primaryAdapterConfigs {
+		if primaryAdapterConfig.RepositoryConfig != nil {
 			return true
 		}
 	}
 	return false
 }
 
-func getBrokerAdapters(ingressAdapterConfigs []model.IngressAdapterSpec) []model.BrokerIngressAdapterConfig {
-	var configs []model.BrokerIngressAdapterConfig
-	for _, ingresingressAdapterConfig := range ingressAdapterConfigs {
-		if ingresingressAdapterConfig.BrokerIngressAdapterConfig != nil {
-			configs = append(configs, *ingresingressAdapterConfig.BrokerIngressAdapterConfig)
+func getBrokerAdapters(primaryAdapterConfigs []model.PrimaryAdapterSpec) []model.ConsumerConfig {
+	var configs []model.ConsumerConfig
+	for _, primaryAdapterConfig := range primaryAdapterConfigs {
+		if primaryAdapterConfig.ConsumerConfig != nil {
+			configs = append(configs, *primaryAdapterConfig.ConsumerConfig)
 		}
 	}
 	return configs

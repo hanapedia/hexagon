@@ -35,19 +35,19 @@ func (gg GraphGenerator) generate() []byte {
 	// Loop through ServiceUnitConfigs
 	for _, config := range gg.serviceUnitConfigs {
 		serviceName := config.Name
-		for _, ia := range config.IngressAdapterConfigs {
+		for _, ia := range config.AdapterConfigs {
 
-			if ia.StatefulIngressAdapterConfig != nil {
+			if ia.RepositoryConfig != nil {
 				// Add node data from Egress
 				continue
 			}
 
-			if ia.BrokerIngressAdapterConfig != nil {
-				err := addEdge(graph, ia.BrokerIngressAdapterConfig.Topic, serviceName, "subscribe")
+			if ia.ConsumerConfig != nil {
+				err := addEdge(graph, ia.ConsumerConfig.Topic, serviceName, "subscribe")
 				if err != nil {
 					logger.Logger.Fatalf(
 						"Error adding edge (%s, %s). %s",
-						ia.BrokerIngressAdapterConfig.Topic,
+						ia.ConsumerConfig.Topic,
 						serviceName,
 						err,
 					)
@@ -109,18 +109,18 @@ func addEdge(graph *graphml.Graph, source, destination, edgeLabel string) error 
 func parseSteps(graph *graphml.Graph, serviceName string, steps []model.Step) {
 	for _, step := range steps {
 		var destination, edgeLabel string
-		if step.EgressAdapterConfig.BrokerEgressAdapterConfig != nil {
-			destination = step.EgressAdapterConfig.BrokerEgressAdapterConfig.Topic
+		if step.AdapterConfig.ProducerConfig != nil {
+			destination = step.AdapterConfig.ProducerConfig.Topic
 			edgeLabel = "publish"
 		}
 
-		if step.EgressAdapterConfig.StatefulEgressAdapterConfig != nil {
-			destination = step.EgressAdapterConfig.StatefulEgressAdapterConfig.Name
+		if step.AdapterConfig.RepositoryConfig != nil {
+			destination = step.AdapterConfig.RepositoryConfig.Name
 			edgeLabel = "tcp"
 		}
 
-		if step.EgressAdapterConfig.StatelessEgressAdapterConfig != nil {
-			destination = step.EgressAdapterConfig.StatelessEgressAdapterConfig.Service
+		if step.AdapterConfig.InvocationConfig != nil {
+			destination = step.AdapterConfig.InvocationConfig.Service
 			edgeLabel = "http"
 		}
 
