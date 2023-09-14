@@ -33,11 +33,11 @@ type SecondaryPortError struct {
 }
 
 // LogSecondaryPortErrors logs the failed tasks
-func LogSecondaryPortErrors(egressAdapterErrors *[]SecondaryPortError) {
-	for _, egressAdapterError := range *egressAdapterErrors {
+func LogSecondaryPortErrors(errors *[]SecondaryPortError) {
+	for _, error := range *errors {
 		logger.Logger.Errorf("Invocating %s failed: %s",
-			reflect.TypeOf(egressAdapterError.SecondaryPort).Elem().Name(),
-			egressAdapterError.Error,
+			reflect.TypeOf(error.SecondaryPort).Elem().Name(),
+			error.Error,
 		)
 	}
 

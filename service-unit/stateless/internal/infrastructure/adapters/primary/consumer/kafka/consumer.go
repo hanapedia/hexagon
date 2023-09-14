@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure_new/adapters/secondary/config"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/secondary/config"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/core/runtime"
 	tracing "github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/telemetry/tracing/kafka"
 	"github.com/segmentio/kafka-go"
@@ -17,7 +17,7 @@ type KafkaConsumerAdapter struct {
 
 type KafkaConsumer struct {
 	reader  *kafka.Reader
-	handler *ports.PrimaryAdapter
+	handler *ports.PrimaryHandler
 }
 
 func NewKafkaConsumerAdapter(topic string) KafkaConsumerAdapter {
@@ -57,7 +57,7 @@ func (kca KafkaConsumerAdapter) Serve() error {
 	return err
 }
 
-func (kca KafkaConsumerAdapter) Register(serviceName string, handler *ports.PrimaryAdapter) error {
+func (kca KafkaConsumerAdapter) Register(serviceName string, handler *ports.PrimaryHandler) error {
 	kca.kafkaConsumer.handler = handler
 	return nil
 }

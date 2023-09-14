@@ -3,7 +3,7 @@ package mongo
 import (
 	"context"
 
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure_new/adapters/secondary/config"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/secondary/config"
 	tracing "github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/telemetry/tracing/mongo"
 	"github.com/hanapedia/the-bench/service-unit/stateless/pkg/utils"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"

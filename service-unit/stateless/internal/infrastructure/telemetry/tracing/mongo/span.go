@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure_new/adapters/secondary/config"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/secondary/config"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/telemetry/tracing"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"

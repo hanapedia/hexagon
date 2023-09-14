@@ -1,13 +1,10 @@
-// A ingress Adapter can have multiple handlers
-// A handler can have multiple tasks sets
-// A task have a single egress adapter
 package ports
 
 import (
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 )
 
-// PrimaryPort provides common interface for all the ingress resources.
+// PrimaryPort provides common interface for all the primary adapters.
 // Example resources include:
 // - REST API server
 // - gRPC server
@@ -16,7 +13,7 @@ import (
 // It is intended to represent the individual interfaces on each exteranl service,
 type PrimaryPort interface {
 	Serve() error
-	Register(string, *PrimaryAdapter) error
+	Register(string, *PrimaryHandler) error
 }
 
 type PrimaryPortError struct {
@@ -25,7 +22,7 @@ type PrimaryPortError struct {
 }
 
 // either StatelessAdapterConfig or BrokerAdapterConfig must be defined
-type PrimaryAdapter struct {
+type PrimaryHandler struct {
 	StatelessPrimaryAdapterConfig *model.StatelessIngressAdapterConfig
 	BrokerPrimaryAdapterConfig    *model.BrokerIngressAdapterConfig
 	TaskSets                      []TaskSet
@@ -36,7 +33,7 @@ type TaskSet struct {
 	Concurrent    bool
 }
 
-func (iah PrimaryAdapter) GetId(serviceName string) string {
+func (iah PrimaryHandler) GetId(serviceName string) string {
 	var id string
 	if iah.StatelessPrimaryAdapterConfig != nil {
 		id = iah.StatelessPrimaryAdapterConfig.GetId(serviceName)

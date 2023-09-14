@@ -37,7 +37,7 @@ func NewConsumerAdapter(protocol constants.BrokerAdapterVariant, action string) 
 // Takes the pointer to the slice of ServerAdapters
 // Update or insert ServiceAdapter based on the handler input.
 // Does not return any value
-func RegiserHandlerToIngressAdapter(serviceName string, serverAdapter *ports.PrimaryPort, handler *ports.PrimaryAdapter) error {
+func RegiserHandlerToPrimaryAdapter(serviceName string, serverAdapter *ports.PrimaryPort, handler *ports.PrimaryHandler) error {
 	err := (*serverAdapter).Register(serviceName, handler)
 
 	return err

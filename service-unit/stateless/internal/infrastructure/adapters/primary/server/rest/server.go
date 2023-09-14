@@ -37,7 +37,7 @@ func (rsa RestServerAdapter) Serve() error {
 	return rsa.server.Listen(rsa.addr)
 }
 
-func (rsa RestServerAdapter) Register(serviceName string, handler *ports.PrimaryAdapter) error {
+func (rsa RestServerAdapter) Register(serviceName string, handler *ports.PrimaryHandler) error {
 	if handler.StatelessPrimaryAdapterConfig == nil {
 		return errors.New(fmt.Sprintf("Invalid configuartion for handler %s.", handler.GetId(serviceName)))
 	}
