@@ -46,7 +46,7 @@ func (su *ServiceUnit) Start(errChan chan ports.PrimaryPortError) {
 		logger.Logger.Infof("Serving '%s' server.", protocol)
 		go func() {
 			if err := (*serverAdapterCopy).Serve(); err != nil {
-				errChan <- ports.PrimaryPortError{IngressAdapter: serverAdapterCopy, Error: err}
+				errChan <- ports.PrimaryPortError{PrimaryPort: serverAdapterCopy, Error: err}
 			}
 		}()
 	}
@@ -56,7 +56,7 @@ func (su *ServiceUnit) Start(errChan chan ports.PrimaryPortError) {
 		logger.Logger.Infof("Consumer '%s' started.", protocolAndAction)
 		go func() {
 			if err := (*consumerAdapterCopy).Serve(); err != nil {
-				errChan <- ports.PrimaryPortError{IngressAdapter: consumerAdapterCopy, Error: err}
+				errChan <- ports.PrimaryPortError{PrimaryPort: consumerAdapterCopy, Error: err}
 			}
 		}()
 	}
@@ -142,13 +142,13 @@ func (su *ServiceUnit) mapHandlersToIngressAdapters() {
 func (su ServiceUnit) createIngressAdapterHandler(ingressAdapterConfig model.IngressAdapterSpec, taskSets *[]ports.TaskSet) (ports.PrimaryAdapter, error) {
 	if ingressAdapterConfig.StatelessIngressAdapterConfig != nil {
 		return ports.PrimaryAdapter{
-			StatelessIngressAdapterConfig: ingressAdapterConfig.StatelessIngressAdapterConfig,
+			StatelessPrimaryAdapterConfig: ingressAdapterConfig.StatelessIngressAdapterConfig,
 			TaskSets:                      *taskSets,
 		}, nil
 	}
 	if ingressAdapterConfig.BrokerIngressAdapterConfig != nil {
 		return ports.PrimaryAdapter{
-			BrokerIngressAdapterConfig: ingressAdapterConfig.BrokerIngressAdapterConfig,
+			BrokerPrimaryAdapterConfig: ingressAdapterConfig.BrokerIngressAdapterConfig,
 			TaskSets:                   *taskSets,
 		}, nil
 	}
@@ -164,7 +164,7 @@ func (su ServiceUnit) mapTaskSet(steps []model.Step) *[]ports.TaskSet {
 			logger.Logger.Infof("Skipped interface: %s", err)
 			continue
 		}
-		tasksets[i] = ports.TaskSet{EgressAdapter: egressAdapter, Concurrent: step.Concurrent}
+		tasksets[i] = ports.TaskSet{SecondaryPort: egressAdapter, Concurrent: step.Concurrent}
 	}
 
 	return &tasksets

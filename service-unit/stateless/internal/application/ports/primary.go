@@ -20,29 +20,29 @@ type PrimaryPort interface {
 }
 
 type PrimaryPortError struct {
-	IngressAdapter *PrimaryPort
+	PrimaryPort *PrimaryPort
 	Error          error
 }
 
 // either StatelessAdapterConfig or BrokerAdapterConfig must be defined
 type PrimaryAdapter struct {
-	StatelessIngressAdapterConfig *model.StatelessIngressAdapterConfig
-	BrokerIngressAdapterConfig    *model.BrokerIngressAdapterConfig
+	StatelessPrimaryAdapterConfig *model.StatelessIngressAdapterConfig
+	BrokerPrimaryAdapterConfig    *model.BrokerIngressAdapterConfig
 	TaskSets                      []TaskSet
 }
 
 type TaskSet struct {
-	EgressAdapter SecodaryPort
+	SecondaryPort SecodaryPort
 	Concurrent    bool
 }
 
 func (iah PrimaryAdapter) GetId(serviceName string) string {
 	var id string
-	if iah.StatelessIngressAdapterConfig != nil {
-		id = iah.StatelessIngressAdapterConfig.GetId(serviceName)
+	if iah.StatelessPrimaryAdapterConfig != nil {
+		id = iah.StatelessPrimaryAdapterConfig.GetId(serviceName)
 	}
-	if iah.BrokerIngressAdapterConfig != nil {
-		id = iah.BrokerIngressAdapterConfig.GetId(serviceName)
+	if iah.BrokerPrimaryAdapterConfig != nil {
+		id = iah.BrokerPrimaryAdapterConfig.GetId(serviceName)
 	}
 	return id
 }

@@ -26,5 +26,5 @@ func main() {
 	serviceUnit.Start(errChan)
 
 	serverAdapterError := <-errChan
-	logger.Logger.Fatalf("%s failed: %s", reflect.TypeOf(serverAdapterError.IngressAdapter).Elem().Name(), serverAdapterError.Error)
+	logger.Logger.Fatalf("%s failed: %s", reflect.TypeOf(serverAdapterError.PrimaryPort).Elem().Name(), serverAdapterError.Error)
 }

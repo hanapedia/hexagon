@@ -28,7 +28,7 @@ type SecondaryAdapter interface {
 }
 
 type SecondaryPortError struct {
-	EgressAdapter *SecodaryPort
+	SecondaryPort *SecodaryPort
 	Error         error
 }
 
@@ -36,7 +36,7 @@ type SecondaryPortError struct {
 func LogSecondaryPortErrors(egressAdapterErrors *[]SecondaryPortError) {
 	for _, egressAdapterError := range *egressAdapterErrors {
 		logger.Logger.Errorf("Invocating %s failed: %s",
-			reflect.TypeOf(egressAdapterError.EgressAdapter).Elem().Name(),
+			reflect.TypeOf(egressAdapterError.SecondaryPort).Elem().Name(),
 			egressAdapterError.Error,
 		)
 	}

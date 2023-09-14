@@ -14,23 +14,23 @@ func TaskSetHandler(ctx context.Context, taskSets []ports.TaskSet) []ports.Secon
 		if task.Concurrent {
 			go func(task ports.TaskSet) {
 				defer func() { done <- true }()
-				_, err := task.EgressAdapter.Call(ctx)
-				errCh <- ports.SecondaryPortError{EgressAdapter: &task.EgressAdapter, Error: err}
+				_, err := task.SecondaryPort.Call(ctx)
+				errCh <- ports.SecondaryPortError{SecondaryPort: &task.SecondaryPort, Error: err}
 			}(task)
 		} else {
-			_, err := task.EgressAdapter.Call(ctx)
-			errCh <- ports.SecondaryPortError{EgressAdapter: &task.EgressAdapter, Error: err}
+			_, err := task.SecondaryPort.Call(ctx)
+			errCh <- ports.SecondaryPortError{SecondaryPort: &task.SecondaryPort, Error: err}
             done <- true
 		}
 	}
 
-	var egressAdapterErrors []ports.SecondaryPortError
+	var secondaryAdapterErrors []ports.SecondaryPortError
 	for i := 0; i < len(taskSets); i++ {
 		<-done
 		invocationAdapterError := <-errCh
 		if invocationAdapterError.Error != nil {
-			egressAdapterErrors = append(egressAdapterErrors, invocationAdapterError)
+			secondaryAdapterErrors = append(secondaryAdapterErrors, invocationAdapterError)
 		}
 	}
-	return egressAdapterErrors
+	return secondaryAdapterErrors
 }

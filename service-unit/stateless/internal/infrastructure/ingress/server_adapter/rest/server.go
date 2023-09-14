@@ -38,14 +38,14 @@ func (rsa RestServerAdapter) Serve() error {
 }
 
 func (rsa RestServerAdapter) Register(serviceName string, handler *ports.PrimaryAdapter) error {
-	if handler.StatelessIngressAdapterConfig == nil {
+	if handler.StatelessPrimaryAdapterConfig == nil {
 		return errors.New(fmt.Sprintf("Invalid configuartion for handler %s.", handler.GetId(serviceName)))
 	}
 
 	var err error
-	switch handler.StatelessIngressAdapterConfig.Action {
+	switch handler.StatelessPrimaryAdapterConfig.Action {
 	case "read":
-		rsa.server.Get("/"+handler.StatelessIngressAdapterConfig.Route, func(c *fiber.Ctx) error {
+		rsa.server.Get("/"+handler.StatelessPrimaryAdapterConfig.Route, func(c *fiber.Ctx) error {
 			// call tasks
 			egressAdapterErrors := runtime.TaskSetHandler(c.Context(), handler.TaskSets)
 			ports.LogSecondaryPortErrors(&egressAdapterErrors)
@@ -63,7 +63,7 @@ func (rsa RestServerAdapter) Register(serviceName string, handler *ports.Primary
 			return c.Status(fiber.StatusOK).JSON(restResponse)
 		})
 	case "write":
-		rsa.server.Post("/"+handler.StatelessIngressAdapterConfig.Route, func(c *fiber.Ctx) error {
+		rsa.server.Post("/"+handler.StatelessPrimaryAdapterConfig.Route, func(c *fiber.Ctx) error {
 			// call tasks
 			egressAdapterErrors := runtime.TaskSetHandler(c.Context() ,handler.TaskSets)
 			ports.LogSecondaryPortErrors(&egressAdapterErrors)
