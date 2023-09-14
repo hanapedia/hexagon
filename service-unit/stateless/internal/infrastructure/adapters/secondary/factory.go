@@ -5,9 +5,9 @@ import (
 
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure_new/adapters/secondary/invocation"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure_new/adapters/secondary/repository"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure_new/adapters/secondary/producer"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/secondary/invocation"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/secondary/repository"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/secondary/producer"
 )
 
 func NewSecondaryAdapter(config model.EgressAdapterConfig, clients *map[string]ports.SecondaryAdapter) (ports.SecodaryPort, error) {

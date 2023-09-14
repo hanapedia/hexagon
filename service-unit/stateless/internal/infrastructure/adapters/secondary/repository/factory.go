@@ -4,8 +4,8 @@ import (
 	"errors"
 
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure_new/adapters/secondary/config"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure_new/adapters/secondary/repository/mongo"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/secondary/config"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/secondary/repository/mongo"
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"

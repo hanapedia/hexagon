@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure_new/adapters/secondary/invocation/rest"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/secondary/invocation/rest"
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"

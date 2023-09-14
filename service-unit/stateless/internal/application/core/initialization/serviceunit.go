@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure_new/adapters/secondary"
-	ingressAdapterFactory "github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/factory"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/secondary"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/primary"
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
@@ -88,7 +88,7 @@ func (su *ServiceUnit) initializeServerAdapter(statelessAdapterConfig model.Stat
 	serverKey := getServerKey(statelessAdapterConfig)
 	_, ok := (*su.ServerAdapters)[serverKey]
 	if !ok {
-		(*su.ServerAdapters)[serverKey] = ingressAdapterFactory.NewServerAdapter(serverKey)
+		(*su.ServerAdapters)[serverKey] = primary.NewServerAdapter(serverKey)
 	}
 }
 
@@ -102,7 +102,7 @@ func (su *ServiceUnit) initializeConsumerAdapter(brokerIngressAdapterConfig mode
 	consumerKey := getConsumerKey(brokerIngressAdapterConfig)
 	_, ok := (*su.ConsumerAdapters)[consumerKey]
 	if !ok {
-		(*su.ConsumerAdapters)[consumerKey] = ingressAdapterFactory.NewConsumerAdapter(brokerIngressAdapterConfig.Variant, brokerIngressAdapterConfig.Topic)
+		(*su.ConsumerAdapters)[consumerKey] = primary.NewConsumerAdapter(brokerIngressAdapterConfig.Variant, brokerIngressAdapterConfig.Topic)
 	}
 }
 
@@ -130,7 +130,7 @@ func (su *ServiceUnit) mapHandlersToIngressAdapters() {
 		}
 		logger.Logger.Tracef("registering handler %s", handler.GetId(su.Name))
 
-		err = ingressAdapterFactory.RegiserHandlerToIngressAdapter(su.Name, ingressAdapter, &handler)
+		err = primary.RegiserHandlerToIngressAdapter(su.Name, ingressAdapter, &handler)
 		if err != nil {
 			logger.Logger.Fatalf("Error registering handler to server adapter: %v", err)
 		}

@@ -9,7 +9,7 @@ import (
 	fiber_logger "github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/contract"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure_new/adapters/secondary/config"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/secondary/config"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/core/runtime"
 	"github.com/hanapedia/the-bench/service-unit/stateless/pkg/utils"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"

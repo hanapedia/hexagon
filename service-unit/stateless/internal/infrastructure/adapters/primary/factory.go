@@ -1,11 +1,11 @@
-package factory
+package primary
 
 import (
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/consumer_adapter/kafka"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/server_adapter/rest"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/primary/consumer/kafka"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/primary/server/rest"
 )
 
 func NewServerAdapter(serverAdapterProtocol constants.StatelessAdapterVariant) *ports.PrimaryPort {
