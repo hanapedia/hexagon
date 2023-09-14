@@ -7,37 +7,36 @@ import (
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 )
 
-// IngressAdapter provides common interface for all the ingress resources.
+// PrimaryPort provides common interface for all the ingress resources.
 // Example resources include:
 // - REST API server
 // - gRPC server
 // - Kafka consumer
 //
 // It is intended to represent the individual interfaces on each exteranl service,
-// not the services themselves; hence the name `EgressAdapter`
-type IngressAdapter interface {
+type PrimaryPort interface {
 	Serve() error
-	Register(string, *IngressAdapterHandler) error
+	Register(string, *PrimaryAdapter) error
 }
 
-type IngressAdapterError struct {
-	IngressAdapter *IngressAdapter
+type PrimaryPortError struct {
+	IngressAdapter *PrimaryPort
 	Error          error
 }
 
 // either StatelessAdapterConfig or BrokerAdapterConfig must be defined
-type IngressAdapterHandler struct {
+type PrimaryAdapter struct {
 	StatelessIngressAdapterConfig *model.StatelessIngressAdapterConfig
 	BrokerIngressAdapterConfig    *model.BrokerIngressAdapterConfig
 	TaskSets                      []TaskSet
 }
 
 type TaskSet struct {
-	EgressAdapter EgressAdapter
+	EgressAdapter SecodaryPort
 	Concurrent    bool
 }
 
-func (iah IngressAdapterHandler) GetId(serviceName string) string {
+func (iah PrimaryAdapter) GetId(serviceName string) string {
 	var id string
 	if iah.StatelessIngressAdapterConfig != nil {
 		id = iah.StatelessIngressAdapterConfig.GetId(serviceName)

@@ -7,7 +7,7 @@ import (
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 )
 
-func NewEgressAdapter(egressAdapterConfig model.EgressAdapterConfig, clients *map[string]ports.EgressClient) (ports.EgressAdapter, error) {
+func NewEgressAdapter(egressAdapterConfig model.EgressAdapterConfig, clients *map[string]ports.SecondaryAdapter) (ports.SecodaryPort, error) {
 	if egressAdapterConfig.StatelessEgressAdapterConfig != nil {
 		client := getOrCreateStatelessEgressClient(*egressAdapterConfig.StatelessEgressAdapterConfig, clients)
 		return statelesEgressAdapterFactory(*egressAdapterConfig.StatelessEgressAdapterConfig, client)

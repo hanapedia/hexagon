@@ -11,8 +11,8 @@ import (
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 )
 
-func restEgressAdapterFactory(adapterConfig model.StatelessEgressAdapterConfig, client ports.EgressClient) (ports.EgressAdapter, error) {
-	var restEgressAdapter ports.EgressAdapter
+func restEgressAdapterFactory(adapterConfig model.StatelessEgressAdapterConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+	var restEgressAdapter ports.SecodaryPort
 	var err error
 
 	if restClient, ok := (client).(rest.RestClient); ok {

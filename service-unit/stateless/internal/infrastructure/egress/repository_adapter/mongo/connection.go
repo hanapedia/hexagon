@@ -15,7 +15,7 @@ type MongoClient struct {
 }
 
 // Client client for mongo
-func NewMongoClient(addr string) ports.EgressClient {
+func NewMongoClient(addr string) ports.SecondaryAdapter {
 	ctx := context.Background()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(addr))
 	if err != nil {

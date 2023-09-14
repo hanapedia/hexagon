@@ -11,7 +11,7 @@ import (
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
-func brokerEgressAdapterFactory(adapterConfig model.BrokerEgressAdapterConfig, client ports.EgressClient) (ports.EgressAdapter, error) {
+func brokerEgressAdapterFactory(adapterConfig model.BrokerEgressAdapterConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
 	switch adapterConfig.Variant {
 	case constants.KAFKA:
 		return kafkaEgressAdapterFactory(adapterConfig, client)
@@ -22,7 +22,7 @@ func brokerEgressAdapterFactory(adapterConfig model.BrokerEgressAdapterConfig, c
 
 }
 
-func getOrCreateBrokerEgressClient(adapterConfig model.BrokerEgressAdapterConfig, clients *map[string]ports.EgressClient) ports.EgressClient {
+func getOrCreateBrokerEgressClient(adapterConfig model.BrokerEgressAdapterConfig, clients *map[string]ports.SecondaryAdapter) ports.SecondaryAdapter {
 	key := adapterConfig.GetId()
 	client, ok := (*clients)[key]
 	if ok {

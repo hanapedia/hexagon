@@ -9,8 +9,8 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/egress/repository_adapter/mongo"
 )
 
-func mongoEgressAdapterFactory(adapterConfig model.StatefulEgressAdapterConfig, client ports.EgressClient) (ports.EgressAdapter, error) {
-	var mongoEgressAdapter ports.EgressAdapter
+func mongoEgressAdapterFactory(adapterConfig model.StatefulEgressAdapterConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+	var mongoEgressAdapter ports.SecodaryPort
 	var err error
 	if mongoClient, ok := (client).(mongo.MongoClient); ok {
 		switch adapterConfig.Action {

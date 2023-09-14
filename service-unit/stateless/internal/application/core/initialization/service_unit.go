@@ -16,19 +16,19 @@ type ServiceUnit struct {
 	Name             string
 	Config           *model.ServiceUnitConfig
 	// ServerAdapters hold the adapters for server processes from REST, gRPC
-	ServerAdapters   *map[constants.StatelessAdapterVariant]*ports.IngressAdapter
+	ServerAdapters   *map[constants.StatelessAdapterVariant]*ports.PrimaryPort
 	// ConsumerAdapters hold the adapters for consumer processes from Kafka, RabbitMQ, Pular, etc
-	ConsumerAdapters *map[string]*ports.IngressAdapter
+	ConsumerAdapters *map[string]*ports.PrimaryPort
 	// EgressClients hold the persistent clients for egress adapters
-	EgressClients    *map[string]ports.EgressClient
+	EgressClients    *map[string]ports.SecondaryAdapter
 }
 
 // NewServiceUnit initializes service unit object
 func NewServiceUnit(serviceUnitConfig model.ServiceUnitConfig) ServiceUnit {
-	serverAdapters := make(map[constants.StatelessAdapterVariant]*ports.IngressAdapter)
-	consumerAdapters := make(map[string]*ports.IngressAdapter)
+	serverAdapters := make(map[constants.StatelessAdapterVariant]*ports.PrimaryPort)
+	consumerAdapters := make(map[string]*ports.PrimaryPort)
 
-	egressClients := make(map[string]ports.EgressClient)
+	egressClients := make(map[string]ports.SecondaryAdapter)
 
 	return ServiceUnit{
 		Name:             serviceUnitConfig.Name,
@@ -40,13 +40,13 @@ func NewServiceUnit(serviceUnitConfig model.ServiceUnitConfig) ServiceUnit {
 }
 
 // Start ingress adapters
-func (su *ServiceUnit) Start(errChan chan ports.IngressAdapterError) {
+func (su *ServiceUnit) Start(errChan chan ports.PrimaryPortError) {
 	for protocol, serverAdapter := range *su.ServerAdapters {
 		serverAdapterCopy := serverAdapter
 		logger.Logger.Infof("Serving '%s' server.", protocol)
 		go func() {
 			if err := (*serverAdapterCopy).Serve(); err != nil {
-				errChan <- ports.IngressAdapterError{IngressAdapter: serverAdapterCopy, Error: err}
+				errChan <- ports.PrimaryPortError{IngressAdapter: serverAdapterCopy, Error: err}
 			}
 		}()
 	}
@@ -56,7 +56,7 @@ func (su *ServiceUnit) Start(errChan chan ports.IngressAdapterError) {
 		logger.Logger.Infof("Consumer '%s' started.", protocolAndAction)
 		go func() {
 			if err := (*consumerAdapterCopy).Serve(); err != nil {
-				errChan <- ports.IngressAdapterError{IngressAdapter: consumerAdapterCopy, Error: err}
+				errChan <- ports.PrimaryPortError{IngressAdapter: consumerAdapterCopy, Error: err}
 			}
 		}()
 	}
@@ -120,7 +120,7 @@ func (su *ServiceUnit) mapHandlersToIngressAdapters() {
 			logger.Logger.Fatalf("Error creating handler: %v", err)
 		}
 
-		var ingressAdapter *ports.IngressAdapter
+		var ingressAdapter *ports.PrimaryPort
 		if ingressAdapterConfig.StatelessIngressAdapterConfig != nil {
 			ingressAdapter = (*su.ServerAdapters)[ingressAdapterConfig.StatelessIngressAdapterConfig.Variant]
 		}
@@ -139,20 +139,20 @@ func (su *ServiceUnit) mapHandlersToIngressAdapters() {
 }
 
 // createIngressAdapterHandler builds ingress adapter with given task set
-func (su ServiceUnit) createIngressAdapterHandler(ingressAdapterConfig model.IngressAdapterSpec, taskSets *[]ports.TaskSet) (ports.IngressAdapterHandler, error) {
+func (su ServiceUnit) createIngressAdapterHandler(ingressAdapterConfig model.IngressAdapterSpec, taskSets *[]ports.TaskSet) (ports.PrimaryAdapter, error) {
 	if ingressAdapterConfig.StatelessIngressAdapterConfig != nil {
-		return ports.IngressAdapterHandler{
+		return ports.PrimaryAdapter{
 			StatelessIngressAdapterConfig: ingressAdapterConfig.StatelessIngressAdapterConfig,
 			TaskSets:                      *taskSets,
 		}, nil
 	}
 	if ingressAdapterConfig.BrokerIngressAdapterConfig != nil {
-		return ports.IngressAdapterHandler{
+		return ports.PrimaryAdapter{
 			BrokerIngressAdapterConfig: ingressAdapterConfig.BrokerIngressAdapterConfig,
 			TaskSets:                   *taskSets,
 		}, nil
 	}
-	return ports.IngressAdapterHandler{}, errors.New("Failed to create ingress adapter handler. No adapter config found.")
+	return ports.PrimaryAdapter{}, errors.New("Failed to create ingress adapter handler. No adapter config found.")
 }
 
 // mapTaskSet creates task set from config

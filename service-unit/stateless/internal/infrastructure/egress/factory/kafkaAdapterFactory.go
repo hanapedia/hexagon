@@ -8,8 +8,8 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/egress/producer_adapter/kafka"
 )
 
-func kafkaEgressAdapterFactory(adapterConfig model.BrokerEgressAdapterConfig, client ports.EgressClient) (ports.EgressAdapter, error) {
-	var kafkaEgressAdapter ports.EgressAdapter
+func kafkaEgressAdapterFactory(adapterConfig model.BrokerEgressAdapterConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+	var kafkaEgressAdapter ports.SecodaryPort
 	var err error
 	if kafkaProducerClient, ok := (client).(kafka.KafkaProducerClient); ok {
 		kafkaEgressAdapter = kafka.KafkaProducerAdapter{Writer: kafkaProducerClient.Client}

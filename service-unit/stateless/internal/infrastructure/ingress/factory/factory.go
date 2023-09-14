@@ -8,8 +8,8 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/ingress/server_adapter/rest"
 )
 
-func NewServerAdapter(serverAdapterProtocol constants.StatelessAdapterVariant) *ports.IngressAdapter {
-	var serverAdapter ports.IngressAdapter
+func NewServerAdapter(serverAdapterProtocol constants.StatelessAdapterVariant) *ports.PrimaryPort {
+	var serverAdapter ports.PrimaryPort
 
 	switch serverAdapterProtocol {
 	case constants.REST:
@@ -21,8 +21,8 @@ func NewServerAdapter(serverAdapterProtocol constants.StatelessAdapterVariant) *
 	return &serverAdapter
 }
 
-func NewConsumerAdapter(protocol constants.BrokerAdapterVariant, action string) *ports.IngressAdapter {
-	var consumerAdapter ports.IngressAdapter
+func NewConsumerAdapter(protocol constants.BrokerAdapterVariant, action string) *ports.PrimaryPort {
+	var consumerAdapter ports.PrimaryPort
 
 	switch protocol {
 	case constants.KAFKA:
@@ -37,7 +37,7 @@ func NewConsumerAdapter(protocol constants.BrokerAdapterVariant, action string) 
 // Takes the pointer to the slice of ServerAdapters
 // Update or insert ServiceAdapter based on the handler input.
 // Does not return any value
-func RegiserHandlerToIngressAdapter(serviceName string, serverAdapter *ports.IngressAdapter, handler *ports.IngressAdapterHandler) error {
+func RegiserHandlerToIngressAdapter(serviceName string, serverAdapter *ports.PrimaryPort, handler *ports.PrimaryAdapter) error {
 	err := (*serverAdapter).Register(serviceName, handler)
 
 	return err

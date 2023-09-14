@@ -11,7 +11,7 @@ import (
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
-func statefulEgressAdapterFactory(adapterConfig model.StatefulEgressAdapterConfig, client ports.EgressClient) (ports.EgressAdapter, error) {
+func statefulEgressAdapterFactory(adapterConfig model.StatefulEgressAdapterConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
 	switch adapterConfig.Variant {
 	case constants.MONGO:
 		return mongoEgressAdapterFactory(adapterConfig, client)
@@ -23,7 +23,7 @@ func statefulEgressAdapterFactory(adapterConfig model.StatefulEgressAdapterConfi
 }
 
 // getOrCreateStatefulEgressClient creates new client to stateful service if it does not exist
-func getOrCreateStatefulEgressClient(adapterConfig model.StatefulEgressAdapterConfig, clients *map[string]ports.EgressClient) ports.EgressClient {
+func getOrCreateStatefulEgressClient(adapterConfig model.StatefulEgressAdapterConfig, clients *map[string]ports.SecondaryAdapter) ports.SecondaryAdapter {
 	key := adapterConfig.GetId()
 	client, ok := (*clients)[key]
 	if ok {

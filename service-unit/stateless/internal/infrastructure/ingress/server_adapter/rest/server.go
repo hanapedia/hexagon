@@ -37,7 +37,7 @@ func (rsa RestServerAdapter) Serve() error {
 	return rsa.server.Listen(rsa.addr)
 }
 
-func (rsa RestServerAdapter) Register(serviceName string, handler *ports.IngressAdapterHandler) error {
+func (rsa RestServerAdapter) Register(serviceName string, handler *ports.PrimaryAdapter) error {
 	if handler.StatelessIngressAdapterConfig == nil {
 		return errors.New(fmt.Sprintf("Invalid configuartion for handler %s.", handler.GetId(serviceName)))
 	}
@@ -48,7 +48,7 @@ func (rsa RestServerAdapter) Register(serviceName string, handler *ports.Ingress
 		rsa.server.Get("/"+handler.StatelessIngressAdapterConfig.Route, func(c *fiber.Ctx) error {
 			// call tasks
 			egressAdapterErrors := common.TaskSetHandler(c.Context(), handler.TaskSets)
-			ports.LogEgressAdapterErrors(&egressAdapterErrors)
+			ports.LogSecondaryPortErrors(&egressAdapterErrors)
 
 
 			// write response
@@ -66,7 +66,7 @@ func (rsa RestServerAdapter) Register(serviceName string, handler *ports.Ingress
 		rsa.server.Post("/"+handler.StatelessIngressAdapterConfig.Route, func(c *fiber.Ctx) error {
 			// call tasks
 			egressAdapterErrors := common.TaskSetHandler(c.Context() ,handler.TaskSets)
-			ports.LogEgressAdapterErrors(&egressAdapterErrors)
+			ports.LogSecondaryPortErrors(&egressAdapterErrors)
 
 			// write response
 			restResponse := contract.RestResponseBody{

@@ -10,7 +10,7 @@ type KafkaProducerClient struct {
 }
 
 // Only cosumer client is included for Kafka
-func NewKafkaClient(addr string, topic string) ports.EgressClient {
+func NewKafkaClient(addr string, topic string) ports.SecondaryAdapter {
 	client := kafka.Writer{
 		Addr:     kafka.TCP(addr),
 		Topic:    topic,

@@ -22,7 +22,7 @@ func main() {
 	serviceUnit.Setup()
 
 	// create error channel and start service unit
-	errChan := make(chan ports.IngressAdapterError)
+	errChan := make(chan ports.PrimaryPortError)
 	serviceUnit.Start(errChan)
 
 	serverAdapterError := <-errChan

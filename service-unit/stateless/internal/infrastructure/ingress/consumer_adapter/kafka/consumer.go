@@ -17,7 +17,7 @@ type KafkaConsumerAdapter struct {
 
 type KafkaConsumer struct {
 	reader  *kafka.Reader
-	handler *ports.IngressAdapterHandler
+	handler *ports.PrimaryAdapter
 }
 
 func NewKafkaConsumerAdapter(topic string) KafkaConsumerAdapter {
@@ -52,12 +52,12 @@ func (kca KafkaConsumerAdapter) Serve() error {
 
 		// call tasks
 		egressAdapterErrors := common.TaskSetHandler(ctx, kca.kafkaConsumer.handler.TaskSets)
-		ports.LogEgressAdapterErrors(&egressAdapterErrors)
+		ports.LogSecondaryPortErrors(&egressAdapterErrors)
 	}
 	return err
 }
 
-func (kca KafkaConsumerAdapter) Register(serviceName string, handler *ports.IngressAdapterHandler) error {
+func (kca KafkaConsumerAdapter) Register(serviceName string, handler *ports.PrimaryAdapter) error {
 	kca.kafkaConsumer.handler = handler
 	return nil
 }

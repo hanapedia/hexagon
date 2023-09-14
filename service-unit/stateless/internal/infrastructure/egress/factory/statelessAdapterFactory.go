@@ -10,7 +10,7 @@ import (
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
-func statelesEgressAdapterFactory(adapterConfig model.StatelessEgressAdapterConfig, client ports.EgressClient) (ports.EgressAdapter, error) {
+func statelesEgressAdapterFactory(adapterConfig model.StatelessEgressAdapterConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
 	switch adapterConfig.Variant {
 	case constants.REST:
 		return restEgressAdapterFactory(adapterConfig, client)
@@ -20,7 +20,7 @@ func statelesEgressAdapterFactory(adapterConfig model.StatelessEgressAdapterConf
 	}
 }
 
-func getOrCreateStatelessEgressClient(adapterConfig model.StatelessEgressAdapterConfig, clients *map[string]ports.EgressClient) ports.EgressClient {
+func getOrCreateStatelessEgressClient(adapterConfig model.StatelessEgressAdapterConfig, clients *map[string]ports.SecondaryAdapter) ports.SecondaryAdapter {
 	var client rest.RestClient
 	switch adapterConfig.Variant {
 	case constants.REST:
