@@ -1,12 +1,13 @@
+version: v0.1.0
 name: service-b
-ingressAdapters:
-  - stateless:
+adapters:
+  - server:
       action: write
       variant: rest
       route: updateUser
     steps:
-      - egressAdapter:
-          stateful:
+      - adapter:
+          repository:
             variant: mongo
             name: test
             action: write

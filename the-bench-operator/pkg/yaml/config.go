@@ -3,7 +3,7 @@ package yaml
 import (
 	"os"
 
-	"gopkg.in/yaml.v3"
+	k8syaml "sigs.k8s.io/yaml"
 
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 )
@@ -16,7 +16,7 @@ func (ycl YamlConfigLoader) Load() (model.ServiceUnitConfig, error) {
 	data, err := os.ReadFile(ycl.Path)
 
 	var config model.ServiceUnitConfig
-	err = yaml.Unmarshal(data, &config)
+	err = k8syaml.Unmarshal(data, &config)
 
     return config, err
 }
