@@ -114,8 +114,8 @@ func getConsumerKey(config model.BrokerIngressAdapterConfig) string {
 // mapSecondaryToPrimary map secondary adapter to primary adapter
 func (su *ServiceUnit) mapSecondaryToPrimary() {
 	for _, primaryConfig := range su.Config.IngressAdapterConfigs {
-		taskSet := su.createTaskSet(primaryConfig.Steps)
-		handler, err := su.createPrimaryAdapterHandler(primaryConfig, taskSet)
+		taskSet := su.newTaskSet(primaryConfig.Steps)
+		handler, err := su.newPrimaryAdapterHandler(primaryConfig, taskSet)
 		if err != nil {
 			logger.Logger.Fatalf("Error creating handler: %v", err)
 		}
@@ -138,8 +138,8 @@ func (su *ServiceUnit) mapSecondaryToPrimary() {
 	}
 }
 
-// createPrimaryAdapterHandler builds ingress adapter with given task set
-func (su ServiceUnit) createPrimaryAdapterHandler(primaryConfig model.IngressAdapterSpec, taskSet *[]ports.TaskSet) (ports.PrimaryHandler, error) {
+// newPrimaryAdapterHandler builds ingress adapter with given task set
+func (su ServiceUnit) newPrimaryAdapterHandler(primaryConfig model.IngressAdapterSpec, taskSet *[]ports.TaskSet) (ports.PrimaryHandler, error) {
 	if primaryConfig.StatelessIngressAdapterConfig != nil {
 		return ports.PrimaryHandler{
 			StatelessPrimaryAdapterConfig: primaryConfig.StatelessIngressAdapterConfig,
@@ -155,8 +155,8 @@ func (su ServiceUnit) createPrimaryAdapterHandler(primaryConfig model.IngressAda
 	return ports.PrimaryHandler{}, errors.New("Failed to create ingress adapter handler. No adapter config found.")
 }
 
-// createTaskSet creates task set from config
-func (su ServiceUnit) createTaskSet(steps []model.Step) *[]ports.TaskSet {
+// newTaskSet creates task set from config
+func (su ServiceUnit) newTaskSet(steps []model.Step) *[]ports.TaskSet {
 	tasksets := make([]ports.TaskSet, len(steps))
 	for i, step := range steps {
 		secondaryAdapter, err := secondary.NewSecondaryAdapter(*step.EgressAdapterConfig, su.SecondaryAdapters)
