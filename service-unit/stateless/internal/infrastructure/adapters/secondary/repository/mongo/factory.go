@@ -14,14 +14,14 @@ func MongoClientAdapterFactory(adapterConfig model.RepositoryClientConfig, clien
 	if mongoClient, ok := (client).(MongoClient); ok {
 		switch adapterConfig.Action {
 		case constants.READ:
-			mongoAdapter = MongoReadAdapter{
+			mongoAdapter = &MongoReadAdapter{
 				Name: adapterConfig.Name,
 				Database: string(adapterConfig.Variant),
 				Client: mongoClient.Client,
 				Collection: constants.RepositoryEntryVariant(adapterConfig.Size),
 			}
 		case constants.WRITE:
-			mongoAdapter = MongoWriteAdapter{
+			mongoAdapter = &MongoWriteAdapter{
 				Name: adapterConfig.Name,
 				Database: string(adapterConfig.Variant),
 				Client: mongoClient.Client,
@@ -33,5 +33,9 @@ func MongoClientAdapterFactory(adapterConfig model.RepositoryClientConfig, clien
 	} else {
 		err = errors.New("Unmatched client instance")
 	}
+
+	// set destionation id
+	mongoAdapter.SetDestId(adapterConfig.GetId())
+
 	return mongoAdapter, err
 }

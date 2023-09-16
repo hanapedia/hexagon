@@ -1,7 +1,10 @@
 package ports
 
 import (
+	"context"
+
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
+	l "github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
 // PrimaryPort provides common interface for all the primary adapters.
@@ -23,23 +26,42 @@ type PrimaryPortError struct {
 
 // either StatelessAdapterConfig or BrokerAdapterConfig must be defined
 type PrimaryHandler struct {
+	ServiceName    string
 	ServerConfig   *model.ServerConfig
 	ConsumerConfig *model.ConsumerConfig
-	TaskSets       []TaskSet
+	TaskSet        []Task
 }
 
-type TaskSet struct {
+type Task struct {
 	SecondaryPort SecodaryPort
 	Concurrent    bool
 }
 
-func (iah PrimaryHandler) GetId(serviceName string) string {
+type TaskError struct {
+	task  Task
+	error error
+}
+
+func NewTaskError(task Task, err error) *TaskError {
+	return &TaskError{task: task, error: err}
+}
+
+func (iah PrimaryHandler) GetId() string {
 	var id string
 	if iah.ServerConfig != nil {
-		id = iah.ServerConfig.GetId(serviceName)
+		id = iah.ServerConfig.GetId(iah.ServiceName)
 	}
 	if iah.ConsumerConfig != nil {
-		id = iah.ConsumerConfig.GetId(serviceName)
+		id = iah.ConsumerConfig.GetId(iah.ServiceName)
 	}
 	return id
+}
+
+func (iah PrimaryHandler) LogTaskError(ctx context.Context, taskError *TaskError) {
+	l.Logger.WithContext(ctx).Error(
+		"Call failed",
+		"sourceId", iah.GetId(),
+		"destId", taskError.task.SecondaryPort.GetDestId,
+		"err", taskError.error,
+	)
 }

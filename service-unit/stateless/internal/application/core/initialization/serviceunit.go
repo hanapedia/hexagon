@@ -9,7 +9,7 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/secondary"
 	model "github.com/hanapedia/the-bench/the-bench-operator/api/v1"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
-	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
+	l "github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
 type ServiceUnit struct {
@@ -43,7 +43,7 @@ func NewServiceUnit(serviceUnitConfig model.ServiceUnitConfig) ServiceUnit {
 func (su *ServiceUnit) Start(errChan chan ports.PrimaryPortError) {
 	for protocol, serverAdapter := range *su.ServerAdapters {
 		serverAdapterCopy := serverAdapter
-		logger.Logger.Infof("Serving '%s' server.", protocol)
+		l.Logger.Infof("Serving '%s' server.", protocol)
 		go func() {
 			if err := (*serverAdapterCopy).Serve(); err != nil {
 				errChan <- ports.PrimaryPortError{PrimaryPort: serverAdapterCopy, Error: err}
@@ -53,7 +53,7 @@ func (su *ServiceUnit) Start(errChan chan ports.PrimaryPortError) {
 
 	for protocolAndAction, consumerAdapter := range *su.ConsumerAdapters {
 		consumerAdapterCopy := consumerAdapter
-		logger.Logger.Infof("Consumer '%s' started.", protocolAndAction)
+		l.Logger.Infof("Consumer '%s' started.", protocolAndAction)
 		go func() {
 			if err := (*consumerAdapterCopy).Serve(); err != nil {
 				errChan <- ports.PrimaryPortError{PrimaryPort: consumerAdapterCopy, Error: err}
@@ -79,7 +79,7 @@ func (su *ServiceUnit) initializePrimaryAdapters() {
 			su.initializeConsumerAdapter(*primaryConfig.ConsumerConfig)
 			continue
 		}
-		logger.Logger.Fatal("Invalid primary adapter config.")
+		l.Logger.Fatal("Invalid primary adapter config.")
 	}
 }
 
@@ -117,7 +117,7 @@ func (su *ServiceUnit) mapSecondaryToPrimary() {
 		taskSet := su.newTaskSet(primaryConfig.Steps)
 		handler, err := su.newPrimaryAdapterHandler(primaryConfig, taskSet)
 		if err != nil {
-			logger.Logger.Fatalf("Error creating handler: %v", err)
+			l.Logger.Fatalf("Error creating handler: %v", err)
 		}
 
 		var primaryAdapter *ports.PrimaryPort
@@ -128,44 +128,44 @@ func (su *ServiceUnit) mapSecondaryToPrimary() {
 			consumerKey := getConsumerKey(*primaryConfig.ConsumerConfig)
 			primaryAdapter = (*su.ConsumerAdapters)[consumerKey]
 		}
-		logger.Logger.Tracef("registering handler %s", handler.GetId(su.Name))
 
 		err = primary.RegiserHandlerToPrimaryAdapter(su.Name, primaryAdapter, &handler)
 		if err != nil {
-			logger.Logger.Fatalf("Error registering handler to server adapter: %v", err)
+			l.Logger.Fatalf("Error registering handler to server adapter: %v", err)
 		}
-		logger.Logger.Infof("Successfully mapped '%s' handler", handler.GetId(su.Name))
+		l.Logger.Infof("Successfully mapped '%s' handler", handler.GetId())
 	}
 }
 
 // newPrimaryAdapterHandler builds primary adapter with given task set
-func (su ServiceUnit) newPrimaryAdapterHandler(primaryConfig model.PrimaryAdapterSpec, taskSet *[]ports.TaskSet) (ports.PrimaryHandler, error) {
+func (su ServiceUnit) newPrimaryAdapterHandler(primaryConfig model.PrimaryAdapterSpec, taskSet *[]ports.Task) (ports.PrimaryHandler, error) {
 	if primaryConfig.ServerConfig != nil {
 		return ports.PrimaryHandler{
+			ServiceName: su.Name,
 			ServerConfig: primaryConfig.ServerConfig,
-			TaskSets:     *taskSet,
+			TaskSet:     *taskSet,
 		}, nil
 	}
 	if primaryConfig.ConsumerConfig != nil {
 		return ports.PrimaryHandler{
 			ConsumerConfig: primaryConfig.ConsumerConfig,
-			TaskSets:       *taskSet,
+			TaskSet:       *taskSet,
 		}, nil
 	}
 	return ports.PrimaryHandler{}, errors.New("Failed to create primary adapter handler. No adapter config found.")
 }
 
 // newTaskSet creates task set from config
-func (su ServiceUnit) newTaskSet(steps []model.Step) *[]ports.TaskSet {
-	tasksets := make([]ports.TaskSet, len(steps))
+func (su ServiceUnit) newTaskSet(steps []model.Step) *[]ports.Task {
+	taskSet := make([]ports.Task, len(steps))
 	for i, step := range steps {
 		secondaryAdapter, err := secondary.NewSecondaryAdapter(*step.AdapterConfig, su.SecondaryAdapters)
 		if err != nil {
-			logger.Logger.Infof("Skipped interface: %s", err)
+			l.Logger.Infof("Skipped interface: %s", err)
 			continue
 		}
-		tasksets[i] = ports.TaskSet{SecondaryPort: secondaryAdapter, Concurrent: step.Concurrent}
+		taskSet[i] = ports.Task{SecondaryPort: secondaryAdapter, Concurrent: step.Concurrent}
 	}
 
-	return &tasksets
+	return &taskSet
 }

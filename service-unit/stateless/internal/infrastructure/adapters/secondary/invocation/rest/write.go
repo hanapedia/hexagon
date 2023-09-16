@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/contract"
 	"github.com/hanapedia/the-bench/service-unit/stateless/pkg/utils"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
@@ -16,12 +17,16 @@ import (
 type RestWriteAdapter struct {
 	URL string
 	Client *http.Client
+	ports.SecondaryPortBase
 }
 
-func (rwa RestWriteAdapter) Call(ctx context.Context) (string, error) {
+func (rwa *RestWriteAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
 	payload, err := utils.GenerateRandomString(constants.PayloadSize)
 	if err != nil {
-		return "", err
+        return ports.SecondaryPortCallResult{
+			Payload: nil,
+			Error: err,
+		}
 	}
 
 	restRequestBody := contract.RestRequestBody{
@@ -30,36 +35,57 @@ func (rwa RestWriteAdapter) Call(ctx context.Context) (string, error) {
 	}
 	jsonRestRequestBody, err := json.Marshal(restRequestBody)
 	if err != nil {
-		return "", err
+        return ports.SecondaryPortCallResult{
+			Payload: nil,
+			Error: err,
+		}
 	}
 
 	req, err := http.NewRequestWithContext(ctx, "POST", rwa.URL, bytes.NewReader(jsonRestRequestBody))
 	if err != nil {
-		return "", err
+        return ports.SecondaryPortCallResult{
+			Payload: nil,
+			Error: err,
+		}
 	}
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := rwa.Client.Do(req)
 	if err != nil {
-		return "", err
+        return ports.SecondaryPortCallResult{
+			Payload: nil,
+			Error: err,
+		}
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("unexpected status code %v: %s", resp.StatusCode, rwa.URL)
+        return ports.SecondaryPortCallResult{
+			Payload: nil,
+			Error: fmt.Errorf("unexpected status code %v", resp.StatusCode),
+		}
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+        return ports.SecondaryPortCallResult{
+			Payload: nil,
+			Error: err,
+		}
 	}
 
 	var restResponse contract.RestResponseBody
 	err = json.Unmarshal(body, &restResponse)
 	if err != nil {
-		return "", err
+        return ports.SecondaryPortCallResult{
+			Payload: nil,
+			Error: err,
+		}
 	}
 
-	return restResponse.Message, nil
+	return ports.SecondaryPortCallResult{
+		Payload: restResponse.Payload,
+		Error: nil,
+	}
 }
 

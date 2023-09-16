@@ -3,6 +3,7 @@ package kafka
 import (
 	"context"
 
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/secondary/config"
 	tracing "github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/telemetry/tracing/kafka"
 	"github.com/hanapedia/the-bench/service-unit/stateless/pkg/utils"
@@ -12,13 +13,17 @@ import (
 
 type KafkaProducerAdapter struct {
 	Writer *kafka.Writer
+	ports.SecondaryPortBase
 }
 
-func (kpa KafkaProducerAdapter) Call(ctx context.Context) (string, error) {
+func (kpa *KafkaProducerAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
 	// prepare payload
 	payload, err := utils.GenerateRandomString(constants.PayloadSize)
 	if err != nil {
-		return "", err
+        return ports.SecondaryPortCallResult{
+			Payload: nil,
+			Error: err,
+		}
 	}
 	message := kafka.Message{
 		Value: []byte(payload),
@@ -31,7 +36,14 @@ func (kpa KafkaProducerAdapter) Call(ctx context.Context) (string, error) {
 	}
 
 	if err = kpa.Writer.WriteMessages(ctx, message); err != nil {
-		return "Failed to produce", err
+        return ports.SecondaryPortCallResult{
+			Payload: nil,
+			Error: err,
+		}
 	}
-	return "Successfully produced", nil
+
+	return ports.SecondaryPortCallResult{
+		Payload: &payload,
+		Error: nil,
+	}
 }

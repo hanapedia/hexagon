@@ -39,7 +39,7 @@ func (rsa RestServerAdapter) Serve() error {
 
 func (rsa RestServerAdapter) Register(serviceName string, handler *ports.PrimaryHandler) error {
 	if handler.ServerConfig == nil {
-		return errors.New(fmt.Sprintf("Invalid configuartion for handler %s.", handler.GetId(serviceName)))
+		return errors.New(fmt.Sprintf("Invalid configuartion for handler %s.", handler.GetId()))
 	}
 
 	var err error
@@ -47,16 +47,26 @@ func (rsa RestServerAdapter) Register(serviceName string, handler *ports.Primary
 	case "read":
 		rsa.server.Get("/"+handler.ServerConfig.Route, func(c *fiber.Ctx) error {
 			// call tasks
-			secondaryAdapterErrors := runtime.TaskSetHandler(c.Context(), handler.TaskSets)
-			ports.LogSecondaryPortErrors(&secondaryAdapterErrors)
+			errs := runtime.TaskSetHandler(c.Context(), handler.TaskSet)
+			if errs != nil {
+				for _, err := range *errs {
+					handler.LogTaskError(c.Context(), err)
+				}
+
+				restResponse := contract.RestResponseBody{
+					Message: "Task failed",
+				}
+				return c.Status(fiber.StatusOK).JSON(restResponse)
+			}
 
 			// write response
 			payload, err := utils.GenerateRandomString(constants.PayloadSize)
 			if err != nil {
 				return err
 			}
+
 			restResponse := contract.RestResponseBody{
-				Message: fmt.Sprintf("Successfully ran %s, sending %vKB.", handler.GetId(serviceName), constants.PayloadSize),
+				Message: fmt.Sprintf("Successfully ran %s, sending %vKB.", handler.GetId(), constants.PayloadSize),
 				Payload: &payload,
 			}
 			return c.Status(fiber.StatusOK).JSON(restResponse)
@@ -64,12 +74,20 @@ func (rsa RestServerAdapter) Register(serviceName string, handler *ports.Primary
 	case "write":
 		rsa.server.Post("/"+handler.ServerConfig.Route, func(c *fiber.Ctx) error {
 			// call tasks
-			secondaryAdapterErrors := runtime.TaskSetHandler(c.Context(), handler.TaskSets)
-			ports.LogSecondaryPortErrors(&secondaryAdapterErrors)
+			errs := runtime.TaskSetHandler(c.Context(), handler.TaskSet)
+			if errs != nil {
+				for _, err := range *errs {
+					handler.LogTaskError(c.Context(), err)
+				}
+				restResponse := contract.RestResponseBody{
+					Message: "Task failed",
+				}
+				return c.Status(fiber.StatusOK).JSON(restResponse)
+			}
 
 			// write response
 			restResponse := contract.RestResponseBody{
-				Message: fmt.Sprintf("Successfully ran %s.", handler.GetId(serviceName)),
+				Message: fmt.Sprintf("Successfully ran %s.", handler.GetId()),
 			}
 			return c.Status(fiber.StatusOK).JSON(restResponse)
 		})

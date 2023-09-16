@@ -2,9 +2,6 @@ package ports
 
 import (
 	"context"
-	"reflect"
-
-	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
 // SecodaryPort provides common interface for all the external service resouce.
@@ -17,7 +14,10 @@ import (
 // It is intended to represent the individual endpoints on each exteranl service,
 // not the services themselves; hence the name `SecodaryPort`
 type SecodaryPort interface {
-	Call(context.Context) (string, error)
+	// Call(context.Context) (string, error)
+	Call(context.Context) SecondaryPortCallResult
+	SetDestId(string)
+	GetDestId() string
 }
 
 // Used to reuse clients to other serivces
@@ -26,19 +26,35 @@ type SecodaryPort interface {
 type SecondaryAdapter interface {
 	Close()
 }
+//
+// type SecondaryPortError struct {
+// 	SecondaryPort *SecodaryPort
+// 	Error         error
+// }
 
-type SecondaryPortError struct {
-	SecondaryPort *SecodaryPort
-	Error         error
+type SecondaryPortCallResult struct {
+	Payload *string
+	Error error
+}
+
+type SecondaryPortBase struct {
+	destId string
+}
+
+func (spb *SecondaryPortBase) GetDestId() string {
+	return spb.destId
+}
+
+func (spb *SecondaryPortBase) SetDestId(id string) {
+	spb.destId = id
 }
 
 // LogSecondaryPortErrors logs the failed tasks
-func LogSecondaryPortErrors(errors *[]SecondaryPortError) {
-	for _, error := range *errors {
-		logger.Logger.Errorf("Invocating %s failed: %s",
-			reflect.TypeOf(error.SecondaryPort).Elem().Name(),
-			error.Error,
-		)
-	}
-
-}
+// func LogSecondaryPortErrors(errors *[]SecondaryPortError) {
+// 	for _, error := range *errors {
+// 		logger.Logger.Errorf("Invocating %s failed: %s",
+// 			reflect.TypeOf(error.SecondaryPort).Elem().Name(),
+// 			error.Error,
+// 		)
+// 	}
+// }

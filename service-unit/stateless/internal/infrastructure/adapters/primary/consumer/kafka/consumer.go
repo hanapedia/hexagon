@@ -2,11 +2,13 @@ package kafka
 
 import (
 	"context"
+	"time"
 
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/core/runtime"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/secondary/config"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/core/runtime"
 	tracing "github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/telemetry/tracing/kafka"
+	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 	"github.com/segmentio/kafka-go"
 )
 
@@ -37,6 +39,8 @@ func NewKafkaConsumer(topic string) *KafkaConsumer {
 func (kca KafkaConsumerAdapter) Serve() error {
 	var err error
 	for {
+		startTime := time.Now()
+
 		message, err := kca.kafkaConsumer.reader.ReadMessage(context.Background())
 		if err != nil {
 			break
@@ -51,8 +55,14 @@ func (kca KafkaConsumerAdapter) Serve() error {
 		}
 
 		// call tasks
-		secondaryAdapterErrors := runtime.TaskSetHandler(ctx, kca.kafkaConsumer.handler.TaskSets)
-		ports.LogSecondaryPortErrors(&secondaryAdapterErrors)
+		errs := runtime.TaskSetHandler(ctx, kca.kafkaConsumer.handler.TaskSet)
+		if errs != nil {
+			for _, err := range *errs {
+				kca.kafkaConsumer.handler.LogTaskError(ctx, err)
+			}
+		}
+
+		kca.log(ctx, time.Since(startTime).Milliseconds())
 	}
 	return err
 }
@@ -60,4 +70,8 @@ func (kca KafkaConsumerAdapter) Serve() error {
 func (kca KafkaConsumerAdapter) Register(serviceName string, handler *ports.PrimaryHandler) error {
 	kca.kafkaConsumer.handler = handler
 	return nil
+}
+
+func (kca KafkaConsumerAdapter) log(ctx context.Context, elapsed int64) {
+	logger.Logger.WithContext(ctx).Infof("Message consumed | %-30s | %10v ms", kca.kafkaConsumer.handler.GetId(), elapsed)
 }

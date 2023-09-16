@@ -3,6 +3,7 @@ package mongo
 import (
 	"context"
 
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/secondary/config"
 	tracing "github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/telemetry/tracing/mongo"
 	"github.com/hanapedia/the-bench/service-unit/stateless/pkg/utils"
@@ -17,10 +18,11 @@ type MongoWriteAdapter struct {
 	Database string
 	Client *mongo.Client
 	Collection constants.RepositoryEntryVariant
+	ports.SecondaryPortBase
 }
 
 // Update or insert to random id in range from number of initial data to twice the size of the initial data
-func (mra MongoWriteAdapter) Call(ctx context.Context) (string, error) {
+func (mra *MongoWriteAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
 	// create span if tracing is enabled
 	if config.GetEnvs().TRACING {
 		span := tracing.CreateWriteSpan(ctx, mra.Name, mra.Database, string(mra.Collection))
@@ -38,8 +40,15 @@ func (mra MongoWriteAdapter) Call(ctx context.Context) (string, error) {
 
 	_, err = collection.UpdateOne(ctx, filter, update, updateOpts)
 	if err != nil {
-		return "Failed to write an entry.", err
+        return ports.SecondaryPortCallResult{
+			Payload: nil,
+			Error: err,
+		}
 	}
-	return "Successfully wrote an entry.", err
+
+	return ports.SecondaryPortCallResult{
+		Payload: &payload,
+		Error: nil,
+	}
 }
 

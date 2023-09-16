@@ -19,12 +19,12 @@ func RestInvocationAdapterFactory(adapterConfig model.InvocationConfig, client p
 
 		switch adapterConfig.Action {
 		case constants.READ:
-			restAdapter = RestReadAdapter{
+			restAdapter = &RestReadAdapter{
 				URL:    fmt.Sprintf("http://%s:%s/%s", adapterConfig.Service, port, adapterConfig.Route),
 				Client: restClient.Client,
 			}
 		case constants.WRITE:
-			restAdapter = RestWriteAdapter{
+			restAdapter = &RestWriteAdapter{
 				URL:    fmt.Sprintf("http://%s:%s/%s", adapterConfig.Service, port, adapterConfig.Route),
 				Client: restClient.Client,
 			}
@@ -34,5 +34,9 @@ func RestInvocationAdapterFactory(adapterConfig model.InvocationConfig, client p
 	} else {
 		err = errors.New("Unmatched client instance")
 	}
+
+	// set destionation id
+	restAdapter.SetDestId(adapterConfig.GetId())
+
 	return restAdapter, err
 }

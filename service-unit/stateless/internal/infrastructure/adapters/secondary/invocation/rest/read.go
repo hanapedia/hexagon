@@ -7,41 +7,60 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/contract"
 )
 
 type RestReadAdapter struct {
 	URL string
 	Client *http.Client
+	ports.SecondaryPortBase
 }
 
-func (rga RestReadAdapter) Call(ctx context.Context) (string, error) {
-    req, err := http.NewRequestWithContext(ctx, "GET", rga.URL, nil)
+func (rra *RestReadAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
+    req, err := http.NewRequestWithContext(ctx, "GET", rra.URL, nil)
     if err != nil {
-        return "", err
+        return ports.SecondaryPortCallResult{
+			Payload: nil,
+			Error: err,
+		}
     }
 
-    resp, err := rga.Client.Do(req)
+    resp, err := rra.Client.Do(req)
     if err != nil {
-        return "", err
+        return ports.SecondaryPortCallResult{
+			Payload: nil,
+			Error: err,
+		}
     }
     defer resp.Body.Close()
 
     if resp.StatusCode != http.StatusOK {
-        return "", fmt.Errorf("unexpected status code %v calling: %s", resp.StatusCode, rga.URL)
+        return ports.SecondaryPortCallResult{
+			Payload: nil,
+			Error: fmt.Errorf("unexpected status code %v", resp.StatusCode),
+		}
     }
 
     body, err := ioutil.ReadAll(resp.Body)
     if err != nil {
-        return "", err
+        return ports.SecondaryPortCallResult{
+			Payload: nil,
+			Error: err,
+		}
     }
 
     var restResponse contract.RestResponseBody
     err = json.Unmarshal(body, &restResponse)
     if err != nil {
-        return "", err
+        return ports.SecondaryPortCallResult{
+			Payload: nil,
+			Error: err,
+		}
     }
 
-    return restResponse.Message, nil
+	return ports.SecondaryPortCallResult{
+		Payload: restResponse.Payload,
+		Error: nil,
+	}
 }
-

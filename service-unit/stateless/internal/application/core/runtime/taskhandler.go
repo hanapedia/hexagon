@@ -6,31 +6,39 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 )
 
-func TaskSetHandler(ctx context.Context, taskSets []ports.TaskSet) []ports.SecondaryPortError {
-	done := make(chan bool, len(taskSets))
-	errCh := make(chan ports.SecondaryPortError, len(taskSets))
+func TaskSetHandler(ctx context.Context, taskSet []ports.Task) *[]*ports.TaskError {
+	done := make(chan bool, len(taskSet))
+	errCh := make(chan *ports.TaskError, len(taskSet))
 
-	for _, task := range taskSets {
+	for _, task := range taskSet {
 		if task.Concurrent {
-			go func(task ports.TaskSet) {
+			go func(task ports.Task) {
 				defer func() { done <- true }()
-				_, err := task.SecondaryPort.Call(ctx)
-				errCh <- ports.SecondaryPortError{SecondaryPort: &task.SecondaryPort, Error: err}
+				res := task.SecondaryPort.Call(ctx)
+				if res.Error != nil {
+					errCh <- ports.NewTaskError(task, res.Error)
+				} else {
+					errCh <- nil
+				}
 			}(task)
 		} else {
-			_, err := task.SecondaryPort.Call(ctx)
-			errCh <- ports.SecondaryPortError{SecondaryPort: &task.SecondaryPort, Error: err}
+			res := task.SecondaryPort.Call(ctx)
+			if res.Error != nil {
+				errCh <- ports.NewTaskError(task, res.Error)
+			} else {
+				errCh <- nil
+			}
             done <- true
 		}
 	}
 
-	var secondaryAdapterErrors []ports.SecondaryPortError
-	for i := 0; i < len(taskSets); i++ {
+	var errs []*ports.TaskError
+	for i := 0; i < len(taskSet); i++ {
 		<-done
-		invocationAdapterError := <-errCh
-		if invocationAdapterError.Error != nil {
-			secondaryAdapterErrors = append(secondaryAdapterErrors, invocationAdapterError)
+		taskError := <-errCh
+		if taskError != nil {
+			errs = append(errs, taskError)
 		}
 	}
-	return secondaryAdapterErrors
+	return &errs
 }

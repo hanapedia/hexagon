@@ -3,6 +3,7 @@ package mongo
 import (
 	"context"
 
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/contract"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/secondary/config"
 	tracing "github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/telemetry/tracing/mongo"
@@ -17,10 +18,11 @@ type MongoReadAdapter struct {
 	Database string
 	Client *mongo.Client
 	Collection constants.RepositoryEntryVariant
+	ports.SecondaryPortBase
 }
 
 // Read the document in the intial set of data
-func (mra MongoReadAdapter) Call(ctx context.Context) (string, error) {
+func (mra *MongoReadAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
 	// create span if tracing is enabled
 	if config.GetEnvs().TRACING {
 		span := tracing.CreateWriteSpan(ctx, mra.Name, mra.Database, string(mra.Collection))
@@ -35,5 +37,15 @@ func (mra MongoReadAdapter) Call(ctx context.Context) (string, error) {
 	filter := bson.D{{Key: "id", Value: id}}
 
 	err := collection.FindOne(ctx, filter).Decode(&foundRecord)
-	return foundRecord.Payload, err
+	if err != nil {
+        return ports.SecondaryPortCallResult{
+			Payload: nil,
+			Error: err,
+		}
+	}
+
+	return ports.SecondaryPortCallResult{
+		Payload: &foundRecord.Payload,
+		Error: nil,
+	}
 }

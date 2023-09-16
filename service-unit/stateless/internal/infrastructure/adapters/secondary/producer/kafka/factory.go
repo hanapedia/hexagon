@@ -11,9 +11,15 @@ func KafkaProducerAdapterFactory(adapterConfig model.ProducerConfig, client port
 	var kafkaAdapter ports.SecodaryPort
 	var err error
 	if kafkaProducerClient, ok := (client).(KafkaProducerClient); ok {
-		kafkaAdapter = KafkaProducerAdapter{Writer: kafkaProducerClient.Client}
+		kafkaAdapter = &KafkaProducerAdapter{
+			Writer: kafkaProducerClient.Client,
+		}
 	} else {
 		err = errors.New("Unmatched client instance")
 	}
+
+	// set destionation id
+	kafkaAdapter.SetDestId(adapterConfig.GetId())
+
 	return kafkaAdapter, err
 }
