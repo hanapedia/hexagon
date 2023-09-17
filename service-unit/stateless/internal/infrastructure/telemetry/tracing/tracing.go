@@ -27,7 +27,7 @@ func InitTracer(name, collectorUrl string) *sdktrace.TracerProvider {
 		grpc.WithBlock(),
 	)
 	if err != nil {
-		logger.Logger.Errorf("failed to create gRPC connection to collector: %w, setting TRACING=false", err)
+		logger.Logger.Errorf("failed to create gRPC connection to collector: %s, setting TRACING=false", err)
 		config.GetEnvs().TRACING = false
 		return nil
 	}

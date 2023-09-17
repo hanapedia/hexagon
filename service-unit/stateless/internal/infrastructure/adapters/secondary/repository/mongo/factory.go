@@ -11,7 +11,7 @@ import (
 func MongoClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
 	var mongoAdapter ports.SecodaryPort
 	var err error
-	if mongoClient, ok := (client).(MongoClient); ok {
+	if mongoClient, ok := (client).(*MongoClient); ok {
 		switch adapterConfig.Action {
 		case constants.READ:
 			mongoAdapter = &MongoReadAdapter{

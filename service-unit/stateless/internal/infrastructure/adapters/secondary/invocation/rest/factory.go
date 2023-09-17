@@ -14,7 +14,7 @@ func RestInvocationAdapterFactory(adapterConfig *model.InvocationConfig, client 
 	var restAdapter ports.SecodaryPort
 	var err error
 
-	if restClient, ok := (client).(RestClient); ok {
+	if restClient, ok := (client).(*RestClient); ok {
 		port := config.GetEnvs().HTTP_PORT
 
 		switch adapterConfig.Action {

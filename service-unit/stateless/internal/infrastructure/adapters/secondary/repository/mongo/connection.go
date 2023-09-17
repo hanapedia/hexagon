@@ -14,15 +14,16 @@ type MongoClient struct {
 }
 
 // Client client for mongo
-func NewMongoClient(addr string) MongoClient {
+func NewMongoClient(addr string) *MongoClient {
 	ctx := context.Background()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(addr))
 	if err != nil {
 		logger.Logger.Fatalf("Failed to connect to MongoDB: %v", err)
 	}
-	return MongoClient{Client: client, context: &ctx}
+	mongoClient := MongoClient{Client: client, context: &ctx}
+	return &mongoClient
 }
 
-func (mongoClient MongoClient) Close() {
+func (mongoClient *MongoClient) Close() {
 	mongoClient.Client.Disconnect(*mongoClient.context)
 }

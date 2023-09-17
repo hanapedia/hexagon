@@ -17,7 +17,7 @@ func (su *ServiceUnit) initializePrimaryAdapters() {
 			su.initializeConsumerAdapter(*primaryConfig.ConsumerConfig)
 			continue
 		}
-		l.Logger.Fatal("Invalid primary adapter config.")
+		l.Logger.Fatal("Invalid primary adapter config")
 	}
 }
 

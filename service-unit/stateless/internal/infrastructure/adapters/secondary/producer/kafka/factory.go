@@ -10,7 +10,7 @@ import (
 func KafkaProducerAdapterFactory(adapterConfig *model.ProducerConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
 	var kafkaAdapter ports.SecodaryPort
 	var err error
-	if kafkaProducerClient, ok := (client).(KafkaProducerClient); ok {
+	if kafkaProducerClient, ok := (client).(*KafkaProducerClient); ok {
 		kafkaAdapter = &KafkaProducerAdapter{
 			Writer: kafkaProducerClient.Client,
 		}

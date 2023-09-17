@@ -1,0 +1,28 @@
+version: v0.1.0
+name: client
+gateway: # load generator specific
+  virtualUsers: 10
+  duration: 60
+adapters:
+- server:
+    action: read
+    variant: rest
+    route: get
+  steps:
+  - adapter:
+      repository:
+        name: test
+        variant: mongo
+        action: read
+        size: small
+- server:
+    route: post
+    variant: rest
+    action: write
+  steps:
+  - adapter:
+      repository:
+        name: test
+        variant: mongo
+        action: write
+        size: large

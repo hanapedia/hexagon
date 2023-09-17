@@ -22,36 +22,13 @@ func NewSecondaryAdapter(adapterConfig *model.RepositoryClientConfig, client por
 
 }
 
-// GetOrCreateClient creates new client to stateful service if it does not exist
-func GetOrCreateClient(adapterConfig model.RepositoryClientConfig, clients *map[string]ports.SecondaryAdapter) ports.SecondaryAdapter {
-	key := adapterConfig.GetId()
-	client, ok := (*clients)[key]
-	if ok {
-		logger.Logger.Infof("Client already exists reusing %s", key)
-		return client
-	}
-	switch adapterConfig.Variant {
-	case constants.MONGO:
-		connectionUri := config.GetMongoConnectionUri(&adapterConfig)
-		mongoClient := mongo.NewMongoClient(connectionUri)
-		logger.Logger.Infof("created new client %s", key)
-
-		(*clients)[key] = mongoClient
-		return mongoClient
-	default:
-		logger.Logger.Fatalf("invalid protocol")
-	}
-	return client
-}
-
 // NewClient creates new client to stateful service
 func NewClient(adapterConfig *model.RepositoryClientConfig) ports.SecondaryAdapter {
 	switch adapterConfig.Variant {
 	case constants.MONGO:
 		connectionUri := config.GetMongoConnectionUri(adapterConfig)
 		mongoClient := mongo.NewMongoClient(connectionUri)
-
-		return &mongoClient
+		return mongoClient
 	default:
 		logger.Logger.Fatalf("invalid protocol")
 		return nil

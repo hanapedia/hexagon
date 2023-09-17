@@ -9,15 +9,16 @@ type KafkaProducerClient struct {
 }
 
 // Only cosumer client is included for Kafka
-func NewKafkaClient(addr string, topic string) KafkaProducerClient {
+func NewKafkaClient(addr string, topic string) *KafkaProducerClient {
 	client := kafka.Writer{
 		Addr:     kafka.TCP(addr),
 		Topic:    topic,
 		Balancer: &kafka.RoundRobin{},
 	}
-	return KafkaProducerClient{Client: &client}
+	producerClient := KafkaProducerClient{Client: &client}
+	return &producerClient
 }
 
-func (kafkaProducerClient KafkaProducerClient) Close() {
+func (kafkaProducerClient *KafkaProducerClient) Close() {
 	kafkaProducerClient.Client.Close()
 }

@@ -5,12 +5,14 @@ import (
 
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/core/initialization"
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/secondary/config"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
 func main() {
 	// load config from yaml
-	serviceUnitConfig := initialization.GetConfig("yaml")
+	yamlConfigLoader := config.NewConfigLoader("yaml")
+	serviceUnitConfig := initialization.GetConfig(yamlConfigLoader)
 
 	// init telemetry
 	initialization.InitTelemetry(serviceUnitConfig.Name)

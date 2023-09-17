@@ -63,7 +63,7 @@ func (su *ServiceUnit) newTaskSet(steps []model.Step) *[]ports.Task {
 		key := step.AdapterConfig.GetGroupByKey()
 		client, ok := (*su.SecondaryAdapters)[key]
 		if !ok {
-			l.Logger.Errorf("Client does not exist", "key", key)
+			l.Logger.Error("Client does not exist", "key", key)
 		}
 		secondaryAdapter, err := secondary.NewSecondaryAdapter(step.AdapterConfig, client)
 		if err != nil {

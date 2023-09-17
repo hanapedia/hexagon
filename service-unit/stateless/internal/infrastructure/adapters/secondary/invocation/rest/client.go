@@ -12,7 +12,7 @@ type RestClient struct {
 	Client *http.Client
 }
 
-func NewRestClient() RestClient {
+func NewRestClient() *RestClient {
 	client := RestClient{
 		Client: &http.Client{
 			Timeout: time.Duration(time.Second * 5),
@@ -24,9 +24,9 @@ func NewRestClient() RestClient {
 		client.Client.Transport = otelhttp.NewTransport(http.DefaultTransport)
 	}
 
-	return client
+	return &client
 }
 
-func (restClient RestClient) Close() {
+func (restClient *RestClient) Close() {
 	restClient.Client.CloseIdleConnections()
 }
