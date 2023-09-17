@@ -20,7 +20,7 @@ type PrimaryPort interface {
 }
 
 type PrimaryPortError struct {
-	PrimaryPort *PrimaryPort
+	PrimaryPort PrimaryPort
 	Error       error
 }
 

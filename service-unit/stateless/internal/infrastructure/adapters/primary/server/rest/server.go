@@ -21,7 +21,7 @@ type RestServerAdapter struct {
 	server *fiber.App
 }
 
-func NewRestServerAdapter() RestServerAdapter {
+func NewRestServerAdapter() *RestServerAdapter {
 	app := fiber.New()
 	app.Use(fiber_logger.New())
 
@@ -30,7 +30,9 @@ func NewRestServerAdapter() RestServerAdapter {
 		app.Use(otelfiber.Middleware())
 	}
 
-	return RestServerAdapter{addr: config.GetRestServerAddr(), server: app}
+	adapter := RestServerAdapter{addr: config.GetRestServerAddr(), server: app}
+
+	return &adapter
 }
 
 func (rsa RestServerAdapter) Serve() error {

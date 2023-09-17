@@ -8,7 +8,7 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/primary/server/rest"
 )
 
-func NewServerAdapter(serverAdapterProtocol constants.SeverAdapterVariant) *ports.PrimaryPort {
+func NewServerAdapter(serverAdapterProtocol constants.SeverAdapterVariant) ports.PrimaryPort {
 	var serverAdapter ports.PrimaryPort
 
 	switch serverAdapterProtocol {
@@ -18,10 +18,10 @@ func NewServerAdapter(serverAdapterProtocol constants.SeverAdapterVariant) *port
 		logger.Logger.Fatal("Adapter currently unsupported.")
 	}
 
-	return &serverAdapter
+	return serverAdapter
 }
 
-func NewConsumerAdapter(protocol constants.BrokerVariant, action string) *ports.PrimaryPort {
+func NewConsumerAdapter(protocol constants.BrokerVariant, action string) ports.PrimaryPort {
 	var consumerAdapter ports.PrimaryPort
 
 	switch protocol {
@@ -31,14 +31,14 @@ func NewConsumerAdapter(protocol constants.BrokerVariant, action string) *ports.
 		logger.Logger.Fatal("Adapter currently unsupported.")
 	}
 
-	return &consumerAdapter
+	return consumerAdapter
 }
 
 // Takes the pointer to the slice of ServerAdapters
 // Update or insert ServiceAdapter based on the handler input.
 // Does not return any value
-func RegiserHandlerToPrimaryAdapter(serviceName string, serverAdapter *ports.PrimaryPort, handler *ports.PrimaryHandler) error {
-	err := (*serverAdapter).Register(serviceName, handler)
+func RegiserHandlerToPrimaryAdapter(serviceName string, serverAdapter ports.PrimaryPort, handler *ports.PrimaryHandler) error {
+	err := serverAdapter.Register(serviceName, handler)
 
 	return err
 }

@@ -22,9 +22,10 @@ type KafkaConsumer struct {
 	handler *ports.PrimaryHandler
 }
 
-func NewKafkaConsumerAdapter(topic string) KafkaConsumerAdapter {
+func NewKafkaConsumerAdapter(topic string) *KafkaConsumerAdapter {
 	kafkaConsumer := NewKafkaConsumer(topic)
-	return KafkaConsumerAdapter{addr: config.GetKafkaBrokerAddr(), kafkaConsumer: kafkaConsumer}
+	adapter := KafkaConsumerAdapter{addr: config.GetKafkaBrokerAddr(), kafkaConsumer: kafkaConsumer}
+	return &adapter
 }
 
 func NewKafkaConsumer(topic string) *KafkaConsumer {

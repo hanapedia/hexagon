@@ -10,7 +10,7 @@ import (
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/constants"
 )
 
-func RestInvocationAdapterFactory(adapterConfig model.InvocationConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+func RestInvocationAdapterFactory(adapterConfig *model.InvocationConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
 	var restAdapter ports.SecodaryPort
 	var err error
 

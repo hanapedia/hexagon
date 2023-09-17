@@ -11,7 +11,7 @@ import (
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
-func NewSecondaryAdapter(adapterConfig model.ProducerConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+func NewSecondaryAdapter(adapterConfig *model.ProducerConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
 	switch adapterConfig.Variant {
 	case constants.KAFKA:
 		return kafka.KafkaProducerAdapterFactory(adapterConfig, client)
@@ -40,4 +40,15 @@ func GetOrCreateClient(adapterConfig model.ProducerConfig, clients *map[string]p
 		logger.Logger.Fatalf("invalid protocol")
 	}
 	return client
+}
+
+func NewClient(adapterConfig *model.ProducerConfig) ports.SecondaryAdapter {
+	switch adapterConfig.Variant {
+	case constants.KAFKA:
+		kafkaClient := kafka.NewKafkaClient(config.GetKafkaBrokerAddr(), adapterConfig.Topic)
+		return &kafkaClient
+	default:
+		logger.Logger.Fatalf("invalid protocol")
+		return nil
+	}
 }

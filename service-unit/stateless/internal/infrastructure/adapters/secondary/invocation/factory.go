@@ -10,7 +10,7 @@ import (
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
-func NewSecondaryAdapter(adapterConfig model.InvocationConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+func NewSecondaryAdapter(adapterConfig *model.InvocationConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
 	switch adapterConfig.Variant {
 	case constants.REST:
 		return rest.RestInvocationAdapterFactory(adapterConfig, client)
@@ -39,4 +39,15 @@ func GetOrCreateClient(adapterConfig model.InvocationConfig, clients *map[string
 		logger.Logger.Fatalf("invalid protocol")
 	}
 	return client
+}
+
+func NewClient(adapterConfig *model.InvocationConfig) ports.SecondaryAdapter {
+	switch adapterConfig.Variant {
+	case constants.REST:
+		client := rest.NewRestClient()
+		return &client
+	default:
+		logger.Logger.Fatalf("invalid protocol")
+		return nil
+	}
 }

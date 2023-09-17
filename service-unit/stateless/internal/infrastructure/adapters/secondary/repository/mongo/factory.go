@@ -8,7 +8,7 @@ import (
 	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
 )
 
-func MongoClientAdapterFactory(adapterConfig model.RepositoryClientConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+func MongoClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
 	var mongoAdapter ports.SecodaryPort
 	var err error
 	if mongoClient, ok := (client).(MongoClient); ok {
