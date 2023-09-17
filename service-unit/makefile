@@ -1,4 +1,4 @@
-TAG ?= v0.0.3
+TAG ?= test
 SUBDIRS := stateless stateful/mongo load-generator
 
 .PHONY: all $(SUBDIRS)
