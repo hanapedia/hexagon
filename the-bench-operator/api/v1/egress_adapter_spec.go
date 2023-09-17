@@ -15,21 +15,6 @@ type SecondaryAdapterConfig struct {
 	// InternalEgressAdapterConfig  *InternalAdapterConfig        `json:"internal,omitempty"`
 }
 
-// Get secondary adapter id
-func (eac SecondaryAdapterConfig) GetId() string {
-	var id string
-	if eac.InvocationConfig != nil {
-		id = eac.InvocationConfig.GetId()
-	}
-	if eac.ProducerConfig != nil {
-		id = eac.ProducerConfig.GetId()
-	}
-	if eac.RepositoryConfig != nil {
-		id = eac.RepositoryConfig.GetId()
-	}
-	return id
-}
-
 // Config fields for server services
 type InvocationConfig struct {
 	Variant constants.SeverAdapterVariant `json:"variant,omitempty" validate:"required,oneof=rest grpc"`
@@ -52,6 +37,37 @@ type ProducerConfig struct {
 	Topic   string                  `json:"topic,omitempty" validate:"required"`
 }
 
+// Get secondary adapter id
+func (sac SecondaryAdapterConfig) GetId() string {
+	var id string
+	if sac.InvocationConfig != nil {
+		id = sac.InvocationConfig.GetId()
+	}
+	if sac.ProducerConfig != nil {
+		id = sac.ProducerConfig.GetId()
+	}
+	if sac.RepositoryConfig != nil {
+		id = sac.RepositoryConfig.GetId()
+	}
+	return id
+}
+
+// Get primary adapter group by key
+// Get secondary adapter id
+func (sac SecondaryAdapterConfig) GetGroupByKey() string {
+	var key string
+	if sac.InvocationConfig != nil {
+		key = sac.InvocationConfig.GetGroupByKey()
+	}
+	if sac.ProducerConfig != nil {
+		key = sac.ProducerConfig.GetGroupByKey()
+	}
+	if sac.RepositoryConfig != nil {
+		key = sac.RepositoryConfig.GetGroupByKey()
+	}
+	return key
+}
+
 // Get server secondary adapter id
 func (sac InvocationConfig) GetId() string {
 	return fmt.Sprintf(
@@ -60,6 +76,14 @@ func (sac InvocationConfig) GetId() string {
 		sac.Variant,
 		sac.Action,
 		sac.Route,
+	)
+}
+
+// Get group key
+func (sac InvocationConfig) GetGroupByKey() string {
+	return fmt.Sprintf(
+		"%s",
+		sac.Variant,
 	)
 }
 
@@ -72,6 +96,11 @@ func (sac RepositoryClientConfig) GetId() string {
 	)
 }
 
+// Get repository secondary adapter group by key
+func (sac RepositoryClientConfig) GetGroupByKey() string {
+	return sac.GetId()
+}
+
 // Get broker secondary adapter id
 func (bac ProducerConfig) GetId() string {
 	return fmt.Sprintf(
@@ -79,4 +108,9 @@ func (bac ProducerConfig) GetId() string {
 		bac.Variant,
 		bac.Topic,
 	)
+}
+
+// Get broker secondary adapter group by key
+func (bac ProducerConfig) GetGroupByKey() string {
+	return bac.GetId()
 }

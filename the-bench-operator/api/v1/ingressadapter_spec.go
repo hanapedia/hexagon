@@ -28,8 +28,8 @@ type Step struct {
 // Config fields for repository services
 type ServerConfig struct {
 	Variant constants.SeverAdapterVariant `json:"variant,omitempty" validate:"required,oneof=rest grpc"`
-	Action  constants.Action                  `json:"action,omitempty" validate:"required,oneof=read write"`
-	Route   string                            `json:"route,omitempty" validate:"required"`
+	Action  constants.Action              `json:"action,omitempty" validate:"required,oneof=read write"`
+	Route   string                        `json:"route,omitempty" validate:"required"`
 	// applies to only gateway service
 	// refers to the weight applied to the route
 	// intentionally a pointer to destinguish 0
@@ -44,7 +44,7 @@ type RepositoryConfig struct {
 // Config fields for Brokers
 type ConsumerConfig struct {
 	Variant constants.BrokerVariant `json:"variant,omitempty" validate:"required,oneof=kafka rabbitmq pulsar"`
-	Topic   string                         `json:"topic,omitempty" validate:"required"`
+	Topic   string                  `json:"topic,omitempty" validate:"required"`
 }
 
 // Config fields for Internal services
@@ -70,6 +70,21 @@ func (ias PrimaryAdapterSpec) GetId(serviceName string) string {
 	return id
 }
 
+// Get primary adapter group by key
+func (ias PrimaryAdapterSpec) GetGroupByKey() string {
+	var key string
+	if ias.ServerConfig != nil {
+		key = ias.ServerConfig.GetGroupByKey()
+	}
+	if ias.ConsumerConfig != nil {
+		key = ias.ConsumerConfig.GetGroupByKey()
+	}
+	if ias.RepositoryConfig != nil {
+		key = ias.RepositoryConfig.GetGroupByKey()
+	}
+	return key
+}
+
 // Get invocation adapter id
 func (sac ServerConfig) GetId(serviceName string) string {
 	return fmt.Sprintf(
@@ -81,6 +96,11 @@ func (sac ServerConfig) GetId(serviceName string) string {
 	)
 }
 
+// Get invocation adapter id
+func (sac ServerConfig) GetGroupByKey() string {
+	return string(sac.Variant)
+}
+
 // Get repository adapter id
 func (sac RepositoryConfig) GetId(serviceName string) string {
 	return fmt.Sprintf(
@@ -90,8 +110,22 @@ func (sac RepositoryConfig) GetId(serviceName string) string {
 	)
 }
 
+// Get repository adapter group by key
+func (rac RepositoryConfig) GetGroupByKey() string {
+	return string(rac.Variant)
+}
+
 // Get consumer adapter id
 func (bac ConsumerConfig) GetId(serviceName string) string {
+	return fmt.Sprintf(
+		"%s.%s",
+		bac.Variant,
+		bac.Topic,
+	)
+}
+
+// Get consumer adapter id
+func (bac ConsumerConfig) GetGroupByKey() string {
 	return fmt.Sprintf(
 		"%s.%s",
 		bac.Variant,
