@@ -1,0 +1,18 @@
+# binary
+bin
+
+# test
+**/test/**
+**/testdata/**
+
+# example
+example
+
+# documents
+**/README.md/**
+docs
+*.md
+
+# git
+.git
+.gitignore

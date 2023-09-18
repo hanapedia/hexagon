@@ -1,6 +1,6 @@
 # Variables
 
 # Targets
-.PHONY: build
-build:
-	go build ../../cmd/tbctl/main.go
+.PHONY: prod
+prod:
+	go build -o ../../bin/tbctl ../../cmd/tbctl/main.go
