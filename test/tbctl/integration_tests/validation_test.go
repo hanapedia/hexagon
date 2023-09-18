@@ -3,7 +3,7 @@ package integration_test
 import (
 	"testing"
 
-	"github.com/hanapedia/the-bench/tbctl/pkg/validation"
+	"github.com/hanapedia/the-bench/internal/tbctl/validation"
 )
 
 func TestFileValidation(t *testing.T) {

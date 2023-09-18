@@ -61,7 +61,7 @@ func (mg ManifestGenerator) GenerateManifest() ManifestErrors {
 			manfiestErrors.Extend(mg.GenerateBrokerManifests(config))
 		}
 	}
-	if mg.ServiceUnitConfig.Gateway != nil {
+	if mg.ServiceUnitConfig.DeploymentSpec.Gateway != nil {
 		manfiestErrors.Extend(mg.GenerateLoadGeneratorManifests())
 	}
 

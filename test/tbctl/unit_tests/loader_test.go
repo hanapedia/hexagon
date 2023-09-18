@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hanapedia/the-bench/tbctl/pkg/loader"
+	"github.com/hanapedia/the-bench/internal/tbctl/loader"
 )
 
 func TestGetYAMLFiles(t *testing.T) {

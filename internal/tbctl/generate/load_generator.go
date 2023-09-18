@@ -85,12 +85,12 @@ func (mg ManifestGenerator) GenerateLoadGeneratorManifests() ManifestErrors {
 
 // GenerateConfigJson generate json content for config
 func (mg ManifestGenerator) GenerateConfigJson() ([]byte, error) {
-	if mg.ServiceUnitConfig.Gateway == nil {
+	if mg.ServiceUnitConfig.DeploymentSpec.Gateway == nil {
 		return nil, errors.New("Gateway config not found")
 	}
 	config := usecases.CreateLoadGeneratorConfig(
-		mg.ServiceUnitConfig.Gateway.VirtualUsers,
-		mg.ServiceUnitConfig.Gateway.Duration,
+		mg.ServiceUnitConfig.DeploymentSpec.Gateway.VirtualUsers,
+		mg.ServiceUnitConfig.DeploymentSpec.Gateway.Duration,
 		mg.ServiceUnitConfig.Name,
 	)
 	return json.Marshal(config)
@@ -98,7 +98,7 @@ func (mg ManifestGenerator) GenerateConfigJson() ([]byte, error) {
 
 // GenerateConfigJson generate json content for config
 func (mg ManifestGenerator) GenerateRoutesJson() ([]byte, error) {
-	if mg.ServiceUnitConfig.Gateway == nil {
+	if mg.ServiceUnitConfig.DeploymentSpec.Gateway == nil {
 		return nil, errors.New("Gateway config not found")
 	}
 	var routes []usecases.Route
