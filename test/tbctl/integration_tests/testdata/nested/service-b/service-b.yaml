@@ -1,0 +1,13 @@
+name: service-b
+ingressAdapters:
+  - stateless:
+      action: write
+      variant: rest
+      route: updateUser
+    steps:
+      - egressAdapter:
+          stateful:
+            name: users
+            variant: mongo
+            action: write
+            size: small

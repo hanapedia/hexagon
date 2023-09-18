@@ -1,8 +1,0 @@
-name: stateless
-ingressAdapters:
-  - stateless:
-      action: read
-      variant: rest
-      route: get
-    steps: []
-

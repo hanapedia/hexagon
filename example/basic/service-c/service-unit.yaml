@@ -1,6 +1,0 @@
-name: service-c
-handler:
-  - name: getUserHistory
-    protocol: rest
-    action: read
-    flow: []
