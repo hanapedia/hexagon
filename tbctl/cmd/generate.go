@@ -8,12 +8,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/hanapedia/the-bench/tbctl/pkg/kubernetes/generate"
+	"github.com/hanapedia/the-bench/tbctl/pkg/generate"
 	"github.com/spf13/cobra"
 )
-
-var inputPath string
-var outputPath string
 
 // generateCmd represents the generate command
 var generateCmd = &cobra.Command{

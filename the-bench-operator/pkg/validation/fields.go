@@ -8,17 +8,17 @@ import (
 // validate fields for a single service config
 func ValidateFields(serviceUnitConfig *model.ServiceUnitConfig) ConfigValidationError {
 	var configValidationError ConfigValidationError
-	// use service name to stateful ingress adapters no matter it exist. Give warning when rewriting
+	// use service name to repository adapters no matter it exist. Give warning when rewriting
 	configValidationError.Extend(validateServiceUnitConfigFields(serviceUnitConfig))
 
-	for i := range serviceUnitConfig.IngressAdapterConfigs {
-		configValidationError.Extend(validateIngressAdapterConfigFields(serviceUnitConfig, &serviceUnitConfig.IngressAdapterConfigs[i]))
-		for _, step := range serviceUnitConfig.IngressAdapterConfigs[i].Steps {
-			// ensure that egressAdapter is defined
-			if step.EgressAdapterConfig == nil {
+	for i := range serviceUnitConfig.AdapterConfigs {
+		configValidationError.Extend(validatePrimaryAdapterConfigFields(serviceUnitConfig, &serviceUnitConfig.AdapterConfigs[i]))
+		for _, step := range serviceUnitConfig.AdapterConfigs[i].Steps {
+			// ensure that secondary adapter is defined
+			if step.AdapterConfig == nil {
 				continue
 			}
-			configValidationError.Extend(validateEgressAdapterConfigFields(*step.EgressAdapterConfig))
+			configValidationError.Extend(validateSecondaryAdapterConfigFields(*step.AdapterConfig))
 		}
 	}
 
@@ -27,20 +27,20 @@ func ValidateFields(serviceUnitConfig *model.ServiceUnitConfig) ConfigValidation
 
 // validate fields on service unit config
 func validateServiceUnitConfigFields(serviceUnitConfig *model.ServiceUnitConfig) ConfigValidationError {
-	if len(serviceUnitConfig.IngressAdapterConfigs) > 1 {
-		var statefulIngressAdapterConfig *model.StatefulIngressAdapterConfig
-		for _, ingressAdapterConfig := range serviceUnitConfig.IngressAdapterConfigs {
-			if ingressAdapterConfig.StatefulIngressAdapterConfig == nil {
+	if len(serviceUnitConfig.AdapterConfigs) > 1 {
+		var repositoryConfig *model.RepositoryConfig
+		for _, primaryAdapterConfig := range serviceUnitConfig.AdapterConfigs {
+			if primaryAdapterConfig.RepositoryConfig == nil {
 				continue
 			}
-			statefulIngressAdapterConfig = ingressAdapterConfig.StatefulIngressAdapterConfig
+			repositoryConfig = primaryAdapterConfig.RepositoryConfig
 			break
 		}
-		if statefulIngressAdapterConfig != nil {
-			logger.Logger.Warnf("Stateful ingress adapter found, ignoring other ingress adapter definitions.\n")
-			serviceUnitConfig.IngressAdapterConfigs = []model.IngressAdapterSpec{
+		if repositoryConfig != nil {
+			logger.Logger.Warnf("repository adapter found, ignoring other primary adapter definitions.\n")
+			serviceUnitConfig.AdapterConfigs = []model.PrimaryAdapterSpec{
 				{
-					StatefulIngressAdapterConfig: statefulIngressAdapterConfig,
+					RepositoryConfig: repositoryConfig,
 				},
 			}
 		}
@@ -48,53 +48,53 @@ func validateServiceUnitConfigFields(serviceUnitConfig *model.ServiceUnitConfig)
 	return ValidateServiceUnitConfigFields(serviceUnitConfig)
 }
 
-// Validate the fields of the ingress adapter configuration
-func validateIngressAdapterConfigFields(serviceUnitConfig *model.ServiceUnitConfig, ingressAdapterConfig *model.IngressAdapterSpec) ConfigValidationError {
+// Validate the fields of the primary adapter configuration
+func validatePrimaryAdapterConfigFields(serviceUnitConfig *model.ServiceUnitConfig, primaryAdapterConfig *model.PrimaryAdapterSpec) ConfigValidationError {
 	var adapterFieldErrors []InvalidAdapterFieldValueError
-	if ingressAdapterConfig.StatelessIngressAdapterConfig != nil {
-		adapterFieldErrors = ValidateStatelessIngressAdapterFields(
-			ingressAdapterConfig.StatelessIngressAdapterConfig,
+	if primaryAdapterConfig.ServerConfig != nil {
+		adapterFieldErrors = ValidateServerFields(
+			primaryAdapterConfig.ServerConfig,
 			serviceUnitConfig.Name,
 		)
 	}
-	if ingressAdapterConfig.BrokerIngressAdapterConfig != nil {
-		adapterFieldErrors = ValidateBrokerIngressAdapterFields(
-			ingressAdapterConfig.BrokerIngressAdapterConfig,
+	if primaryAdapterConfig.ConsumerConfig != nil {
+		adapterFieldErrors = ValidateConsumerFields(
+			primaryAdapterConfig.ConsumerConfig,
 			serviceUnitConfig.Name,
 		)
 	}
-	if ingressAdapterConfig.StatefulIngressAdapterConfig != nil {
-		if len(ingressAdapterConfig.Steps) > 0 {
-			ingressAdapterConfig.Steps = []model.Step{} // makes sure that stateful service unit config have no steps defined
+	if primaryAdapterConfig.RepositoryConfig != nil {
+		if len(primaryAdapterConfig.Steps) > 0 {
+			primaryAdapterConfig.Steps = []model.Step{} // makes sure that repository service unit config have no steps defined
 			logger.Logger.Warnf(
-				"Steps definition found on stateful ingress config for %s. These Steps will be ignored.\n",
+				"Steps definition found on repository config for %s. These Steps will be ignored.\n",
 				serviceUnitConfig.Name,
 			)
 		}
-		adapterFieldErrors = ValidateStatefulIngressAdapterFields(
-			ingressAdapterConfig.StatefulIngressAdapterConfig,
+		adapterFieldErrors = ValidateRepositoryFields(
+			primaryAdapterConfig.RepositoryConfig,
 			serviceUnitConfig.Name,
 		)
 	}
 	var stepFieldErrors []InvalidStepFieldValueError
-	for _, step := range ingressAdapterConfig.Steps {
-		errs := ValidateStepFields(step, ingressAdapterConfig, serviceUnitConfig.Name)
+	for _, step := range primaryAdapterConfig.Steps {
+		errs := ValidateStepFields(step, primaryAdapterConfig, serviceUnitConfig.Name)
 		stepFieldErrors = append(stepFieldErrors, errs...)
 	}
 	return ConfigValidationError{AdapterFieldErrors: adapterFieldErrors, StepFieldErrors: stepFieldErrors}
 }
 
-// Validate the fields of the egress adapter configuration
-func validateEgressAdapterConfigFields(egressAdapterConfig model.EgressAdapterConfig) ConfigValidationError {
+// Validate the fields of the secondary adapter configuration
+func validateSecondaryAdapterConfigFields(secondaryAdapterConfig model.SecondaryAdapterConfig) ConfigValidationError {
 	var errs []InvalidAdapterFieldValueError
-	if egressAdapterConfig.StatelessEgressAdapterConfig != nil {
-		errs = ValidateStatelessEgressAdapterFields(*egressAdapterConfig.StatelessEgressAdapterConfig)
+	if secondaryAdapterConfig.InvocationConfig != nil {
+		errs = ValidateInvocationFields(*secondaryAdapterConfig.InvocationConfig)
 	}
-	if egressAdapterConfig.BrokerEgressAdapterConfig != nil {
-		errs = ValidateBrokerEgressAdapterFields(*egressAdapterConfig.BrokerEgressAdapterConfig)
+	if secondaryAdapterConfig.ProducerConfig != nil {
+		errs = ValidateProducerFields(*secondaryAdapterConfig.ProducerConfig)
 	}
-	if egressAdapterConfig.StatefulEgressAdapterConfig != nil {
-		errs = ValidateStatefulEgressAdapterFields(*egressAdapterConfig.StatefulEgressAdapterConfig)
+	if secondaryAdapterConfig.RepositoryConfig != nil {
+		errs = ValidateRepositoryClientFields(*secondaryAdapterConfig.RepositoryConfig)
 	}
 	return ConfigValidationError{AdapterFieldErrors: errs}
 }

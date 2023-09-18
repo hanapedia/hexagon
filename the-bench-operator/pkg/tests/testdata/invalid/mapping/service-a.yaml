@@ -1,27 +1,28 @@
+version: v0.1.0
 name: service-a
-ingressAdapters:
-  - stateless:
+adapters:
+  - server:
       action: read
       variant: rest
       route: foo
     steps:
-      - egressAdapter:
-          stateless:
+      - adapter:
+          invocation:
             service: service-b
             variant: rest
             action: write
             route: updateUser
-      - egressAdapter:
-          broker:
+      - adapter:
+          producer:
             variant: kafka
             topic: newUser
-  - broker:
+  - consumer:
       variant: kafka
       topic: foo
     steps:
-      - egressAdapter:
-          internal:
-            name: kafka
-            resource: cpu
-            duration: small
-            load: large
+      - adapter:
+          invocation:
+            service: service-b
+            variant: rest
+            action: write
+            route: updateUser

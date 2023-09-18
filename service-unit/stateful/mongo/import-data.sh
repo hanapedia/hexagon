@@ -11,4 +11,7 @@ mongoimport --jsonArray --db mongo --collection small --file /data/small.json
 mongoimport --jsonArray --db mongo --collection medium --file /data/medium.json
 mongoimport --jsonArray --db mongo --collection large --file /data/large.json
 
+# Create the default user
+mongo admin --eval 'db.createUser({user: "root", pwd: "password", roles: [{role: "readWrite", db: "mongo"}]})'
+
 echo "Data import completed."

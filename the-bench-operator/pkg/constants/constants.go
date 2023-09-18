@@ -1,19 +1,19 @@
 package constants
 
-type StatelessAdapterVariant string
-type BrokerAdapterVariant string
-type StatefulAdapterVariant string
+type SeverAdapterVariant string
+type BrokerVariant string
+type RepositoryVariant string
 
 const (
-	REST StatelessAdapterVariant = "rest"
-	GRPC StatelessAdapterVariant = "grpc"
+	REST SeverAdapterVariant = "rest"
+	GRPC SeverAdapterVariant = "grpc"
 
-	KAFKA    BrokerAdapterVariant = "kafka"
-	RABBITMQ BrokerAdapterVariant = "rabbitmq"
-	Pulsar   BrokerAdapterVariant = "pulsar"
+	KAFKA    BrokerVariant = "kafka"
+	RABBITMQ BrokerVariant = "rabbitmq"
+	Pulsar   BrokerVariant = "pulsar"
 
-	MONGO   StatefulAdapterVariant = "mongo"
-	POSTGRE StatefulAdapterVariant = "postgre"
+	MONGO   RepositoryVariant = "mongo"
+	POSTGRE RepositoryVariant = "postgre"
 )
 
 type Action string

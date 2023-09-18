@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/config"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/secondary/config"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
@@ -27,7 +27,7 @@ func InitTracer(name, collectorUrl string) *sdktrace.TracerProvider {
 		grpc.WithBlock(),
 	)
 	if err != nil {
-		logger.Logger.Errorf("failed to create gRPC connection to collector: %w, setting TRACING=false", err)
+		logger.Logger.Errorf("failed to create gRPC connection to collector: %s, setting TRACING=false", err)
 		config.GetEnvs().TRACING = false
 		return nil
 	}

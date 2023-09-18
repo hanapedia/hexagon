@@ -12,35 +12,33 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var validateFilePath string
-
 // validateCmd represents the validate command
 var validateCmd = &cobra.Command{
 	Use:   "validate",
 	Short: "Validate service unit configs from a YAML file or directory containing YAML files.",
 	Run: func(cmd *cobra.Command, args []string) {
-		if strings.TrimSpace(validateFilePath) == "" {
+		if strings.TrimSpace(inputPath) == "" {
 			fmt.Println("Error: Missing -f flag or empty file path")
 			return
 		}
 
-		fileInfo, err := os.Stat(validateFilePath)
+		fileInfo, err := os.Stat(inputPath)
 		if err != nil {
 			fmt.Println("Error:", err)
 			return
 		}
 
 		if fileInfo.IsDir() {
-			_ = validation.ValidateDirectory(validateFilePath)
+			_ = validation.ValidateDirectory(inputPath)
 		} else {
-			_ = validation.ValidateFile(validateFilePath)
+			_ = validation.ValidateFile(inputPath)
 		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(validateCmd)
-	validateCmd.PersistentFlags().StringVarP(&validateFilePath, "file", "f", "", "YAML file or directory to validate")
+	validateCmd.PersistentFlags().StringVarP(&inputPath, "file", "f", "", "YAML file or directory to validate")
 
 	// Here you will define your flags and configuration settings.
 

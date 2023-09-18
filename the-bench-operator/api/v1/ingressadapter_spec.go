@@ -7,13 +7,13 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// ingress adapter
+// PrimaryAdapterSpec
 // must be attachted to a service unit
-type IngressAdapterSpec struct {
-	StatelessIngressAdapterConfig *StatelessIngressAdapterConfig `json:"stateless,omitempty" yaml:"stateless,omitempty"`
-	BrokerIngressAdapterConfig    *BrokerIngressAdapterConfig    `json:"broker,omitempty" yaml:"broker,omitempty"`
-	StatefulIngressAdapterConfig  *StatefulIngressAdapterConfig  `json:"stateful,omitempty" yaml:"stateful,omitempty"`
-	Steps                         []Step                         `json:"steps,omitempty" yaml:"steps,omitempty" validate:"required"`
+type PrimaryAdapterSpec struct {
+	ServerConfig     *ServerConfig     `json:"server,omitempty"`
+	ConsumerConfig   *ConsumerConfig   `json:"consumer,omitempty"`
+	RepositoryConfig *RepositoryConfig `json:"repository,omitempty"`
+	Steps            []Step            `json:"steps,omitempty" validate:"required"`
 
 	// +optional
 	Selector *metav1.LabelSelector `json:"selector,omitempty"`
@@ -21,57 +21,72 @@ type IngressAdapterSpec struct {
 
 // A task to be performed in a single step
 type Step struct {
-	EgressAdapterConfig *EgressAdapterConfig `json:"egressAdapter,omitempty" yaml:"egressAdapter,omitempty" validate:"required"`
-	Concurrent          bool                 `json:"concurrent,omitempty" yaml:"concurrent,omitempty"`
+	AdapterConfig *SecondaryAdapterConfig `json:"adapter,omitempty" validate:"required"`
+	Concurrent    bool                    `json:"concurrent,omitempty" `
 }
 
-// Config fields for stateful services
-type StatelessIngressAdapterConfig struct {
-	Variant constants.StatelessAdapterVariant `json:"variant,omitempty" yaml:"variant,omitempty" validate:"required,oneof=rest grpc"`
-	Action  constants.Action                  `json:"action,omitempty" yaml:"action,omitempty" validate:"required,oneof=read write"`
-	Route   string                            `json:"route,omitempty" yaml:"route,omitempty" validate:"required"`
+// Config fields for repository services
+type ServerConfig struct {
+	Variant constants.SeverAdapterVariant `json:"variant,omitempty" validate:"required,oneof=rest grpc"`
+	Action  constants.Action              `json:"action,omitempty" validate:"required,oneof=read write"`
+	Route   string                        `json:"route,omitempty" validate:"required"`
 	// applies to only gateway service
 	// refers to the weight applied to the route
 	// intentionally a pointer to destinguish 0
-	Weight  *int32                               `json:"weight,omitempty" yaml:"weight,omitempty"`
+	Weight *int32 `json:"weight,omitempty"`
 }
 
-// Config fields for stateful services
-type StatefulIngressAdapterConfig struct {
-	Variant constants.StatefulAdapterVariant `json:"variant,omitempty" yaml:"variant,omitempty" validate:"required,oneof=mongo postgre"`
+// Config fields for repository services
+type RepositoryConfig struct {
+	Variant constants.RepositoryVariant `json:"variant,omitempty" validate:"required,oneof=mongo postgre"`
 }
 
 // Config fields for Brokers
-type BrokerIngressAdapterConfig struct {
-	Variant constants.BrokerAdapterVariant `json:"variant,omitempty" yaml:"variant,omitempty" validate:"required,oneof=kafka rabbitmq pulsar"`
-	Topic   string                         `json:"topic,omitempty" yaml:"topic,omitempty" validate:"required"`
+type ConsumerConfig struct {
+	Variant constants.BrokerVariant `json:"variant,omitempty" validate:"required,oneof=kafka rabbitmq pulsar"`
+	Topic   string                  `json:"topic,omitempty" validate:"required"`
 }
 
 // Config fields for Internal services
 type InternalAdapterConfig struct {
-	Name     string `json:"name,omitempty" yaml:"name,omitempty" validate:"required"`
-	Resource string `json:"resource,omitempty" yaml:"resource,omitempty" validate:"required,oneof=cpu memory disk network"`
-	Duration string `json:"duration,omitempty" yaml:"duration,omitempty" validate:"required,oneof=small medium large"`
-	Load     string `json:"load,omitempty" yaml:"load,omitempty" validate:"required,oneof=small medium large"`
+	Name     string `json:"name,omitempty" validate:"required"`
+	Resource string `json:"resource,omitempty" validate:"required,oneof=cpu memory disk network"`
+	Duration string `json:"duration,omitempty" validate:"required,oneof=small medium large"`
+	Load     string `json:"load,omitempty" validate:"required,oneof=small medium large"`
 }
 
-// Get ingress adapter id
-func (ias IngressAdapterSpec) GetId(serviceName string) string {
+// Get primary adapter id
+func (ias PrimaryAdapterSpec) GetId(serviceName string) string {
 	var id string
-	if ias.StatelessIngressAdapterConfig != nil {
-		id = ias.StatelessIngressAdapterConfig.GetId(serviceName)
+	if ias.ServerConfig != nil {
+		id = ias.ServerConfig.GetId(serviceName)
 	}
-	if ias.BrokerIngressAdapterConfig != nil {
-		id = ias.BrokerIngressAdapterConfig.GetId(serviceName)
+	if ias.ConsumerConfig != nil {
+		id = ias.ConsumerConfig.GetId(serviceName)
 	}
-	if ias.StatefulIngressAdapterConfig != nil {
-		id = ias.StatefulIngressAdapterConfig.GetId(serviceName)
+	if ias.RepositoryConfig != nil {
+		id = ias.RepositoryConfig.GetId(serviceName)
 	}
 	return id
 }
 
-// Get stateless ingress adapter id
-func (sac StatelessIngressAdapterConfig) GetId(serviceName string) string {
+// Get primary adapter group by key
+func (ias PrimaryAdapterSpec) GetGroupByKey() string {
+	var key string
+	if ias.ServerConfig != nil {
+		key = ias.ServerConfig.GetGroupByKey()
+	}
+	if ias.ConsumerConfig != nil {
+		key = ias.ConsumerConfig.GetGroupByKey()
+	}
+	if ias.RepositoryConfig != nil {
+		key = ias.RepositoryConfig.GetGroupByKey()
+	}
+	return key
+}
+
+// Get invocation adapter id
+func (sac ServerConfig) GetId(serviceName string) string {
 	return fmt.Sprintf(
 		"%s.%s.%s.%s",
 		serviceName,
@@ -81,8 +96,13 @@ func (sac StatelessIngressAdapterConfig) GetId(serviceName string) string {
 	)
 }
 
-// Get stateful ingress adapter id
-func (sac StatefulIngressAdapterConfig) GetId(serviceName string) string {
+// Get invocation adapter id
+func (sac ServerConfig) GetGroupByKey() string {
+	return string(sac.Variant)
+}
+
+// Get repository adapter id
+func (sac RepositoryConfig) GetId(serviceName string) string {
 	return fmt.Sprintf(
 		"%s.%s",
 		sac.Variant,
@@ -90,8 +110,22 @@ func (sac StatefulIngressAdapterConfig) GetId(serviceName string) string {
 	)
 }
 
-// Get broker ingress adapter id
-func (bac BrokerIngressAdapterConfig) GetId(serviceName string) string {
+// Get repository adapter group by key
+func (rac RepositoryConfig) GetGroupByKey() string {
+	return string(rac.Variant)
+}
+
+// Get consumer adapter id
+func (bac ConsumerConfig) GetId(serviceName string) string {
+	return fmt.Sprintf(
+		"%s.%s",
+		bac.Variant,
+		bac.Topic,
+	)
+}
+
+// Get consumer adapter id
+func (bac ConsumerConfig) GetGroupByKey() string {
 	return fmt.Sprintf(
 		"%s.%s",
 		bac.Variant,

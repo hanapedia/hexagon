@@ -1,10 +1,11 @@
+version: v0.1.0
 name: service-c
-ingressAdapters:
-  - broker:
+adapters:
+  - consumer:
       variant: kafka
       topic: foo
     steps:
-      - egressAdapter:
-          broker:
+      - adapter:
+          producer:
             variant: kafka
             topic: created

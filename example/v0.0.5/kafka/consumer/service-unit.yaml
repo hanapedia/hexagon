@@ -1,0 +1,7 @@
+version: v0.0.5
+name: consumer
+ingressAdapters:
+- broker:
+    variant: kafka
+    topic: topic1
+  steps: []

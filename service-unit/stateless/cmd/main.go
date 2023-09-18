@@ -3,25 +3,30 @@ package main
 import (
 	"reflect"
 
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/app/usecases"
-	"github.com/hanapedia/the-bench/service-unit/stateless/internal/domain/core"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/core/initialization"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/application/ports"
+	"github.com/hanapedia/the-bench/service-unit/stateless/internal/infrastructure/adapters/secondary/config"
 	"github.com/hanapedia/the-bench/the-bench-operator/pkg/logger"
 )
 
 func main() {
-	serviceUnitConfig := usecases.GetConfig("yaml")
+	// load config from yaml
+	yamlConfigLoader := config.NewConfigLoader("yaml")
+	serviceUnitConfig := initialization.GetConfig(yamlConfigLoader)
 
 	// init telemetry
-	usecases.InitTelemetry(serviceUnitConfig.Name)
+	initialization.InitTelemetry(serviceUnitConfig.Name)
 
-	serviceUnit := usecases.NewServiceUnit(serviceUnitConfig)
+	serviceUnit := initialization.NewServiceUnit(serviceUnitConfig)
 	logger.Logger.Println("Service unit successfully loaded.")
 
+	// setup service unit
 	serviceUnit.Setup()
 
-	errChan := make(chan core.IngressAdapterError)
+	// create error channel and start service unit
+	errChan := make(chan ports.PrimaryPortError)
 	serviceUnit.Start(errChan)
 
 	serverAdapterError := <-errChan
-	logger.Logger.Fatalf("%s failed: %s", reflect.TypeOf(serverAdapterError.IngressAdapter).Elem().Name(), serverAdapterError.Error)
+	logger.Logger.Fatalf("%s failed: %s", reflect.TypeOf(serverAdapterError.PrimaryPort).Elem().Name(), serverAdapterError.Error)
 }
