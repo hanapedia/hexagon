@@ -1,0 +1,6 @@
+name: stateful
+ingressAdapters:
+  - broker:
+      variant: kafka
+      topic: topic1
+    steps: []

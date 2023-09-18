@@ -61,10 +61,8 @@ By configuring the deployment strategies, Physical network topology of the bench
 the-bench extends chaos engineering tools to simulate more complex and realistic set of anomalies, faults, and failures in microservices.
 
 ## Project Structure
-- `./service-unit/` is the source code for the docker image of both stateless and stateful services.
-- `./tbctl/` is the source code for cli program that can be used to validate the service-unit configuration and generate the Kubernetes manifests. 
-- `./config/` holds the common package that is used in both service unit and the cli.
-- `./the-bench-operator/` holds the source code for the Custom Resource Definition and Controller using [kubebuilder](https://github.com/kubernetes-sigs/kubebuilder)
+- `./cmd/service-unit/main.go` is the entry point for service unit binary.
+- `./cmd/tbctl/main.go` is the entry point for cli program that can be used to validate the service-unit configuration and generate the Kubernetes manifests. 
 - `./example/` holds the example configs.
 
 ## How it works

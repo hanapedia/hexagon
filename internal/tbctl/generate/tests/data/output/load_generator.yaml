@@ -1,0 +1,75 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: gateway
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: gateway
+    spec:
+      containers:
+      - image: hiroki11hanada/tb-load-generator:v1.3
+        name: gateway
+        ports:
+        - containerPort: 8080
+          name: http
+        resources:
+          limits:
+            cpu: 250m
+            memory: 128Mi
+          requests:
+            cpu: 125m
+            memory: 64Mi
+        volumeMounts:
+        - mountPath: /data/
+          name: config
+      volumes:
+      - configMap:
+          items:
+          - key: config
+            path: config.json
+          - key: routes
+            path: routes.json
+          name: gateway-lg-config
+        name: config
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  name: gateway
+  namespace: default
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 0
+  selector:
+    app: gateway
+status:
+  loadBalancer: {}
+
+---
+apiVersion: v1
+data:
+  config: '{"vus":10,"duration":"60m","urlPrefix":"http://gateway:8080"}'
+  routes: '[{"route":"get","method":"GET","weight":1},{"route":"post","method":"POST","weight":2}]'
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: gateway-lg-config
+  namespace: default
+
