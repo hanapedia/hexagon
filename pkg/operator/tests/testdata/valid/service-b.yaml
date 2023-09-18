@@ -1,0 +1,14 @@
+version: v0.1.0
+name: service-b
+adapters:
+  - server:
+      action: write
+      variant: rest
+      route: updateUser
+    steps:
+      - adapter:
+          repository:
+            variant: mongo
+            name: test
+            action: write
+            size: small

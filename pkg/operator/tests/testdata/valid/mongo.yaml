@@ -1,0 +1,5 @@
+version: v0.1.0
+name: test
+adapters:
+  - repository:
+      variant: mongo

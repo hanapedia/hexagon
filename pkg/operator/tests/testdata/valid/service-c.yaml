@@ -1,0 +1,11 @@
+version: v0.1.0
+name: service-c
+adapters:
+  - consumer:
+      variant: kafka
+      topic: newUser
+    steps:
+      - adapter:
+          producer:
+            variant: kafka
+            topic: created
