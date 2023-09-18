@@ -35,7 +35,7 @@ func CreateStatelessUnitDeployment(name, version string) *appsv1.Deployment {
 		// 	},
 		// },
 	}
-	deployment := factory.DeploymentFactory(&deploymentArgs)
+	deployment := factory.NewDeployment(&deploymentArgs)
 	return &deployment
 }
 
@@ -46,7 +46,7 @@ func CreateStatelessUnitService(name string) *corev1.Service {
 		Namespace: factory.NAMESPACE,
 		Ports:     map[string]int32{"http": factory.HTTP_PORT},
 	}
-	service := factory.SerivceFactory(&serviceArgs)
+	service := factory.NewSerivce(&serviceArgs)
 	return &service
 }
 
@@ -59,7 +59,7 @@ func CreateStatelessUnitYamlConfigMap(name string, rawConfig string) *corev1.Con
 			"config": rawConfig,
 		},
 	}
-	configMap := factory.ConfigMapFactory(&configMapArgs)
+	configMap := factory.NewConfigMap(&configMapArgs)
 	return &configMap
 }
 

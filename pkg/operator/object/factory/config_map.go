@@ -10,11 +10,11 @@ type ConfigMapArgs struct {
 	Data      map[string]string
 }
 
-// ConfigMapFactory create config map
-func ConfigMapFactory(args *ConfigMapArgs) corev1.ConfigMap {
+// NewConfigMap create config map
+func NewConfigMap(args *ConfigMapArgs) corev1.ConfigMap {
 	return corev1.ConfigMap{
-		TypeMeta:   TypeMetaFactory("ConfigMap", "v1"),
-		ObjectMeta: ObjectMetaFactory(ObjectMetaOptions{Name: args.Name, Namespace: args.Namespace}),
+		TypeMeta:   NewTypeMeta("ConfigMap", "v1"),
+		ObjectMeta: NewObjectMeta(ObjectMetaOptions{Name: args.Name, Namespace: args.Namespace}),
 		Data:       args.Data,
 	}
 }

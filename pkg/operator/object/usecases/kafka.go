@@ -14,6 +14,6 @@ func CreateKafkaTopic(topic string) *crd.KafkaTopic {
 		Replicas:    factory.KAFKA_REPLICATIONS,
 		Partitions:  factory.KAFKA_PARTITIONS,
 	}
-	kafkaTopic := factory.KafkaTopicFactory(&kafkaTopicArgs)
+	kafkaTopic := factory.NewKafkaTopic(&kafkaTopicArgs)
 	return &kafkaTopic
 }

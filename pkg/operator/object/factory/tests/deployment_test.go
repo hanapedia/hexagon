@@ -30,7 +30,7 @@ func TestDeploymentFactory(t *testing.T) {
 			Items: map[string]string{"env": ".env"},
 		},
 	}
-	deployment := factory.DeploymentFactory(&args)
+	deployment := factory.NewDeployment(&args)
 
 	// Generate the YAML
 	deploymentYAML := yaml.GenerateManifest(deployment)

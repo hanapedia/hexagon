@@ -33,7 +33,7 @@ ingressAdapters:
 			"yaml": rawYaml,
 		},
 	}
-	configMap := factory.ConfigMapFactory(&args)
+	configMap := factory.NewConfigMap(&args)
 
 	// Generate the YAML
 	configMapYAML := yaml.GenerateManifest(configMap)

@@ -18,7 +18,7 @@ func CreateNetworkDelay(name string) *crd.NetworkChaos {
 		Latency:         factory.CHAOSMESH_LATENCY,
 		Jitter:          factory.CHAOSMESH_LATENCY_JITTER,
 	}
-	networkChaos := factory.NetworkChaosFactory(&networkChaosArgs)
+	networkChaos := factory.NewNetworkChaos(&networkChaosArgs)
 
 	return &networkChaos
 }

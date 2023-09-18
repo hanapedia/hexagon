@@ -36,7 +36,7 @@ func CreateMongoDeployment(name, version string) *appsv1.Deployment {
 			},
 		},
 	}
-	deployment := factory.DeploymentFactory(&deploymentArgs)
+	deployment := factory.NewDeployment(&deploymentArgs)
 	return &deployment
 }
 
@@ -47,7 +47,7 @@ func CreateMongoService(name string) *corev1.Service {
 		Namespace: factory.NAMESPACE,
 		Ports:     map[string]int32{"mongo": factory.MONGO_PORT},
 	}
-	service := factory.SerivceFactory(&serviceArgs)
+	service := factory.NewSerivce(&serviceArgs)
 	return &service
 }
 
@@ -73,6 +73,6 @@ func CreateMongoEnvConfigMap(name string, rawEnv string) *corev1.ConfigMap {
 			"env": rawEnv,
 		},
 	}
-	configMap := factory.ConfigMapFactory(&configMapArgs)
+	configMap := factory.NewConfigMap(&configMapArgs)
 	return &configMap
 }

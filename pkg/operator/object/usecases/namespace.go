@@ -12,6 +12,6 @@ func CreateNamespace() *corev1.Namespace {
 		Name:        factory.NAMESPACE,
 		Annotations: map[string]string{"linkerd.io/inject": "enabled"},
 	}
-	namespace := factory.NamespaceFactory(&namespaceArgs)
+	namespace := factory.NewNamespace(&namespaceArgs)
 	return &namespace
 }
