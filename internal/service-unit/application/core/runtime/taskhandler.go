@@ -6,7 +6,7 @@ import (
 	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
 )
 
-func TaskSetHandler(ctx context.Context, taskSet []ports.Task) *[]*ports.TaskError {
+func TaskSetHandler(ctx context.Context, taskSet []ports.Task) []*ports.TaskError {
 	done := make(chan bool, len(taskSet))
 	errCh := make(chan *ports.TaskError, len(taskSet))
 
@@ -40,5 +40,5 @@ func TaskSetHandler(ctx context.Context, taskSet []ports.Task) *[]*ports.TaskErr
 			errs = append(errs, taskError)
 		}
 	}
-	return &errs
+	return errs
 }

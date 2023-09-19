@@ -51,7 +51,7 @@ func (rsa RestServerAdapter) Register(serviceName string, handler *ports.Primary
 			// call tasks
 			errs := runtime.TaskSetHandler(c.Context(), handler.TaskSet)
 			if errs != nil {
-				for _, err := range *errs {
+				for _, err := range errs {
 					handler.LogTaskError(c.Context(), err)
 				}
 
@@ -78,7 +78,7 @@ func (rsa RestServerAdapter) Register(serviceName string, handler *ports.Primary
 			// call tasks
 			errs := runtime.TaskSetHandler(c.Context(), handler.TaskSet)
 			if errs != nil {
-				for _, err := range *errs {
+				for _, err := range errs {
 					handler.LogTaskError(c.Context(), err)
 				}
 				restResponse := contract.RestResponseBody{
