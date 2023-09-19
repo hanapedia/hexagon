@@ -1,6 +1,7 @@
-package usecases
+package kafka
 
 import (
+	"github.com/hanapedia/the-bench/pkg/operator/manifest/defaults"
 	"github.com/hanapedia/the-bench/pkg/operator/object/crd"
 	"github.com/hanapedia/the-bench/pkg/operator/object/factory"
 )
@@ -9,10 +10,10 @@ import (
 func CreateKafkaTopic(topic string) *crd.KafkaTopic {
 	kafkaTopicArgs := factory.KafkaTopicArgs{
 		Topic:       topic,
-		Namespace:   factory.KAFKA_NAMESPACE,
-		ClusterName: factory.KAFKA_CLUSTER_NAME,
-		Replicas:    factory.KAFKA_REPLICATIONS,
-		Partitions:  factory.KAFKA_PARTITIONS,
+		Namespace:   defaults.KAFKA_NAMESPACE,
+		ClusterName: defaults.KAFKA_CLUSTER_NAME,
+		Replicas:    defaults.KAFKA_REPLICATIONS,
+		Partitions:  defaults.KAFKA_PARTITIONS,
 	}
 	kafkaTopic := factory.NewKafkaTopic(&kafkaTopicArgs)
 	return &kafkaTopic

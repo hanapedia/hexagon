@@ -17,7 +17,7 @@ func TestServiceConfigsValidation(t *testing.T) {
 		getServiceUnitConfig("./testdata/valid/service-c.yaml"),
 		getServiceUnitConfig("./testdata/valid/mongo.yaml"),
 	}
-	errs := validation.ValidateServiceUnitConfigs(&serviceUnitConfigs)
+	errs := validation.ValidateServiceUnitConfigs(serviceUnitConfigs)
 	errs.Print()
 	if errs.Exist() {
 		t.Fail()
@@ -31,7 +31,7 @@ func TestInvalidServiceMappingValidation(t *testing.T) {
 		getServiceUnitConfig("./testdata/invalid/mapping/service-c.yaml"),
 		getServiceUnitConfig("./testdata/invalid/mapping/mongo.yaml"),
 	}
-	errs := validation.ValidateServiceUnitConfigs(&serviceUnitConfigs)
+	errs := validation.ValidateServiceUnitConfigs(serviceUnitConfigs)
 	if !errs.Exist() {
 		t.Fail()
 	}

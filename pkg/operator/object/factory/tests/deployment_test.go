@@ -15,19 +15,12 @@ func TestDeploymentFactory(t *testing.T) {
 		Namespace:              "test",
 		Image:                  "test",
 		Replicas:               1,
-		ResourceLimitsCPU:      "125m",
-		ResourceLimitsMemory:   "64Mi",
-		ResourceRequestsCPU:    "250m",
-		ResourceRequestsMemory: "128Mi",
+		Resource: nil,
 		Ports:                  map[string]int32{"http": 8080},
 		VolumeMounts:           map[string]string{"config": "/config"},
 		ConfigVolume: &factory.ConfigMapVolumeArgs{
 			Name:  "config",
 			Items: map[string]string{"config": "config.txt"},
-		},
-		EnvVolume: &factory.ConfigMapVolumeArgs{
-			Name:  "env",
-			Items: map[string]string{"env": ".env"},
 		},
 	}
 	deployment := factory.NewDeployment(&args)

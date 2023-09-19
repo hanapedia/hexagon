@@ -8,8 +8,8 @@ import (
 type DeploymentSpec struct {
 	Replicas int32                        `json:"replicas,omitempty"`
 	Gateway  *Gateway                     `json:"gateway,omitempty"`
-	Resource *corev1.ResourceRequirements `json:"resource,omitempty"`
-	EnvVar   *[]corev1.EnvVar             `json:"env,omitempty"`
+	Resource *corev1.ResourceRequirements `json:"resources,omitempty"`
+	EnvVar   []corev1.EnvVar              `json:"env,omitempty"`
 }
 
 // Gateway contains config information about loadgenerator

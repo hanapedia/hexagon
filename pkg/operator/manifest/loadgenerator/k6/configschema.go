@@ -1,4 +1,4 @@
-package usecases
+package k6
 
 import "github.com/hanapedia/the-bench/pkg/operator/constants"
 

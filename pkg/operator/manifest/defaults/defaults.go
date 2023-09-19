@@ -1,4 +1,4 @@
-package factory
+package defaults
 
 const (
 	NAMESPACE = "the-bench"

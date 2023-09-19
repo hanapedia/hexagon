@@ -5,23 +5,19 @@ import (
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/resource"
 )
 
 type DeploymentArgs struct {
-	Name                   string
-	Namespace              string
-	Annotations            map[string]string
-	Image                  string
-	Replicas               int32
-	ResourceLimitsCPU      string
-	ResourceLimitsMemory   string
-	ResourceRequestsCPU    string
-	ResourceRequestsMemory string
-	Ports                  map[string]int32
-	VolumeMounts           map[string]string
-	ConfigVolume           *ConfigMapVolumeArgs
-	EnvVolume              *ConfigMapVolumeArgs
+	Name         string
+	Namespace    string
+	Annotations  map[string]string
+	Image        string
+	Replicas     int32
+	Resource     *corev1.ResourceRequirements
+	Ports        map[string]int32
+	VolumeMounts map[string]string
+	Envs         []corev1.EnvVar
+	ConfigVolume *ConfigMapVolumeArgs
 }
 
 type ConfigMapVolumeArgs struct {
@@ -60,7 +56,7 @@ func NewPodTemplate(args *DeploymentArgs) corev1.PodTemplateSpec {
 func NewPodSpec(args *DeploymentArgs) corev1.PodSpec {
 	return corev1.PodSpec{
 		Containers: NewContainer(args),
-		Volumes:    NewVolume(args.ConfigVolume, args.EnvVolume),
+		Volumes:    NewVolume(args.ConfigVolume),
 	}
 }
 
@@ -70,46 +66,19 @@ func NewContainer(args *DeploymentArgs) []corev1.Container {
 		{
 			Name:         args.Name,
 			Image:        args.Image,
-			Resources:    NewContainerResources(args),
+			Resources:    *args.Resource,
 			Ports:        NewContainerPort(args.Ports),
 			VolumeMounts: NewVolumeMount(args.VolumeMounts),
-			// EnvFrom:      ContainerEnvFactory(args),
+			Env:          args.Envs,
 		},
 	}
-}
-
-// NewContainerResources creates resource requiremnts definition
-func NewContainerResources(args *DeploymentArgs) corev1.ResourceRequirements {
-	return corev1.ResourceRequirements{
-		Limits: corev1.ResourceList{
-			corev1.ResourceCPU:    resource.MustParse(args.ResourceLimitsCPU),
-			corev1.ResourceMemory: resource.MustParse(args.ResourceLimitsMemory),
-		},
-		Requests: corev1.ResourceList{
-			corev1.ResourceCPU:    resource.MustParse(args.ResourceRequestsCPU),
-			corev1.ResourceMemory: resource.MustParse(args.ResourceRequestsMemory),
-		},
-	}
-}
-
-// NewContainerEnv creates container env from source
-func NewContainerEnv(args *DeploymentArgs) []corev1.EnvFromSource {
-	envFromSource := corev1.EnvFromSource{
-		ConfigMapRef: &corev1.ConfigMapEnvSource{
-			LocalObjectReference: *NewLocalObjectReference("env"),
-		},
-	}
-	return []corev1.EnvFromSource{envFromSource}
 }
 
 // NewVolume create volume
-func NewVolume(configVolumeArgs, envVolumeArgs *ConfigMapVolumeArgs) []corev1.Volume {
+func NewVolume(configVolumeArgs *ConfigMapVolumeArgs) []corev1.Volume {
 	var volumes []corev1.Volume
 	if configVolumeArgs != nil {
 		volumes = append(volumes, GetConfigMapVolume("config", configVolumeArgs))
-	}
-	if envVolumeArgs != nil {
-		volumes = append(volumes, GetConfigMapVolume("env", envVolumeArgs))
 	}
 	return volumes
 }
