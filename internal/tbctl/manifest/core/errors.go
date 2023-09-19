@@ -1,4 +1,4 @@
-package generate
+package core
 
 import (
 	"fmt"
@@ -7,45 +7,45 @@ import (
 )
 
 type ManifestErrors struct {
-	stateless     []StatelessManifestError
-	broker        []BrokerManifestError
-	stateful      []StatefulManifestError
-	common        []CommonManifestError
-	loadGenerator []LoadGeneratorManifestError
+	Stateless     []StatelessManifestError
+	Broker        []BrokerManifestError
+	Stateful      []StatefulManifestError
+	Common        []CommonManifestError
+	LoadGenerator []LoadGeneratorManifestError
 }
 
 func (me ManifestErrors) Print() {
-	for _, err := range me.stateless {
+	for _, err := range me.Stateless {
 		fmt.Println(err.message)
 	}
-	for _, err := range me.broker {
+	for _, err := range me.Broker {
 		fmt.Println(err.message)
 	}
-	for _, err := range me.stateful {
+	for _, err := range me.Stateful {
 		fmt.Println(err.message)
 	}
-	for _, err := range me.common {
+	for _, err := range me.Common {
 		fmt.Println(err.message)
 	}
-	for _, err := range me.loadGenerator {
+	for _, err := range me.LoadGenerator {
 		fmt.Println(err.message)
 	}
 }
 
 func (me *ManifestErrors) Extend(other ManifestErrors) {
-	me.stateless = append(me.stateless, other.stateless...)
-	me.broker = append(me.broker, other.broker...)
-	me.stateful = append(me.stateful, other.stateful...)
-	me.common = append(me.common, other.common...)
-	me.loadGenerator = append(me.loadGenerator, other.loadGenerator...)
+	me.Stateless = append(me.Stateless, other.Stateless...)
+	me.Broker = append(me.Broker, other.Broker...)
+	me.Stateful = append(me.Stateful, other.Stateful...)
+	me.Common = append(me.Common, other.Common...)
+	me.LoadGenerator = append(me.LoadGenerator, other.LoadGenerator...)
 }
 
 func (me ManifestErrors) Exist() bool {
-	return (len(me.stateless) > 0 ||
-		len(me.broker) > 0 ||
-		len(me.stateful) > 0 ||
-		len(me.common) > 0 ||
-		len(me.loadGenerator) > 0)
+	return (len(me.Stateless) > 0 ||
+		len(me.Broker) > 0 ||
+		len(me.Stateful) > 0 ||
+		len(me.Common) > 0 ||
+		len(me.LoadGenerator) > 0)
 }
 
 // stateless error
@@ -57,7 +57,7 @@ func (e *LoadGeneratorManifestError) Error() string {
 	return e.message
 }
 
-func NewLoadGeneratorManifestError(serviceUnitConfig model.ServiceUnitConfig, message string) LoadGeneratorManifestError {
+func NewLoadGeneratorManifestError(serviceUnitConfig *model.ServiceUnitConfig, message string) LoadGeneratorManifestError {
 	return LoadGeneratorManifestError{
 		message: fmt.Sprintf(
 			"Error generating config map manifest for %s: %s",
@@ -76,7 +76,7 @@ func (e *CommonManifestError) Error() string {
 	return e.message
 }
 
-func NewCommonManifestError(serviceUnitConfig model.ServiceUnitConfig, message string) CommonManifestError {
+func NewCommonManifestError(serviceUnitConfig *model.ServiceUnitConfig, message string) CommonManifestError {
 	return CommonManifestError{
 		message: fmt.Sprintf(
 			"Error generating config map manifest for %s: %s",
@@ -95,7 +95,7 @@ func (e *StatelessManifestError) Error() string {
 	return e.message
 }
 
-func NewStatelessManifestError(serviceUnitConfig model.ServiceUnitConfig, message string) StatelessManifestError {
+func NewStatelessManifestError(serviceUnitConfig *model.ServiceUnitConfig, message string) StatelessManifestError {
 	return StatelessManifestError{
 		message: fmt.Sprintf(
 			"Error generating stateless manifest for %s: %s",
@@ -114,7 +114,7 @@ func (e *BrokerManifestError) Error() string {
 	return e.message
 }
 
-func NewBrokerManifestError(brokerAdapterConfig model.ConsumerConfig, message string) BrokerManifestError {
+func NewBrokerManifestError(brokerAdapterConfig *model.ConsumerConfig, message string) BrokerManifestError {
 	return BrokerManifestError{
 		message: fmt.Sprintf(
 			"Error generating broker manifest for %s for topic %s: %s",
@@ -125,6 +125,17 @@ func NewBrokerManifestError(brokerAdapterConfig model.ConsumerConfig, message st
 	}
 }
 
+func NewBrokerManifestFileError(serviceUnitConfig *model.ServiceUnitConfig, message string) BrokerManifestError {
+	return BrokerManifestError{
+		message: fmt.Sprintf(
+			"Error generating broker manifest for %s: %s",
+			serviceUnitConfig.Name,
+			message,
+		),
+	}
+}
+
+
 // stateful error
 type StatefulManifestError struct {
 	message string
@@ -134,7 +145,7 @@ func (e *StatefulManifestError) Error() string {
 	return e.message
 }
 
-func NewStatefulManifestError(serviceUnitConfig model.ServiceUnitConfig, message string) StatefulManifestError {
+func NewStatefulManifestError(serviceUnitConfig *model.ServiceUnitConfig, message string) StatefulManifestError {
 	return StatefulManifestError{
 		message: fmt.Sprintf(
 			"Error generating stateful manifest for %s: %s",
