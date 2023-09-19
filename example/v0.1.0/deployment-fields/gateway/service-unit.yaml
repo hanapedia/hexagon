@@ -4,6 +4,16 @@ deployment:
   gateway: # load generator specific
     virtualUsers: 10
     duration: 60
+  resources:
+    limits:
+      cpu: 500m
+      memory: 256Mi
+    requests:
+      cpu: 125m
+      memory: 64Mi
+  env:
+    - name: TRACING
+      value: 1
 adapters:
 - server:
     action: read
