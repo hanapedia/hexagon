@@ -38,26 +38,26 @@ func (su *ServiceUnit) mapSecondaryToPrimary() {
 }
 
 // newPrimaryAdapterHandler builds primary adapter with given task set
-func (su *ServiceUnit) newPrimaryAdapterHandler(primaryConfig model.PrimaryAdapterSpec, taskSet *[]ports.Task) (ports.PrimaryHandler, error) {
+func (su *ServiceUnit) newPrimaryAdapterHandler(primaryConfig model.PrimaryAdapterSpec, taskSet []ports.Task) (ports.PrimaryHandler, error) {
 	if primaryConfig.ServerConfig != nil {
 		return ports.PrimaryHandler{
 			ServiceName: su.Name,
 			ServerConfig: primaryConfig.ServerConfig,
-			TaskSet:     *taskSet,
+			TaskSet:     taskSet,
 		}, nil
 	}
 	if primaryConfig.ConsumerConfig != nil {
 		return ports.PrimaryHandler{
 			ServiceName: su.Name,
 			ConsumerConfig: primaryConfig.ConsumerConfig,
-			TaskSet:       *taskSet,
+			TaskSet:       taskSet,
 		}, nil
 	}
 	return ports.PrimaryHandler{}, errors.New("Failed to create primary adapter handler. No adapter config found.")
 }
 
 // newTaskSet creates task set from config
-func (su *ServiceUnit) newTaskSet(steps []model.Step) *[]ports.Task {
+func (su *ServiceUnit) newTaskSet(steps []model.Step) []ports.Task {
 	taskSet := make([]ports.Task, len(steps))
 	for i, step := range steps {
 		key := step.AdapterConfig.GetGroupByKey()
@@ -73,5 +73,5 @@ func (su *ServiceUnit) newTaskSet(steps []model.Step) *[]ports.Task {
 		taskSet[i] = ports.Task{SecondaryPort: secondaryAdapter, Concurrent: step.Concurrent}
 	}
 
-	return &taskSet
+	return taskSet
 }

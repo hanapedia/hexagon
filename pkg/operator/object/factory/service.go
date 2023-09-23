@@ -12,19 +12,20 @@ type ServiceArgs struct {
 	Ports map[string]int32
 }
 
-func SerivceFactory(args *ServiceArgs) corev1.Service {
+// NewSerivce create new service api object
+func NewSerivce(args *ServiceArgs) corev1.Service {
 	return corev1.Service{
-		TypeMeta:   TypeMetaFactory("Service", "v1"),
-		ObjectMeta: ObjectMetaFactory(ObjectMetaOptions{Name: args.Name, Namespace: args.Namespace}),
+		TypeMeta:   NewTypeMeta("Service", "v1"),
+		ObjectMeta: NewObjectMeta(ObjectMetaOptions{Name: args.Name, Namespace: args.Namespace}),
 		Spec: corev1.ServiceSpec{
 			Selector: map[string]string{"app": args.Name},
-			Ports:    ServicePortFactory(args.Ports),
+			Ports:    NewServicePort(args.Ports),
 		},
 	}
 }
 
-// ServicePortFactory create service port slice
-func ServicePortFactory(ports map[string]int32) []corev1.ServicePort {
+// NewServicePort create service port slice
+func NewServicePort(ports map[string]int32) []corev1.ServicePort {
 	var containerPorts []corev1.ServicePort
 	for name, port := range ports {
 		containerPorts = append(containerPorts, corev1.ServicePort{

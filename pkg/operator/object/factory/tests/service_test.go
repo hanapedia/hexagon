@@ -15,7 +15,7 @@ func TestServiceFactory(t *testing.T) {
 		Namespace:              "test",
 		Ports:                  map[string]int32{"http": 8080},
 	}
-	service := factory.SerivceFactory(&args)
+	service := factory.NewSerivce(&args)
 
 	// Generate the YAML
 	serviceYAML := yaml.GenerateManifest(service)

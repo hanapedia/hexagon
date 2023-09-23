@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/hanapedia/the-bench/internal/tbctl/generate"
+	"github.com/hanapedia/the-bench/internal/tbctl/manifest/generator"
 	"github.com/spf13/cobra"
 )
 
@@ -25,9 +25,9 @@ var generateCmd = &cobra.Command{
 			return
 		}
 		if fileInfo.IsDir() {
-			generate.GenerateFromDirectory(inputPath, outputPath)
+			generator.GenerateFromDirectory(inputPath, outputPath)
 		} else {
-			manifestGenerator := generate.NewManifestGenerator(inputPath, outputPath)
+			manifestGenerator := generator.NewManifestGenerator(inputPath, outputPath)
 			manifestGenerator.GenerateFromFile()
 		}
 	},

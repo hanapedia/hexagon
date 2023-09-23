@@ -1,8 +1,9 @@
 version: v0.1.0
 name: client
-gateway: # load generator specific
-  virtualUsers: 10
-  duration: 60
+deployment:
+  gateway: # load generator specific
+    virtualUsers: 10
+    duration: 60
 adapters:
 - server:
     action: read

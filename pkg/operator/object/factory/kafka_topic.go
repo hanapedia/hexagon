@@ -10,11 +10,11 @@ type KafkaTopicArgs struct {
 	Replicas    int32
 }
 
-// KafkaTopicFactory creates kafka topic custom resource defined by strimzi.io
-func KafkaTopicFactory(args *KafkaTopicArgs) crd.KafkaTopic {
+// NewKafkaTopic creates kafka topic custom resource defined by strimzi.io
+func NewKafkaTopic(args *KafkaTopicArgs) crd.KafkaTopic {
 	return crd.KafkaTopic{
-		TypeMeta: TypeMetaFactory("KafkaTopic", "kafka.strimzi.io/v1beta2"),
-		ObjectMeta: ObjectMetaFactory(ObjectMetaOptions{
+		TypeMeta: NewTypeMeta("KafkaTopic", "kafka.strimzi.io/v1beta2"),
+		ObjectMeta: NewObjectMeta(ObjectMetaOptions{
 			Name:      args.Topic,
 			Namespace: args.Namespace,
 			Labels: map[string]string{

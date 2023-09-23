@@ -28,7 +28,7 @@ func ValidateDirectory(path string) v1validator.ConfigValidationError {
 	for _, path = range paths {
 		serviceUnitConfigs = append(serviceUnitConfigs, loader.GetConfig(path))
 	}
-	errs := v1validator.ValidateServiceUnitConfigs(&serviceUnitConfigs)
+	errs := v1validator.ValidateServiceUnitConfigs(serviceUnitConfigs)
 	if errs.Exist() {
 		errs.Print()
 	} else {

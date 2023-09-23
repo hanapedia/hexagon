@@ -1,0 +1,41 @@
+version: v0.1.0
+name: gateway
+deployment:
+  gateway: # load generator specific
+    virtualUsers: 10
+    duration: 60
+  resources:
+    limits:
+      cpu: 500m
+      memory: 256Mi
+    requests:
+      cpu: 125m
+      memory: 64Mi
+  env:
+    - name: TRACING
+      value: 1
+adapters:
+- server:
+    action: read
+    variant: rest
+    route: get
+    weight: 1 # load generator specific
+  steps:
+  - adapter:
+      invocation:
+        variant: rest
+        service: chain1
+        action: read
+        route: get
+- server:
+    action: write
+    variant: rest
+    route: post
+    weight: 2 # load generator specific
+  steps:
+  - adapter:
+      invocation:
+        variant: rest
+        service: chain1
+        action: write
+        route: post

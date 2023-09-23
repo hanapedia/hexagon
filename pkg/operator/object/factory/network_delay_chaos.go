@@ -12,17 +12,17 @@ type NetworkChaosArgs struct {
 	Jitter          string
 }
 
-// NetworkChaosFactory create type network chaos kubernetes custom resource objects for chaos-mesh.
-func NetworkChaosFactory(args *NetworkChaosArgs) crd.NetworkChaos {
+// NewNetworkChaos create type network chaos kubernetes custom resource objects for chaos-mesh.
+func NewNetworkChaos(args *NetworkChaosArgs) crd.NetworkChaos {
 	return crd.NetworkChaos{
-		TypeMeta:   TypeMetaFactory("NetworkChaos", "chaos-mesh.org/v1alpha1"),
-		ObjectMeta: ObjectMetaFactory(ObjectMetaOptions{Name: args.Name, Namespace: args.Namespace}),
-		Spec:       NetworkChaosSpecFactory(args),
+		TypeMeta:   NewTypeMeta("NetworkChaos", "chaos-mesh.org/v1alpha1"),
+		ObjectMeta: NewObjectMeta(ObjectMetaOptions{Name: args.Name, Namespace: args.Namespace}),
+		Spec:       NewNetworkChaosSpec(args),
 	}
 }
 
-// NetworkChaosSpecFactory create type namespace kubernetes objects.
-func NetworkChaosSpecFactory(args *NetworkChaosArgs) crd.NetworkChaosSpec {
+// NewNetworkChaosSpec create type namespace kubernetes objects.
+func NewNetworkChaosSpec(args *NetworkChaosArgs) crd.NetworkChaosSpec {
 	return crd.NetworkChaosSpec{
 		PodSelector: crd.PodSelector{
 			Selector: crd.PodSelectorSpec{

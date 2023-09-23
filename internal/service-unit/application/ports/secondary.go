@@ -48,13 +48,3 @@ func (spb *SecondaryPortBase) GetDestId() string {
 func (spb *SecondaryPortBase) SetDestId(id string) {
 	spb.destId = id
 }
-
-// LogSecondaryPortErrors logs the failed tasks
-// func LogSecondaryPortErrors(errors *[]SecondaryPortError) {
-// 	for _, error := range *errors {
-// 		logger.Logger.Errorf("Invocating %s failed: %s",
-// 			reflect.TypeOf(error.SecondaryPort).Elem().Name(),
-// 			error.Error,
-// 		)
-// 	}
-// }
