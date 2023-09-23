@@ -4,4 +4,10 @@ adapters:
 - consumer:
     variant: kafka
     topic: topic1
-  steps: []
+  steps:
+  - adapter:
+      invocation:
+        variant: rest
+        service: chain1
+        action: read
+        route: get
