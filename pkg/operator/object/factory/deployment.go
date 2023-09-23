@@ -5,23 +5,19 @@ import (
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/resource"
 )
 
 type DeploymentArgs struct {
-	Name                   string
-	Namespace              string
-	Annotations            map[string]string
-	Image                  string
-	Replicas               int32
-	ResourceLimitsCPU      string
-	ResourceLimitsMemory   string
-	ResourceRequestsCPU    string
-	ResourceRequestsMemory string
-	Ports                  map[string]int32
-	VolumeMounts           map[string]string
-	ConfigVolume           *ConfigMapVolumeArgs
-	EnvVolume              *ConfigMapVolumeArgs
+	Name         string
+	Namespace    string
+	Annotations  map[string]string
+	Image        string
+	Replicas     int32
+	Resource     *corev1.ResourceRequirements
+	Ports        map[string]int32
+	VolumeMounts map[string]string
+	Envs         []corev1.EnvVar
+	ConfigVolume *ConfigMapVolumeArgs
 }
 
 type ConfigMapVolumeArgs struct {
@@ -29,87 +25,60 @@ type ConfigMapVolumeArgs struct {
 	Items map[string]string
 }
 
-// DeploymentFactory create Deployment
-func DeploymentFactory(args *DeploymentArgs) appsv1.Deployment {
+// NewDeployment create Deployment
+func NewDeployment(args *DeploymentArgs) appsv1.Deployment {
 	return appsv1.Deployment{
-		TypeMeta:   TypeMetaFactory("Deployment", "apps/v1"),
-		ObjectMeta: ObjectMetaFactory(ObjectMetaOptions{Name: args.Name, Namespace: args.Namespace, Annotations: args.Annotations}),
-		Spec:       DeploymentSpecFactory(args),
+		TypeMeta:   NewTypeMeta("Deployment", "apps/v1"),
+		ObjectMeta: NewObjectMeta(ObjectMetaOptions{Name: args.Name, Namespace: args.Namespace, Annotations: args.Annotations}),
+		Spec:       NewDeploymentSpec(args),
 	}
 }
 
-// DeploymentSpecFactory create deployment specs
-func DeploymentSpecFactory(args *DeploymentArgs) appsv1.DeploymentSpec {
+// NewDeploymentSpec create deployment specs
+func NewDeploymentSpec(args *DeploymentArgs) appsv1.DeploymentSpec {
 	return appsv1.DeploymentSpec{
 		Replicas: utils.Int32Ptr(args.Replicas),
-		Selector: LabelSelectorFactory(map[string]string{"app": args.Name}),
-		Template: PodTemplateFactory(args),
+		Selector: NewLabelSelector(map[string]string{"app": args.Name}),
+		Template: NewPodTemplate(args),
 	}
 
 }
 
-// PodTemplateFactory create pod template
-func PodTemplateFactory(args *DeploymentArgs) corev1.PodTemplateSpec {
+// NewPodTemplate create pod template
+func NewPodTemplate(args *DeploymentArgs) corev1.PodTemplateSpec {
 	return corev1.PodTemplateSpec{
-		ObjectMeta: ObjectMetaFactory(ObjectMetaOptions{Labels: map[string]string{"app": args.Name}}),
-		Spec:       PodSpecFactory(args),
+		ObjectMeta: NewObjectMeta(ObjectMetaOptions{Labels: map[string]string{"app": args.Name}}),
+		Spec:       NewPodSpec(args),
 	}
 }
 
-// PodSpecFactory create pod spec
-func PodSpecFactory(args *DeploymentArgs) corev1.PodSpec {
+// NewPodSpec create pod spec
+func NewPodSpec(args *DeploymentArgs) corev1.PodSpec {
 	return corev1.PodSpec{
-		Containers: ContainerFactory(args),
-		Volumes:    VolumeFactory(args.ConfigVolume, args.EnvVolume),
+		Containers: NewContainer(args),
+		Volumes:    NewVolume(args.ConfigVolume),
 	}
 }
 
-// ContainerFactory create container
-func ContainerFactory(args *DeploymentArgs) []corev1.Container {
+// NewContainer create container
+func NewContainer(args *DeploymentArgs) []corev1.Container {
 	return []corev1.Container{
 		{
 			Name:         args.Name,
 			Image:        args.Image,
-			Resources:    ContainerResourcesFactory(args),
-			Ports:        ContainerPortFactory(args.Ports),
-			VolumeMounts: VolumeMountFactory(args.VolumeMounts),
-			// EnvFrom:      ContainerEnvFactory(args),
+			Resources:    *args.Resource,
+			Ports:        NewContainerPort(args.Ports),
+			VolumeMounts: NewVolumeMount(args.VolumeMounts),
+			Env:          args.Envs,
 		},
 	}
 }
 
-// ContainerResourcesFactory creates resource requiremnts definition
-func ContainerResourcesFactory(args *DeploymentArgs) corev1.ResourceRequirements {
-	return corev1.ResourceRequirements{
-		Limits: corev1.ResourceList{
-			corev1.ResourceCPU:    resource.MustParse(args.ResourceLimitsCPU),
-			corev1.ResourceMemory: resource.MustParse(args.ResourceLimitsMemory),
-		},
-		Requests: corev1.ResourceList{
-			corev1.ResourceCPU:    resource.MustParse(args.ResourceRequestsCPU),
-			corev1.ResourceMemory: resource.MustParse(args.ResourceRequestsMemory),
-		},
-	}
-}
-
-// ContainerEnvFactory creates container env from source
-func ContainerEnvFactory(args *DeploymentArgs) []corev1.EnvFromSource {
-	envFromSource := corev1.EnvFromSource{
-		ConfigMapRef: &corev1.ConfigMapEnvSource{
-			LocalObjectReference: *LocalObjectReferenceFactory("env"),
-		},
-	}
-	return []corev1.EnvFromSource{envFromSource}
-}
-
-// VolumeFactory create volume
-func VolumeFactory(configVolumeArgs, envVolumeArgs *ConfigMapVolumeArgs) []corev1.Volume {
+// NewVolume create volume
+func NewVolume(configVolumeArgs *ConfigMapVolumeArgs) []corev1.Volume {
 	var volumes []corev1.Volume
 	if configVolumeArgs != nil {
 		volumes = append(volumes, GetConfigMapVolume("config", configVolumeArgs))
-	}
-	if envVolumeArgs != nil {
-		volumes = append(volumes, GetConfigMapVolume("env", envVolumeArgs))
 	}
 	return volumes
 }
@@ -128,7 +97,7 @@ func GetConfigMapVolume(key string, arg *ConfigMapVolumeArgs) corev1.Volume {
 		Name: key,
 		VolumeSource: corev1.VolumeSource{
 			ConfigMap: &corev1.ConfigMapVolumeSource{
-				LocalObjectReference: *LocalObjectReferenceFactory(arg.Name),
+				LocalObjectReference: *NewLocalObjectReference(arg.Name),
 				Items:                items,
 			},
 		},
@@ -136,8 +105,8 @@ func GetConfigMapVolume(key string, arg *ConfigMapVolumeArgs) corev1.Volume {
 	return volume
 }
 
-// ContainerPortFactory create container port slice
-func ContainerPortFactory(ports map[string]int32) []corev1.ContainerPort {
+// NewContainerPort create container port slice
+func NewContainerPort(ports map[string]int32) []corev1.ContainerPort {
 	var containerPorts []corev1.ContainerPort
 	for name, port := range ports {
 		containerPorts = append(containerPorts, corev1.ContainerPort{
@@ -148,8 +117,8 @@ func ContainerPortFactory(ports map[string]int32) []corev1.ContainerPort {
 	return containerPorts
 }
 
-// VolumeMountFactory create container port slice
-func VolumeMountFactory(volumes map[string]string) []corev1.VolumeMount {
+// NewVolumeMount create container port slice
+func NewVolumeMount(volumes map[string]string) []corev1.VolumeMount {
 	var volumeMounts []corev1.VolumeMount
 	for name, path := range volumes {
 		volumeMounts = append(volumeMounts, corev1.VolumeMount{

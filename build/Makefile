@@ -1,5 +1,5 @@
 TAG ?= test
-SUBDIRS := stateless stateful/mongo load-generator
+SUBDIRS := service-unit stateful-unit/mongo load-generator tbctl
 
 .PHONY: all $(SUBDIRS)
 

@@ -9,10 +9,10 @@ type NamespaceArgs struct {
 	Annotations map[string]string
 }
 
-// NamespaceFactory create type namespace kubernetes objects.
-func NamespaceFactory(args *NamespaceArgs) corev1.Namespace {
+// NewNamespace create type namespace kubernetes objects.
+func NewNamespace(args *NamespaceArgs) corev1.Namespace {
 	return corev1.Namespace{
-		TypeMeta:   TypeMetaFactory("Namespace", "v1"),
-		ObjectMeta: ObjectMetaFactory(ObjectMetaOptions{Name: args.Name, Annotations: args.Annotations}),
+		TypeMeta:   NewTypeMeta("Namespace", "v1"),
+		ObjectMeta: NewObjectMeta(ObjectMetaOptions{Name: args.Name, Annotations: args.Annotations}),
 	}
 }

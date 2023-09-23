@@ -6,7 +6,6 @@ import (
 	"github.com/hanapedia/the-bench/pkg/tbctl/graphml"
 	"github.com/hanapedia/the-bench/internal/tbctl/loader"
 	model "github.com/hanapedia/the-bench/pkg/api/v1"
-	"github.com/hanapedia/the-bench/pkg/operator/defaults"
 	"github.com/hanapedia/the-bench/pkg/operator/logger"
 )
 
@@ -19,7 +18,6 @@ func newGraphGenerator(paths []string) GraphGenerator {
 	configs := make([]*model.ServiceUnitConfig, 0, len(paths))
 	for _, path := range paths {
 		config := loader.GetConfig(path)
-		defaults.SetDefaults(&config)
 		configs = append(configs, &config)
 	}
 

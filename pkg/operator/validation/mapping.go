@@ -6,7 +6,7 @@ import (
 
 // Validate adapter mapping across service unit configs
 // serviceUnitConfigs: an array of serviceUnitConfig
-func validateMapping(serviceUnitConfigs *[]model.ServiceUnitConfig) ConfigValidationError {
+func validateMapping(serviceUnitConfigs []model.ServiceUnitConfig) ConfigValidationError {
 	serviceAdapterIds := mapPrimaryAdapters(serviceUnitConfigs)
 	mappingErrors := mapSecondaryAdapters(serviceAdapterIds, serviceUnitConfigs)
 	return ConfigValidationError{MappingErrors: mappingErrors}
@@ -14,9 +14,9 @@ func validateMapping(serviceUnitConfigs *[]model.ServiceUnitConfig) ConfigValida
 
 // map primary adapters to services
 // returns the list of ids of primary adapter
-func mapPrimaryAdapters(serviceUnitConfigs *[]model.ServiceUnitConfig) []string {
+func mapPrimaryAdapters(serviceUnitConfigs []model.ServiceUnitConfig) []string {
 	var serviceAdapterIds []string
-	for _, serviceUnitConfig := range *serviceUnitConfigs {
+	for _, serviceUnitConfig := range serviceUnitConfigs {
 		for _, primaryAdapterConfig := range serviceUnitConfig.AdapterConfigs {
 			serviceAdapterIds = append(serviceAdapterIds, primaryAdapterConfig.GetId(serviceUnitConfig.Name))
 		}
@@ -26,9 +26,9 @@ func mapPrimaryAdapters(serviceUnitConfigs *[]model.ServiceUnitConfig) []string 
 
 // map secondary adapters to primary adapters of services
 // check if the id of secondary adapter is found in the list of ids of primary adapters
-func mapSecondaryAdapters(serviceAdapterIds []string, serviceUnitConfigs *[]model.ServiceUnitConfig) []InvalidAdapterMappingError {
+func mapSecondaryAdapters(serviceAdapterIds []string, serviceUnitConfigs []model.ServiceUnitConfig) []InvalidAdapterMappingError {
 	var mappingErrors []InvalidAdapterMappingError
-	for _, serviceUnitConfig := range *serviceUnitConfigs {
+	for _, serviceUnitConfig := range serviceUnitConfigs {
 		for _, primaryAdapterConfig := range serviceUnitConfig.AdapterConfigs {
 			errs := mapAdapters(serviceAdapterIds, primaryAdapterConfig)
 			if len(errs) != 0 {

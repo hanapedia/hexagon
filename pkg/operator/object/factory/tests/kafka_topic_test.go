@@ -17,7 +17,7 @@ func TestKafkaTopicFactory(t *testing.T) {
 		Partitions:  1,
 		Replicas:    1,
 	}
-	kafkaTopic := factory.KafkaTopicFactory(&args)
+	kafkaTopic := factory.NewKafkaTopic(&args)
 
 	// Generate the YAML
 	kafkaTopicYAML := yaml.GenerateManifest(kafkaTopic)

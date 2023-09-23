@@ -58,7 +58,7 @@ func (kca KafkaConsumerAdapter) Serve() error {
 		// call tasks
 		errs := runtime.TaskSetHandler(ctx, kca.kafkaConsumer.handler.TaskSet)
 		if errs != nil {
-			for _, err := range *errs {
+			for _, err := range errs {
 				kca.kafkaConsumer.handler.LogTaskError(ctx, err)
 			}
 		}
