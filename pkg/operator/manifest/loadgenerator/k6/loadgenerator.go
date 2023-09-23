@@ -101,12 +101,10 @@ func generateConfigJson(config *model.ServiceUnitConfig) ([]byte, error) {
 		logger.Logger.Panic("Gateway config not found.")
 	}
 
-	name := fmt.Sprintf("%s-lg", config.Name)
-
 	k6Config := createLoadGeneratorConfig(
 		config.DeploymentSpec.Gateway.VirtualUsers,
 		config.DeploymentSpec.Gateway.Duration,
-		name,
+		config.Name,
 	)
 	return json.Marshal(k6Config)
 }
