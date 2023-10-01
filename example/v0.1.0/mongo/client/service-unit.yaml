@@ -15,7 +15,7 @@ adapters:
         name: test
         variant: mongo
         action: read
-        size: small
+        payload: small
 - server:
     route: post
     variant: rest
@@ -26,4 +26,4 @@ adapters:
         name: test
         variant: mongo
         action: write
-        size: large
+        payload: large

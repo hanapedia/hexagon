@@ -6,18 +6,18 @@ import (
 	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
 	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary/config"
 	tracing "github.com/hanapedia/the-bench/internal/service-unit/infrastructure/telemetry/tracing/mongo"
-	"github.com/hanapedia/the-bench/pkg/service-unit/utils"
 	"github.com/hanapedia/the-bench/pkg/operator/constants"
+	"github.com/hanapedia/the-bench/pkg/service-unit/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type MongoWriteAdapter struct {
-	Name string
-	Database string
-	Client *mongo.Client
-	Collection constants.RepositoryEntryVariant
+	name       string
+	database   string
+	client     *mongo.Client
+	collection constants.PayloadSizeVariant
 	ports.SecondaryPortBase
 }
 
@@ -25,14 +25,14 @@ type MongoWriteAdapter struct {
 func (mra *MongoWriteAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
 	// create span if tracing is enabled
 	if config.GetEnvs().TRACING {
-		span := tracing.CreateWriteSpan(ctx, mra.Name, mra.Database, string(mra.Collection))
+		span := tracing.CreateWriteSpan(ctx, mra.name, mra.database, string(mra.collection))
 		defer span.End()
 	}
 
-	db := mra.Client.Database(mra.Database)
-	collection := db.Collection(string(mra.Collection))
+	db := mra.client.Database(mra.database)
+	collection := db.Collection(string(mra.collection))
 
-	payload, err := utils.GeneratePayloadWithRepositorySize(mra.Collection)
+	payload, err := utils.GeneratePayload(mra.collection)
 	id := utils.GetRandomId(constants.NumInitialEntries+1, constants.NumInitialEntries*2)
 	filter := bson.M{"id": id}
 	update := bson.M{"$set": bson.M{"payload": payload}}
@@ -40,15 +40,14 @@ func (mra *MongoWriteAdapter) Call(ctx context.Context) ports.SecondaryPortCallR
 
 	_, err = collection.UpdateOne(ctx, filter, update, updateOpts)
 	if err != nil {
-        return ports.SecondaryPortCallResult{
+		return ports.SecondaryPortCallResult{
 			Payload: nil,
-			Error: err,
+			Error:   err,
 		}
 	}
 
 	return ports.SecondaryPortCallResult{
 		Payload: &payload,
-		Error: nil,
+		Error:   nil,
 	}
 }
-

@@ -30,20 +30,20 @@ const (
 	GET  HttpMethod = "GET"
 )
 
-type RepositoryEntryVariant string
-type RepositoryEntrySize int
+type PayloadSizeVariant string
+type PayloadSize int
 
 const (
-	SMALL      RepositoryEntryVariant = "small"  // 1kb entries
-	MEDIUM     RepositoryEntryVariant = "medium" // 4kb entries
-	LARGE      RepositoryEntryVariant = "large"  // 16kb entries
-	SMALLSIZE  RepositoryEntrySize    = 1        // 1kb entries
-	MEDIUMSIZE RepositoryEntrySize    = 4        // 1kb entries
-	LARGESIZE  RepositoryEntrySize    = 16       // 1kb entries
+	SMALL      PayloadSizeVariant = "small"  // 1kb entries
+	MEDIUM     PayloadSizeVariant = "medium" // 4kb entries
+	LARGE      PayloadSizeVariant = "large"  // 16kb entries
+	SMALLSIZE  PayloadSize    = 1        // 1kb entries
+	MEDIUMSIZE PayloadSize    = 4        // 1kb entries
+	LARGESIZE  PayloadSize    = 16       // 1kb entries
 )
 
 const (
-	PayloadSize = LARGESIZE
+	DefaultPayloadSize = MEDIUMSIZE
 )
 
 const (

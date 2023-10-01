@@ -11,17 +11,18 @@ import (
 	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
 	"github.com/hanapedia/the-bench/internal/service-unit/domain/contract"
 	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary/config"
-	"github.com/hanapedia/the-bench/pkg/service-unit/utils"
 	"github.com/hanapedia/the-bench/pkg/operator/constants"
+	"github.com/hanapedia/the-bench/pkg/service-unit/utils"
 )
 
 // must implement ports.ServerAdapter
 type RestServerAdapter struct {
-	addr   string
-	server *fiber.App
+	addr    string
+	server  *fiber.App
+	payload constants.PayloadSizeVariant
 }
 
-func NewRestServerAdapter() *RestServerAdapter {
+func NewRestServerAdapter(payload constants.PayloadSizeVariant) *RestServerAdapter {
 	app := fiber.New()
 	app.Use(fiber_logger.New())
 
@@ -30,7 +31,7 @@ func NewRestServerAdapter() *RestServerAdapter {
 		app.Use(otelfiber.Middleware())
 	}
 
-	adapter := RestServerAdapter{addr: config.GetRestServerAddr(), server: app}
+	adapter := RestServerAdapter{addr: config.GetRestServerAddr(), server: app, payload: payload}
 
 	return &adapter
 }
@@ -62,13 +63,13 @@ func (rsa RestServerAdapter) Register(serviceName string, handler *ports.Primary
 			}
 
 			// write response
-			payload, err := utils.GenerateRandomString(constants.PayloadSize)
+			payload, err := utils.GeneratePayload(rsa.payload)
 			if err != nil {
 				return err
 			}
 
 			restResponse := contract.RestResponseBody{
-				Message: fmt.Sprintf("Successfully ran %s, sending %vKB.", handler.GetId(), constants.PayloadSize),
+				Message: fmt.Sprintf("Successfully ran %s, sending %s payload.", handler.GetId(), rsa.payload),
 				Payload: &payload,
 			}
 			return c.Status(fiber.StatusOK).JSON(restResponse)

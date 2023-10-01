@@ -30,6 +30,8 @@ type ServerConfig struct {
 	Variant constants.SeverAdapterVariant `json:"variant,omitempty" validate:"required,oneof=rest grpc"`
 	Action  constants.Action              `json:"action,omitempty" validate:"required,oneof=read write"`
 	Route   string                        `json:"route,omitempty" validate:"required"`
+	Payload constants.PayloadSizeVariant  `json:"payload,omitempty" validate:"omitempty,oneof=small medium large"`
+
 	// applies to only gateway service
 	// refers to the weight applied to the route
 	// intentionally a pointer to destinguish 0

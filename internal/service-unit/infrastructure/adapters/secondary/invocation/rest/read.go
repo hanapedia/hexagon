@@ -12,13 +12,13 @@ import (
 )
 
 type RestReadAdapter struct {
-	URL string
-	Client *http.Client
+	url string
+	client *http.Client
 	ports.SecondaryPortBase
 }
 
 func (rra *RestReadAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
-    req, err := http.NewRequestWithContext(ctx, "GET", rra.URL, nil)
+    req, err := http.NewRequestWithContext(ctx, "GET", rra.url, nil)
     if err != nil {
         return ports.SecondaryPortCallResult{
 			Payload: nil,
@@ -26,7 +26,7 @@ func (rra *RestReadAdapter) Call(ctx context.Context) ports.SecondaryPortCallRes
 		}
     }
 
-    resp, err := rra.Client.Do(req)
+    resp, err := rra.client.Do(req)
     if err != nil {
         return ports.SecondaryPortCallResult{
 			Payload: nil,
