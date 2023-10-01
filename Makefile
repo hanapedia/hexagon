@@ -24,3 +24,7 @@ devmanifests:
 .PHONY: devbuild
 devbuild:
 	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o bin/service-unit cmd/service-unit/main.go
+
+.PHONY: devbuildcli
+devbuildcli:
+	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o bin/tbctl cmd/tbctl/main.go

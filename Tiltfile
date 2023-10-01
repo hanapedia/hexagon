@@ -15,8 +15,11 @@ local_resource('service-unit manifests', cmd='make devmanifests', deps=['dev/con
 watch_file('./dev/manifest/')
 k8s_yaml(kustomize('./dev/manifest'))
 
-# Re-compile go
-local_resource('Watch & Compile', 'make devbuild', deps=['cmd', 'pkg', 'internal'])
+# Re-compile service unit
+local_resource('Watch & Compile service-unit', 'make devbuild', deps=['cmd', 'pkg', 'internal'])
+
+# Re-compile tbctl
+local_resource('Watch & Compile tbctl', 'make devbuildcli', deps=['cmd/tbctl', 'pkg/tbctl', 'internal/tbctl'])
 
 # Build service-unit image
 docker_build_with_restart(
