@@ -27,7 +27,7 @@ func GetMongoConnectionUri(adapterConfig *model.RepositoryClientConfig) string {
 	password := GetEnvs().MONGO_PASSWORD
 	// port := GetEnvs().MONGO_PORT
 	port := "27017" // port is hardcoded until environmental variable issue is resolved
-	return fmt.Sprintf("mongodb://%s:%s@%s:%s/mongo?authSource=admin", user, password, port, adapterConfig.Name)
+	return fmt.Sprintf("mongodb://%s:%s@%s:%s/mongo?authSource=admin", user, password, adapterConfig.Name, port)
 }
 
 func GetOtelCollectorUrl() string {
