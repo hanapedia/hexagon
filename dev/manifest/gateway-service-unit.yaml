@@ -1,0 +1,137 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: gateway
+  namespace: the-bench
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: gateway
+    spec:
+      containers:
+      - image: hiroki11hanada/service-unit:dev
+        name: gateway
+        ports:
+        - containerPort: 8080
+          name: http
+        resources:
+          limits:
+            cpu: 250m
+            memory: 128Mi
+          requests:
+            cpu: 125m
+            memory: 64Mi
+        volumeMounts:
+        - mountPath: /app/config/
+          name: config
+      volumes:
+      - configMap:
+          items:
+          - key: config
+            path: service-unit.yaml
+          name: gateway-config
+        name: config
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  name: gateway
+  namespace: the-bench
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 0
+  selector:
+    app: gateway
+status:
+  loadBalancer: {}
+
+---
+apiVersion: v1
+data:
+  config: |
+    version: dev
+    name: gateway
+    deployment:
+      gateway: # load generator specific
+        virtualUsers: 10
+        duration: 60
+    adapters:
+    - server:
+        action: read
+        variant: rest
+        route: serverget
+        weight: 1 # load generator specific
+      steps:
+      - adapter:
+          invocation:
+            variant: rest
+            service: chain1
+            action: read
+            route: get
+    - server:
+        action: write
+        variant: rest
+        route: serverpost
+        weight: 2 # load generator specific
+      steps:
+      - adapter:
+          invocation:
+            variant: rest
+            service: chain1
+            action: write
+            route: post
+    - server:
+        action: read
+        variant: rest
+        route: mongoget
+        weight: 2 # load generator specific
+      steps:
+      - adapter:
+          repository:
+            name: mongorepo
+            variant: mongo
+            action: read
+            size: small
+    - server:
+        action: write
+        variant: rest
+        route: mongowrite
+        weight: 2 # load generator specific
+      steps:
+      - adapter:
+          repository:
+            name: mongorepo
+            variant: mongo
+            action: write
+            size: large
+    - server:
+        action: read
+        variant: rest
+        route: produce
+        weight: 2 # load generator specific
+      steps:
+      - adapter:
+          producer:
+            variant: kafka
+            topic: topic1
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: gateway-config
+  namespace: the-bench
+

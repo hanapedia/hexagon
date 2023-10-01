@@ -1,0 +1,13 @@
+version: dev
+name: chain1
+adapters:
+- server:
+    action: read
+    variant: rest
+    route: get
+  steps: []
+- server:
+    action: write
+    variant: rest
+    route: post
+  steps: []
