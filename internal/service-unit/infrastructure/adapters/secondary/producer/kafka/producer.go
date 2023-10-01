@@ -12,13 +12,14 @@ import (
 )
 
 type KafkaProducerAdapter struct {
-	Writer *kafka.Writer
+	writer *kafka.Writer
+	payload constants.PayloadSizeVariant
 	ports.SecondaryPortBase
 }
 
 func (kpa *KafkaProducerAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
 	// prepare payload
-	payload, err := utils.GenerateRandomString(constants.PayloadSize)
+	payload, err := utils.GeneratePayload(kpa.payload)
 	if err != nil {
         return ports.SecondaryPortCallResult{
 			Payload: nil,
@@ -35,7 +36,7 @@ func (kpa *KafkaProducerAdapter) Call(ctx context.Context) ports.SecondaryPortCa
 		defer span.End()
 	}
 
-	if err = kpa.Writer.WriteMessages(ctx, message); err != nil {
+	if err = kpa.writer.WriteMessages(ctx, message); err != nil {
         return ports.SecondaryPortCallResult{
 			Payload: nil,
 			Error: err,

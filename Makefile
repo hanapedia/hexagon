@@ -27,4 +27,4 @@ devbuild:
 
 .PHONY: devbuildcli
 devbuildcli:
-	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o bin/tbctl cmd/tbctl/main.go
+	CGO_ENABLED=0 go build -o bin/tbctl cmd/tbctl/main.go

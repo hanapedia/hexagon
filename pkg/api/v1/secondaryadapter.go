@@ -20,20 +20,22 @@ type InvocationConfig struct {
 	Service string                        `json:"service,omitempty" validate:"required"`
 	Action  constants.Action              `json:"action,omitempty" validate:"required,oneof=read write"`
 	Route   string                        `json:"route,omitempty" validate:"required"`
+	Payload constants.PayloadSizeVariant  `json:"payload,omitempty" validate:"omitempty,oneof=small medium large"`
 }
 
 // Config fields for repository services
 type RepositoryClientConfig struct {
-	Name    string                      `json:"name,omitempty" validate:"required"`
-	Variant constants.RepositoryVariant `json:"variant,omitempty" validate:"required,oneof=mongo postgre"`
-	Action  constants.Action            `json:"action,omitempty" validate:"omitempty,oneof=read write"`
-	Size    string                      `json:"size,omitempty" validate:"omitempty,oneof=small medium large"`
+	Name    string                       `json:"name,omitempty" validate:"required"`
+	Variant constants.RepositoryVariant  `json:"variant,omitempty" validate:"required,oneof=mongo postgre"`
+	Action  constants.Action             `json:"action,omitempty" validate:"omitempty,oneof=read write"`
+	Payload constants.PayloadSizeVariant `json:"payload,omitempty" validate:"omitempty,oneof=small medium large"`
 }
 
 // Config fields for Brokers
 type ProducerConfig struct {
-	Variant constants.BrokerVariant `json:"variant,omitempty" validate:"required,oneof=kafka rabbitmq pulsar"`
-	Topic   string                  `json:"topic,omitempty" validate:"required"`
+	Variant constants.BrokerVariant      `json:"variant,omitempty" validate:"required,oneof=kafka rabbitmq pulsar"`
+	Topic   string                       `json:"topic,omitempty" validate:"required"`
+	Payload constants.PayloadSizeVariant `json:"payload,omitempty" validate:"omitempty,oneof=small medium large"`
 }
 
 // Get secondary adapter id

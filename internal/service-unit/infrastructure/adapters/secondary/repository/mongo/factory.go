@@ -3,9 +3,9 @@ package mongo
 import (
 	"errors"
 
+	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
 	model "github.com/hanapedia/the-bench/pkg/api/v1"
 	"github.com/hanapedia/the-bench/pkg/operator/constants"
-	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
 )
 
 func MongoClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
@@ -15,17 +15,17 @@ func MongoClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, clie
 		switch adapterConfig.Action {
 		case constants.READ:
 			mongoAdapter = &MongoReadAdapter{
-				Name: adapterConfig.Name,
-				Database: string(adapterConfig.Variant),
-				Client: mongoClient.Client,
-				Collection: constants.RepositoryEntryVariant(adapterConfig.Size),
+				name:       adapterConfig.Name,
+				database:   string(adapterConfig.Variant),
+				client:     mongoClient.Client,
+				collection: adapterConfig.Payload,
 			}
 		case constants.WRITE:
 			mongoAdapter = &MongoWriteAdapter{
-				Name: adapterConfig.Name,
-				Database: string(adapterConfig.Variant),
-				Client: mongoClient.Client,
-				Collection: constants.RepositoryEntryVariant(adapterConfig.Size),
+				name:       adapterConfig.Name,
+				database:   string(adapterConfig.Variant),
+				client:     mongoClient.Client,
+				collection: adapterConfig.Payload,
 			}
 		default:
 			err = errors.New("No matching action found when creating mongo client adapter.")

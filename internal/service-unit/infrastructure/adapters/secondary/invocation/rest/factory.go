@@ -20,13 +20,14 @@ func RestInvocationAdapterFactory(adapterConfig *model.InvocationConfig, client 
 		switch adapterConfig.Action {
 		case constants.READ:
 			restAdapter = &RestReadAdapter{
-				URL:    fmt.Sprintf("http://%s:%s/%s", adapterConfig.Service, port, adapterConfig.Route),
-				Client: restClient.Client,
+				url:    fmt.Sprintf("http://%s:%s/%s", adapterConfig.Service, port, adapterConfig.Route),
+				client: restClient.Client,
 			}
 		case constants.WRITE:
 			restAdapter = &RestWriteAdapter{
-				URL:    fmt.Sprintf("http://%s:%s/%s", adapterConfig.Service, port, adapterConfig.Route),
-				Client: restClient.Client,
+				url:     fmt.Sprintf("http://%s:%s/%s", adapterConfig.Service, port, adapterConfig.Route),
+				client:  restClient.Client,
+				payload: adapterConfig.Payload,
 			}
 		default:
 			err = errors.New("No matching protocol found when creating rest secondary adapter.")

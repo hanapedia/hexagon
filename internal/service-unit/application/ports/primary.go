@@ -59,9 +59,9 @@ func (iah PrimaryHandler) GetId() string {
 
 func (iah PrimaryHandler) LogTaskError(ctx context.Context, taskError *TaskError) {
 	l.Logger.WithContext(ctx).Error(
-		"Call failed",
-		"sourceId", iah.GetId(),
-		"destId", taskError.task.SecondaryPort.GetDestId(),
-		"err", taskError.error,
+		"Call failed. ",
+		"sourceId=", iah.GetId(), ", ",
+		"destId=", taskError.task.SecondaryPort.GetDestId(), ", ",
+		"err=", taskError.error,
 	)
 }

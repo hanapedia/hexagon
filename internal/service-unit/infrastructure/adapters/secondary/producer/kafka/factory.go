@@ -12,7 +12,8 @@ func KafkaProducerAdapterFactory(adapterConfig *model.ProducerConfig, client por
 	var err error
 	if kafkaProducerClient, ok := (client).(*KafkaProducerClient); ok {
 		kafkaAdapter = &KafkaProducerAdapter{
-			Writer: kafkaProducerClient.Client,
+			writer: kafkaProducerClient.Client,
+			payload: adapterConfig.Payload,
 		}
 	} else {
 		err = errors.New("Unmatched client instance")
