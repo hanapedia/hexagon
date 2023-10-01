@@ -25,8 +25,9 @@ func GetKafkaBrokerAddr() string {
 func GetMongoConnectionUri(adapterConfig *model.RepositoryClientConfig) string {
 	user := GetEnvs().MONGO_USER
 	password := GetEnvs().MONGO_PASSWORD
-	port := GetEnvs().MONGO_PORT
-	return fmt.Sprintf("mongodb://%s:%s@%s:%s/mongo?authSource=admin", user, password, adapterConfig.Name, port)
+	// port := GetEnvs().MONGO_PORT
+	port := "27017" // port is hardcoded until environmental variable issue is resolved
+	return fmt.Sprintf("mongodb://%s:%s@%s:%s/mongo?authSource=admin", user, password, port, adapterConfig.Name)
 }
 
 func GetOtelCollectorUrl() string {

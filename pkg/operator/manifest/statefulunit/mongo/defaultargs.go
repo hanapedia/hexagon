@@ -21,14 +21,14 @@ func getDefaultResource() *corev1.ResourceRequirements {
 
 func getDefaultEnvs() []corev1.EnvVar {
 	return []corev1.EnvVar{
-		{
-			Name: "MONGO_INITDB_ROOT_USERNAME",
-			Value: "root",
-		},
-		{
-			Name: "MONGO_INITDB_ROOT_PASSWORD",
-			Value: "password",
-		},
+		// {
+		// 	Name: "MONGO_INITDB_ROOT_USERNAME",
+		// 	Value: "root",
+		// },
+		// {
+		// 	Name: "MONGO_INITDB_ROOT_PASSWORD",
+		// 	Value: "password",
+		// },
 		{
 			Name: "MONGO_INITDB_DATABASE",
 			Value: "mongo",

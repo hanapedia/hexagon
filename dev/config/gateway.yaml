@@ -1,0 +1,65 @@
+version: dev
+name: gateway
+deployment:
+  gateway: # load generator specific
+    virtualUsers: 10
+    duration: 60
+adapters:
+- server:
+    action: read
+    variant: rest
+    route: serverget
+    weight: 1 # load generator specific
+  steps:
+  - adapter:
+      invocation:
+        variant: rest
+        service: chain1
+        action: read
+        route: get
+- server:
+    action: write
+    variant: rest
+    route: serverpost
+    weight: 2 # load generator specific
+  steps:
+  - adapter:
+      invocation:
+        variant: rest
+        service: chain1
+        action: write
+        route: post
+- server:
+    action: read
+    variant: rest
+    route: mongoget
+    weight: 2 # load generator specific
+  steps:
+  - adapter:
+      repository:
+        name: mongorepo
+        variant: mongo
+        action: read
+        size: small
+- server:
+    action: write
+    variant: rest
+    route: mongowrite
+    weight: 2 # load generator specific
+  steps:
+  - adapter:
+      repository:
+        name: mongorepo
+        variant: mongo
+        action: write
+        size: large
+- server:
+    action: read
+    variant: rest
+    route: produce
+    weight: 2 # load generator specific
+  steps:
+  - adapter:
+      producer:
+        variant: kafka
+        topic: topic1
