@@ -5,13 +5,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
 	"github.com/hanapedia/the-bench/internal/service-unit/domain/contract"
-	"github.com/hanapedia/the-bench/pkg/service-unit/utils"
 	"github.com/hanapedia/the-bench/pkg/operator/constants"
+	"github.com/hanapedia/the-bench/pkg/service-unit/utils"
 )
 
 type RestWriteAdapter struct {
@@ -66,7 +66,7 @@ func (rwa *RestWriteAdapter) Call(ctx context.Context) ports.SecondaryPortCallRe
 		}
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
         return ports.SecondaryPortCallResult{
 			Payload: nil,
