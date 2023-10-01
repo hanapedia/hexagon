@@ -40,7 +40,7 @@ adapters:
         name: mongorepo
         variant: mongo
         action: read
-        size: small
+        payload: small
 - server:
     action: write
     variant: rest
@@ -52,7 +52,7 @@ adapters:
         name: mongorepo
         variant: mongo
         action: write
-        size: large
+        payload: large
 - server:
     action: read
     variant: rest
