@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package grpc;
+
+// Message definition
+message StreamRequest {
+    string message = 1;
+    string payload = 2;
+}
+
+message StreamResponse {
+    string message = 1;
+    string payload = 2;
+}
+
+// Service definition
+service grpc {
+
+    // Regular RPC
+    rpc RegularCall(StreamRequest) returns (StreamResponse);
+
+    // Client-side streaming
+    rpc ClientStreaming(stream StreamRequest) returns (StreamResponse);
+
+    // Server-side streaming
+    rpc ServerStreaming(StreamRequest) returns (stream StreamResponse);
+
+    // Bidirectional streaming
+    rpc BidirectionalStreaming(stream StreamRequest) returns (stream StreamResponse);
+}
