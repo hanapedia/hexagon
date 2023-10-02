@@ -71,6 +71,7 @@ data:
         action: read
         variant: rest
         route: get
+        payload: large
       steps: []
     - server:
         action: write

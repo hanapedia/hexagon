@@ -14,7 +14,7 @@ func NewServerAdapter(config *model.ServerConfig) ports.PrimaryPort {
 
 	switch config.Variant {
 	case constants.REST:
-		serverAdapter = rest.NewRestServerAdapter(config.Payload)
+		serverAdapter = rest.NewRestServerAdapter()
 	default:
 		logger.Logger.Fatal("Adapter currently unsupported.")
 	}

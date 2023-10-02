@@ -95,6 +95,7 @@ data:
             service: chain1
             action: write
             route: post
+            payload: large
     - server:
         action: read
         variant: rest
