@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
@@ -42,7 +42,7 @@ func (rra *RestReadAdapter) Call(ctx context.Context) ports.SecondaryPortCallRes
 		}
     }
 
-    body, err := ioutil.ReadAll(resp.Body)
+    body, err := io.ReadAll(resp.Body)
     if err != nil {
         return ports.SecondaryPortCallResult{
 			Payload: nil,
