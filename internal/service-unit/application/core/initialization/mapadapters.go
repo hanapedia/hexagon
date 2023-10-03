@@ -22,11 +22,11 @@ func (su *ServiceUnit) mapSecondaryToPrimary() {
 		var primaryAdapter ports.PrimaryPort
 		if primaryConfig.ServerConfig != nil {
 			serverKey := primaryConfig.ServerConfig.GetGroupByKey()
-			primaryAdapter = (*su.ServerAdapters)[serverKey]
+			primaryAdapter = su.ServerAdapters[serverKey]
 		}
 		if primaryConfig.ConsumerConfig != nil {
 			consumerKey := primaryConfig.ConsumerConfig.GetGroupByKey()
-			primaryAdapter = (*su.ConsumerAdapters)[consumerKey]
+			primaryAdapter = su.ConsumerAdapters[consumerKey]
 		}
 
 		err = primary.RegiserHandlerToPrimaryAdapter(su.Name, primaryAdapter, &handler)
@@ -61,7 +61,7 @@ func (su *ServiceUnit) newTaskSet(steps []model.Step) []ports.Task {
 	taskSet := make([]ports.Task, len(steps))
 	for i, step := range steps {
 		key := step.AdapterConfig.GetGroupByKey()
-		client, ok := (*su.SecondaryAdapters)[key]
+		client, ok := su.SecondaryAdapters[key]
 		if !ok {
 			l.Logger.Error("Client does not exist", "key", key)
 		}
