@@ -11,6 +11,11 @@ func GetRestServerAddr() string {
 	return fmt.Sprintf(":%s", port)
 }
 
+func GetGrpcServerAddr() string {
+	port := GetEnvs().GRPC_PORT
+	return fmt.Sprintf(":%s", port)
+}
+
 func GetKafkaBrokerAddr() string {
 	port := GetEnvs().KAFKA_PORT
 	clusterName := GetEnvs().KAFKA_CLUSTER_NAME
