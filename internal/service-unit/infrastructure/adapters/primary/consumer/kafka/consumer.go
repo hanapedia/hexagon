@@ -68,11 +68,11 @@ func (kca KafkaConsumerAdapter) Serve() error {
 	return err
 }
 
-func (kca KafkaConsumerAdapter) Register(serviceName string, handler *ports.PrimaryHandler) error {
+func (kca *KafkaConsumerAdapter) Register(handler *ports.PrimaryHandler) error {
 	kca.kafkaConsumer.handler = handler
 	return nil
 }
 
-func (kca KafkaConsumerAdapter) log(ctx context.Context, elapsed int64) {
+func (kca *KafkaConsumerAdapter) log(ctx context.Context, elapsed int64) {
 	logger.Logger.WithContext(ctx).Infof("Message consumed | %-30s | %10v ms", kca.kafkaConsumer.handler.GetId(), elapsed)
 }

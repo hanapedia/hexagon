@@ -39,7 +39,7 @@ func NewConsumerAdapter(config *model.ConsumerConfig) ports.PrimaryPort {
 // Update or insert ServiceAdapter based on the handler input.
 // Does not return any value
 func RegiserHandlerToPrimaryAdapter(serviceName string, serverAdapter ports.PrimaryPort, handler *ports.PrimaryHandler) error {
-	err := serverAdapter.Register(serviceName, handler)
+	err := serverAdapter.Register(handler)
 
 	return err
 }

@@ -14,10 +14,10 @@ import (
 	"github.com/hanapedia/the-bench/pkg/service-unit/utils"
 )
 
-// must implement ports.ServerAdapter
+// must implement ports.PrimaryPort
 type RestServerAdapter struct {
-	addr    string
-	server  *fiber.App
+	addr   string
+	server *fiber.App
 }
 
 func NewRestServerAdapter() *RestServerAdapter {
@@ -29,16 +29,19 @@ func NewRestServerAdapter() *RestServerAdapter {
 		app.Use(otelfiber.Middleware())
 	}
 
-	adapter := RestServerAdapter{addr: config.GetRestServerAddr(), server: app}
+	adapter := RestServerAdapter{
+		addr:   config.GetRestServerAddr(),
+		server: app,
+	}
 
 	return &adapter
 }
 
-func (rsa RestServerAdapter) Serve() error {
+func (rsa *RestServerAdapter) Serve() error {
 	return rsa.server.Listen(rsa.addr)
 }
 
-func (rsa RestServerAdapter) Register(serviceName string, handler *ports.PrimaryHandler) error {
+func (rsa *RestServerAdapter) Register(handler *ports.PrimaryHandler) error {
 	if handler.ServerConfig == nil {
 		return errors.New(fmt.Sprintf("Invalid configuartion for handler %s.", handler.GetId()))
 	}

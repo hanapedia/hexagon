@@ -16,7 +16,7 @@ import (
 // It is intended to represent the individual interfaces on each exteranl service,
 type PrimaryPort interface {
 	Serve() error
-	Register(string, *PrimaryHandler) error
+	Register(*PrimaryHandler) error
 }
 
 type PrimaryPortError struct {
