@@ -14,14 +14,14 @@ import (
 	"github.com/hanapedia/the-bench/pkg/service-unit/utils"
 )
 
-type RestWriteAdapter struct {
+type restWriteAdapter struct {
 	url     string
 	client  *http.Client
 	payload constants.PayloadSizeVariant
 	ports.SecondaryPortBase
 }
 
-func (rwa *RestWriteAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
+func (rwa *restWriteAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
 	payload, err := utils.GeneratePayload(rwa.payload)
 	if err != nil {
 		return ports.SecondaryPortCallResult{
@@ -31,7 +31,7 @@ func (rwa *RestWriteAdapter) Call(ctx context.Context) ports.SecondaryPortCallRe
 	}
 
 	restRequestBody := contract.RestRequestBody{
-		Message: fmt.Sprintf("Posting %s payload of random text to %s", rwa.payload, rwa.url),
+		Message: fmt.Sprintf("Posting %s payload of random text to %s", rwa.payload, rwa.GetDestId()),
 		Payload: &payload,
 	}
 	jsonRestRequestBody, err := json.Marshal(restRequestBody)

@@ -19,12 +19,12 @@ func RestInvocationAdapterFactory(adapterConfig *model.InvocationConfig, client 
 
 		switch adapterConfig.Action {
 		case constants.READ:
-			restAdapter = &RestReadAdapter{
+			restAdapter = &restReadAdapter{
 				url:    fmt.Sprintf("http://%s:%s/%s", adapterConfig.Service, port, adapterConfig.Route),
 				client: restClient.Client,
 			}
 		case constants.WRITE:
-			restAdapter = &RestWriteAdapter{
+			restAdapter = &restWriteAdapter{
 				url:     fmt.Sprintf("http://%s:%s/%s", adapterConfig.Service, port, adapterConfig.Route),
 				client:  restClient.Client,
 				payload: adapterConfig.Payload,

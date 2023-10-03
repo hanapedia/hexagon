@@ -11,13 +11,13 @@ import (
 	"github.com/hanapedia/the-bench/internal/service-unit/domain/contract"
 )
 
-type RestReadAdapter struct {
+type restReadAdapter struct {
 	url string
 	client *http.Client
 	ports.SecondaryPortBase
 }
 
-func (rra *RestReadAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
+func (rra *restReadAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
     req, err := http.NewRequestWithContext(ctx, "GET", rra.url, nil)
     if err != nil {
         return ports.SecondaryPortCallResult{
