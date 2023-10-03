@@ -4,8 +4,9 @@ package grpc;
 
 // Message definition
 message StreamRequest {
-    string message = 1;
-    string payload = 2;
+    string route = 1;
+    string message = 2;
+    string payload = 3;
 }
 
 message StreamResponse {
@@ -17,7 +18,7 @@ message StreamResponse {
 service grpc {
 
     // Regular RPC
-    rpc RegularCall(StreamRequest) returns (StreamResponse);
+    rpc SimpleRPC(StreamRequest) returns (StreamResponse);
 
     // Client-side streaming
     rpc ClientStreaming(stream StreamRequest) returns (StreamResponse);

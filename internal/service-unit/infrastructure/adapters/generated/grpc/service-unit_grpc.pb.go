@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type GrpcClient interface {
 	// Regular RPC
-	RegularCall(ctx context.Context, in *StreamRequest, opts ...grpc.CallOption) (*StreamResponse, error)
+	SimpleRPC(ctx context.Context, in *StreamRequest, opts ...grpc.CallOption) (*StreamResponse, error)
 	// Client-side streaming
 	ClientStreaming(ctx context.Context, opts ...grpc.CallOption) (Grpc_ClientStreamingClient, error)
 	// Server-side streaming
@@ -40,9 +40,9 @@ func NewGrpcClient(cc grpc.ClientConnInterface) GrpcClient {
 	return &grpcClient{cc}
 }
 
-func (c *grpcClient) RegularCall(ctx context.Context, in *StreamRequest, opts ...grpc.CallOption) (*StreamResponse, error) {
+func (c *grpcClient) SimpleRPC(ctx context.Context, in *StreamRequest, opts ...grpc.CallOption) (*StreamResponse, error) {
 	out := new(StreamResponse)
-	err := c.cc.Invoke(ctx, "/grpc.grpc/RegularCall", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/grpc.grpc/SimpleRPC", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +151,7 @@ func (x *grpcBidirectionalStreamingClient) Recv() (*StreamResponse, error) {
 // for forward compatibility
 type GrpcServer interface {
 	// Regular RPC
-	RegularCall(context.Context, *StreamRequest) (*StreamResponse, error)
+	SimpleRPC(context.Context, *StreamRequest) (*StreamResponse, error)
 	// Client-side streaming
 	ClientStreaming(Grpc_ClientStreamingServer) error
 	// Server-side streaming
@@ -165,8 +165,8 @@ type GrpcServer interface {
 type UnimplementedGrpcServer struct {
 }
 
-func (UnimplementedGrpcServer) RegularCall(context.Context, *StreamRequest) (*StreamResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RegularCall not implemented")
+func (UnimplementedGrpcServer) SimpleRPC(context.Context, *StreamRequest) (*StreamResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SimpleRPC not implemented")
 }
 func (UnimplementedGrpcServer) ClientStreaming(Grpc_ClientStreamingServer) error {
 	return status.Errorf(codes.Unimplemented, "method ClientStreaming not implemented")
@@ -190,20 +190,20 @@ func RegisterGrpcServer(s grpc.ServiceRegistrar, srv GrpcServer) {
 	s.RegisterService(&Grpc_ServiceDesc, srv)
 }
 
-func _Grpc_RegularCall_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Grpc_SimpleRPC_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(StreamRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GrpcServer).RegularCall(ctx, in)
+		return srv.(GrpcServer).SimpleRPC(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/grpc.grpc/RegularCall",
+		FullMethod: "/grpc.grpc/SimpleRPC",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GrpcServer).RegularCall(ctx, req.(*StreamRequest))
+		return srv.(GrpcServer).SimpleRPC(ctx, req.(*StreamRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -289,8 +289,8 @@ var Grpc_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*GrpcServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "RegularCall",
-			Handler:    _Grpc_RegularCall_Handler,
+			MethodName: "SimpleRPC",
+			Handler:    _Grpc_SimpleRPC_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
