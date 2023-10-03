@@ -26,10 +26,10 @@ type GrpcServerAdapter struct {
 
 // GrpcVariantConfigs holds the config for each grpc variant
 type GrpcVariantConfigs struct {
-	simpleRpc     map[string]*ports.PrimaryHandler
-	clientStream  map[string]*ports.PrimaryHandler
-	serverStream  map[string]*ports.PrimaryHandler
-	bidirectional map[string]*ports.PrimaryHandler
+	simpleRpc    map[string]*ports.PrimaryHandler
+	clientStream map[string]*ports.PrimaryHandler
+	serverStream map[string]*ports.PrimaryHandler
+	biStream     map[string]*ports.PrimaryHandler
 }
 
 func NewGrpcServerAdapter() *GrpcServerAdapter {
@@ -63,7 +63,7 @@ func (gsa *GrpcServerAdapter) Register(handler *ports.PrimaryHandler) error {
 	var simpleRpc map[string]*ports.PrimaryHandler
 	var clientStream map[string]*ports.PrimaryHandler
 	var serverStream map[string]*ports.PrimaryHandler
-	var bidirectional map[string]*ports.PrimaryHandler
+	var biStream map[string]*ports.PrimaryHandler
 
 	switch handler.ServerConfig.Action {
 	case constants.RPC:
@@ -72,15 +72,15 @@ func (gsa *GrpcServerAdapter) Register(handler *ports.PrimaryHandler) error {
 		clientStream[handler.ServerConfig.Route] = handler
 	case constants.SERVER_STREAM:
 		serverStream[handler.ServerConfig.Route] = handler
-	case constants.BIDIRECTIONAL:
-		bidirectional[handler.ServerConfig.Route] = handler
+	case constants.BI_STREAM:
+		biStream[handler.ServerConfig.Route] = handler
 	}
 
 	gsa.configs = GrpcVariantConfigs{
-		simpleRpc:     simpleRpc,
-		clientStream:  clientStream,
-		serverStream:  serverStream,
-		bidirectional: bidirectional,
+		simpleRpc:    simpleRpc,
+		clientStream: clientStream,
+		serverStream: serverStream,
+		biStream:     biStream,
 	}
 
 	return nil

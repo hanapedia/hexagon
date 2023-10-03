@@ -26,7 +26,7 @@ const (
 	RPC           Action = "rpc"
 	CLIENT_STREAM Action = "clientStream"
 	SERVER_STREAM Action = "serverStream"
-	BIDIRECTIONAL Action = "bidirectional"
+	BI_STREAM     Action = "biStream"
 )
 
 type HttpMethod string
