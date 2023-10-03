@@ -66,7 +66,7 @@ func (gsa *GrpcServerAdapter) Register(handler *ports.PrimaryHandler) error {
 	var biStream map[string]*ports.PrimaryHandler
 
 	switch handler.ServerConfig.Action {
-	case constants.RPC:
+	case constants.SIMPLE_RPC:
 		simpleRpc[handler.ServerConfig.Route] = handler
 	case constants.CLIENT_STREAM:
 		clientStream[handler.ServerConfig.Route] = handler

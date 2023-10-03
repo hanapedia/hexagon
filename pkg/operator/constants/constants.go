@@ -23,7 +23,7 @@ const (
 	WRITE         Action = "write"
 	GET           Action = "get"
 	POST          Action = "post"
-	RPC           Action = "rpc"
+	SIMPLE_RPC    Action = "simpleRpc"
 	CLIENT_STREAM Action = "clientStream"
 	SERVER_STREAM Action = "serverStream"
 	BI_STREAM     Action = "biStream"
