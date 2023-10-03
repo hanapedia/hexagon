@@ -21,6 +21,9 @@ type InvocationConfig struct {
 	Action  constants.Action              `json:"action,omitempty" validate:"required,oneof=read write"`
 	Route   string                        `json:"route,omitempty" validate:"required"`
 	Payload constants.PayloadSizeVariant  `json:"payload,omitempty" validate:"omitempty,oneof=small medium large"`
+
+	// applies to only clientStreams and biStream via grpc
+	PayloadCount int `json:"payloadCount,omitempty"`
 }
 
 // Config fields for repository services
