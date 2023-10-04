@@ -1,0 +1,23 @@
+version: dev
+name: grpcserver
+adapters:
+- server:
+    action: simpleRpc
+    variant: grpc
+    route: get
+  steps: []
+- server:
+    action: clientStream
+    variant: grpc
+    route: get
+  steps: []
+- server:
+    action: serverStream
+    variant: grpc
+    route: get
+  steps: []
+- server:
+    action: biStream
+    variant: grpc
+    route: get
+  steps: []

@@ -3,23 +3,23 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   creationTimestamp: null
-  name: chain1
+  name: grpcserver
   namespace: the-bench
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: chain1
+      app: grpcserver
   strategy: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: chain1
+        app: grpcserver
     spec:
       containers:
       - image: hiroki11hanada/service-unit:dev
-        name: chain1
+        name: grpcserver
         ports:
         - containerPort: 8080
           name: http
@@ -38,7 +38,7 @@ spec:
           items:
           - key: config
             path: service-unit.yaml
-          name: chain1-config
+          name: grpcserver-config
         name: config
 status: {}
 
@@ -47,7 +47,7 @@ apiVersion: v1
 kind: Service
 metadata:
   creationTimestamp: null
-  name: chain1
+  name: grpcserver
   namespace: the-bench
 spec:
   ports:
@@ -60,7 +60,7 @@ spec:
     protocol: TCP
     targetPort: 0
   selector:
-    app: chain1
+    app: grpcserver
 status:
   loadBalancer: {}
 
@@ -69,22 +69,31 @@ apiVersion: v1
 data:
   config: |
     version: dev
-    name: chain1
+    name: grpcserver
     adapters:
     - server:
-        action: read
-        variant: rest
+        action: simpleRpc
+        variant: grpc
         route: get
-        payload: large
       steps: []
     - server:
-        action: write
-        variant: rest
-        route: post
+        action: clientStream
+        variant: grpc
+        route: get
+      steps: []
+    - server:
+        action: serverStream
+        variant: grpc
+        route: get
+      steps: []
+    - server:
+        action: biStream
+        variant: grpc
+        route: get
       steps: []
 kind: ConfigMap
 metadata:
   creationTimestamp: null
-  name: chain1-config
+  name: grpcserver-config
   namespace: the-bench
 

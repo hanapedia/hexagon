@@ -9,3 +9,4 @@ resources:
   - gateway-load-generator.yaml
   - gateway-service-unit.yaml
   - mongorepo-stateful-unit.yaml
+  - grpcserver-service-unit.yaml
