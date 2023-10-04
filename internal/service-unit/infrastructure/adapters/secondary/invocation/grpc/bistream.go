@@ -54,12 +54,12 @@ func (bsa *biStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCallRes
 
 		biStream.Send(&request)
 	}
+	biStream.CloseSend()
 
 	var lastPayload string
 	for {
 		resp, err := biStream.Recv()
 		if err == io.EOF {
-			lastPayload = resp.Payload
 			break
 		}
 		if err != nil {
@@ -68,6 +68,7 @@ func (bsa *biStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCallRes
 				Error:   err,
 			}
 		}
+		lastPayload = resp.Payload
 	}
 
 	return ports.SecondaryPortCallResult{

@@ -49,7 +49,6 @@ func (ssa *serverStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCal
 	for {
 		resp, err := serverStream.Recv()
 		if err == io.EOF {
-			lastPayload = resp.Payload
 			break
 		}
 		if err != nil {
@@ -58,6 +57,7 @@ func (ssa *serverStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCal
 				Error:   err,
 			}
 		}
+		lastPayload = resp.Payload
 	}
 
 	return ports.SecondaryPortCallResult{

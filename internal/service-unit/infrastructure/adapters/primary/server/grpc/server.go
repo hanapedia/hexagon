@@ -218,7 +218,7 @@ func (gsa *GrpcServerAdapter) BidirectionalStreaming(stream pb.Grpc_Bidirectiona
 	for {
 		_, err := stream.Recv()
 		if err == io.EOF {
-			return nil
+			break
 		}
 		if err != nil {
 			return err
@@ -237,4 +237,5 @@ func (gsa *GrpcServerAdapter) BidirectionalStreaming(stream pb.Grpc_Bidirectiona
 			return err
 		}
 	}
+	return nil
 }
