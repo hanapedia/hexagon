@@ -13,6 +13,7 @@ import (
 )
 
 type biStreamAdapter struct {
+	route        string
 	client       *grpc.ClientConn
 	payload      constants.PayloadSizeVariant
 	payloadCount int
@@ -46,6 +47,7 @@ func (bsa *biStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCallRes
 		}
 
 		request := pb.StreamRequest{
+			Route:   bsa.route,
 			Message: fmt.Sprintf("Posting %s payload of random text to %s", bsa.payload, bsa.GetDestId()),
 			Payload: payload,
 		}

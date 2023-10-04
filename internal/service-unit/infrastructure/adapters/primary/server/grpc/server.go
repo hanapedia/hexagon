@@ -12,6 +12,7 @@ import (
 	pb "github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/generated/grpc"
 	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary/config"
 	"github.com/hanapedia/the-bench/pkg/operator/constants"
+	"github.com/hanapedia/the-bench/pkg/operator/logger"
 	"github.com/hanapedia/the-bench/pkg/service-unit/utils"
 	"google.golang.org/grpc"
 )
@@ -36,20 +37,27 @@ func NewGrpcServerAdapter() *GrpcServerAdapter {
 	server := grpc.NewServer()
 
 	adapter := GrpcServerAdapter{
-		addr:   config.GetRestServerAddr(),
+		addr:   config.GetGrpcServerAddr(),
 		server: server,
+		configs: GrpcVariantConfigs{
+			simpleRpc: make(map[string]*ports.PrimaryHandler),
+			clientStream: make(map[string]*ports.PrimaryHandler),
+			serverStream: make(map[string]*ports.PrimaryHandler),
+			biStream: make(map[string]*ports.PrimaryHandler),
+		},
 	}
 	return &adapter
 }
 
 // Serve starts the grpc server
 func (gsa *GrpcServerAdapter) Serve() error {
+	logger.Logger.Infof("Serving grpc server at %s", gsa.addr)
 	listen, err := net.Listen("tcp", gsa.addr)
 	if err != nil {
 		return err
 	}
 
-	pb.RegisterGrpcServer(gsa.server, &GrpcServerAdapter{})
+	pb.RegisterGrpcServer(gsa.server, gsa)
 
 	return gsa.server.Serve(listen)
 }
@@ -60,35 +68,26 @@ func (gsa *GrpcServerAdapter) Register(handler *ports.PrimaryHandler) error {
 		return errors.New(fmt.Sprintf("Invalid configuartion for handler %s.", handler.GetId()))
 	}
 
-	var simpleRpc map[string]*ports.PrimaryHandler
-	var clientStream map[string]*ports.PrimaryHandler
-	var serverStream map[string]*ports.PrimaryHandler
-	var biStream map[string]*ports.PrimaryHandler
-
 	switch handler.ServerConfig.Action {
 	case constants.SIMPLE_RPC:
-		simpleRpc[handler.ServerConfig.Route] = handler
+		logger.Logger.Infof("Registered simple rpc at %s", handler.ServerConfig.Route)
+		gsa.configs.simpleRpc[handler.ServerConfig.Route] = handler
 	case constants.CLIENT_STREAM:
-		clientStream[handler.ServerConfig.Route] = handler
+		logger.Logger.Infof("Registered client stream at %s", handler.ServerConfig.Route)
+		gsa.configs.clientStream[handler.ServerConfig.Route] = handler
 	case constants.SERVER_STREAM:
-		serverStream[handler.ServerConfig.Route] = handler
+		logger.Logger.Infof("Registered server stream at %s", handler.ServerConfig.Route)
+		gsa.configs.serverStream[handler.ServerConfig.Route] = handler
 	case constants.BI_STREAM:
-		biStream[handler.ServerConfig.Route] = handler
+		logger.Logger.Infof("Registered bi stream at %s", handler.ServerConfig.Route)
+		gsa.configs.biStream[handler.ServerConfig.Route] = handler
 	}
-
-	gsa.configs = GrpcVariantConfigs{
-		simpleRpc:    simpleRpc,
-		clientStream: clientStream,
-		serverStream: serverStream,
-		biStream:     biStream,
-	}
-
 	return nil
 }
 
 // Regular RPC
-func (s *GrpcServerAdapter) SimpleRPC(ctx context.Context, req *pb.StreamRequest) (*pb.StreamResponse, error) {
-	handler, ok := s.configs.simpleRpc[req.Route]
+func (gsa *GrpcServerAdapter) SimpleRPC(ctx context.Context, req *pb.StreamRequest) (*pb.StreamResponse, error) {
+	handler, ok := gsa.configs.simpleRpc[req.Route]
 	if !ok {
 		return nil, errors.New(fmt.Sprintf("Route not found %s.", req.Route))
 	}
@@ -116,14 +115,14 @@ func (s *GrpcServerAdapter) SimpleRPC(ctx context.Context, req *pb.StreamRequest
 }
 
 // Client-side streaming
-func (s *GrpcServerAdapter) ClientStreaming(stream pb.Grpc_ClientStreamingServer) error {
+func (gsa *GrpcServerAdapter) ClientStreaming(stream pb.Grpc_ClientStreamingServer) error {
 	// process the first message in the stream and start tasks
 	req, err := stream.Recv()
 	if err != nil {
 		return err
 	}
 
-	handler, ok := s.configs.clientStream[req.Route]
+	handler, ok := gsa.configs.clientStream[req.Route]
 	if !ok {
 		return errors.New(fmt.Sprintf("Route not found %s.", req.Route))
 	}
@@ -159,8 +158,8 @@ func (s *GrpcServerAdapter) ClientStreaming(stream pb.Grpc_ClientStreamingServer
 }
 
 // Server-side streaming
-func (s *GrpcServerAdapter) ServerStreaming(req *pb.StreamRequest, stream pb.Grpc_ServerStreamingServer) error {
-	handler, ok := s.configs.serverStream[req.Route]
+func (gsa *GrpcServerAdapter) ServerStreaming(req *pb.StreamRequest, stream pb.Grpc_ServerStreamingServer) error {
+	handler, ok := gsa.configs.serverStream[req.Route]
 	if !ok {
 		return errors.New(fmt.Sprintf("Route not found %s.", req.Route))
 	}
@@ -196,14 +195,14 @@ func (s *GrpcServerAdapter) ServerStreaming(req *pb.StreamRequest, stream pb.Grp
 }
 
 // Bidirectional streaming
-func (s *GrpcServerAdapter) BidirectionalStreaming(stream pb.Grpc_BidirectionalStreamingServer) error {
+func (gsa *GrpcServerAdapter) BidirectionalStreaming(stream pb.Grpc_BidirectionalStreamingServer) error {
 	// process the first message in the stream and start tasks
 	req, err := stream.Recv()
 	if err != nil {
 		return err
 	}
 
-	handler, ok := s.configs.serverStream[req.Route]
+	handler, ok := gsa.configs.serverStream[req.Route]
 	if !ok {
 		return errors.New(fmt.Sprintf("Route not found %s.", req.Route))
 	}

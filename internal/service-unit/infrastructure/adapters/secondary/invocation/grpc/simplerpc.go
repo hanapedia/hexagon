@@ -12,7 +12,8 @@ import (
 )
 
 type simpleRpcAdapter struct {
-	client *grpc.ClientConn
+	route   string
+	client  *grpc.ClientConn
 	payload constants.PayloadSizeVariant
 	ports.SecondaryPortBase
 }
@@ -29,6 +30,7 @@ func (sra *simpleRpcAdapter) Call(ctx context.Context) ports.SecondaryPortCallRe
 	client := pb.NewGrpcClient(sra.client)
 
 	request := pb.StreamRequest{
+		Route:   sra.route,
 		Message: fmt.Sprintf("Posting %s payload of random text to %s", sra.payload, sra.GetDestId()),
 		Payload: payload,
 	}
@@ -36,14 +38,14 @@ func (sra *simpleRpcAdapter) Call(ctx context.Context) ports.SecondaryPortCallRe
 	// Regular RPC
 	response, err := client.SimpleRPC(context.Background(), &request)
 	if err != nil {
-        return ports.SecondaryPortCallResult{
+		return ports.SecondaryPortCallResult{
 			Payload: nil,
-			Error: err,
+			Error:   err,
 		}
 	}
 
 	return ports.SecondaryPortCallResult{
 		Payload: &response.Payload,
-		Error: nil,
+		Error:   nil,
 	}
 }

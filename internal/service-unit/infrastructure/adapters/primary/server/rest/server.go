@@ -11,6 +11,7 @@ import (
 	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
 	"github.com/hanapedia/the-bench/internal/service-unit/domain/contract"
 	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary/config"
+	"github.com/hanapedia/the-bench/pkg/operator/logger"
 	"github.com/hanapedia/the-bench/pkg/service-unit/utils"
 )
 
@@ -38,6 +39,7 @@ func NewRestServerAdapter() *RestServerAdapter {
 }
 
 func (rsa *RestServerAdapter) Serve() error {
+	logger.Logger.Infof("Serving rest server at %s", rsa.addr)
 	return rsa.server.Listen(rsa.addr)
 }
 

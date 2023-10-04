@@ -13,6 +13,7 @@ import (
 )
 
 type serverStreamAdapter struct {
+	route   string
 	client  *grpc.ClientConn
 	payload constants.PayloadSizeVariant
 	ports.SecondaryPortBase
@@ -30,6 +31,7 @@ func (ssa *serverStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCal
 	client := pb.NewGrpcClient(ssa.client)
 
 	request := pb.StreamRequest{
+		Route:   ssa.route,
 		Message: fmt.Sprintf("Posting %s payload of random text to %s", ssa.payload, ssa.GetDestId()),
 		Payload: payload,
 	}

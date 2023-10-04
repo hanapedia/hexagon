@@ -35,9 +35,8 @@ func NewServiceUnit(serviceUnitConfig model.ServiceUnitConfig) ServiceUnit {
 
 // Start primary adapters
 func (su *ServiceUnit) Start(errChan chan ports.PrimaryPortError) {
-	for protocol, serverAdapter := range su.ServerAdapters {
+	for _, serverAdapter := range su.ServerAdapters {
 		serverAdapterCopy := serverAdapter
-		l.Logger.Infof("Serving '%s' server.", protocol)
 		go func() {
 			if err := serverAdapterCopy.Serve(); err != nil {
 				errChan <- ports.PrimaryPortError{PrimaryPort: serverAdapterCopy, Error: err}

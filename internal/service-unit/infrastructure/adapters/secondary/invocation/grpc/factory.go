@@ -16,22 +16,26 @@ func GrpcInvocationAdapterFactory(adapterConfig *model.InvocationConfig, client 
 		switch adapterConfig.Action {
 		case constants.SIMPLE_RPC:
 			grpcAdapter = &simpleRpcAdapter{
+				route:   adapterConfig.Route,
 				client:  grpcClient.Connection,
 				payload: adapterConfig.Payload,
 			}
 		case constants.SERVER_STREAM:
 			grpcAdapter = &serverStreamAdapter{
+				route:   adapterConfig.Route,
 				client:  grpcClient.Connection,
 				payload: adapterConfig.Payload,
 			}
 		case constants.CLIENT_STREAM:
 			grpcAdapter = &clientStreamAdapter{
+				route:        adapterConfig.Route,
 				client:       grpcClient.Connection,
 				payload:      adapterConfig.Payload,
 				payloadCount: adapterConfig.PayloadCount,
 			}
 		case constants.BI_STREAM:
 			grpcAdapter = &biStreamAdapter{
+				route:        adapterConfig.Route,
 				client:       grpcClient.Connection,
 				payload:      adapterConfig.Payload,
 				payloadCount: adapterConfig.PayloadCount,
