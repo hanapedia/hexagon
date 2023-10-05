@@ -50,10 +50,10 @@ func NewGrpcServerAdapter() *GrpcServerAdapter {
 		addr:   config.GetGrpcServerAddr(),
 		server: server,
 		configs: GrpcVariantConfigs{
-			simpleRpc: make(map[string]*ports.PrimaryHandler),
+			simpleRpc:    make(map[string]*ports.PrimaryHandler),
 			clientStream: make(map[string]*ports.PrimaryHandler),
 			serverStream: make(map[string]*ports.PrimaryHandler),
-			biStream: make(map[string]*ports.PrimaryHandler),
+			biStream:     make(map[string]*ports.PrimaryHandler),
 		},
 	}
 	return &adapter
@@ -274,8 +274,12 @@ func (gsa *GrpcServerAdapter) BidirectionalStreaming(stream pb.Grpc_Bidirectiona
 	return nil
 }
 
-
 func (gsa *GrpcServerAdapter) log(ctx context.Context, handler *ports.PrimaryHandler, startTime time.Time) {
 	elapsed := time.Since(startTime).Milliseconds()
-	logger.Logger.WithContext(ctx).Infof("Message consumed | %-30s | %10v ms", handler.GetId(), elapsed)
+	unit := "ms"
+	if elapsed == 0 {
+		elapsed = time.Since(startTime).Microseconds()
+		unit = "μs"
+	}
+	logger.Logger.WithContext(ctx).Infof("Invocation handled | %-40s | %10v %s", handler.GetId(), elapsed, unit)
 }

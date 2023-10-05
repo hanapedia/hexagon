@@ -1,12 +1,13 @@
 package rest
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/gofiber/contrib/otelfiber"
 	"github.com/gofiber/fiber/v2"
-	fiber_logger "github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/hanapedia/the-bench/internal/service-unit/application/core/runtime"
 	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
 	"github.com/hanapedia/the-bench/internal/service-unit/domain/contract"
@@ -23,7 +24,6 @@ type RestServerAdapter struct {
 
 func NewRestServerAdapter() *RestServerAdapter {
 	app := fiber.New()
-	app.Use(fiber_logger.New())
 
 	// enable tracing
 	if config.GetEnvs().TRACING {
@@ -52,6 +52,11 @@ func (rsa *RestServerAdapter) Register(handler *ports.PrimaryHandler) error {
 	switch handler.ServerConfig.Action {
 	case "read":
 		rsa.server.Get("/"+handler.ServerConfig.Route, func(c *fiber.Ctx) error {
+			// record time for logging
+			startTime := time.Now()
+			// defer log
+			defer rsa.log(c.Context(), handler, startTime)
+
 			// call tasks
 			errs := runtime.TaskSetHandler(c.Context(), handler.TaskSet)
 			if errs != nil {
@@ -79,6 +84,11 @@ func (rsa *RestServerAdapter) Register(handler *ports.PrimaryHandler) error {
 		})
 	case "write":
 		rsa.server.Post("/"+handler.ServerConfig.Route, func(c *fiber.Ctx) error {
+			// record time for logging
+			startTime := time.Now()
+			// defer log
+			defer rsa.log(c.Context(), handler, startTime)
+
 			// call tasks
 			errs := runtime.TaskSetHandler(c.Context(), handler.TaskSet)
 			if errs != nil {
@@ -101,4 +111,14 @@ func (rsa *RestServerAdapter) Register(handler *ports.PrimaryHandler) error {
 		err = errors.New("Handler has no matching action")
 	}
 	return err
+}
+
+func (rsa *RestServerAdapter) log(ctx context.Context, handler *ports.PrimaryHandler, startTime time.Time) {
+	elapsed := time.Since(startTime).Milliseconds()
+	unit := "ms"
+	if elapsed == 0 {
+		elapsed = time.Since(startTime).Microseconds()
+		unit = "μs"
+	}
+	logger.Logger.WithContext(ctx).Infof("Invocation handled | %-40s | %10v %s", handler.GetId(), elapsed, unit)
 }
