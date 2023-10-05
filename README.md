@@ -19,15 +19,15 @@ The types of network protocols include:
 
 Synchronous protocols such as:
 - HTTP REST
-- gRPC [WIP]
+- gRPC
 
 Asynchrounous protocols such as:
 - Kafka
-- RabbitMQ [WIP]
 
 Database connections such as:
 - MongoDB
 - PostgresQL [WIP]
+- Redis [WIP]
 
 #### Stateful Service
 the-bench supports the creation and configuration of stateful services. Currently supported services are:
@@ -39,14 +39,8 @@ the-bench supports the configuration of internal workload for each service.
 Using this feature, any stateless services can simulate various types of resources intensive tasks.
 
 
-### Dynamic update simulation [WIP]
-the-bench [helm chart]() will come with Custom Resource Definition and custome Kubernetes Controller for the Custom Resource.
-The Custom resource will represent each microservice in the benchmark application. 
-Controller manages the dynamic and scheduled udpates for the custom resource to simulate application updates.
-
-
 ### Deployment manifest generation
-Using the [cli](./tbctl/) the-bench can generate kubernetes manifests files from the configuration of each service.
+Using the [cli](./cmd/tbctl/) the-bench can generate kubernetes manifests files from the configuration of each service.
 The generated manifests include resources such as:
 - Deployment
 - Service
