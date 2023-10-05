@@ -1,19 +1,23 @@
 package primary
 
 import (
-	"github.com/hanapedia/the-bench/pkg/operator/constants"
-	"github.com/hanapedia/the-bench/pkg/operator/logger"
 	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
 	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/primary/consumer/kafka"
+	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/primary/server/grpc"
 	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/primary/server/rest"
+	model "github.com/hanapedia/the-bench/pkg/api/v1"
+	"github.com/hanapedia/the-bench/pkg/operator/constants"
+	"github.com/hanapedia/the-bench/pkg/operator/logger"
 )
 
-func NewServerAdapter(serverAdapterProtocol constants.SeverAdapterVariant) ports.PrimaryPort {
+func NewServerAdapter(config *model.ServerConfig) ports.PrimaryPort {
 	var serverAdapter ports.PrimaryPort
 
-	switch serverAdapterProtocol {
+	switch config.Variant {
 	case constants.REST:
 		serverAdapter = rest.NewRestServerAdapter()
+	case constants.GRPC:
+		serverAdapter = grpc.NewGrpcServerAdapter()
 	default:
 		logger.Logger.Fatal("Adapter currently unsupported.")
 	}
@@ -21,12 +25,12 @@ func NewServerAdapter(serverAdapterProtocol constants.SeverAdapterVariant) ports
 	return serverAdapter
 }
 
-func NewConsumerAdapter(protocol constants.BrokerVariant, action string) ports.PrimaryPort {
+func NewConsumerAdapter(config *model.ConsumerConfig) ports.PrimaryPort {
 	var consumerAdapter ports.PrimaryPort
 
-	switch protocol {
+	switch config.Variant {
 	case constants.KAFKA:
-		consumerAdapter = kafka.NewKafkaConsumerAdapter(action)
+		consumerAdapter = kafka.NewKafkaConsumerAdapter(config.Topic)
 	default:
 		logger.Logger.Fatal("Adapter currently unsupported.")
 	}
@@ -38,7 +42,7 @@ func NewConsumerAdapter(protocol constants.BrokerVariant, action string) ports.P
 // Update or insert ServiceAdapter based on the handler input.
 // Does not return any value
 func RegiserHandlerToPrimaryAdapter(serviceName string, serverAdapter ports.PrimaryPort, handler *ports.PrimaryHandler) error {
-	err := serverAdapter.Register(serviceName, handler)
+	err := serverAdapter.Register(handler)
 
 	return err
 }

@@ -10,11 +10,11 @@ import (
 func (su *ServiceUnit) initializePrimaryAdapters() {
 	for _, primaryConfig := range su.Config.AdapterConfigs {
 		if primaryConfig.ServerConfig != nil {
-			su.initializeServerAdapter(*primaryConfig.ServerConfig)
+			su.initializeServerAdapter(primaryConfig.ServerConfig)
 			continue
 		}
 		if primaryConfig.ConsumerConfig != nil {
-			su.initializeConsumerAdapter(*primaryConfig.ConsumerConfig)
+			su.initializeConsumerAdapter(primaryConfig.ConsumerConfig)
 			continue
 		}
 		l.Logger.Fatal("Invalid primary adapter config")
@@ -22,20 +22,20 @@ func (su *ServiceUnit) initializePrimaryAdapters() {
 }
 
 // initializeServerAdapter prepare server adapters
-func (su *ServiceUnit) initializeServerAdapter(config model.ServerConfig) {
+func (su *ServiceUnit) initializeServerAdapter(config *model.ServerConfig) {
 	serverKey := config.GetGroupByKey()
-	_, ok := (*su.ServerAdapters)[serverKey]
+	_, ok := su.ServerAdapters[serverKey]
 	if !ok {
-		(*su.ServerAdapters)[serverKey] = primary.NewServerAdapter(config.Variant)
+		su.ServerAdapters[serverKey] = primary.NewServerAdapter(config)
 	}
 }
 
 // initializeConsumerAdapter prepare consumer adapters
-func (su *ServiceUnit) initializeConsumerAdapter(config model.ConsumerConfig) {
+func (su *ServiceUnit) initializeConsumerAdapter(config *model.ConsumerConfig) {
 	consumerKey := config.GetGroupByKey()
-	_, ok := (*su.ConsumerAdapters)[consumerKey]
+	_, ok := su.ConsumerAdapters[consumerKey]
 	if !ok {
-		(*su.ConsumerAdapters)[consumerKey] = primary.NewConsumerAdapter(config.Variant, config.Topic)
+		su.ConsumerAdapters[consumerKey] = primary.NewConsumerAdapter(config)
 	}
 }
 

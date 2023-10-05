@@ -4,10 +4,10 @@ package constants
 func GetHttpMethodFromAction(action Action) HttpMethod {
 	switch action {
 	case "read":
-		return GET
+		return HTTP_GET
 	case "write":
-		return POST
+		return HTTP_POST
 	default:
-		return GET
+		return HTTP_GET
 	}
 }

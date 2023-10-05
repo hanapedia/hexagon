@@ -11,6 +11,11 @@ func GetRestServerAddr() string {
 	return fmt.Sprintf(":%s", port)
 }
 
+func GetGrpcServerAddr() string {
+	port := GetEnvs().GRPC_PORT
+	return fmt.Sprintf(":%s", port)
+}
+
 func GetKafkaBrokerAddr() string {
 	port := GetEnvs().KAFKA_PORT
 	clusterName := GetEnvs().KAFKA_CLUSTER_NAME
@@ -25,8 +30,14 @@ func GetKafkaBrokerAddr() string {
 func GetMongoConnectionUri(adapterConfig *model.RepositoryClientConfig) string {
 	user := GetEnvs().MONGO_USER
 	password := GetEnvs().MONGO_PASSWORD
-	port := GetEnvs().MONGO_PORT
+	// port := GetEnvs().MONGO_PORT
+	port := "27017" // port is hardcoded until environmental variable issue is resolved
 	return fmt.Sprintf("mongodb://%s:%s@%s:%s/mongo?authSource=admin", user, password, adapterConfig.Name, port)
+}
+
+func GetGrpcDialAddr(adapterConfig *model.InvocationConfig) string {
+	port := GetEnvs().GRPC_PORT
+	return fmt.Sprintf("%s:%s", adapterConfig.Service, port)
 }
 
 func GetOtelCollectorUrl() string {

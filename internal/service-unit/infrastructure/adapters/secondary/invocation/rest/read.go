@@ -4,21 +4,21 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
 	"github.com/hanapedia/the-bench/internal/service-unit/domain/contract"
 )
 
-type RestReadAdapter struct {
-	URL string
-	Client *http.Client
+type restReadAdapter struct {
+	url string
+	client *http.Client
 	ports.SecondaryPortBase
 }
 
-func (rra *RestReadAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
-    req, err := http.NewRequestWithContext(ctx, "GET", rra.URL, nil)
+func (rra *restReadAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
+    req, err := http.NewRequestWithContext(ctx, "GET", rra.url, nil)
     if err != nil {
         return ports.SecondaryPortCallResult{
 			Payload: nil,
@@ -26,7 +26,7 @@ func (rra *RestReadAdapter) Call(ctx context.Context) ports.SecondaryPortCallRes
 		}
     }
 
-    resp, err := rra.Client.Do(req)
+    resp, err := rra.client.Do(req)
     if err != nil {
         return ports.SecondaryPortCallResult{
 			Payload: nil,
@@ -42,7 +42,7 @@ func (rra *RestReadAdapter) Call(ctx context.Context) ports.SecondaryPortCallRes
 		}
     }
 
-    body, err := ioutil.ReadAll(resp.Body)
+    body, err := io.ReadAll(resp.Body)
     if err != nil {
         return ports.SecondaryPortCallResult{
 			Payload: nil,

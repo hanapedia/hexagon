@@ -38,7 +38,7 @@ func CreateMongoDeployment(config *model.ServiceUnitConfig) *appsv1.Deployment {
 		Replicas:     replica,
 		Resource:     resource,
 		Ports:        map[string]int32{"mongo": defaults.MONGO_PORT},
-		Envs:         config.DeploymentSpec.EnvVar,
+		Envs:         envs,
 		VolumeMounts: map[string]string{},
 	}
 	deployment := factory.NewDeployment(&deploymentArgs)

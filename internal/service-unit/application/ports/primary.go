@@ -16,7 +16,7 @@ import (
 // It is intended to represent the individual interfaces on each exteranl service,
 type PrimaryPort interface {
 	Serve() error
-	Register(string, *PrimaryHandler) error
+	Register(*PrimaryHandler) error
 }
 
 type PrimaryPortError struct {
@@ -59,9 +59,9 @@ func (iah PrimaryHandler) GetId() string {
 
 func (iah PrimaryHandler) LogTaskError(ctx context.Context, taskError *TaskError) {
 	l.Logger.WithContext(ctx).Error(
-		"Call failed",
-		"sourceId", iah.GetId(),
-		"destId", taskError.task.SecondaryPort.GetDestId(),
-		"err", taskError.error,
+		"Call failed. ",
+		"sourceId=", iah.GetId(), ", ",
+		"destId=", taskError.task.SecondaryPort.GetDestId(), ", ",
+		"err=", taskError.error,
 	)
 }

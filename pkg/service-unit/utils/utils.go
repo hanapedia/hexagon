@@ -4,12 +4,11 @@ import (
 	cryptoRand "crypto/rand"
 	"encoding/base64"
 	mathRand "math/rand"
-	"time"
 
 	"github.com/hanapedia/the-bench/pkg/operator/constants"
 )
 
-func GenerateRandomString(kbSize constants.RepositoryEntrySize) (string, error) {
+func GenerateRandomString(kbSize constants.PayloadSize) (string, error) {
 	byteSize := kbSize * 1024
 	rawByteSize := byteSize * 3 / 4
 	bytes := make([]byte, rawByteSize)
@@ -22,7 +21,9 @@ func GenerateRandomString(kbSize constants.RepositoryEntrySize) (string, error) 
 	return string(encoded[:byteSize]), nil
 }
 
-func GeneratePayloadWithRepositorySize(entrySize constants.RepositoryEntryVariant) (string, error) {
+// GeneratePayload generates payload with given size.
+// if the size is not given, default payload size is used.
+func GeneratePayload(entrySize constants.PayloadSizeVariant) (string, error) {
 	var payload string
 	var err error
 	switch entrySize {
@@ -32,7 +33,10 @@ func GeneratePayloadWithRepositorySize(entrySize constants.RepositoryEntryVarian
 		payload, err = GenerateRandomString(constants.MEDIUMSIZE)
 	case constants.LARGE:
 		payload, err = GenerateRandomString(constants.LARGESIZE)
+	default:
+		payload, err = GenerateRandomString(constants.DefaultPayloadSize)
 	}
+
 	return payload, err
 }
 
@@ -42,8 +46,7 @@ func GetRandomId(min int, max int) int {
 		max = 100
 		min = 1
 	}
-	// Seed the random number generator with the current time
-	mathRand.Seed(time.Now().UnixNano())
+
 	randomInt := mathRand.Intn(max) + min
 	return randomInt
 }

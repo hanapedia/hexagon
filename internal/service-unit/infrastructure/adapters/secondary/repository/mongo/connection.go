@@ -18,7 +18,7 @@ func NewMongoClient(addr string) *MongoClient {
 	ctx := context.Background()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(addr))
 	if err != nil {
-		logger.Logger.Fatalf("Failed to connect to MongoDB: %v", err)
+		logger.Logger.Fatalf("Failed to connect to MongoDB. err=%v, addr=%s", err, addr)
 	}
 	mongoClient := MongoClient{Client: client, context: &ctx}
 	return &mongoClient

@@ -1,0 +1,11 @@
+apiVersion: ctlptl.dev/v1alpha1
+kind: Registry
+name: the-bench-registry
+port: 5151
+---
+apiVersion: ctlptl.dev/v1alpha1
+kind: Cluster
+name: kind-the-bench-dev
+product: kind
+kubernetesVersion: v1.27.3
+registry: the-bench-registry

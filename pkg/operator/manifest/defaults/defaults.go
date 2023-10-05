@@ -15,6 +15,7 @@ const (
 	LIMIT_MEM_LG = "1Gi"
 
 	HTTP_PORT  = 8080
+	GRPC_PORT  = 9090
 	MONGO_PORT = 27017
 
 	KAFKA_CLUSTER_NAME = "my-cluster" // default name from strimzi kafka operator getting started guide
