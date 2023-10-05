@@ -14,6 +14,7 @@ import (
 	"github.com/hanapedia/the-bench/pkg/operator/constants"
 	"github.com/hanapedia/the-bench/pkg/operator/logger"
 	"github.com/hanapedia/the-bench/pkg/service-unit/utils"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 )
 
@@ -34,7 +35,15 @@ type GrpcVariantConfigs struct {
 }
 
 func NewGrpcServerAdapter() *GrpcServerAdapter {
-	server := grpc.NewServer()
+	var opts []grpc.ServerOption
+
+	// enable tracing
+	if config.GetEnvs().TRACING {
+		opts = append(opts, grpc.UnaryInterceptor(otelgrpc.UnaryServerInterceptor()))
+		opts = append(opts, grpc.StreamInterceptor(otelgrpc.StreamServerInterceptor()))
+	}
+
+	server := grpc.NewServer(opts...)
 
 	adapter := GrpcServerAdapter{
 		addr:   config.GetGrpcServerAddr(),
