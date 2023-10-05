@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"time"
 
 	"github.com/hanapedia/the-bench/internal/service-unit/application/core/runtime"
 	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
@@ -96,10 +97,16 @@ func (gsa *GrpcServerAdapter) Register(handler *ports.PrimaryHandler) error {
 
 // Regular RPC
 func (gsa *GrpcServerAdapter) SimpleRPC(ctx context.Context, req *pb.StreamRequest) (*pb.StreamResponse, error) {
+	// record time for logging
+	startTime := time.Now()
+
 	handler, ok := gsa.configs.simpleRpc[req.Route]
 	if !ok {
 		return nil, errors.New(fmt.Sprintf("Route not found %s.", req.Route))
 	}
+
+	// defer log
+	defer gsa.log(ctx, handler, startTime)
 
 	errs := runtime.TaskSetHandler(ctx, handler.TaskSet)
 	if errs != nil {
@@ -125,6 +132,9 @@ func (gsa *GrpcServerAdapter) SimpleRPC(ctx context.Context, req *pb.StreamReque
 
 // Client-side streaming
 func (gsa *GrpcServerAdapter) ClientStreaming(stream pb.Grpc_ClientStreamingServer) error {
+	// record time for logging
+	startTime := time.Now()
+
 	// process the first message in the stream and start tasks
 	req, err := stream.Recv()
 	if err != nil {
@@ -135,6 +145,9 @@ func (gsa *GrpcServerAdapter) ClientStreaming(stream pb.Grpc_ClientStreamingServ
 	if !ok {
 		return errors.New(fmt.Sprintf("Route not found %s.", req.Route))
 	}
+
+	// defer log
+	defer gsa.log(stream.Context(), handler, startTime)
 
 	errs := runtime.TaskSetHandler(stream.Context(), handler.TaskSet)
 	if errs != nil {
@@ -168,10 +181,16 @@ func (gsa *GrpcServerAdapter) ClientStreaming(stream pb.Grpc_ClientStreamingServ
 
 // Server-side streaming
 func (gsa *GrpcServerAdapter) ServerStreaming(req *pb.StreamRequest, stream pb.Grpc_ServerStreamingServer) error {
+	// record time for logging
+	startTime := time.Now()
+
 	handler, ok := gsa.configs.serverStream[req.Route]
 	if !ok {
 		return errors.New(fmt.Sprintf("Route not found %s.", req.Route))
 	}
+
+	// defer log
+	defer gsa.log(stream.Context(), handler, startTime)
 
 	errs := runtime.TaskSetHandler(stream.Context(), handler.TaskSet)
 	if errs != nil {
@@ -205,6 +224,9 @@ func (gsa *GrpcServerAdapter) ServerStreaming(req *pb.StreamRequest, stream pb.G
 
 // Bidirectional streaming
 func (gsa *GrpcServerAdapter) BidirectionalStreaming(stream pb.Grpc_BidirectionalStreamingServer) error {
+	// record time for logging
+	startTime := time.Now()
+
 	// process the first message in the stream and start tasks
 	req, err := stream.Recv()
 	if err != nil {
@@ -215,6 +237,9 @@ func (gsa *GrpcServerAdapter) BidirectionalStreaming(stream pb.Grpc_Bidirectiona
 	if !ok {
 		return errors.New(fmt.Sprintf("Route not found %s.", req.Route))
 	}
+
+	// defer log
+	defer gsa.log(stream.Context(), handler, startTime)
 
 	errs := runtime.TaskSetHandler(stream.Context(), handler.TaskSet)
 	if errs != nil {
@@ -247,4 +272,10 @@ func (gsa *GrpcServerAdapter) BidirectionalStreaming(stream pb.Grpc_Bidirectiona
 		}
 	}
 	return nil
+}
+
+
+func (gsa *GrpcServerAdapter) log(ctx context.Context, handler *ports.PrimaryHandler, startTime time.Time) {
+	elapsed := time.Since(startTime).Milliseconds()
+	logger.Logger.WithContext(ctx).Infof("Message consumed | %-30s | %10v ms", handler.GetId(), elapsed)
 }
