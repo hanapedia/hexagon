@@ -36,6 +36,9 @@ type ServerConfig struct {
 	// refers to the weight applied to the route
 	// intentionally a pointer to destinguish 0
 	Weight *int32 `json:"weight,omitempty"`
+
+	// applies to only serverStreams via grpc
+	PayloadCount int `json:"payloadCount,omitempty"`
 }
 
 // Config fields for repository services

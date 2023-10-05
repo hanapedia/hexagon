@@ -48,7 +48,10 @@ func CreateStatelessUnitService(config *model.ServiceUnitConfig) *corev1.Service
 	serviceArgs := factory.ServiceArgs{
 		Name:      config.Name,
 		Namespace: defaults.NAMESPACE,
-		Ports:     map[string]int32{"http": defaults.HTTP_PORT},
+		Ports:     map[string]int32{
+			"http": defaults.HTTP_PORT,
+			"grpc": defaults.GRPC_PORT,
+		},
 	}
 	service := factory.NewSerivce(&serviceArgs)
 	return &service

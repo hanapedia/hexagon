@@ -3,6 +3,7 @@ package primary
 import (
 	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
 	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/primary/consumer/kafka"
+	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/primary/server/grpc"
 	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/primary/server/rest"
 	model "github.com/hanapedia/the-bench/pkg/api/v1"
 	"github.com/hanapedia/the-bench/pkg/operator/constants"
@@ -15,6 +16,8 @@ func NewServerAdapter(config *model.ServerConfig) ports.PrimaryPort {
 	switch config.Variant {
 	case constants.REST:
 		serverAdapter = rest.NewRestServerAdapter()
+	case constants.GRPC:
+		serverAdapter = grpc.NewGrpcServerAdapter()
 	default:
 		logger.Logger.Fatal("Adapter currently unsupported.")
 	}
@@ -39,7 +42,7 @@ func NewConsumerAdapter(config *model.ConsumerConfig) ports.PrimaryPort {
 // Update or insert ServiceAdapter based on the handler input.
 // Does not return any value
 func RegiserHandlerToPrimaryAdapter(serviceName string, serverAdapter ports.PrimaryPort, handler *ports.PrimaryHandler) error {
-	err := serverAdapter.Register(serviceName, handler)
+	err := serverAdapter.Register(handler)
 
 	return err
 }

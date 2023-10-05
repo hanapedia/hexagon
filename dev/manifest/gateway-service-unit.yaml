@@ -55,6 +55,10 @@ spec:
     port: 8080
     protocol: TCP
     targetPort: 0
+  - name: grpc
+    port: 9090
+    protocol: TCP
+    targetPort: 0
   selector:
     app: gateway
 status:
@@ -74,62 +78,92 @@ data:
     - server:
         action: read
         variant: rest
-        route: serverget
+        route: grpc
         weight: 1 # load generator specific
       steps:
       - adapter:
           invocation:
-            variant: rest
-            service: chain1
-            action: read
+            variant: grpc
+            service: grpcserver
+            action: simpleRpc
             route: get
-    - server:
-        action: write
-        variant: rest
-        route: serverpost
-        weight: 2 # load generator specific
-      steps:
       - adapter:
           invocation:
-            variant: rest
-            service: chain1
-            action: write
-            route: post
-            payload: large
-    - server:
-        action: read
-        variant: rest
-        route: mongoget
-        weight: 2 # load generator specific
-      steps:
+            variant: grpc
+            service: grpcserver
+            action: clientStream
+            route: get
       - adapter:
-          repository:
-            name: mongorepo
-            variant: mongo
-            action: read
-            payload: small
-    - server:
-        action: write
-        variant: rest
-        route: mongowrite
-        weight: 2 # load generator specific
-      steps:
+          invocation:
+            variant: grpc
+            service: grpcserver
+            action: serverStream
+            route: get
       - adapter:
-          repository:
-            name: mongorepo
-            variant: mongo
-            action: write
-            payload: large
-    - server:
-        action: read
-        variant: rest
-        route: produce
-        weight: 2 # load generator specific
-      steps:
-      - adapter:
-          producer:
-            variant: kafka
-            topic: topic1
+          invocation:
+            variant: grpc
+            service: grpcserver
+            action: biStream
+            route: get
+    # - server:
+    #     action: read
+    #     variant: rest
+    #     route: serverget
+    #     weight: 1 # load generator specific
+    #   steps:
+    #   - adapter:
+    #       invocation:
+    #         variant: rest
+    #         service: chain1
+    #         action: read
+    #         route: get
+    # - server:
+    #     action: write
+    #     variant: rest
+    #     route: serverpost
+    #     weight: 2 # load generator specific
+    #   steps:
+    #   - adapter:
+    #       invocation:
+    #         variant: rest
+    #         service: chain1
+    #         action: write
+    #         route: post
+    #         payload: large
+    # - server:
+    #     action: read
+    #     variant: rest
+    #     route: mongoget
+    #     weight: 2 # load generator specific
+    #   steps:
+    #   - adapter:
+    #       repository:
+    #         name: mongorepo
+    #         variant: mongo
+    #         action: read
+    #         payload: small
+    # - server:
+    #     action: write
+    #     variant: rest
+    #     route: mongowrite
+    #     weight: 2 # load generator specific
+    #   steps:
+    #   - adapter:
+    #       repository:
+    #         name: mongorepo
+    #         variant: mongo
+    #         action: write
+    #         payload: large
+    # - server:
+    #     action: read
+    #     variant: rest
+    #     route: produce
+    #     weight: 2 # load generator specific
+    #   steps:
+    #   - adapter:
+    #       producer:
+    #         variant: kafka
+    #         topic: topic1
 kind: ConfigMap
 metadata:
   creationTimestamp: null

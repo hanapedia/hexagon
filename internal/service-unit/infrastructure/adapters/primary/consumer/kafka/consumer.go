@@ -63,16 +63,17 @@ func (kca KafkaConsumerAdapter) Serve() error {
 			}
 		}
 
-		kca.log(ctx, time.Since(startTime).Milliseconds())
+		kca.log(ctx, startTime)
 	}
 	return err
 }
 
-func (kca KafkaConsumerAdapter) Register(serviceName string, handler *ports.PrimaryHandler) error {
+func (kca *KafkaConsumerAdapter) Register(handler *ports.PrimaryHandler) error {
 	kca.kafkaConsumer.handler = handler
 	return nil
 }
 
-func (kca KafkaConsumerAdapter) log(ctx context.Context, elapsed int64) {
+func (kca *KafkaConsumerAdapter) log(ctx context.Context, startTime time.Time) {
+	elapsed := time.Since(startTime).Milliseconds()
 	logger.Logger.WithContext(ctx).Infof("Message consumed | %-30s | %10v ms", kca.kafkaConsumer.handler.GetId(), elapsed)
 }

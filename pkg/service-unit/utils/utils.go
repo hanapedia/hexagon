@@ -4,7 +4,6 @@ import (
 	cryptoRand "crypto/rand"
 	"encoding/base64"
 	mathRand "math/rand"
-	"time"
 
 	"github.com/hanapedia/the-bench/pkg/operator/constants"
 )
@@ -22,6 +21,8 @@ func GenerateRandomString(kbSize constants.PayloadSize) (string, error) {
 	return string(encoded[:byteSize]), nil
 }
 
+// GeneratePayload generates payload with given size.
+// if the size is not given, default payload size is used.
 func GeneratePayload(entrySize constants.PayloadSizeVariant) (string, error) {
 	var payload string
 	var err error
@@ -45,8 +46,7 @@ func GetRandomId(min int, max int) int {
 		max = 100
 		min = 1
 	}
-	// Seed the random number generator with the current time
-	mathRand.Seed(time.Now().UnixNano())
+
 	randomInt := mathRand.Intn(max) + min
 	return randomInt
 }

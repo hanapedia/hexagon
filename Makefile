@@ -1,3 +1,7 @@
+GRPC_GENERATE_DIR := ./internal/service-unit/infrastructure/adapters/generated/grpc/
+GO_MODULE := $(shell go list -m)
+COMMA := ,
+
 # Local development with tilt
 .PHONY: devstart
 devstart:
@@ -28,3 +32,11 @@ devbuild:
 .PHONY: devbuildcli
 devbuildcli:
 	CGO_ENABLED=0 go build -o bin/tbctl cmd/tbctl/main.go
+
+.PHONY: genproto
+genproto:
+	protoc --go_out=$(GRPC_GENERATE_DIR) \
+		--go_opt=paths=source_relative$(COMMA)Mproto/service-unit.proto=$(GO_MODULE)/$(GRPC_GENERATE_DIR) \
+		--go-grpc_out=$(GRPC_GENERATE_DIR) \
+		--go-grpc_opt=paths=source_relative$(COMMA)Mproto/service-unit.proto=$(GO_MODULE)/$(GRPC_GENERATE_DIR) \
+		./proto/service-unit.proto

@@ -68,7 +68,7 @@ status:
 apiVersion: v1
 data:
   config: '{"vus":10,"duration":"60m","urlPrefix":"http://gateway:8080/"}'
-  routes: '[{"route":"serverget","method":"GET","weight":1},{"route":"serverpost","method":"POST","weight":2},{"route":"mongoget","method":"GET","weight":2},{"route":"mongowrite","method":"POST","weight":2},{"route":"produce","method":"GET","weight":2}]'
+  routes: '[{"route":"grpc","method":"GET","weight":1}]'
 kind: ConfigMap
 metadata:
   creationTimestamp: null
