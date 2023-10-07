@@ -1,6 +1,6 @@
 # Variables
 DOCKER_HUB_USERNAME := hiroki11hanada
-REPOSITORY_NAME := stateful-unit-mongo
+REPOSITORY_NAME := stateful-unit-redis
 TAG ?= v0.0.3
 IMAGE_NAME := $(DOCKER_HUB_USERNAME)/$(REPOSITORY_NAME):$(TAG)
 BUILDER_NAME := datagen
