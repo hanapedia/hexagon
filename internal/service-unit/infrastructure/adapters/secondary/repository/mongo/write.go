@@ -6,8 +6,9 @@ import (
 	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
 	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary/config"
 	tracing "github.com/hanapedia/the-bench/internal/service-unit/infrastructure/telemetry/tracing/mongo"
+	"github.com/hanapedia/the-bench/pkg/common/utils"
 	"github.com/hanapedia/the-bench/pkg/operator/constants"
-	"github.com/hanapedia/the-bench/pkg/service-unit/utils"
+	"github.com/hanapedia/the-bench/pkg/service-unit/payload"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -32,7 +33,7 @@ func (mra *MongoWriteAdapter) Call(ctx context.Context) ports.SecondaryPortCallR
 	db := mra.client.Database(mra.database)
 	collection := db.Collection(string(mra.collection))
 
-	payload, err := utils.GeneratePayload(mra.collection)
+	payload, err := payload.GeneratePayload(mra.collection)
 	id := utils.GetRandomId(constants.NumInitialEntries+1, constants.NumInitialEntries*2)
 	filter := bson.M{"id": id}
 	update := bson.M{"$set": bson.M{"payload": payload}}

@@ -14,7 +14,7 @@ import (
 	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary/config"
 	"github.com/hanapedia/the-bench/pkg/operator/constants"
 	"github.com/hanapedia/the-bench/pkg/operator/logger"
-	"github.com/hanapedia/the-bench/pkg/service-unit/utils"
+	"github.com/hanapedia/the-bench/pkg/service-unit/payload"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"google.golang.org/grpc"
 )
@@ -117,7 +117,7 @@ func (gsa *GrpcServerAdapter) SimpleRPC(ctx context.Context, req *pb.StreamReque
 	}
 
 	// write response
-	payload, err := utils.GeneratePayload(handler.ServerConfig.Payload)
+	payload, err := payload.GeneratePayload(handler.ServerConfig.Payload)
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +162,7 @@ func (gsa *GrpcServerAdapter) ClientStreaming(stream pb.Grpc_ClientStreamingServ
 		_, err := stream.Recv()
 		if err == io.EOF {
 			// write response
-			payload, err := utils.GeneratePayload(handler.ServerConfig.Payload)
+			payload, err := payload.GeneratePayload(handler.ServerConfig.Payload)
 			if err != nil {
 				return err
 			}
@@ -206,7 +206,7 @@ func (gsa *GrpcServerAdapter) ServerStreaming(req *pb.StreamRequest, stream pb.G
 	}
 
 	for i := 0; i < payloadCount; i++ {
-		payload, err := utils.GeneratePayload(handler.ServerConfig.Payload)
+		payload, err := payload.GeneratePayload(handler.ServerConfig.Payload)
 		if err != nil {
 			return err
 		}
@@ -258,7 +258,7 @@ func (gsa *GrpcServerAdapter) BidirectionalStreaming(stream pb.Grpc_Bidirectiona
 			return err
 		}
 
-		payload, err := utils.GeneratePayload(handler.ServerConfig.Payload)
+		payload, err := payload.GeneratePayload(handler.ServerConfig.Payload)
 		if err != nil {
 			return err
 		}

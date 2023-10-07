@@ -7,8 +7,8 @@ import (
 	"github.com/hanapedia/the-bench/internal/service-unit/domain/contract"
 	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary/config"
 	tracing "github.com/hanapedia/the-bench/internal/service-unit/infrastructure/telemetry/tracing/mongo"
+	"github.com/hanapedia/the-bench/pkg/common/utils"
 	"github.com/hanapedia/the-bench/pkg/operator/constants"
-	"github.com/hanapedia/the-bench/pkg/service-unit/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )

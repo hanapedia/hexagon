@@ -6,8 +6,8 @@ import (
 	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
 	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary/config"
 	tracing "github.com/hanapedia/the-bench/internal/service-unit/infrastructure/telemetry/tracing/kafka"
-	"github.com/hanapedia/the-bench/pkg/service-unit/utils"
 	"github.com/hanapedia/the-bench/pkg/operator/constants"
+	"github.com/hanapedia/the-bench/pkg/service-unit/payload"
 	"github.com/segmentio/kafka-go"
 )
 
@@ -19,7 +19,7 @@ type KafkaProducerAdapter struct {
 
 func (kpa *KafkaProducerAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
 	// prepare payload
-	payload, err := utils.GeneratePayload(kpa.payload)
+	payload, err := payload.GeneratePayload(kpa.payload)
 	if err != nil {
         return ports.SecondaryPortCallResult{
 			Payload: nil,

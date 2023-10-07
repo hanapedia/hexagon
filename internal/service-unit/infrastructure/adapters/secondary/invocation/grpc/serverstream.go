@@ -8,7 +8,7 @@ import (
 	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
 	pb "github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/generated/grpc"
 	"github.com/hanapedia/the-bench/pkg/operator/constants"
-	"github.com/hanapedia/the-bench/pkg/service-unit/utils"
+	"github.com/hanapedia/the-bench/pkg/service-unit/payload"
 	"google.golang.org/grpc"
 )
 
@@ -20,7 +20,7 @@ type serverStreamAdapter struct {
 }
 
 func (ssa *serverStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
-	payload, err := utils.GeneratePayload(ssa.payload)
+	payload, err := payload.GeneratePayload(ssa.payload)
 	if err != nil {
 		return ports.SecondaryPortCallResult{
 			Payload: nil,
