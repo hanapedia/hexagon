@@ -6,6 +6,7 @@ import (
 	"github.com/hanapedia/the-bench/pkg/operator/constants"
 	"github.com/hanapedia/the-bench/pkg/operator/logger"
 	"github.com/hanapedia/the-bench/pkg/operator/manifest/statefulunit/mongo"
+	"github.com/hanapedia/the-bench/pkg/operator/manifest/statefulunit/redis"
 	"github.com/hanapedia/the-bench/pkg/operator/yaml"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -28,6 +29,11 @@ func NewStatefulUnitManifest(config *model.ServiceUnitConfig) *StatefulUnitManif
 		manifest = StatefulUnitManifest{
 			deployment: mongo.CreateMongoDeployment(config),
 			service: mongo.CreateMongoService(config),
+		}
+	case constants.REDIS:
+		manifest = StatefulUnitManifest{
+			deployment: redis.CreateRedisDeployment(config),
+			service: redis.CreateRedisService(config),
 		}
 	default:
 		logger.Logger.Panic("Invalid repository variant.")
