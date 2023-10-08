@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"sync"
 
-	model "github.com/hanapedia/the-bench/pkg/api/v1"
+	"github.com/hanapedia/the-bench/pkg/api/defaults"
 )
 
 type EnvVars struct {
@@ -40,19 +40,19 @@ func loadEnvVariables() *EnvVars {
 	return &EnvVars{
 		DEP_ENV:                  readEnv("DEP_ENV", "k8s"),
 		TRACING:                  readBoolEnv("TRACING", false),
-		HTTP_PORT:                readEnv("HTTP_PORT", strconv.Itoa(model.HTTP_PORT)),
-		GRPC_PORT:                readEnv("GRPC_PORT", strconv.Itoa(model.GRPC_PORT)),
-		KAFKA_PORT:               readEnv("KAFKA_PORT", strconv.Itoa(model.KAFKA_PORT)),
-		KAFKA_CLUSTER_NAME:       readEnv("KAFKA_CLUSTER_NAME", model.KAFKA_CLUSTER_NAME),
-		KAFKA_CLUSTER_NAMESPACE:  readEnv("KAFKA_CLUSTER_NAMESPACE", model.KAFKA_NAMESPACE),
-		MONGO_USER:               readEnv("MONGO_USER", model.MONGO_USERNAME),
-		MONGO_PASSWORD:           readEnv("MONGO_PASSWORD", model.MONGO_PASSWORD),
-		MONGO_PORT:               readEnv("MONGO_PORT", strconv.Itoa(model.MONGO_PORT)),
-		REDIS_PORT:               readEnv("REDIS_PORT", strconv.Itoa(model.REDIS_PORT)),
-		POSTGRE_PORT:             readEnv("POSTGRE_PORT", strconv.Itoa(model.POSTGRES_PORT)),
-		OTEL_COLLECTOR_NAME:      readEnv("OTEL_COLLECTOR_NAME", model.OTEL_COLLECTOR_NAME),
-		OTEL_COLLECTOR_NAMESPACE: readEnv("OTEL_COLLECTOR_NAMESPACE", model.OTEL_COLLECTOR_NAMESPACE),
-		OTEL_COLLECTOR_PORT:      readEnv("OTEL_COLLECTOR_PORT", strconv.Itoa(model.OTEL_COLLECTOR_PORT)),
+		HTTP_PORT:                readEnv("HTTP_PORT", strconv.Itoa(defaults.HTTP_PORT)),
+		GRPC_PORT:                readEnv("GRPC_PORT", strconv.Itoa(defaults.GRPC_PORT)),
+		KAFKA_PORT:               readEnv("KAFKA_PORT", strconv.Itoa(defaults.KAFKA_PORT)),
+		KAFKA_CLUSTER_NAME:       readEnv("KAFKA_CLUSTER_NAME", defaults.KAFKA_CLUSTER_NAME),
+		KAFKA_CLUSTER_NAMESPACE:  readEnv("KAFKA_CLUSTER_NAMESPACE", defaults.KAFKA_NAMESPACE),
+		MONGO_USER:               readEnv("MONGO_USER", defaults.MONGO_USERNAME),
+		MONGO_PASSWORD:           readEnv("MONGO_PASSWORD", defaults.MONGO_PASSWORD),
+		MONGO_PORT:               readEnv("MONGO_PORT", strconv.Itoa(defaults.MONGO_PORT)),
+		REDIS_PORT:               readEnv("REDIS_PORT", strconv.Itoa(defaults.REDIS_PORT)),
+		POSTGRE_PORT:             readEnv("POSTGRE_PORT", strconv.Itoa(defaults.POSTGRES_PORT)),
+		OTEL_COLLECTOR_NAME:      readEnv("OTEL_COLLECTOR_NAME", defaults.OTEL_COLLECTOR_NAME),
+		OTEL_COLLECTOR_NAMESPACE: readEnv("OTEL_COLLECTOR_NAMESPACE", defaults.OTEL_COLLECTOR_NAMESPACE),
+		OTEL_COLLECTOR_PORT:      readEnv("OTEL_COLLECTOR_PORT", strconv.Itoa(defaults.OTEL_COLLECTOR_PORT)),
 	}
 }
 

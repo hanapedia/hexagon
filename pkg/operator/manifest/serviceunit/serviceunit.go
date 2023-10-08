@@ -3,6 +3,7 @@ package serviceunit
 import (
 	"fmt"
 
+	"github.com/hanapedia/the-bench/pkg/api/defaults"
 	model "github.com/hanapedia/the-bench/pkg/api/v1"
 	"github.com/hanapedia/the-bench/pkg/operator/object/factory"
 
@@ -24,11 +25,11 @@ func CreateStatelessUnitDeployment(config *model.ServiceUnitConfig) *appsv1.Depl
 
 	deploymentArgs := factory.DeploymentArgs{
 		Name:         config.Name,
-		Namespace:    model.NAMESPACE,
-		Image:        fmt.Sprintf("%s:%s", model.SERVICE_UNIT_IMAGE_NAME, config.Version),
+		Namespace:    defaults.NAMESPACE,
+		Image:        fmt.Sprintf("%s:%s", defaults.SERVICE_UNIT_IMAGE_NAME, config.Version),
 		Replicas:     replica,
 		Resource:     resource,
-		Ports:        map[string]int32{"http": model.HTTP_PORT},
+		Ports:        map[string]int32{"http": defaults.HTTP_PORT},
 		VolumeMounts: map[string]string{"config": "/app/config/"},
 		Envs:         config.DeploymentSpec.EnvVar,
 		ConfigVolume: &factory.ConfigMapVolumeArgs{
@@ -46,10 +47,10 @@ func CreateStatelessUnitDeployment(config *model.ServiceUnitConfig) *appsv1.Depl
 func CreateStatelessUnitService(config *model.ServiceUnitConfig) *corev1.Service {
 	serviceArgs := factory.ServiceArgs{
 		Name:      config.Name,
-		Namespace: model.NAMESPACE,
-		Ports:     map[string]int32{
-			"http": model.HTTP_PORT,
-			"grpc": model.GRPC_PORT,
+		Namespace: defaults.NAMESPACE,
+		Ports: map[string]int32{
+			"http": defaults.HTTP_PORT,
+			"grpc": defaults.GRPC_PORT,
 		},
 	}
 	service := factory.NewSerivce(&serviceArgs)
@@ -60,7 +61,7 @@ func CreateStatelessUnitService(config *model.ServiceUnitConfig) *corev1.Service
 func CreateStatelessUnitYamlConfigMap(config *model.ServiceUnitConfig, rawConfig string) *corev1.ConfigMap {
 	configMapArgs := factory.ConfigMapArgs{
 		Name:      fmt.Sprintf("%s-config", config.Name),
-		Namespace: model.NAMESPACE,
+		Namespace: defaults.NAMESPACE,
 		Data: map[string]string{
 			"config": rawConfig,
 		},

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	model "github.com/hanapedia/the-bench/pkg/api/v1"
+	"github.com/hanapedia/the-bench/pkg/api/defaults"
 	"github.com/hanapedia/the-bench/pkg/operator/object/factory"
 
 	appsv1 "k8s.io/api/apps/v1"
@@ -31,12 +32,12 @@ func CreateMongoDeployment(config *model.ServiceUnitConfig) *appsv1.Deployment {
 
 	deploymentArgs := factory.DeploymentArgs{
 		Name:         config.Name,
-		Namespace:    model.NAMESPACE,
+		Namespace:    defaults.NAMESPACE,
 		Annotations:  map[string]string{"rca": "ignore"},
-		Image:        fmt.Sprintf("%s:%s", model.MONGO_IMAGE_NAME, config.Version),
+		Image:        fmt.Sprintf("%s:%s", defaults.MONGO_IMAGE_NAME, config.Version),
 		Replicas:     replica,
 		Resource:     resource,
-		Ports:        map[string]int32{"mongo": model.MONGO_PORT},
+		Ports:        map[string]int32{"mongo": defaults.MONGO_PORT},
 		Envs:         envs,
 		VolumeMounts: map[string]string{},
 	}
@@ -48,8 +49,8 @@ func CreateMongoDeployment(config *model.ServiceUnitConfig) *appsv1.Deployment {
 func CreateMongoService(config *model.ServiceUnitConfig) *corev1.Service {
 	serviceArgs := factory.ServiceArgs{
 		Name:      config.Name,
-		Namespace: model.NAMESPACE,
-		Ports:     map[string]int32{"mongo": model.MONGO_PORT},
+		Namespace: defaults.NAMESPACE,
+		Ports:     map[string]int32{"mongo": defaults.MONGO_PORT},
 	}
 	service := factory.NewSerivce(&serviceArgs)
 	return &service
