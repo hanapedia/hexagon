@@ -1,7 +1,7 @@
 package mongo
 
 import (
-	"github.com/hanapedia/the-bench/pkg/operator/manifest/defaults"
+	"github.com/hanapedia/the-bench/pkg/api/defaults"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 )

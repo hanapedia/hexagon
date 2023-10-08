@@ -5,40 +5,43 @@ deployment:
     virtualUsers: 10
     duration: 60
 adapters:
-- server:
-    action: read
-    variant: rest
-    route: grpc
-    weight: 1 # load generator specific
-  steps:
-  - adapter:
-      invocation:
-        variant: grpc
-        service: grpcserver
-        action: simpleRpc
-        route: get
-  - adapter:
-      invocation:
-        variant: grpc
-        service: grpcserver
-        action: clientStream
-        route: get
-  - adapter:
-      invocation:
-        variant: grpc
-        service: grpcserver
-        action: serverStream
-        route: get
-  - adapter:
-      invocation:
-        variant: grpc
-        service: grpcserver
-        action: biStream
-        route: get
+# # grpc secondary adapters
 # - server:
 #     action: read
 #     variant: rest
-#     route: serverget
+#     route: grpc
+#     weight: 1 # load generator specific
+#   steps:
+#   - adapter:
+#       invocation:
+#         variant: grpc
+#         service: grpcserver
+#         action: simpleRpc
+#         route: get
+#   - adapter:
+#       invocation:
+#         variant: grpc
+#         service: grpcserver
+#         action: clientStream
+#         route: get
+#   - adapter:
+#       invocation:
+#         variant: grpc
+#         service: grpcserver
+#         action: serverStream
+#         route: get
+#   - adapter:
+#       invocation:
+#         variant: grpc
+#         service: grpcserver
+#         action: biStream
+#         route: get
+#
+# # http secondary adapters
+# - server:
+#     action: read
+#     variant: rest
+#     route: httprest
 #     weight: 1 # load generator specific
 #   steps:
 #   - adapter:
@@ -47,12 +50,6 @@ adapters:
 #         service: chain1
 #         action: read
 #         route: get
-# - server:
-#     action: write
-#     variant: rest
-#     route: serverpost
-#     weight: 2 # load generator specific
-#   steps:
 #   - adapter:
 #       invocation:
 #         variant: rest
@@ -60,11 +57,13 @@ adapters:
 #         action: write
 #         route: post
 #         payload: large
+#
+# # mongo secondary adapter
 # - server:
 #     action: read
 #     variant: rest
-#     route: mongoget
-#     weight: 2 # load generator specific
+#     route: mongo
+#     weight: 1 # load generator specific
 #   steps:
 #   - adapter:
 #       repository:
@@ -72,23 +71,39 @@ adapters:
 #         variant: mongo
 #         action: read
 #         payload: small
-# - server:
-#     action: write
-#     variant: rest
-#     route: mongowrite
-#     weight: 2 # load generator specific
-#   steps:
 #   - adapter:
 #       repository:
 #         name: mongorepo
 #         variant: mongo
 #         action: write
 #         payload: large
+#
+# redis secondary adapters
+- server:
+    action: read
+    variant: rest
+    route: redis
+    weight: 1 # load generator specific
+  steps:
+  - adapter:
+      repository:
+        name: redisrepo
+        variant: redis
+        action: read
+        payload: small
+  - adapter:
+      repository:
+        name: redisrepo
+        variant: redis
+        action: write
+        payload: large
+#
+# # kafka secondary adapter
 # - server:
 #     action: read
 #     variant: rest
 #     route: produce
-#     weight: 2 # load generator specific
+#     weight: 1 # load generator specific
 #   steps:
 #   - adapter:
 #       producer:

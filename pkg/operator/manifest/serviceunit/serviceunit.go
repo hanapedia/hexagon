@@ -3,8 +3,8 @@ package serviceunit
 import (
 	"fmt"
 
+	"github.com/hanapedia/the-bench/pkg/api/defaults"
 	model "github.com/hanapedia/the-bench/pkg/api/v1"
-	"github.com/hanapedia/the-bench/pkg/operator/manifest/defaults"
 	"github.com/hanapedia/the-bench/pkg/operator/object/factory"
 
 	appsv1 "k8s.io/api/apps/v1"
@@ -48,7 +48,7 @@ func CreateStatelessUnitService(config *model.ServiceUnitConfig) *corev1.Service
 	serviceArgs := factory.ServiceArgs{
 		Name:      config.Name,
 		Namespace: defaults.NAMESPACE,
-		Ports:     map[string]int32{
+		Ports: map[string]int32{
 			"http": defaults.HTTP_PORT,
 			"grpc": defaults.GRPC_PORT,
 		},

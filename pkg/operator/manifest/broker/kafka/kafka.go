@@ -1,7 +1,7 @@
 package kafka
 
 import (
-	"github.com/hanapedia/the-bench/pkg/operator/manifest/defaults"
+	"github.com/hanapedia/the-bench/pkg/api/defaults"
 	"github.com/hanapedia/the-bench/pkg/operator/object/crd"
 	"github.com/hanapedia/the-bench/pkg/operator/object/factory"
 )

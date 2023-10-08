@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	model "github.com/hanapedia/the-bench/pkg/api/v1"
-	"github.com/hanapedia/the-bench/pkg/operator/manifest/defaults"
+	"github.com/hanapedia/the-bench/pkg/api/defaults"
 	"github.com/hanapedia/the-bench/pkg/operator/object/factory"
 
 	appsv1 "k8s.io/api/apps/v1"

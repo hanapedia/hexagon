@@ -13,7 +13,7 @@ import (
 	"github.com/hanapedia/the-bench/internal/service-unit/domain/contract"
 	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary/config"
 	"github.com/hanapedia/the-bench/pkg/operator/logger"
-	"github.com/hanapedia/the-bench/pkg/service-unit/utils"
+	"github.com/hanapedia/the-bench/pkg/service-unit/payload"
 )
 
 // must implement ports.PrimaryPort
@@ -71,7 +71,7 @@ func (rsa *RestServerAdapter) Register(handler *ports.PrimaryHandler) error {
 			}
 
 			// write response
-			payload, err := utils.GeneratePayload(handler.ServerConfig.Payload)
+			payload, err := payload.GeneratePayload(handler.ServerConfig.Payload)
 			if err != nil {
 				return err
 			}

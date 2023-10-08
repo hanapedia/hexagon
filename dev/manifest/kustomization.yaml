@@ -10,3 +10,4 @@ resources:
   - gateway-service-unit.yaml
   - mongorepo-stateful-unit.yaml
   - grpcserver-service-unit.yaml
+  - redisrepo-stateful-unit.yaml

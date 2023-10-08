@@ -8,6 +8,11 @@ COPY ./bin/service-unit .
 CMD ["./service-unit"]
 '''
 
+DATAGEN_DOCKERFILE = '''FROM golang:1.21
+WORKDIR /app
+COPY ./bin/datagen .
+'''
+
 # Generate manifests and go files
 local_resource('service-unit manifests', cmd='make devmanifests', deps=['dev/config', 'bin/tbctl'])
 
@@ -20,6 +25,9 @@ local_resource('Watch & Compile service-unit', 'make devbuild', deps=['cmd', 'pk
 
 # Re-compile tbctl
 local_resource('Watch & Compile tbctl', 'make devbuildcli', deps=['cmd/tbctl', 'pkg/tbctl', 'internal/tbctl'])
+
+# Re-compile datage
+local_resource('Watch & Compile datagen', 'make devbuilddatagen', deps=['cmd/datagen', 'internal/datagen'])
 
 # Build service-unit image
 docker_build_with_restart(
@@ -39,8 +47,31 @@ docker_build(
     context='./build/load-generator/',
 )
 
+# Build datagen image
+docker_build(
+    ref='hiroki11hanada/datagen:dev',
+    context='.',
+    dockerfile_contents=DATAGEN_DOCKERFILE,
+    only=['./bin/datagen'],
+    live_update=[
+        sync('./bin/datagen', '/app/datagen'),
+    ]
+)
+
 # Build mongo image
 docker_build(
     ref='hiroki11hanada/stateful-unit-mongo:dev',
     context='./build/stateful-unit/mongo/',
+    build_args={
+        'BUILDER_IMAGE': 'hiroki11hanada/datagen:dev'
+    },
+)
+
+# Build redis image
+docker_build(
+    ref='hiroki11hanada/stateful-unit-redis:dev',
+    context='./build/stateful-unit/redis/',
+    build_args={
+        'BUILDER_IMAGE': 'hiroki11hanada/datagen:dev'
+    },
 )

@@ -43,7 +43,7 @@ type ServerConfig struct {
 
 // Config fields for repository services
 type RepositoryConfig struct {
-	Variant constants.RepositoryVariant `json:"variant,omitempty" validate:"required,oneof=mongo postgre"`
+	Variant constants.RepositoryVariant `json:"variant,omitempty" validate:"required,oneof=mongo redis postgre"`
 }
 
 // Config fields for Brokers

@@ -38,10 +38,10 @@ spec:
       volumes:
       - configMap:
           items:
-          - key: config
-            path: config.json
           - key: routes
             path: routes.json
+          - key: config
+            path: config.json
           name: gateway-lg-config
         name: config
 status: {}
@@ -68,7 +68,7 @@ status:
 apiVersion: v1
 data:
   config: '{"vus":10,"duration":"60m","urlPrefix":"http://gateway:8080/"}'
-  routes: '[{"route":"grpc","method":"GET","weight":1}]'
+  routes: '[{"route":"redis","method":"GET","weight":1}]'
 kind: ConfigMap
 metadata:
   creationTimestamp: null

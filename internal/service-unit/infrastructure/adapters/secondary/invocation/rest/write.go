@@ -11,7 +11,7 @@ import (
 	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
 	"github.com/hanapedia/the-bench/internal/service-unit/domain/contract"
 	"github.com/hanapedia/the-bench/pkg/operator/constants"
-	"github.com/hanapedia/the-bench/pkg/service-unit/utils"
+	"github.com/hanapedia/the-bench/pkg/service-unit/payload"
 )
 
 type restWriteAdapter struct {
@@ -22,7 +22,7 @@ type restWriteAdapter struct {
 }
 
 func (rwa *restWriteAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
-	payload, err := utils.GeneratePayload(rwa.payload)
+	payload, err := payload.GeneratePayload(rwa.payload)
 	if err != nil {
 		return ports.SecondaryPortCallResult{
 			Payload: nil,

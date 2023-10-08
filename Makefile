@@ -33,6 +33,10 @@ devbuild:
 devbuildcli:
 	CGO_ENABLED=0 go build -o bin/tbctl cmd/tbctl/main.go
 
+.PHONY: devbuilddatagen
+devbuilddatagen:
+	CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o bin/datagen cmd/datagen/main.go
+
 .PHONY: genproto
 genproto:
 	protoc --go_out=$(GRPC_GENERATE_DIR) \

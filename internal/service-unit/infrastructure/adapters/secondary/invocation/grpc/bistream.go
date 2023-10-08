@@ -8,7 +8,7 @@ import (
 	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
 	pb "github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/generated/grpc"
 	"github.com/hanapedia/the-bench/pkg/operator/constants"
-	"github.com/hanapedia/the-bench/pkg/service-unit/utils"
+	"github.com/hanapedia/the-bench/pkg/service-unit/payload"
 	"google.golang.org/grpc"
 )
 
@@ -38,7 +38,7 @@ func (bsa *biStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCallRes
 	}
 
 	for i := 0; i < payloadCount; i++ {
-		payload, err := utils.GeneratePayload(bsa.payload)
+		payload, err := payload.GeneratePayload(bsa.payload)
 		if err != nil {
 			return ports.SecondaryPortCallResult{
 				Payload: nil,

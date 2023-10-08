@@ -1,0 +1,54 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    rca: ignore
+  creationTimestamp: null
+  name: redisrepo
+  namespace: the-bench
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redisrepo
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: redisrepo
+    spec:
+      containers:
+      - image: hiroki11hanada/stateful-unit-redis:dev
+        name: redisrepo
+        ports:
+        - containerPort: 6379
+          name: redis
+        resources:
+          limits:
+            cpu: 250m
+            memory: 128Mi
+          requests:
+            cpu: 125m
+            memory: 64Mi
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  name: redisrepo
+  namespace: the-bench
+spec:
+  ports:
+  - name: redis
+    port: 6379
+    protocol: TCP
+    targetPort: 0
+  selector:
+    app: redisrepo
+status:
+  loadBalancer: {}
+

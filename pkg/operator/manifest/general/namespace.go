@@ -1,7 +1,7 @@
 package manifest
 
 import (
-	"github.com/hanapedia/the-bench/pkg/operator/manifest/defaults"
+	"github.com/hanapedia/the-bench/pkg/api/defaults"
 	"github.com/hanapedia/the-bench/pkg/operator/object/factory"
 
 	corev1 "k8s.io/api/core/v1"

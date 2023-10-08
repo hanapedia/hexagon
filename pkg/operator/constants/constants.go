@@ -13,6 +13,7 @@ const (
 	Pulsar   BrokerVariant = "pulsar"
 
 	MONGO   RepositoryVariant = "mongo"
+	REDIS   RepositoryVariant = "redis"
 	POSTGRE RepositoryVariant = "postgre"
 )
 
