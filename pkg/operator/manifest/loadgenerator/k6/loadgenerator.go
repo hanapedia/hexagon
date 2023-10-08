@@ -7,7 +7,6 @@ import (
 	model "github.com/hanapedia/the-bench/pkg/api/v1"
 	"github.com/hanapedia/the-bench/pkg/operator/constants"
 	"github.com/hanapedia/the-bench/pkg/operator/logger"
-	"github.com/hanapedia/the-bench/pkg/operator/manifest/defaults"
 	"github.com/hanapedia/the-bench/pkg/operator/object/factory"
 
 	appsv1 "k8s.io/api/apps/v1"
@@ -20,12 +19,12 @@ func CreateLoadGeneratorDeployment(config *model.ServiceUnitConfig) *appsv1.Depl
 	name := fmt.Sprintf("%s-lg", config.Name)
 	deploymentArgs := factory.DeploymentArgs{
 		Name:         name,
-		Namespace:    defaults.NAMESPACE,
+		Namespace:    model.NAMESPACE,
 		Annotations:  map[string]string{"rca": "ignore"},
-		Image:        fmt.Sprintf("%s:%s", defaults.LOAD_GENERATOR_IMAGE_NAME, config.Version),
+		Image:        fmt.Sprintf("%s:%s", model.LOAD_GENERATOR_IMAGE_NAME, config.Version),
 		Replicas:     1,
 		Resource:     resource,
-		Ports:        map[string]int32{"http": defaults.HTTP_PORT},
+		Ports:        map[string]int32{"http": model.HTTP_PORT},
 		VolumeMounts: map[string]string{"config": "/data/"},
 		ConfigVolume: &factory.ConfigMapVolumeArgs{
 			Name: fmt.Sprintf("%s-config", name),
@@ -44,8 +43,8 @@ func CreateLoadGeneratorService(config *model.ServiceUnitConfig) *corev1.Service
 	name := fmt.Sprintf("%s-lg", config.Name)
 	serviceArgs := factory.ServiceArgs{
 		Name:      name,
-		Namespace: defaults.NAMESPACE,
-		Ports:     map[string]int32{"http": defaults.HTTP_PORT},
+		Namespace: model.NAMESPACE,
+		Ports:     map[string]int32{"http": model.HTTP_PORT},
 	}
 	service := factory.NewSerivce(&serviceArgs)
 	return &service
@@ -67,7 +66,7 @@ func CreateLoadGeneratorYamlConfigMap(config *model.ServiceUnitConfig) *corev1.C
 
 	configMapArgs := factory.ConfigMapArgs{
 		Name:      fmt.Sprintf("%s-config", name),
-		Namespace: defaults.NAMESPACE,
+		Namespace: model.NAMESPACE,
 		Data: map[string]string{
 			"config": string(rawConfig),
 			"routes": string(rawRoutes),
@@ -82,7 +81,7 @@ func createLoadGeneratorConfig(vus, duration int32, targetName string) Config {
 	return Config{
 		Vus:       vus,
 		Duration:  fmt.Sprintf("%vm", duration),
-		UrlPrefix: fmt.Sprintf("http://%s:%v/", targetName, defaults.HTTP_PORT),
+		UrlPrefix: fmt.Sprintf("http://%s:%v/", targetName, model.HTTP_PORT),
 	}
 }
 

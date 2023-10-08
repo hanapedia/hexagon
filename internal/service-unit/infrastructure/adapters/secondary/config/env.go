@@ -4,6 +4,8 @@ import (
 	"os"
 	"strconv"
 	"sync"
+
+	model "github.com/hanapedia/the-bench/pkg/api/v1"
 )
 
 type EnvVars struct {
@@ -38,19 +40,19 @@ func loadEnvVariables() *EnvVars {
 	return &EnvVars{
 		DEP_ENV:                  readEnv("DEP_ENV", "k8s"),
 		TRACING:                  readBoolEnv("TRACING", false),
-		HTTP_PORT:                readEnv("HTTP_PORT", "8080"),
-		GRPC_PORT:                readEnv("GRPC_PORT", "9090"),
-		KAFKA_PORT:               readEnv("KAFKA_PORT", "9092"),
-		KAFKA_CLUSTER_NAME:       readEnv("KAFKA_CLUSTER_NAME", "my-cluster"),
-		KAFKA_CLUSTER_NAMESPACE:  readEnv("KAFKA_CLUSTER_NAMESPACE", "kafka"),
-		MONGO_USER:               readEnv("MONGO_USER", "root"),
-		MONGO_PASSWORD:           readEnv("MONGO_PASSWORD", "password"),
-		MONGO_PORT:               readEnv("MONGO_PORT", "27017"),
-		REDIS_PORT:               readEnv("REDIS_PORT", "6379"),
-		POSTGRE_PORT:             readEnv("POSTGRE_PORT", "5432"),
-		OTEL_COLLECTOR_NAME:      readEnv("OTEL_COLLECTOR_NAME", "otelcollector-collector"),
-		OTEL_COLLECTOR_NAMESPACE: readEnv("OTEL_COLLECTOR_NAMESPACE", "observability"),
-		OTEL_COLLECTOR_PORT:      readEnv("OTEL_COLLECTOR_PORT", "4317"),
+		HTTP_PORT:                readEnv("HTTP_PORT", strconv.Itoa(model.HTTP_PORT)),
+		GRPC_PORT:                readEnv("GRPC_PORT", strconv.Itoa(model.GRPC_PORT)),
+		KAFKA_PORT:               readEnv("KAFKA_PORT", strconv.Itoa(model.KAFKA_PORT)),
+		KAFKA_CLUSTER_NAME:       readEnv("KAFKA_CLUSTER_NAME", model.KAFKA_CLUSTER_NAME),
+		KAFKA_CLUSTER_NAMESPACE:  readEnv("KAFKA_CLUSTER_NAMESPACE", model.KAFKA_NAMESPACE),
+		MONGO_USER:               readEnv("MONGO_USER", model.MONGO_USERNAME),
+		MONGO_PASSWORD:           readEnv("MONGO_PASSWORD", model.MONGO_PASSWORD),
+		MONGO_PORT:               readEnv("MONGO_PORT", strconv.Itoa(model.MONGO_PORT)),
+		REDIS_PORT:               readEnv("REDIS_PORT", strconv.Itoa(model.REDIS_PORT)),
+		POSTGRE_PORT:             readEnv("POSTGRE_PORT", strconv.Itoa(model.POSTGRES_PORT)),
+		OTEL_COLLECTOR_NAME:      readEnv("OTEL_COLLECTOR_NAME", model.OTEL_COLLECTOR_NAME),
+		OTEL_COLLECTOR_NAMESPACE: readEnv("OTEL_COLLECTOR_NAMESPACE", model.OTEL_COLLECTOR_NAMESPACE),
+		OTEL_COLLECTOR_PORT:      readEnv("OTEL_COLLECTOR_PORT", strconv.Itoa(model.OTEL_COLLECTOR_PORT)),
 	}
 }
 
