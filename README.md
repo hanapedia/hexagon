@@ -26,8 +26,8 @@ Asynchrounous protocols such as:
 
 Database connections such as:
 - MongoDB
+- Redis
 - PostgresQL [WIP]
-- Redis [WIP]
 
 #### Stateful Service
 the-bench supports the creation and configuration of stateful services. Currently supported services are:
