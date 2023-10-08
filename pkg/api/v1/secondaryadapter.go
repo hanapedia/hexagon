@@ -29,7 +29,7 @@ type InvocationConfig struct {
 // Config fields for repository services
 type RepositoryClientConfig struct {
 	Name    string                       `json:"name,omitempty" validate:"required"`
-	Variant constants.RepositoryVariant  `json:"variant,omitempty" validate:"required,oneof=mongo postgre"`
+	Variant constants.RepositoryVariant  `json:"variant,omitempty" validate:"required,oneof=mongo redis postgre"`
 	Action  constants.Action             `json:"action,omitempty" validate:"omitempty,oneof=read write"`
 	Payload constants.PayloadSizeVariant `json:"payload,omitempty" validate:"omitempty,oneof=small medium large"`
 }
