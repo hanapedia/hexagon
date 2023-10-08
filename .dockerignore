@@ -1,6 +1,7 @@
 # binary
 bin
 !bin/service-unit
+!bin/datagen
 
 # test
 **/test/**

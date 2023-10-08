@@ -1,0 +1,5 @@
+version: dev
+name: redisrepo
+adapters:
+- repository:
+    variant: redis
