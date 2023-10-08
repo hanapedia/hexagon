@@ -35,6 +35,11 @@ func GetMongoConnectionUri(adapterConfig *model.RepositoryClientConfig) string {
 	return fmt.Sprintf("mongodb://%s:%s@%s:%s/mongo?authSource=admin", user, password, adapterConfig.Name, port)
 }
 
+func GetRedisConnectionAddr(adapterConfig *model.RepositoryClientConfig) string {
+	port := GetEnvs().REDIS_PORT
+	return fmt.Sprintf("mongodb://%s:%s@%s:%s/mongo?authSource=admin", user, password, adapterConfig.Name, port)
+}
+
 func GetGrpcDialAddr(adapterConfig *model.InvocationConfig) string {
 	port := GetEnvs().GRPC_PORT
 	return fmt.Sprintf("%s:%s", adapterConfig.Service, port)

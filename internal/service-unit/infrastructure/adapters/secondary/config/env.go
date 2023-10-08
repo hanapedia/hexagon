@@ -17,6 +17,7 @@ type EnvVars struct {
 	MONGO_USER               string
 	MONGO_PASSWORD           string
 	MONGO_PORT               string
+	REDIS_PORT               string
 	POSTGRE_PORT             string
 	OTEL_COLLECTOR_NAME      string
 	OTEL_COLLECTOR_NAMESPACE string
@@ -34,95 +35,40 @@ func GetEnvs() *EnvVars {
 }
 
 func loadEnvVariables() *EnvVars {
-	depEnv := "k8s"
-	tracing := false
-	httpPort := "8080"
-	grpcPort := "9090"
-	kafkaPort := "9092"
-	kafkaClusterName := "my-cluster"
-	kafkaClusterNamespace := "kafka"
-	mongoUser := "root"
-	mongoPassword := "password"
-	mongoPort := "27017"
-	postgrePort := "5432"
-	otelCollectorName := "otelcollector-collector"
-	otelCollectorNamespace := "observability"
-	otelCollectorPort := "4317"
-
-	if envDepEnv, ok := os.LookupEnv("DEP_ENV"); ok {
-		depEnv = envDepEnv
-	}
-
-	if envTracing, ok := os.LookupEnv("TRACING"); ok {
-		parsed, err := strconv.ParseBool(envTracing)
-		if err != nil {
-			tracing = false
-		}
-		tracing = parsed
-	}
-
-	if envHttpPort, ok := os.LookupEnv("HTTP_PORT"); ok {
-		httpPort = envHttpPort
-	}
-
-	if envGrpcPort, ok := os.LookupEnv("GRPC_PORT"); ok {
-		grpcPort = envGrpcPort
-	}
-
-	if envKafkaPort, ok := os.LookupEnv("KAFKA_PORT"); ok {
-		kafkaPort = envKafkaPort
-	}
-
-	if envKafkaClusterName, ok := os.LookupEnv("KAFKA_PORT"); ok {
-		kafkaClusterName = envKafkaClusterName
-	}
-
-	if envKafkaClusterNamespace, ok := os.LookupEnv("KAFKA_PORT"); ok {
-		kafkaClusterNamespace = envKafkaClusterNamespace
-	}
-
-	if envmongoUser, ok := os.LookupEnv("MONGO_USER"); ok {
-		mongoUser = envmongoUser
-	}
-
-	if envmongoPassword, ok := os.LookupEnv("MONGO_PASSWORD"); ok {
-		mongoPassword = envmongoPassword
-	}
-
-	if envmongoPort, ok := os.LookupEnv("MONGO_PORT"); ok {
-		mongoPort = envmongoPort
-	}
-
-	if envPostgrePort, ok := os.LookupEnv("POSTGRE_PORT"); ok {
-		postgrePort = envPostgrePort
-	}
-
-	if envOtelCollectorName, ok := os.LookupEnv("OTEL_COLLECTOR_NAME"); ok {
-		otelCollectorName = envOtelCollectorName
-	}
-
-	if envOtelCollectorNamespace, ok := os.LookupEnv("OTEL_COLLECTOR_NAMESPACE"); ok {
-		otelCollectorNamespace = envOtelCollectorNamespace
-	}
-
-	if envOtelCollectorPort, ok := os.LookupEnv("OTEL_COLLECTOR_PORT"); ok {
-		otelCollectorPort = envOtelCollectorPort
-	}
-
 	return &EnvVars{
-		DEP_ENV:                  depEnv,
-		TRACING:                  tracing,
-		HTTP_PORT:                httpPort,
-		GRPC_PORT:                grpcPort,
-		KAFKA_PORT:               kafkaPort,
-		KAFKA_CLUSTER_NAME:       kafkaClusterName,
-		KAFKA_CLUSTER_NAMESPACE:  kafkaClusterNamespace,
-		MONGO_USER:               mongoUser,
-		MONGO_PASSWORD:           mongoPassword,
-		MONGO_PORT:               mongoPort,
-		POSTGRE_PORT:             postgrePort,
-		OTEL_COLLECTOR_NAME:      otelCollectorName,
-		OTEL_COLLECTOR_NAMESPACE: otelCollectorNamespace,
-		OTEL_COLLECTOR_PORT:      otelCollectorPort,
+		DEP_ENV:                  readEnv("DEP_ENV", "k8s"),
+		TRACING:                  readBoolEnv("TRACING", false),
+		HTTP_PORT:                readEnv("HTTP_PORT", "8080"),
+		GRPC_PORT:                readEnv("GRPC_PORT", "9090"),
+		KAFKA_PORT:               readEnv("KAFKA_PORT", "9092"),
+		KAFKA_CLUSTER_NAME:       readEnv("KAFKA_CLUSTER_NAME", "my-cluster"),
+		KAFKA_CLUSTER_NAMESPACE:  readEnv("KAFKA_CLUSTER_NAMESPACE", "kafka"),
+		MONGO_USER:               readEnv("MONGO_USER", "root"),
+		MONGO_PASSWORD:           readEnv("MONGO_PASSWORD", "password"),
+		MONGO_PORT:               readEnv("MONGO_PORT", "27017"),
+		REDIS_PORT:               readEnv("REDIS_PORT", "6379"),
+		POSTGRE_PORT:             readEnv("POSTGRE_PORT", "5432"),
+		OTEL_COLLECTOR_NAME:      readEnv("OTEL_COLLECTOR_NAME", "otelcollector-collector"),
+		OTEL_COLLECTOR_NAMESPACE: readEnv("OTEL_COLLECTOR_NAMESPACE", "observability"),
+		OTEL_COLLECTOR_PORT:      readEnv("OTEL_COLLECTOR_PORT", "4317"),
 	}
+}
+
+func readEnv(key, defaultValue string) string {
+	if value, ok := os.LookupEnv(key); ok {
+		return value
+	}
+	return defaultValue
+}
+
+func readBoolEnv(key string, defaultValue bool) bool {
+	boolValue := defaultValue
+	if value, ok := os.LookupEnv(key); ok {
+		parsed, err := strconv.ParseBool(value)
+		if err != nil {
+			return boolValue
+		}
+		return parsed
+	}
+	return boolValue
 }
