@@ -6,7 +6,7 @@ import (
 	model "github.com/hanapedia/the-bench/pkg/api/v1"
 )
 
-func ValidateInternalAdapterConfigFields(iac model.InternalAdapterConfig) []InvalidAdapterFieldValueError {
+func ValidateInternalAdapterConfigFields(iac model.StressorConfig) []InvalidAdapterFieldValueError {
 	validate := validator.New()
 	var errs []InvalidAdapterFieldValueError
 	err := validate.Struct(iac)

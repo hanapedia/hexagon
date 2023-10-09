@@ -3,6 +3,7 @@ package constants
 type SeverAdapterVariant string
 type BrokerVariant string
 type RepositoryVariant string
+type StressorValiant string
 
 const (
 	REST SeverAdapterVariant = "rest"
@@ -15,6 +16,10 @@ const (
 	MONGO   RepositoryVariant = "mongo"
 	REDIS   RepositoryVariant = "redis"
 	POSTGRE RepositoryVariant = "postgre"
+
+	CPU    StressorValiant = "cpu"
+	MEMORY StressorValiant = "memory"
+	DISK   StressorValiant = "disk"
 )
 
 type Action string
