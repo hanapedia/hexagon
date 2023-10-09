@@ -8,7 +8,7 @@ import (
 	"github.com/hanapedia/the-bench/pkg/operator/constants"
 )
 
-func RedisClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+func RedisClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {
 	var redisAdapter ports.SecodaryPort
 	var err error
 	if redisClient, ok := (client).(*redisClient); ok {

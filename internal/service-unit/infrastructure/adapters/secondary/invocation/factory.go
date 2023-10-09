@@ -12,7 +12,7 @@ import (
 	"github.com/hanapedia/the-bench/pkg/operator/logger"
 )
 
-func NewSecondaryAdapter(adapterConfig *model.InvocationConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+func NewSecondaryAdapter(adapterConfig *model.InvocationConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {
 	switch adapterConfig.Variant {
 	case constants.REST:
 		return rest.RestInvocationAdapterFactory(adapterConfig, client)
@@ -24,7 +24,7 @@ func NewSecondaryAdapter(adapterConfig *model.InvocationConfig, client ports.Sec
 	}
 }
 
-func NewClient(adapterConfig *model.InvocationConfig) ports.SecondaryAdapter {
+func NewClient(adapterConfig *model.InvocationConfig) ports.SecondaryAdapterClient {
 	switch adapterConfig.Variant {
 	case constants.REST:
 		client := rest.NewRestClient()

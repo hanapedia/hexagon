@@ -52,14 +52,6 @@ type ConsumerConfig struct {
 	Topic   string                  `json:"topic,omitempty" validate:"required"`
 }
 
-// Config fields for Internal services
-type InternalAdapterConfig struct {
-	Name     string `json:"name,omitempty" validate:"required"`
-	Resource string `json:"resource,omitempty" validate:"required,oneof=cpu memory disk network"`
-	Duration string `json:"duration,omitempty" validate:"required,oneof=small medium large"`
-	Load     string `json:"load,omitempty" validate:"required,oneof=small medium large"`
-}
-
 // Get primary adapter id
 func (ias PrimaryAdapterSpec) GetId(serviceName string) string {
 	var id string
@@ -136,9 +128,4 @@ func (bac ConsumerConfig) GetGroupByKey() string {
 		bac.Variant,
 		bac.Topic,
 	)
-}
-
-// Get internal adapter id
-func (iac InternalAdapterConfig) GetId() string {
-	return iac.Name
 }

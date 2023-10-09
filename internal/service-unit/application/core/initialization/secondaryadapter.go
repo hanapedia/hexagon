@@ -8,10 +8,13 @@ import (
 func (su *ServiceUnit) initializeSecondaryAdaptersClients() {
 	for _, primaryConfig := range su.Config.AdapterConfigs {
 		for _, step := range primaryConfig.Steps {
+			if step.AdapterConfig.StressorConfig != nil {
+				continue
+			}
 			key := step.AdapterConfig.GetGroupByKey()
-			_, ok := su.SecondaryAdapters[key]
+			_, ok := su.SecondaryAdapterClients[key]
 			if !ok {
-				su.SecondaryAdapters[key] = secondary.NewSecondaryAdapterClient(step.AdapterConfig)
+				su.SecondaryAdapterClients[key] = secondary.NewSecondaryAdapterClient(step.AdapterConfig)
 			}
 		}
 	}

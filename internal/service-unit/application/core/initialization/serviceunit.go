@@ -13,8 +13,8 @@ type ServiceUnit struct {
 	ServerAdapters map[string]ports.PrimaryPort
 	// ConsumerAdapters hold the adapters for consumer processes from Kafka, RabbitMQ, Pular, etc
 	ConsumerAdapters map[string]ports.PrimaryPort
-	// SecondaryAdapters hold the persistent clients for secondary adapters
-	SecondaryAdapters map[string]ports.SecondaryAdapter
+	// SecondaryAdapterClients hold the persistent clients for secondary adapters
+	SecondaryAdapterClients map[string]ports.SecondaryAdapterClient
 }
 
 // NewServiceUnit initializes service unit object
@@ -22,14 +22,14 @@ func NewServiceUnit(serviceUnitConfig model.ServiceUnitConfig) ServiceUnit {
 	serverAdapters := make(map[string]ports.PrimaryPort)
 	consumerAdapters := make(map[string]ports.PrimaryPort)
 
-	secondaryAdapters := make(map[string]ports.SecondaryAdapter)
+	secondaryAdapters := make(map[string]ports.SecondaryAdapterClient)
 
 	return ServiceUnit{
-		Name:              serviceUnitConfig.Name,
-		Config:            &serviceUnitConfig,
-		ServerAdapters:    serverAdapters,
-		ConsumerAdapters:  consumerAdapters,
-		SecondaryAdapters: secondaryAdapters,
+		Name:                    serviceUnitConfig.Name,
+		Config:                  &serviceUnitConfig,
+		ServerAdapters:          serverAdapters,
+		ConsumerAdapters:        consumerAdapters,
+		SecondaryAdapterClients: secondaryAdapters,
 	}
 }
 

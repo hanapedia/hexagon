@@ -7,7 +7,7 @@ import (
 	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
 )
 
-func KafkaProducerAdapterFactory(adapterConfig *model.ProducerConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+func KafkaProducerAdapterFactory(adapterConfig *model.ProducerConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {
 	var kafkaAdapter ports.SecodaryPort
 	var err error
 	if kafkaProducerClient, ok := (client).(*KafkaProducerClient); ok {

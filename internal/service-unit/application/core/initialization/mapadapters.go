@@ -61,9 +61,9 @@ func (su *ServiceUnit) newTaskSet(steps []model.Step) []ports.Task {
 	taskSet := make([]ports.Task, len(steps))
 	for i, step := range steps {
 		key := step.AdapterConfig.GetGroupByKey()
-		client, ok := su.SecondaryAdapters[key]
+		client, ok := su.SecondaryAdapterClients[key]
 		if !ok {
-			l.Logger.Error("Client does not exist", "key", key)
+			l.Logger.Error("Client does not exist. ", "key=", key)
 		}
 		secondaryAdapter, err := secondary.NewSecondaryAdapter(step.AdapterConfig, client)
 		if err != nil {

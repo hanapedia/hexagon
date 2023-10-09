@@ -12,7 +12,7 @@ import (
 	"github.com/hanapedia/the-bench/pkg/operator/logger"
 )
 
-func NewSecondaryAdapter(adapterConfig *model.RepositoryClientConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+func NewSecondaryAdapter(adapterConfig *model.RepositoryClientConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {
 	switch adapterConfig.Variant {
 	case constants.MONGO:
 		return mongo.MongoClientAdapterFactory(adapterConfig, client)
@@ -26,7 +26,7 @@ func NewSecondaryAdapter(adapterConfig *model.RepositoryClientConfig, client por
 }
 
 // NewClient creates new client to stateful service
-func NewClient(adapterConfig *model.RepositoryClientConfig) ports.SecondaryAdapter {
+func NewClient(adapterConfig *model.RepositoryClientConfig) ports.SecondaryAdapterClient {
 	switch adapterConfig.Variant {
 	case constants.MONGO:
 		connectionUri := config.GetMongoConnectionUri(adapterConfig)

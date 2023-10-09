@@ -23,7 +23,7 @@ type SecodaryPort interface {
 // Used to reuse clients to other serivces
 // Wrapper interface, so the struct to implement this should have pointer to actual client
 // types to implement this interface should have some sort of pointer to clients
-type SecondaryAdapter interface {
+type SecondaryAdapterClient interface {
 	Close()
 }
 //

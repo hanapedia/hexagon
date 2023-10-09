@@ -11,6 +11,7 @@ type SecondaryAdapterConfig struct {
 	InvocationConfig *InvocationConfig       `json:"invocation,omitempty"`
 	RepositoryConfig *RepositoryClientConfig `json:"repository,omitempty"`
 	ProducerConfig   *ProducerConfig         `json:"producer,omitempty"`
+	StressorConfig   *StressorConfig         `json:"stressor,omitempty"`
 	Id               *string                 `json:"id,omitempty"`
 }
 
@@ -39,6 +40,15 @@ type ProducerConfig struct {
 	Variant constants.BrokerVariant      `json:"variant,omitempty" validate:"required,oneof=kafka rabbitmq pulsar"`
 	Topic   string                       `json:"topic,omitempty" validate:"required"`
 	Payload constants.PayloadSizeVariant `json:"payload,omitempty" validate:"omitempty,oneof=small medium large"`
+}
+
+// Config fields for Stressor
+type StressorConfig struct {
+	Name        string                       `json:"name,omitempty" validate:"required"`
+	Variant     constants.StressorValiant    `json:"variant,omitempty" validate:"required,oneof=cpu memory disk"`
+	Duration    string                       `json:"duration,omitempty" validate:"required,oneof=small medium large"`
+	ThreadCount int                          `json:"threads,omitempty" validate:"omitempty"`
+	Payload     constants.PayloadSizeVariant `json:"payload,omitempty" validate:"omitempty,oneof=small medium large"`
 }
 
 // Get secondary adapter id
@@ -117,4 +127,9 @@ func (bac ProducerConfig) GetId() string {
 // Get broker secondary adapter group by key
 func (bac ProducerConfig) GetGroupByKey() string {
 	return bac.GetId()
+}
+
+// Get internal adapter id
+func (iac StressorConfig) GetId() string {
+	return iac.Name
 }
