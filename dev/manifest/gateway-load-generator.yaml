@@ -38,10 +38,10 @@ spec:
       volumes:
       - configMap:
           items:
-          - key: routes
-            path: routes.json
           - key: config
             path: config.json
+          - key: routes
+            path: routes.json
           name: gateway-lg-config
         name: config
 status: {}

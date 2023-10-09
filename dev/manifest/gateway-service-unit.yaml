@@ -162,6 +162,12 @@ data:
             action: read
             payload: small
       - adapter:
+          stressor:
+            name: cpu
+            variant: cpu
+            duration: 10ms
+            payload: small
+      - adapter:
           repository:
             name: redisrepo
             variant: redis
