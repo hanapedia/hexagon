@@ -12,7 +12,7 @@ import (
 	l "github.com/hanapedia/the-bench/pkg/operator/logger"
 )
 
-func NewSecondaryAdapter(config *model.SecondaryAdapterConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+func NewSecondaryAdapter(config *model.SecondaryAdapterConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {
 	if config.InvocationConfig != nil {
 		return invocation.NewSecondaryAdapter(config.InvocationConfig, client)
 	}
@@ -30,7 +30,7 @@ func NewSecondaryAdapter(config *model.SecondaryAdapterConfig, client ports.Seco
 	return nil, err
 }
 
-func NewSecondaryAdapterClient(config *model.SecondaryAdapterConfig) ports.SecondaryAdapter {
+func NewSecondaryAdapterClient(config *model.SecondaryAdapterConfig) ports.SecondaryAdapterClient {
 	if config.InvocationConfig != nil {
 		return invocation.NewClient(config.InvocationConfig)
 	}

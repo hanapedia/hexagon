@@ -12,9 +12,9 @@ func (su *ServiceUnit) initializeSecondaryAdaptersClients() {
 				continue
 			}
 			key := step.AdapterConfig.GetGroupByKey()
-			_, ok := su.SecondaryAdapters[key]
+			_, ok := su.SecondaryAdapterClients[key]
 			if !ok {
-				su.SecondaryAdapters[key] = secondary.NewSecondaryAdapterClient(step.AdapterConfig)
+				su.SecondaryAdapterClients[key] = secondary.NewSecondaryAdapterClient(step.AdapterConfig)
 			}
 		}
 	}

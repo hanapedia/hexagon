@@ -8,7 +8,7 @@ import (
 	"github.com/hanapedia/the-bench/pkg/operator/constants"
 )
 
-func GrpcInvocationAdapterFactory(adapterConfig *model.InvocationConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+func GrpcInvocationAdapterFactory(adapterConfig *model.InvocationConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {
 	var grpcAdapter ports.SecodaryPort
 	var err error
 

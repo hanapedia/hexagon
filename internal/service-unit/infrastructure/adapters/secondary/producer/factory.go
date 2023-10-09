@@ -11,7 +11,7 @@ import (
 	"github.com/hanapedia/the-bench/pkg/operator/logger"
 )
 
-func NewSecondaryAdapter(adapterConfig *model.ProducerConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+func NewSecondaryAdapter(adapterConfig *model.ProducerConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {
 	switch adapterConfig.Variant {
 	case constants.KAFKA:
 		return kafka.KafkaProducerAdapterFactory(adapterConfig, client)
@@ -22,7 +22,7 @@ func NewSecondaryAdapter(adapterConfig *model.ProducerConfig, client ports.Secon
 
 }
 
-func NewClient(adapterConfig *model.ProducerConfig) ports.SecondaryAdapter {
+func NewClient(adapterConfig *model.ProducerConfig) ports.SecondaryAdapterClient {
 	switch adapterConfig.Variant {
 	case constants.KAFKA:
 		kafkaClient := kafka.NewKafkaClient(config.GetKafkaBrokerAddr(), adapterConfig.Topic)

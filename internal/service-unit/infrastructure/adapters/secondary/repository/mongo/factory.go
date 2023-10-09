@@ -8,7 +8,7 @@ import (
 	"github.com/hanapedia/the-bench/pkg/operator/constants"
 )
 
-func MongoClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, client ports.SecondaryAdapter) (ports.SecodaryPort, error) {
+func MongoClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {
 	var mongoAdapter ports.SecodaryPort
 	var err error
 	if mongoClient, ok := (client).(*MongoClient); ok {

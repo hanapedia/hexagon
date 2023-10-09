@@ -14,7 +14,7 @@ func NewSecondaryAdapter(adapterConfig *model.StressorConfig) (ports.SecodaryPor
 	case constants.CPU:
 		return cpu.CpuStressorAdapterFactory(adapterConfig)
 	default:
-		err := errors.New("No matching protocol found when creating producer adapter.")
+		err := errors.New("No matching protocol found when creating stressor adapter.")
 		return nil, err
 	}
 
