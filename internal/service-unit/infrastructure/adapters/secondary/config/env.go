@@ -39,7 +39,7 @@ func GetEnvs() *EnvVars {
 func loadEnvVariables() *EnvVars {
 	return &EnvVars{
 		DEP_ENV:                  readEnv("DEP_ENV", "k8s"),
-		TRACING:                  readBoolEnv("TRACING", false),
+		TRACING:                  readBoolEnv("TRACING", defaults.TRACING),
 		HTTP_PORT:                readEnv("HTTP_PORT", strconv.Itoa(defaults.HTTP_PORT)),
 		GRPC_PORT:                readEnv("GRPC_PORT", strconv.Itoa(defaults.GRPC_PORT)),
 		KAFKA_PORT:               readEnv("KAFKA_PORT", strconv.Itoa(defaults.KAFKA_PORT)),
