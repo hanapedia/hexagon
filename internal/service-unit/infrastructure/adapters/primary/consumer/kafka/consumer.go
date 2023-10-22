@@ -2,6 +2,7 @@ package kafka
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/hanapedia/the-bench/internal/service-unit/application/core/runtime"
@@ -46,14 +47,12 @@ func (kca KafkaConsumerAdapter) Serve() error {
 		if err != nil {
 			break
 		}
+		fmt.Println(message.Headers)
 
 		ctx := context.Background()
 
 		// propagate trace header if tracing is enabled
-		if config.GetEnvs().TRACING {
-			span := tracing.CreateKafkaConsumerSpan(message)
-			defer span.End()
-		}
+		ctx, span := tracing.CreateKafkaConsumerSpan(ctx, &message)
 
 		// call tasks
 		errs := runtime.TaskSetHandler(ctx, kca.kafkaConsumer.handler.TaskSet)
@@ -64,6 +63,9 @@ func (kca KafkaConsumerAdapter) Serve() error {
 		}
 
 		kca.log(ctx, startTime)
+		if span != nil {
+			(*span).End()
+		}
 	}
 	return err
 }

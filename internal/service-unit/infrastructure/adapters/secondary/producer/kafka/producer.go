@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
-	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary/config"
 	tracing "github.com/hanapedia/the-bench/internal/service-unit/infrastructure/telemetry/tracing/kafka"
 	"github.com/hanapedia/the-bench/pkg/operator/constants"
 	"github.com/hanapedia/the-bench/pkg/service-unit/payload"
@@ -30,11 +29,8 @@ func (kpa *KafkaProducerAdapter) Call(ctx context.Context) ports.SecondaryPortCa
 		Value: []byte(payload),
 	}
 
-	// add trace context if tracing is enabled
-	if config.GetEnvs().TRACING {
-		span := tracing.CreateKafkaProducerSpan(ctx, message)
-		defer span.End()
-	}
+	ctx, span := tracing.CreateKafkaProducerSpan(ctx, &message)
+	defer (*span).End()
 
 	if err = kpa.writer.WriteMessages(ctx, message); err != nil {
         return ports.SecondaryPortCallResult{

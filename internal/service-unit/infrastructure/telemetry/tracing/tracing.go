@@ -34,7 +34,9 @@ func InitTracer(name, collectorUrl string) *sdktrace.TracerProvider {
 
 	traceExporter, err := otlptracegrpc.New(ctx, otlptracegrpc.WithGRPCConn(conn))
 	if err != nil {
-		logger.Logger.Fatalf("failed to create trace exporter: %v", err)
+		logger.Logger.Errorf("failed to create trace exporter: %v", err)
+		config.GetEnvs().TRACING = false
+		return nil
 	}
 
 	resource := resource.NewWithAttributes(
