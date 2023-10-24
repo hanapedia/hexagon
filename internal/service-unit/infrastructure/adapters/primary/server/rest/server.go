@@ -55,13 +55,13 @@ func (rsa *RestServerAdapter) Register(handler *ports.PrimaryHandler) error {
 			// record time for logging
 			startTime := time.Now()
 			// defer log
-			defer rsa.log(c.Context(), handler, startTime)
+			defer rsa.log(c.UserContext(), handler, startTime)
 
 			// call tasks
-			errs := runtime.TaskSetHandler(c.Context(), handler.TaskSet)
+			errs := runtime.TaskSetHandler(c.UserContext(), handler.TaskSet)
 			if errs != nil {
 				for _, err := range errs {
-					handler.LogTaskError(c.Context(), err)
+					handler.LogTaskError(c.UserContext(), err)
 				}
 
 				restResponse := contract.RestResponseBody{
@@ -87,13 +87,13 @@ func (rsa *RestServerAdapter) Register(handler *ports.PrimaryHandler) error {
 			// record time for logging
 			startTime := time.Now()
 			// defer log
-			defer rsa.log(c.Context(), handler, startTime)
+			defer rsa.log(c.UserContext(), handler, startTime)
 
 			// call tasks
-			errs := runtime.TaskSetHandler(c.Context(), handler.TaskSet)
+			errs := runtime.TaskSetHandler(c.UserContext(), handler.TaskSet)
 			if errs != nil {
 				for _, err := range errs {
-					handler.LogTaskError(c.Context(), err)
+					handler.LogTaskError(c.UserContext(), err)
 				}
 				restResponse := contract.RestResponseBody{
 					Message: "Task failed",

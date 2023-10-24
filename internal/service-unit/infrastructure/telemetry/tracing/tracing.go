@@ -52,7 +52,7 @@ func InitTracer(name, collectorUrl string) *sdktrace.TracerProvider {
 	otel.SetTracerProvider(tracerProvider)
 
 	// Set the global text map propagator to tracecontext.
-	otel.SetTextMapPropagator(propagation.TraceContext{})
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
 
 	// return provider so that it can be shutdown
 	return tracerProvider
