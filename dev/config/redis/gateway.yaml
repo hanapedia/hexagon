@@ -1,0 +1,34 @@
+version: dev
+name: redis-gateway
+deployment:
+  gateway: # load generator specific
+    virtualUsers: 3
+    duration: 60
+adapters:
+# redis secondary adapters
+- server:
+    action: read
+    variant: rest
+    route: redis
+    weight: 1 # load generator specific
+  steps:
+  - adapter:
+      repository:
+        name: redisrepo
+        variant: redis
+        action: read
+        payload: small
+
+# redis secondary adapters
+- server:
+    action: write
+    variant: rest
+    route: redis
+    weight: 1 # load generator specific
+  steps:
+  - adapter:
+      repository:
+        name: redisrepo
+        variant: redis
+        action: write
+        payload: large

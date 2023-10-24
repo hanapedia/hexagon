@@ -7,23 +7,26 @@ COMMA := ,
 devstart:
 	ctlptl apply -f ./dev/cluster.yaml
 
+	# create namespaces
+	kubectl apply -f ./dev/namespaces.yaml
+
 	# install strimzi kafka operator and sample kafka cluster
-	kubectl create namespace kafka
-	kubectl create -f https://raw.githubusercontent.com/hanapedia/lab-cluster-apps/main/kafka/operator/overlays/dev/manifests.yaml -n kafka
+	kubectl apply -f https://raw.githubusercontent.com/hanapedia/lab-cluster-apps/main/kafka/operator/overlays/dev/manifests.yaml -n kafka
 	kubectl -n kafka wait --for=condition=available --timeout=180s --all deployments
+
+	# restart once
+	kubectl rollout restart deployment -n kafka strimzi-cluster-operator
+	kubectl -n kafka wait --for=condition=available --timeout=180s --all deployments
+
 	kubectl apply -f https://raw.githubusercontent.com/hanapedia/lab-cluster-apps/main/kafka/kafka/overlays/dev/manifests.yaml -n kafka
 	kubectl wait -n kafka kafka/my-cluster --for=condition=Ready --timeout=300s
 
-	# install monitoring tools
-	kubectl create namespace monitoring
 	# install tempo
 	kubectl apply -f https://raw.githubusercontent.com/hanapedia/lab-cluster-apps/main/tempo/dev/manifests.yaml
 	# install otel collector
 	kubectl apply -f https://raw.githubusercontent.com/hanapedia/lab-cluster-apps/main/otel/collector/overlays/dev/manifests.yaml
 	kubectl -n monitoring wait --for=condition=available --timeout=180s --all deployments
 
-	# create the-bench namespace
-	kubectl create namespace the-bench
 
 .PHONY: devstop
 devstop:
@@ -31,7 +34,8 @@ devstop:
 
 .PHONY: devmanifests
 devmanifests:
-	./bin/tbctl generate -f ./dev/config/ -o ./dev/manifest/
+	./bin/tbctl generate -f ./dev/config/all -o ./dev/manifest/all
+	./bin/tbctl generate -f ./dev/config/redis -o ./dev/manifest/redis
 
 .PHONY: devbuild
 devbuild:

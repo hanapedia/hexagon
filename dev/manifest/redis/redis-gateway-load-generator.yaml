@@ -1,0 +1,77 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    rca: ignore
+  creationTimestamp: null
+  name: redis-gateway-lg
+  namespace: the-bench
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-gateway-lg
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: redis-gateway-lg
+    spec:
+      containers:
+      - image: hiroki11hanada/tb-load-generator:dev
+        name: redis-gateway-lg
+        ports:
+        - containerPort: 8080
+          name: http
+        resources:
+          limits:
+            cpu: 250m
+            memory: 1Gi
+          requests:
+            cpu: 125m
+            memory: 64Mi
+        volumeMounts:
+        - mountPath: /data/
+          name: config
+      volumes:
+      - configMap:
+          items:
+          - key: config
+            path: config.json
+          - key: routes
+            path: routes.json
+          name: redis-gateway-lg-config
+        name: config
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  name: redis-gateway-lg
+  namespace: the-bench
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 0
+  selector:
+    app: redis-gateway-lg
+status:
+  loadBalancer: {}
+
+---
+apiVersion: v1
+data:
+  config: '{"vus":3,"duration":"60m","urlPrefix":"http://redis-gateway:8080/"}'
+  routes: '[{"route":"redis","method":"GET","weight":1},{"route":"redis","method":"POST","weight":1}]'
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: redis-gateway-lg-config
+  namespace: the-bench
+

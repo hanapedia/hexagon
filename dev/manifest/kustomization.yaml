@@ -2,12 +2,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
+# comment out other resources to reduce noise
 resources:
-  - chain1-service-unit.yaml
-  - consumer-broker.yaml
-  - consumer-service-unit.yaml
-  - gateway-load-generator.yaml
-  - gateway-service-unit.yaml
-  - mongorepo-stateful-unit.yaml
-  - grpcserver-service-unit.yaml
-  - redisrepo-stateful-unit.yaml
+  # - ./all
+  - ./redis

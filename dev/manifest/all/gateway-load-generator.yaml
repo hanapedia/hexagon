@@ -67,8 +67,8 @@ status:
 ---
 apiVersion: v1
 data:
-  config: '{"vus":10,"duration":"60m","urlPrefix":"http://gateway:8080/"}'
-  routes: '[{"route":"redis","method":"GET","weight":1}]'
+  config: '{"vus":3,"duration":"60m","urlPrefix":"http://gateway:8080/"}'
+  routes: '[{"route":"grpc","method":"GET","weight":1},{"route":"httprest","method":"GET","weight":1},{"route":"mongo","method":"GET","weight":1},{"route":"redis","method":"GET","weight":1},{"route":"produce","method":"GET","weight":1}]'
 kind: ConfigMap
 metadata:
   creationTimestamp: null
