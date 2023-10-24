@@ -1,9 +1,9 @@
 version: dev
 name: redis-gateway
-deployment:
-  gateway: # load generator specific
-    virtualUsers: 3
-    duration: 60
+# deployment:
+#   gateway: # load generator specific
+#     virtualUsers: 3
+#     duration: 60
 adapters:
 # redis secondary adapters
 - server:

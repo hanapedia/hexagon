@@ -1,8 +1,6 @@
 package redis
 
 import (
-	"context"
-
 	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary/config"
 	"github.com/hanapedia/the-bench/pkg/operator/logger"
 	"github.com/redis/go-redis/extra/redisotel/v9"
@@ -10,13 +8,11 @@ import (
 )
 
 type redisClient struct {
-	context *context.Context
 	Client  *redis.Client
 }
 
 // Client client for redis
 func NewRedisClient(addr string) *redisClient {
-	ctx := context.Background()
 	client := redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Password: "",
@@ -31,7 +27,7 @@ func NewRedisClient(addr string) *redisClient {
 		}
 	}
 
-	redisClient := redisClient{Client: client, context: &ctx}
+	redisClient := redisClient{Client: client}
 	return &redisClient
 }
 
