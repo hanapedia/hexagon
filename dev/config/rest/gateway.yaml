@@ -1,0 +1,33 @@
+version: dev
+name: rest-gateway
+# deployment:
+#   gateway: # load generator specific
+#     virtualUsers: 3
+#     duration: 60
+adapters:
+# http secondary adapters
+- server:
+    action: read
+    variant: rest
+    route: get
+    weight: 1 # load generator specific
+  steps:
+  - adapter:
+      invocation:
+        variant: rest
+        service: chain1
+        action: read
+        route: get
+- server:
+    action: read
+    variant: rest
+    route: post
+    weight: 1 # load generator specific
+  steps:
+  - adapter:
+      invocation:
+        variant: rest
+        service: chain1
+        action: write
+        route: post
+        payload: large

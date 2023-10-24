@@ -1,0 +1,103 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: chain2
+  namespace: the-bench
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chain2
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: chain2
+    spec:
+      containers:
+      - image: hiroki11hanada/service-unit:dev
+        name: chain2
+        ports:
+        - containerPort: 8080
+          name: http
+        resources:
+          limits:
+            cpu: 250m
+            memory: 128Mi
+          requests:
+            cpu: 125m
+            memory: 64Mi
+        volumeMounts:
+        - mountPath: /app/config/
+          name: config
+      volumes:
+      - configMap:
+          items:
+          - key: config
+            path: service-unit.yaml
+          name: chain2-config
+        name: config
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  name: chain2
+  namespace: the-bench
+spec:
+  ports:
+  - name: grpc
+    port: 9090
+    protocol: TCP
+    targetPort: 0
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 0
+  selector:
+    app: chain2
+status:
+  loadBalancer: {}
+
+---
+apiVersion: v1
+data:
+  config: |
+    version: dev
+    name: chain2
+    adapters:
+    - server:
+        action: read
+        variant: rest
+        route: get
+        payload: large
+      steps:
+      - adapter:
+          invocation:
+            variant: rest
+            service: chain3
+            action: read
+            route: get
+    - server:
+        action: write
+        variant: rest
+        route: post
+      steps:
+      - adapter:
+          invocation:
+            variant: rest
+            service: chain3
+            action: write
+            route: post
+            payload: large
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: chain2-config
+  namespace: the-bench
+

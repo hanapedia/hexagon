@@ -27,6 +27,8 @@ devstart:
 	kubectl apply -f https://raw.githubusercontent.com/hanapedia/lab-cluster-apps/main/otel/collector/overlays/dev/manifests.yaml
 	kubectl -n monitoring wait --for=condition=available --timeout=180s --all deployments
 
+	# create curl pod
+	kubectl apply -n the-bench -f ./dev/curl.yaml
 
 .PHONY: devstop
 devstop:
@@ -34,8 +36,9 @@ devstop:
 
 .PHONY: devmanifests
 devmanifests:
-	./bin/tbctl generate -f ./dev/config/all -o ./dev/manifest/all
-	./bin/tbctl generate -f ./dev/config/redis -o ./dev/manifest/redis
+	rm -f ./dev/manifest/all/generated/* && ./bin/tbctl generate -f ./dev/config/all -o ./dev/manifest/all/generated
+	rm -f ./dev/manifest/rest/generated/* && ./bin/tbctl generate -f ./dev/config/rest -o ./dev/manifest/rest/generated/
+	rm -f ./dev/manifest/redis/generated/* && ./bin/tbctl generate -f ./dev/config/redis -o ./dev/manifest/redis/generated
 
 .PHONY: devbuild
 devbuild:

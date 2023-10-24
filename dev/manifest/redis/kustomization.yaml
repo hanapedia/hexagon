@@ -3,6 +3,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - redis-gateway-load-generator.yaml
-  - redis-gateway-service-unit.yaml
-  - redisrepo-stateful-unit.yaml
+  - generated/redis-gateway-load-generator.yaml
+  - generated/redis-gateway-service-unit.yaml
+  - generated/redisrepo-stateful-unit.yaml

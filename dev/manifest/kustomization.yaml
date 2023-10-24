@@ -5,4 +5,5 @@ kind: Kustomization
 # comment out other resources to reduce noise
 resources:
   # - ./all
-  - ./redis
+  - ./rest
+  # - ./redis
