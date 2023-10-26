@@ -40,6 +40,7 @@ devmanifests:
 	rm -f ./dev/manifest/rest/generated/* && ./bin/tbctl generate -f ./dev/config/rest -o ./dev/manifest/rest/generated/
 	rm -f ./dev/manifest/redis/generated/* && ./bin/tbctl generate -f ./dev/config/redis -o ./dev/manifest/redis/generated
 	rm -f ./dev/manifest/mongo/generated/* && ./bin/tbctl generate -f ./dev/config/mongo -o ./dev/manifest/mongo/generated
+	rm -f ./dev/manifest/grpc/generated/* && ./bin/tbctl generate -f ./dev/config/grpc -o ./dev/manifest/grpc/generated/
 
 .PHONY: devbuild
 devbuild:

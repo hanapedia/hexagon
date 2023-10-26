@@ -37,7 +37,7 @@ func (ssa *serverStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCal
 	}
 
 	// server stream
-	serverStream, err := client.ServerStreaming(context.Background(), &request)
+	serverStream, err := client.ServerStreaming(ctx, &request)
 	if err != nil {
 		return ports.SecondaryPortCallResult{
 			Payload: nil,

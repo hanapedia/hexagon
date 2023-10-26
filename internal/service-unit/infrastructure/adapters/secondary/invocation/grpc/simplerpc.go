@@ -36,7 +36,7 @@ func (sra *simpleRpcAdapter) Call(ctx context.Context) ports.SecondaryPortCallRe
 	}
 
 	// Regular RPC
-	response, err := client.SimpleRPC(context.Background(), &request)
+	response, err := client.SimpleRPC(ctx, &request)
 	if err != nil {
 		return ports.SecondaryPortCallResult{
 			Payload: nil,

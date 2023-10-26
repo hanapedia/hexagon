@@ -1,0 +1,38 @@
+version: dev
+name: grpc-gateway
+# deployment:
+#   gateway: # load generator specific
+#     virtualUsers: 3
+#     duration: 60
+adapters:
+# grpc secondary adapters
+- server:
+    action: read
+    variant: rest
+    route: grpc
+    weight: 1 # load generator specific
+  steps:
+  - adapter:
+      invocation:
+        variant: grpc
+        service: grpcserver
+        action: simpleRpc
+        route: get
+  - adapter:
+      invocation:
+        variant: grpc
+        service: grpcserver
+        action: clientStream
+        route: get
+  - adapter:
+      invocation:
+        variant: grpc
+        service: grpcserver
+        action: serverStream
+        route: get
+  - adapter:
+      invocation:
+        variant: grpc
+        service: grpcserver
+        action: biStream
+        route: get
