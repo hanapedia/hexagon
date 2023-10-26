@@ -1,0 +1,32 @@
+version: dev
+name: mongo-gateway
+# deployment:
+#   gateway: # load generator specific
+#     virtualUsers: 3
+#     duration: 60
+adapters:
+# mongo secondary adapter
+- server:
+    action: read
+    variant: rest
+    route: mongoread
+    weight: 1 # load generator specific
+  steps:
+  - adapter:
+      repository:
+        name: mongorepo
+        variant: mongo
+        action: read
+        payload: small
+- server:
+    action: read
+    variant: rest
+    route: mongowrite
+    weight: 1 # load generator specific
+  steps:
+  - adapter:
+      repository:
+        name: mongorepo
+        variant: mongo
+        action: write
+        payload: large
