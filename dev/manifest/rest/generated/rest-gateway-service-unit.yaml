@@ -51,12 +51,12 @@ metadata:
   namespace: the-bench
 spec:
   ports:
-  - name: http
-    port: 8080
-    protocol: TCP
-    targetPort: 0
   - name: grpc
     port: 9090
+    protocol: TCP
+    targetPort: 0
+  - name: http
+    port: 8080
     protocol: TCP
     targetPort: 0
   selector:
@@ -101,6 +101,25 @@ data:
             action: write
             route: post
             payload: large
+    - server:
+        action: read
+        variant: rest
+        route: fanout
+        weight: 1 # load generator specific
+      steps:
+      - adapter:
+          invocation:
+            variant: rest
+            service: chain1
+            action: write
+            route: post
+            payload: large
+      - adapter:
+          invocation:
+            variant: rest
+            service: chain1
+            action: read
+            route: get
 kind: ConfigMap
 metadata:
   creationTimestamp: null

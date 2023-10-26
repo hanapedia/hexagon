@@ -31,3 +31,22 @@ adapters:
         action: write
         route: post
         payload: large
+- server:
+    action: read
+    variant: rest
+    route: fanout
+    weight: 1 # load generator specific
+  steps:
+  - adapter:
+      invocation:
+        variant: rest
+        service: chain1
+        action: write
+        route: post
+        payload: large
+  - adapter:
+      invocation:
+        variant: rest
+        service: chain1
+        action: read
+        route: get
