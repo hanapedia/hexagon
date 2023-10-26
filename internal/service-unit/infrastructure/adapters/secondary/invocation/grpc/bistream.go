@@ -24,7 +24,7 @@ func (bsa *biStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCallRes
 	client := pb.NewGrpcClient(bsa.client)
 
 	// Client-side streaming
-	biStream, err := client.BidirectionalStreaming(context.Background())
+	biStream, err := client.BidirectionalStreaming(ctx)
 	if err != nil {
 		return ports.SecondaryPortCallResult{
 			Payload: nil,

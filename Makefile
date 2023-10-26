@@ -7,15 +7,28 @@ COMMA := ,
 devstart:
 	ctlptl apply -f ./dev/cluster.yaml
 
+	# create namespaces
+	kubectl apply -f ./dev/namespaces.yaml
+
 	# install strimzi kafka operator and sample kafka cluster
-	kubectl create namespace kafka
-	kubectl create -n kafka -f 'https://strimzi.io/install/latest?namespace=kafka'
+	kubectl apply -f https://raw.githubusercontent.com/hanapedia/lab-cluster-apps/main/kafka/operator/overlays/dev/manifests.yaml -n kafka
 	kubectl -n kafka wait --for=condition=available --timeout=180s --all deployments
-	kubectl apply -n kafka -f https://strimzi.io/examples/latest/kafka/kafka-persistent-single.yaml
+
+	# restart once
+	kubectl rollout restart deployment -n kafka strimzi-cluster-operator
+	kubectl -n kafka wait --for=condition=available --timeout=180s --all deployments
+
+	kubectl apply -f https://raw.githubusercontent.com/hanapedia/lab-cluster-apps/main/kafka/kafka/overlays/dev/manifests.yaml -n kafka
 	kubectl wait -n kafka kafka/my-cluster --for=condition=Ready --timeout=300s
 
-	# create the-bench namespace
-	kubectl create namespace the-bench
+	# install tempo
+	kubectl apply -f https://raw.githubusercontent.com/hanapedia/lab-cluster-apps/main/tempo/dev/manifests.yaml
+	# install otel collector
+	kubectl apply -f https://raw.githubusercontent.com/hanapedia/lab-cluster-apps/main/otel/collector/overlays/dev/manifests.yaml
+	kubectl -n monitoring wait --for=condition=available --timeout=180s --all deployments
+
+	# create curl pod
+	kubectl apply -n the-bench -f ./dev/curl.yaml
 
 .PHONY: devstop
 devstop:
@@ -23,7 +36,11 @@ devstop:
 
 .PHONY: devmanifests
 devmanifests:
-	./bin/tbctl generate -f ./dev/config/ -o ./dev/manifest/
+	rm -f ./dev/manifest/all/generated/* && ./bin/tbctl generate -f ./dev/config/all -o ./dev/manifest/all/generated
+	rm -f ./dev/manifest/rest/generated/* && ./bin/tbctl generate -f ./dev/config/rest -o ./dev/manifest/rest/generated/
+	rm -f ./dev/manifest/redis/generated/* && ./bin/tbctl generate -f ./dev/config/redis -o ./dev/manifest/redis/generated
+	rm -f ./dev/manifest/mongo/generated/* && ./bin/tbctl generate -f ./dev/config/mongo -o ./dev/manifest/mongo/generated
+	rm -f ./dev/manifest/grpc/generated/* && ./bin/tbctl generate -f ./dev/config/grpc -o ./dev/manifest/grpc/generated/
 
 .PHONY: devbuild
 devbuild:

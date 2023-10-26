@@ -1,0 +1,13 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - generated/chain1-service-unit.yaml
+  - generated/consumer-broker.yaml
+  - generated/consumer-service-unit.yaml
+  - generated/gateway-load-generator.yaml
+  - generated/gateway-service-unit.yaml
+  - generated/mongorepo-stateful-unit.yaml
+  - generated/grpcserver-service-unit.yaml
+  - generated/redisrepo-stateful-unit.yaml

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary/config"
 	tracing "github.com/hanapedia/the-bench/internal/service-unit/infrastructure/telemetry/tracing"
 	"github.com/segmentio/kafka-go"
 	"go.opentelemetry.io/otel/attribute"
@@ -12,15 +13,20 @@ import (
 )
 
 // CreateKafkaConsumerSpan creates consumer span
-func CreateKafkaConsumerSpan(message kafka.Message) trace.Span {
+func CreateKafkaConsumerSpan(ctx context.Context, message *kafka.Message) (context.Context, *trace.Span) {
+	// return early if tracing is disabled
+	if !config.GetEnvs().TRACING {
+		return ctx, nil
+	}
+
 	// Extract the span context from the message headers.
 	propagator := propagation.TraceContext{}
-	carrier := KafkaCarrier(message.Headers)
-	extractedCtx := propagator.Extract(context.Background(), carrier)
+	carrier := &KafkaCarrier{Headers: message.Headers}
+	extractedCtx := propagator.Extract(ctx, carrier)
 
 	// Start a new span for the Kafka message consumption.
 	tracer := tracing.GetTracer()
-	_, consumerSpan := tracer.Start(extractedCtx, fmt.Sprintf("%s receive", message.Topic))
+	tracedCtx, consumerSpan := tracer.Start(extractedCtx, fmt.Sprintf("%s receive", message.Topic))
 
 	consumerSpan.SetAttributes(
 		attribute.String("messaging.system", "kafka"),
@@ -30,11 +36,16 @@ func CreateKafkaConsumerSpan(message kafka.Message) trace.Span {
 		attribute.Int("messaging.kafka.partition", message.Partition),
 		attribute.Int64("messaging.kafka.offset", message.Offset),
 	)
-	return consumerSpan
+	return tracedCtx, &consumerSpan
 }
 
-// CreateKafkaProducerSpan creates consumer span
-func CreateKafkaProducerSpan(ctx context.Context, message kafka.Message) trace.Span {
+// CreateKafkaProducerSpan creates producer span
+func CreateKafkaProducerSpan(ctx context.Context, message *kafka.Message) (context.Context, *trace.Span) {
+	// return early if tracing is disabled
+	if !config.GetEnvs().TRACING {
+		return ctx, nil
+	}
+
 	// prepare span
 	tracer := tracing.GetTracer()
 	_, producerSpan := tracer.Start(ctx, fmt.Sprintf("%s publish", message.Topic))
@@ -44,9 +55,11 @@ func CreateKafkaProducerSpan(ctx context.Context, message kafka.Message) trace.S
 
 	// add trace context
 	propagator := propagation.TraceContext{}
-	carrier := KafkaCarrier(message.Headers)
+	carrier := &KafkaCarrier{Headers: message.Headers}
 	propagator.Inject(spanCtx, carrier)
+	message.Headers = []kafka.Header(carrier.Headers)
 
+	fmt.Println(message.Headers)
 	producerSpan.SetAttributes(
 		attribute.String("messaging.system", "kafka"),
 		attribute.String("messaging.destination_kind", "topic"),
@@ -54,5 +67,5 @@ func CreateKafkaProducerSpan(ctx context.Context, message kafka.Message) trace.S
 		attribute.String("messaging.destination", message.Topic),
 	)
 
-	return producerSpan
+	return spanCtx, &producerSpan
 }

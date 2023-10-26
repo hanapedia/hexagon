@@ -23,7 +23,7 @@ func (csa *clientStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCal
 	client := pb.NewGrpcClient(csa.client)
 
 	// Client-side streaming
-	clientStream, err := client.ClientStreaming(context.Background())
+	clientStream, err := client.ClientStreaming(ctx)
 	if err != nil {
 		return ports.SecondaryPortCallResult{
 			Payload: nil,
