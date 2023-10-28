@@ -28,7 +28,7 @@ devstart:
 	kubectl -n monitoring wait --for=condition=available --timeout=180s --all deployments
 
 	# create curl pod
-	kubectl apply -n the-bench -f ./dev/curl.yaml
+	kubectl apply -n hexagon -f ./dev/curl.yaml
 
 .PHONY: devstop
 devstop:
