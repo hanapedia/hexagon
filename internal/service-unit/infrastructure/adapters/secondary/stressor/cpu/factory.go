@@ -3,8 +3,8 @@ package cpu
 import (
 	"time"
 
-	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
-	model "github.com/hanapedia/the-bench/pkg/api/v1"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	model "github.com/hanapedia/hexagon/pkg/api/v1"
 )
 
 func CpuStressorAdapterFactory(adapterConfig *model.StressorConfig) (ports.SecodaryPort, error) {

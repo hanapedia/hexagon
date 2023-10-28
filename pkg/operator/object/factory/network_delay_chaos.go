@@ -1,6 +1,6 @@
 package factory
 
-import "github.com/hanapedia/the-bench/pkg/operator/object/crd"
+import "github.com/hanapedia/hexagon/pkg/operator/object/crd"
 
 type NetworkChaosArgs struct {
 	Name            string

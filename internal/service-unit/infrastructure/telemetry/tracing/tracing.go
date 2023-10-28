@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary/config"
-	"github.com/hanapedia/the-bench/pkg/operator/logger"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/propagation"
@@ -60,5 +60,5 @@ func InitTracer(name, collectorUrl string) *sdktrace.TracerProvider {
 
 // get the default tracer for creating original spans
 func GetTracer() trace.Tracer {
-	return otel.Tracer("github.com/hanapedia/the-bench/internal/service-unit/infrastructure/telemetry/tracing")
+	return otel.Tracer("github.com/hanapedia/hexagon/internal/service-unit/infrastructure/telemetry/tracing")
 }

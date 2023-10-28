@@ -1,8 +1,8 @@
 package manifest
 
 import (
-	"github.com/hanapedia/the-bench/pkg/api/defaults"
-	"github.com/hanapedia/the-bench/pkg/operator/object/factory"
+	"github.com/hanapedia/hexagon/pkg/api/defaults"
+	"github.com/hanapedia/hexagon/pkg/operator/object/factory"
 
 	corev1 "k8s.io/api/core/v1"
 )

@@ -1,7 +1,7 @@
 package initialization
 
 import (
-	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary"
 )
 
 // initializePrimaryAdapters prepare primary adapters

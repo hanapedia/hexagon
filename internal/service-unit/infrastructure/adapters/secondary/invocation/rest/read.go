@@ -7,8 +7,8 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
-	"github.com/hanapedia/the-bench/internal/service-unit/domain/contract"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/domain/contract"
 )
 
 type restReadAdapter struct {

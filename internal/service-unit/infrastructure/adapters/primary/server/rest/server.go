@@ -8,12 +8,12 @@ import (
 
 	"github.com/gofiber/contrib/otelfiber"
 	"github.com/gofiber/fiber/v2"
-	"github.com/hanapedia/the-bench/internal/service-unit/application/core/runtime"
-	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
-	"github.com/hanapedia/the-bench/internal/service-unit/domain/contract"
-	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary/config"
-	"github.com/hanapedia/the-bench/pkg/operator/logger"
-	"github.com/hanapedia/the-bench/pkg/service-unit/payload"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/core/runtime"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/domain/contract"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
+	"github.com/hanapedia/hexagon/pkg/service-unit/payload"
 )
 
 // must implement ports.PrimaryPort

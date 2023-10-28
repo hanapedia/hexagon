@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hanapedia/the-bench/internal/service-unit/application/core/runtime"
-	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
-	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary/config"
-	tracing "github.com/hanapedia/the-bench/internal/service-unit/infrastructure/telemetry/tracing/kafka"
-	"github.com/hanapedia/the-bench/pkg/operator/logger"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/core/runtime"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
+	tracing "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/telemetry/tracing/kafka"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 	"github.com/segmentio/kafka-go"
 )
 

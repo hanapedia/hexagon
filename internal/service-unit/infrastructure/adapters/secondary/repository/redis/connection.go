@@ -1,8 +1,8 @@
 package redis
 
 import (
-	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary/config"
-	"github.com/hanapedia/the-bench/pkg/operator/logger"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 	"github.com/redis/go-redis/extra/redisotel/v9"
 	"github.com/redis/go-redis/v9"
 )

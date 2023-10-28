@@ -5,8 +5,8 @@ import (
 
 	k8syaml "sigs.k8s.io/yaml"
 
-	model "github.com/hanapedia/the-bench/pkg/api/v1"
-	"github.com/hanapedia/the-bench/pkg/operator/logger"
+	model "github.com/hanapedia/hexagon/pkg/api/v1"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
 type YamlConfigLoader struct {

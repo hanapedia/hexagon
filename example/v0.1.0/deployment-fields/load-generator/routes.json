@@ -1,4 +1,0 @@
-[
-    { "route": "get", "method": "GET", "weight": 1 },
-    { "route": "post", "method": "POST", "weight": 2 }
-]

@@ -2,7 +2,7 @@ package validation
 
 import (
 	"github.com/go-playground/validator/v10"
-	model "github.com/hanapedia/the-bench/pkg/api/v1"
+	model "github.com/hanapedia/hexagon/pkg/api/v1"
 )
 
 func ValidateServiceUnitConfigFields(serviceUnitConfig *model.ServiceUnitConfig) ConfigValidationError {

@@ -1,8 +1,8 @@
 package payload
 
 import (
-	"github.com/hanapedia/the-bench/pkg/common/utils"
-	"github.com/hanapedia/the-bench/pkg/operator/constants"
+	"github.com/hanapedia/hexagon/pkg/common/utils"
+	"github.com/hanapedia/hexagon/pkg/operator/constants"
 )
 
 // GeneratePayload generates payload with given size.

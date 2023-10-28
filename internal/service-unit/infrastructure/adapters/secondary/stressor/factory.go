@@ -3,10 +3,10 @@ package stressor
 import (
 	"errors"
 
-	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
-	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary/stressor/cpu"
-	model "github.com/hanapedia/the-bench/pkg/api/v1"
-	"github.com/hanapedia/the-bench/pkg/operator/constants"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/stressor/cpu"
+	model "github.com/hanapedia/hexagon/pkg/api/v1"
+	"github.com/hanapedia/hexagon/pkg/operator/constants"
 )
 
 func NewSecondaryAdapter(adapterConfig *model.StressorConfig) (ports.SecodaryPort, error) {

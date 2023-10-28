@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/hanapedia/the-bench/pkg/api/defaults"
-	model "github.com/hanapedia/the-bench/pkg/api/v1"
-	"github.com/hanapedia/the-bench/pkg/operator/constants"
-	"github.com/hanapedia/the-bench/pkg/operator/logger"
-	"github.com/hanapedia/the-bench/pkg/operator/object/factory"
+	"github.com/hanapedia/hexagon/pkg/api/defaults"
+	model "github.com/hanapedia/hexagon/pkg/api/v1"
+	"github.com/hanapedia/hexagon/pkg/operator/constants"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
+	"github.com/hanapedia/hexagon/pkg/operator/object/factory"
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"

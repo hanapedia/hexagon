@@ -1,8 +1,0 @@
-version: v0.1.0
-name: chain1
-adapters:
-- server:
-    variant: rest
-    action: read
-    route: get
-  steps: []

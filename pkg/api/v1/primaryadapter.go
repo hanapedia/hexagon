@@ -3,7 +3,7 @@ package v1
 import (
 	"fmt"
 
-	"github.com/hanapedia/the-bench/pkg/operator/constants"
+	"github.com/hanapedia/hexagon/pkg/operator/constants"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 

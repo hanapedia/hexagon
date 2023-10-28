@@ -1,13 +1,13 @@
 package primary
 
 import (
-	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
-	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/primary/consumer/kafka"
-	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/primary/server/grpc"
-	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/primary/server/rest"
-	model "github.com/hanapedia/the-bench/pkg/api/v1"
-	"github.com/hanapedia/the-bench/pkg/operator/constants"
-	"github.com/hanapedia/the-bench/pkg/operator/logger"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/primary/consumer/kafka"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/primary/server/grpc"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/primary/server/rest"
+	model "github.com/hanapedia/hexagon/pkg/api/v1"
+	"github.com/hanapedia/hexagon/pkg/operator/constants"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
 func NewServerAdapter(config *model.ServerConfig) ports.PrimaryPort {

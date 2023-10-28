@@ -3,10 +3,10 @@ package kafka
 import (
 	"context"
 
-	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
-	tracing "github.com/hanapedia/the-bench/internal/service-unit/infrastructure/telemetry/tracing/kafka"
-	"github.com/hanapedia/the-bench/pkg/operator/constants"
-	"github.com/hanapedia/the-bench/pkg/service-unit/payload"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	tracing "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/telemetry/tracing/kafka"
+	"github.com/hanapedia/hexagon/pkg/operator/constants"
+	"github.com/hanapedia/hexagon/pkg/service-unit/payload"
 	"github.com/segmentio/kafka-go"
 )
 

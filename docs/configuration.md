@@ -9,7 +9,7 @@ see [terminologies](./docs/terminology.md) for unclear terms.
 ## Docs (coming soon)
 
 ## Validation
-- configuration file written in yaml can be validated using the [cli](../cmd/tbctl/).
+- configuration file written in yaml can be validated using the [cli](../cmd/hexctl/).
 - two types of validations:
     - field validation: checks if fields of the configuration file is valid.
     - mapping validation: checks if secondary adapter can be mapped to the destination primary adapter.

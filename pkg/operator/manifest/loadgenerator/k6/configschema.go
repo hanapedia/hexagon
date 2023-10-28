@@ -1,6 +1,6 @@
 package k6
 
-import "github.com/hanapedia/the-bench/pkg/operator/constants"
+import "github.com/hanapedia/hexagon/pkg/operator/constants"
 
 type Route struct {
 	Route  string               `json:"route,omitempty"`

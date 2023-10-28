@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   creationTimestamp: null
   name: chain1
-  namespace: the-bench
+  namespace: hexagon
 spec:
   replicas: 1
   selector:
@@ -48,7 +48,7 @@ kind: Service
 metadata:
   creationTimestamp: null
   name: chain1
-  namespace: the-bench
+  namespace: hexagon
 spec:
   ports:
   - name: grpc
@@ -99,5 +99,5 @@ kind: ConfigMap
 metadata:
   creationTimestamp: null
   name: chain1-config
-  namespace: the-bench
+  namespace: hexagon
 

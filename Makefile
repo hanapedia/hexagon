@@ -28,7 +28,7 @@ devstart:
 	kubectl -n monitoring wait --for=condition=available --timeout=180s --all deployments
 
 	# create curl pod
-	kubectl apply -n the-bench -f ./dev/curl.yaml
+	kubectl apply -n hexagon -f ./dev/curl.yaml
 
 .PHONY: devstop
 devstop:
@@ -36,11 +36,11 @@ devstop:
 
 .PHONY: devmanifests
 devmanifests:
-	rm -f ./dev/manifest/all/generated/* && ./bin/tbctl generate -f ./dev/config/all -o ./dev/manifest/all/generated
-	rm -f ./dev/manifest/rest/generated/* && ./bin/tbctl generate -f ./dev/config/rest -o ./dev/manifest/rest/generated/
-	rm -f ./dev/manifest/redis/generated/* && ./bin/tbctl generate -f ./dev/config/redis -o ./dev/manifest/redis/generated
-	rm -f ./dev/manifest/mongo/generated/* && ./bin/tbctl generate -f ./dev/config/mongo -o ./dev/manifest/mongo/generated
-	rm -f ./dev/manifest/grpc/generated/* && ./bin/tbctl generate -f ./dev/config/grpc -o ./dev/manifest/grpc/generated/
+	rm -f ./dev/manifest/all/generated/* && ./bin/hexctl generate -f ./dev/config/all -o ./dev/manifest/all/generated
+	rm -f ./dev/manifest/rest/generated/* && ./bin/hexctl generate -f ./dev/config/rest -o ./dev/manifest/rest/generated/
+	rm -f ./dev/manifest/redis/generated/* && ./bin/hexctl generate -f ./dev/config/redis -o ./dev/manifest/redis/generated
+	rm -f ./dev/manifest/mongo/generated/* && ./bin/hexctl generate -f ./dev/config/mongo -o ./dev/manifest/mongo/generated
+	rm -f ./dev/manifest/grpc/generated/* && ./bin/hexctl generate -f ./dev/config/grpc -o ./dev/manifest/grpc/generated/
 
 .PHONY: devbuild
 devbuild:
@@ -48,7 +48,7 @@ devbuild:
 
 .PHONY: devbuildcli
 devbuildcli:
-	CGO_ENABLED=0 go build -o bin/tbctl cmd/tbctl/main.go
+	CGO_ENABLED=0 go build -o bin/hexctl cmd/hexctl/main.go
 
 .PHONY: devbuilddatagen
 devbuilddatagen:

@@ -3,9 +3,9 @@ package mongo
 import (
 	"fmt"
 
-	model "github.com/hanapedia/the-bench/pkg/api/v1"
-	"github.com/hanapedia/the-bench/pkg/api/defaults"
-	"github.com/hanapedia/the-bench/pkg/operator/object/factory"
+	model "github.com/hanapedia/hexagon/pkg/api/v1"
+	"github.com/hanapedia/hexagon/pkg/api/defaults"
+	"github.com/hanapedia/hexagon/pkg/operator/object/factory"
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"

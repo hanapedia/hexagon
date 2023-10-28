@@ -1,6 +1,6 @@
 package defaults
 
 const (
-	NAMESPACE = "the-bench"
+	NAMESPACE = "hexagon"
 	TRACING   = true
 )

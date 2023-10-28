@@ -1,11 +1,11 @@
 apiVersion: ctlptl.dev/v1alpha1
 kind: Registry
-name: the-bench-registry
+name: hexagon-registry
 port: 5151
 ---
 apiVersion: ctlptl.dev/v1alpha1
 kind: Cluster
-name: kind-the-bench-dev
+name: kind-hexagon-dev
 product: kind
 kubernetesVersion: v1.27.3
-registry: the-bench-registry
+registry: hexagon-registry

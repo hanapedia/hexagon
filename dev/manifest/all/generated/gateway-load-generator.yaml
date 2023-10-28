@@ -6,7 +6,7 @@ metadata:
     rca: ignore
   creationTimestamp: null
   name: gateway-lg
-  namespace: the-bench
+  namespace: hexagon
 spec:
   replicas: 1
   selector:
@@ -52,7 +52,7 @@ kind: Service
 metadata:
   creationTimestamp: null
   name: gateway-lg
-  namespace: the-bench
+  namespace: hexagon
 spec:
   ports:
   - name: http
@@ -73,5 +73,5 @@ kind: ConfigMap
 metadata:
   creationTimestamp: null
   name: gateway-lg-config
-  namespace: the-bench
+  namespace: hexagon
 
