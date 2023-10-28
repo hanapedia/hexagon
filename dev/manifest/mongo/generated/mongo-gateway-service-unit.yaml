@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   creationTimestamp: null
   name: mongo-gateway
-  namespace: the-bench
+  namespace: hexagon
 spec:
   replicas: 1
   selector:
@@ -48,7 +48,7 @@ kind: Service
 metadata:
   creationTimestamp: null
   name: mongo-gateway
-  namespace: the-bench
+  namespace: hexagon
 spec:
   ports:
   - name: http
@@ -104,5 +104,5 @@ kind: ConfigMap
 metadata:
   creationTimestamp: null
   name: mongo-gateway-config
-  namespace: the-bench
+  namespace: hexagon
 
