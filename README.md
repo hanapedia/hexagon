@@ -35,7 +35,7 @@ Currently CPU intesive workload is supported
 
 
 ### Deployment manifest generation
-Using the [cli](./cmd/tbctl/) Hexagon can generate kubernetes manifests files from the configuration of each service.
+Using the [cli](./cmd/hexctl/) Hexagon can generate kubernetes manifests files from the configuration of each service.
 The generated manifests include resources such as:
 - Deployment
 - Service
@@ -51,7 +51,7 @@ Hexagon extends chaos engineering tools to simulate more complex and realistic s
 
 ## Project Structure
 - `./cmd/service-unit/main.go` is the entry point for service unit binary.
-- `./cmd/tbctl/main.go` is the entry point for cli program that can be used to validate the service-unit configuration and generate the Kubernetes manifests. 
+- `./cmd/hexctl/main.go` is the entry point for cli program that can be used to validate the service-unit configuration and generate the Kubernetes manifests. 
 - `./example/` holds the example configs.
 
 ## How it works

@@ -14,7 +14,7 @@ COPY ./bin/datagen .
 '''
 
 # Generate manifests and go files
-local_resource('service-unit manifests', cmd='make devmanifests', deps=['dev/config', 'bin/tbctl'])
+local_resource('service-unit manifests', cmd='make devmanifests', deps=['dev/config', 'bin/hexctl'])
 
 # Deploy service units
 watch_file('./dev/manifest/')
@@ -23,8 +23,8 @@ k8s_yaml(kustomize('./dev/manifest'))
 # Re-compile service unit
 local_resource('Watch & Compile service-unit', 'make devbuild', deps=['cmd', 'pkg', 'internal'])
 
-# Re-compile tbctl
-local_resource('Watch & Compile tbctl', 'make devbuildcli', deps=['cmd/tbctl', 'pkg/tbctl', 'internal/tbctl'])
+# Re-compile hexctl
+local_resource('Watch & Compile hexctl', 'make devbuildcli', deps=['cmd/hexctl', 'pkg/hexctl', 'internal/hexctl'])
 
 # Re-compile datage
 local_resource('Watch & Compile datagen', 'make devbuilddatagen', deps=['cmd/datagen', 'internal/datagen'])
