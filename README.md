@@ -52,7 +52,6 @@ Hexagon extends chaos engineering tools to simulate more complex and realistic s
 ## Project Structure
 - `./cmd/service-unit/main.go` is the entry point for service unit binary.
 - `./cmd/hexctl/main.go` is the entry point for cli program that can be used to validate the service-unit configuration and generate the Kubernetes manifests. 
-- `./example/` holds the example configs.
 
 ## How it works
 see [internals](./docs/internals.md).
