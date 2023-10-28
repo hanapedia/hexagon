@@ -1,8 +1,8 @@
 package config
 
 import (
-	"github.com/hanapedia/the-bench/pkg/operator/loader"
-	"github.com/hanapedia/the-bench/pkg/operator/yaml"
+	"github.com/hanapedia/hexagon/pkg/operator/loader"
+	"github.com/hanapedia/hexagon/pkg/operator/yaml"
 )
 
 func NewConfigLoader(format string) loader.ConfigLoader {

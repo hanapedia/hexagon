@@ -1,4 +1,4 @@
-module github.com/hanapedia/the-bench
+module github.com/hanapedia/hexagon
 
 go 1.21
 

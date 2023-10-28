@@ -1,10 +1,10 @@
 package validation
 
 import (
-	"github.com/hanapedia/the-bench/internal/tbctl/loader"
-	model "github.com/hanapedia/the-bench/pkg/api/v1"
-	"github.com/hanapedia/the-bench/pkg/operator/logger"
-	v1validator "github.com/hanapedia/the-bench/pkg/operator/validation"
+	"github.com/hanapedia/hexagon/internal/tbctl/loader"
+	model "github.com/hanapedia/hexagon/pkg/api/v1"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
+	v1validator "github.com/hanapedia/hexagon/pkg/operator/validation"
 )
 
 func ValidateFile(path string) v1validator.ConfigValidationError {

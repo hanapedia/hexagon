@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
-	"github.com/hanapedia/the-bench/pkg/common/utils"
-	"github.com/hanapedia/the-bench/pkg/operator/constants"
-	"github.com/hanapedia/the-bench/pkg/service-unit/payload"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/pkg/common/utils"
+	"github.com/hanapedia/hexagon/pkg/operator/constants"
+	"github.com/hanapedia/hexagon/pkg/service-unit/payload"
 	"github.com/redis/go-redis/v9"
 )
 

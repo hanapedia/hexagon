@@ -4,9 +4,9 @@ import (
 	"log"
 	"testing"
 
-	model "github.com/hanapedia/the-bench/pkg/api/v1"
-	"github.com/hanapedia/the-bench/pkg/operator/validation"
-	"github.com/hanapedia/the-bench/pkg/operator/yaml"
+	model "github.com/hanapedia/hexagon/pkg/api/v1"
+	"github.com/hanapedia/hexagon/pkg/operator/validation"
+	"github.com/hanapedia/hexagon/pkg/operator/yaml"
 )
 
 // test multiple valid config

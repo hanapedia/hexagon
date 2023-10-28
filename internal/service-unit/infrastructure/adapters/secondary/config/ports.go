@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 
-	model "github.com/hanapedia/the-bench/pkg/api/v1"
+	model "github.com/hanapedia/hexagon/pkg/api/v1"
 )
 
 func GetRestServerAddr() string {

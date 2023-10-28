@@ -3,9 +3,9 @@ package grpc
 import (
 	"errors"
 
-	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
-	model "github.com/hanapedia/the-bench/pkg/api/v1"
-	"github.com/hanapedia/the-bench/pkg/operator/constants"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	model "github.com/hanapedia/hexagon/pkg/api/v1"
+	"github.com/hanapedia/hexagon/pkg/operator/constants"
 )
 
 func GrpcInvocationAdapterFactory(adapterConfig *model.InvocationConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {

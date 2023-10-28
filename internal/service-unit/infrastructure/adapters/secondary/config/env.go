@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/hanapedia/the-bench/pkg/api/defaults"
+	"github.com/hanapedia/hexagon/pkg/api/defaults"
 )
 
 type EnvVars struct {

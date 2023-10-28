@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary/config"
-	tracing "github.com/hanapedia/the-bench/internal/service-unit/infrastructure/telemetry/tracing"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
+	tracing "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/telemetry/tracing"
 	"github.com/segmentio/kafka-go"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/propagation"

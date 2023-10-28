@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/hanapedia/the-bench/pkg/operator/constants"
-	"github.com/hanapedia/the-bench/pkg/operator/logger"
-	"github.com/hanapedia/the-bench/pkg/service-unit/payload"
+	"github.com/hanapedia/hexagon/pkg/operator/constants"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
+	"github.com/hanapedia/hexagon/pkg/service-unit/payload"
 )
 
 type MongoData struct {

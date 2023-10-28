@@ -1,8 +1,8 @@
 package namespace
 //
 // import (
-// 	"github.com/hanapedia/the-bench/pkg/operator/object/usecases"
-// 	"github.com/hanapedia/the-bench/pkg/operator/yaml"
+// 	"github.com/hanapedia/hexagon/pkg/operator/object/usecases"
+// 	"github.com/hanapedia/hexagon/pkg/operator/yaml"
 // )
 //
 // // GenerateNamespaceManifests generates namespace manifest

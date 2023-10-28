@@ -3,9 +3,9 @@ package commands
 import (
 	"fmt"
 
-	"github.com/hanapedia/the-bench/internal/datagen/redis"
-	"github.com/hanapedia/the-bench/pkg/operator/logger"
-	"github.com/hanapedia/the-bench/pkg/operator/constants"
+	"github.com/hanapedia/hexagon/internal/datagen/redis"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
+	"github.com/hanapedia/hexagon/pkg/operator/constants"
 	"github.com/spf13/cobra"
 )
 

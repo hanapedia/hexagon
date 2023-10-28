@@ -3,8 +3,8 @@ package unit_test
 // import (
 // 	"testing"
 //
-// 	"github.com/hanapedia/the-bench/tbctl/pkg/kubernetes/generate"
-// 	"github.com/hanapedia/the-bench/tbctl/test/support"
+// 	"github.com/hanapedia/hexagon/tbctl/pkg/kubernetes/generate"
+// 	"github.com/hanapedia/hexagon/tbctl/test/support"
 // )
 
 // func TestStatelessManifestGenerator(t *testing.T) {

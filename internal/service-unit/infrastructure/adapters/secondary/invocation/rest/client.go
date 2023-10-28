@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary/config"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 

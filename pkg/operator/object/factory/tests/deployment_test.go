@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hanapedia/the-bench/pkg/operator/object/factory"
-	"github.com/hanapedia/the-bench/pkg/operator/yaml"
+	"github.com/hanapedia/hexagon/pkg/operator/object/factory"
+	"github.com/hanapedia/hexagon/pkg/operator/yaml"
 )
 
 func TestDeploymentFactory(t *testing.T) {

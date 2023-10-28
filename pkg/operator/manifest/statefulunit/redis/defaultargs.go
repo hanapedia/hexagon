@@ -1,7 +1,7 @@
 package redis
 
 import (
-	"github.com/hanapedia/the-bench/pkg/api/defaults"
+	"github.com/hanapedia/hexagon/pkg/api/defaults"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 )

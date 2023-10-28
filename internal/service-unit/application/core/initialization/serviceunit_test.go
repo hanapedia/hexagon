@@ -3,9 +3,9 @@ package initialization_test
 import (
 	"testing"
 
-	"github.com/hanapedia/the-bench/internal/service-unit/application/core/initialization"
-	"github.com/hanapedia/the-bench/pkg/operator/loader"
-	"github.com/hanapedia/the-bench/pkg/operator/yaml"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/core/initialization"
+	"github.com/hanapedia/hexagon/pkg/operator/loader"
+	"github.com/hanapedia/hexagon/pkg/operator/yaml"
 )
 
 var testdataDir string = "../../../../testdata/config"

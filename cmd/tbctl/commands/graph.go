@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/hanapedia/the-bench/internal/tbctl/graph"
+	"github.com/hanapedia/hexagon/internal/tbctl/graph"
 	"github.com/spf13/cobra"
 )
 

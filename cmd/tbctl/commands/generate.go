@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/hanapedia/the-bench/internal/tbctl/manifest/generator"
+	"github.com/hanapedia/hexagon/internal/tbctl/manifest/generator"
 	"github.com/spf13/cobra"
 )
 

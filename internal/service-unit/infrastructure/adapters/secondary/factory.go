@@ -3,13 +3,13 @@ package secondary
 import (
 	"errors"
 
-	"github.com/hanapedia/the-bench/internal/service-unit/application/ports"
-	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary/invocation"
-	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary/producer"
-	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary/repository"
-	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/secondary/stressor"
-	model "github.com/hanapedia/the-bench/pkg/api/v1"
-	l "github.com/hanapedia/the-bench/pkg/operator/logger"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/invocation"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/producer"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/repository"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/stressor"
+	model "github.com/hanapedia/hexagon/pkg/api/v1"
+	l "github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
 func NewSecondaryAdapter(config *model.SecondaryAdapterConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {

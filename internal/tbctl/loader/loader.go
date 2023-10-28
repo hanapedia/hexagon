@@ -5,10 +5,10 @@ import (
 	"io/fs"
 	"path/filepath"
 
-	model "github.com/hanapedia/the-bench/pkg/api/v1"
-	"github.com/hanapedia/the-bench/pkg/operator/loader"
-	"github.com/hanapedia/the-bench/pkg/operator/logger"
-	"github.com/hanapedia/the-bench/pkg/operator/yaml"
+	model "github.com/hanapedia/hexagon/pkg/api/v1"
+	"github.com/hanapedia/hexagon/pkg/operator/loader"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
+	"github.com/hanapedia/hexagon/pkg/operator/yaml"
 )
 
 func newConfigLoader(path string) loader.ConfigLoader {

@@ -3,8 +3,8 @@ package ports
 import (
 	"context"
 
-	model "github.com/hanapedia/the-bench/pkg/api/v1"
-	l "github.com/hanapedia/the-bench/pkg/operator/logger"
+	model "github.com/hanapedia/hexagon/pkg/api/v1"
+	l "github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
 // PrimaryPort provides common interface for all the primary adapters.

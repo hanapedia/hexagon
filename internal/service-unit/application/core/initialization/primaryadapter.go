@@ -1,9 +1,9 @@
 package initialization
 
 import (
-	"github.com/hanapedia/the-bench/internal/service-unit/infrastructure/adapters/primary"
-	model "github.com/hanapedia/the-bench/pkg/api/v1"
-	l "github.com/hanapedia/the-bench/pkg/operator/logger"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/primary"
+	model "github.com/hanapedia/hexagon/pkg/api/v1"
+	l "github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
 // initializePrimaryAdapters prepare primary adapters

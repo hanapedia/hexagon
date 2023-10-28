@@ -1,14 +1,14 @@
 package generator
 
 import (
-	"github.com/hanapedia/the-bench/internal/tbctl/loader"
-	"github.com/hanapedia/the-bench/internal/tbctl/manifest/core"
-	"github.com/hanapedia/the-bench/internal/tbctl/manifest/generator/broker"
-	"github.com/hanapedia/the-bench/internal/tbctl/manifest/generator/loadgenerator"
-	"github.com/hanapedia/the-bench/internal/tbctl/manifest/generator/serviceunit"
-	"github.com/hanapedia/the-bench/internal/tbctl/manifest/generator/statefulunit"
-	model "github.com/hanapedia/the-bench/pkg/api/v1"
-	"github.com/hanapedia/the-bench/pkg/operator/logger"
+	"github.com/hanapedia/hexagon/internal/tbctl/loader"
+	"github.com/hanapedia/hexagon/internal/tbctl/manifest/core"
+	"github.com/hanapedia/hexagon/internal/tbctl/manifest/generator/broker"
+	"github.com/hanapedia/hexagon/internal/tbctl/manifest/generator/loadgenerator"
+	"github.com/hanapedia/hexagon/internal/tbctl/manifest/generator/serviceunit"
+	"github.com/hanapedia/hexagon/internal/tbctl/manifest/generator/statefulunit"
+	model "github.com/hanapedia/hexagon/pkg/api/v1"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
 type ManifestGenerator struct {

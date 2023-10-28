@@ -5,7 +5,7 @@ import (
 	"encoding/base64"
 	mrand "math/rand"
 
-	"github.com/hanapedia/the-bench/pkg/operator/constants"
+	"github.com/hanapedia/hexagon/pkg/operator/constants"
 )
 
 func GenerateRandomString(kbSize constants.PayloadSize) (string, error) {

@@ -3,10 +3,10 @@ package graph
 import (
 	"io/ioutil"
 
-	"github.com/hanapedia/the-bench/pkg/tbctl/graphml"
-	"github.com/hanapedia/the-bench/internal/tbctl/loader"
-	model "github.com/hanapedia/the-bench/pkg/api/v1"
-	"github.com/hanapedia/the-bench/pkg/operator/logger"
+	"github.com/hanapedia/hexagon/pkg/tbctl/graphml"
+	"github.com/hanapedia/hexagon/internal/tbctl/loader"
+	model "github.com/hanapedia/hexagon/pkg/api/v1"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
 type GraphGenerator struct {
