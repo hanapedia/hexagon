@@ -1,20 +1,20 @@
-# the-bench
+# Hexagon
 A highly configurable microservices benchmark application.
 Each microservice in the benchmark application can be configured with their own sets of ingress and egress handling logic. 
 
 ## Objective
-the-bench is a microservices benchmark suite with configurablity in mind.
+Hexagon is a microservices benchmark suite with configurablity in mind.
 It aims to solve the limited benchmarking possibilites for researchers studying microservices.
-Using the-bench researchers can easily construct a benchmark microservices application with highly configured compositions.
+Using Hexagon researchers can easily construct a benchmark microservices application with highly configured compositions.
 
 ## Terminology
 see [terminologies](./docs/terminology.md).
 
 ## Features
 ### Application generation
-the-bench allows configuration of following features for generated application
+Hexagon allows configuration of following features for generated application
 #### Stateless services
-Each stateless service in the-bench can be [configured](./docs/configuration.md) to serve and make various types of network protocols.
+Each stateless service in Hexagon can be [configured](./docs/configuration.md) to serve and make various types of network protocols.
 The types of network protocols include:
 
 Synchronous protocols such as:
@@ -27,20 +27,15 @@ Asynchrounous protocols such as:
 Database connections such as:
 - MongoDB
 - Redis
-- PostgresQL [WIP]
 
-#### Stateful Service
-the-bench supports the creation and configuration of stateful services. Currently supported services are:
-- MongoDB
-- Kakfa
-
-#### Service Internal Workload [WIP]
-the-bench supports the configuration of internal workload for each service.
+#### Service Internal Workload
+Hexagon supports the configuration of internal workload for each service.
 Using this feature, any stateless services can simulate various types of resources intensive tasks.
+Currently CPU intesive workload is supported
 
 
 ### Deployment manifest generation
-Using the [cli](./cmd/tbctl/) the-bench can generate kubernetes manifests files from the configuration of each service.
+Using the [cli](./cmd/tbctl/) Hexagon can generate kubernetes manifests files from the configuration of each service.
 The generated manifests include resources such as:
 - Deployment
 - Service
@@ -52,7 +47,7 @@ Configuration of fields in Deployment such as number of replicas or resource lim
 By configuring the deployment strategies, Physical network topology of the benchmark microservices application can be altered. Features such as Service Mesh type, pod affinity, replicas, and load balancers can be configured via Kubernetes resources.
 
 ### Anomaly simulation [WIP]
-the-bench extends chaos engineering tools to simulate more complex and realistic set of anomalies, faults, and failures in microservices.
+Hexagon extends chaos engineering tools to simulate more complex and realistic set of anomalies, faults, and failures in microservices.
 
 ## Project Structure
 - `./cmd/service-unit/main.go` is the entry point for service unit binary.
