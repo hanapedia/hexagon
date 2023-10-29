@@ -12,7 +12,6 @@ type SecondaryAdapterConfig struct {
 	RepositoryConfig *RepositoryClientConfig `json:"repository,omitempty"`
 	ProducerConfig   *ProducerConfig         `json:"producer,omitempty"`
 	StressorConfig   *StressorConfig         `json:"stressor,omitempty"`
-	Id               *string                 `json:"id,omitempty"`
 }
 
 // Config fields for server services

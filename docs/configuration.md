@@ -68,6 +68,16 @@ Consumer configuration is defined in the unit of topic that the service unit cos
 | variant       | Variant of the consumer. Only "kafka" is supported at the moment. | "" | true |
 | topic         | Name of the topic that the consumer subscribes to. | ""     | true        |
 
+### Secondary Adapter
+Secondary adapter can be type of invocation, repository, producer, or stressor and only one of the configuration should be given.
+| Parameter     | Description                                   | Default     | Required    |
+|---------------|-----------------------------------------------|-------------|-------------|
+| invocation    | Configuration for [invocation](#invocation). This will invoke server primary adapters on other services. | {} | false |
+| repository    | Configuration for [repository](#repository). This will read from or write to stateful services. | {} | false |
+| consumer      | Configuration for [consumer](#consumer). This will produce message to specified topic. | {} | false |
+| stressor      | Configuration for [stressor](#stressor). This will create internal stress within the service. | {} | false |
+
+
 ## Validation
 - configuration file written in yaml can be validated using the [cli](../cmd/hexctl/).
 - two types of validations:
