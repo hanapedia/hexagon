@@ -36,6 +36,21 @@ Primary adapter can be type of server, repository, or cosumer and only one of th
 | steps[].concurrent | Whether to execute the step concurrently. | false      | false        |
 | steps[].adapter | Configuration for the [Secondary Adatper](#seconday-adapter). | {} | true |
 
+### Server
+Server configuration is defined in the unit of individual routes in REST APi.
+Each definition of server primary adapter corresponds to a route attached to REST API.
+
+*For gRPC server, while gRPC does not have the concept of routes, the unit of configuration is the same, 
+meaning that each definition will represent independent execution of secondary adapters.*
+| Parameter     | Description                                   | Default     | Required    |
+|---------------|-----------------------------------------------|-------------|-------------|
+| variant       | Variant of the server. "rest" or "grpc"       | ""          | true        |
+| action        | Action for the route. "post" or "get" for rest and "simpleRpc", "clientStream", "serverStream", or "biStream" for grpc | "" | true |
+| route         | Unique identifier for the route.               | ""          | true        |
+| payload       | Size of the payload that this route returns. Can be "small", "medium", or "large" | "medium" | false |
+| weight        | Weight for the route to be called when load generator is enabled for the service. If load generator is not enabled, the field will be ignored | 0 | false |
+| payloadCount  | Number of payloads to return for grpc route with serverStream action. | 3 | false |
+
 ## Validation
 - configuration file written in yaml can be validated using the [cli](../cmd/hexctl/).
 - two types of validations:
