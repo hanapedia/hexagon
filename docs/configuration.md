@@ -70,13 +70,51 @@ Consumer configuration is defined in the unit of topic that the service unit cos
 
 ### Secondary Adapter
 Secondary adapter can be type of invocation, repository, producer, or stressor and only one of the configuration should be given.
+Each secondary adapter should match existing primary adapters on other services.
 | Parameter     | Description                                   | Default     | Required    |
 |---------------|-----------------------------------------------|-------------|-------------|
 | invocation    | Configuration for [invocation](#invocation). This will invoke server primary adapters on other services. | {} | false |
-| repository    | Configuration for [repository](#repository). This will read from or write to stateful services. | {} | false |
+| repository    | Configuration for [repository](#repository-client). This will read from or write to stateful services. | {} | false |
 | consumer      | Configuration for [consumer](#consumer). This will produce message to specified topic. | {} | false |
 | stressor      | Configuration for [stressor](#stressor). This will create internal stress within the service. | {} | false |
 
+#### Invocation
+Invocation configuration specify which server primary adapter on other service is called.
+| Parameter     | Description                                   | Default     | Required    |
+|---------------|-----------------------------------------------|-------------|-------------|
+| service       | Name of the service to invoke.                | ""          | true        |
+| variant       | Variant of the server. "rest" or "grpc"       | ""          | true        |
+| action        | Action for the route. "post" or "get" for rest and "simpleRpc", "clientStream", "serverStream", or "biStream" for grpc | "" | true |
+| route         | Unique identifier for the route.               | ""          | true        |
+| payload       | Size of the payload that this call sends. Can be "small", "medium", or "large" | "medium" | false |
+
+#### Repository Client
+Repository client configuration specify which repository primary adapter on other service is called.
+| Parameter     | Description                                   | Default     | Required    |
+|---------------|-----------------------------------------------|-------------|-------------|
+| service       | Name of the service to invoke.                | ""          | true        |
+| variant       | Variant of the repository. "mongo" or "redis" | ""          | true        |
+| action        | Action for the route. "read" or "write"       | ""          | true        |
+| payload       | Size of the payload that this call sends. Can be "small", "medium", or "large" | "medium" | false |
+
+#### Producer
+Producer configuration specify which topic to send the message to. 
+| Parameter     | Description                                   | Default     | Required    |
+|---------------|-----------------------------------------------|-------------|-------------|
+| variant       | Variant of the broker. only "kafka" is supported | ""       | true        |
+| topic         | Name of the topic to publish message.         | ""          | true        |
+| payload       | Size of the payload that this call sends. Can be "small", "medium", or "large" | "medium" | false |
+
+#### Stressor
+Stressor configuration specify how the service is stressed internally.
+This is treated the same way as other secondary adapter, except it does not send any external requests.
+| Parameter     | Description                                   | Default     | Required    |
+|---------------|-----------------------------------------------|-------------|-------------|
+| name          | Unique name assigned for the stressor.        | ""          | true        |
+| variant       | Variant of the stressor. only "cpu" is supported. | ""      | true        |
+| duration      | Duration with units.                          | ""          | true        |
+| threadCount   | Number of threads to spawn.                   | ""          | false       |
+| payload       | Size of the payload that this call sends. Can be "small", "medium", or "large" | "medium" | false |
 
 ## Validation
 - configuration file written in yaml can be validated using the [cli](../cmd/hexctl/).
