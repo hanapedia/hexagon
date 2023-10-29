@@ -43,12 +43,12 @@ type ServerConfig struct {
 
 // Config fields for repository services
 type RepositoryConfig struct {
-	Variant constants.RepositoryVariant `json:"variant,omitempty" validate:"required,oneof=mongo redis postgre"`
+	Variant constants.RepositoryVariant `json:"variant,omitempty" validate:"required,oneof=mongo redis"`
 }
 
 // Config fields for Brokers
 type ConsumerConfig struct {
-	Variant constants.BrokerVariant `json:"variant,omitempty" validate:"required,oneof=kafka rabbitmq pulsar"`
+	Variant constants.BrokerVariant `json:"variant,omitempty" validate:"required"`
 	Topic   string                  `json:"topic,omitempty" validate:"required"`
 }
 

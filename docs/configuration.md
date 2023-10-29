@@ -36,7 +36,7 @@ Primary adapter can be type of server, repository, or cosumer and only one of th
 | steps[].concurrent | Whether to execute the step concurrently. | false      | false        |
 | steps[].adapter | Configuration for the [Secondary Adatper](#seconday-adapter). | {} | true |
 
-### Server
+#### Server
 Server configuration is defined in the unit of individual routes in REST APi.
 Each definition of server primary adapter corresponds to a route attached to REST API.
 
@@ -50,6 +50,23 @@ meaning that each definition will represent independent execution of secondary a
 | payload       | Size of the payload that this route returns. Can be "small", "medium", or "large" | "medium" | false |
 | weight        | Weight for the route to be called when load generator is enabled for the service. If load generator is not enabled, the field will be ignored | 0 | false |
 | payloadCount  | Number of payloads to return for grpc route with serverStream action. | 3 | false |
+
+#### Repository
+Repository configuration indicates that the service is a stateful service, which uses different image from regular service units.
+
+*When this configuration is given, any other primary adapter configuration in the adapters list will be ignored.*
+| Parameter     | Description                                   | Default     | Required    |
+|---------------|-----------------------------------------------|-------------|-------------|
+| variant       | Variant of the repository. "mongo" or "redis" | ""          | true        |
+
+#### Consumer
+Consumer configuration is defined in the unit of topic that the service unit cosumes. 
+
+*When this configuration is given, the topic manifest for strimzi kafka will be generated*
+| Parameter     | Description                                   | Default     | Required    |
+|---------------|-----------------------------------------------|-------------|-------------|
+| variant       | Variant of the consumer. Only "kafka" is supported at the moment. | "" | true |
+| topic         | Name of the topic that the consumer subscribes to. | ""     | true        |
 
 ## Validation
 - configuration file written in yaml can be validated using the [cli](../cmd/hexctl/).
