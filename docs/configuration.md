@@ -26,8 +26,15 @@ see [terminologies](./docs/terminology.md) for unclear terms.
 | env           | Extra environmental variables in k8s core v1 format. | {}      | false    |
 
 ### Primary Adapter
+Primary adapter can be type of server, repository, or cosumer and only one of the configuration should be given.
 | Parameter     | Description                                   | Default     | Required    |
 |---------------|-----------------------------------------------|-------------|-------------|
+| server        | Configuration for [server](#server).          | {}          | false       |
+| repository    | Configuration for [repository](#repository).  | {}          | false       |
+| consumer      | Configuration for [consumer](#consumer).      | {}          | false       |
+| steps         | List of secondary adapters attached to primary adapter. | [] | false |
+| steps[].concurrent | Whether to execute the step concurrently. | false      | false        |
+| steps[].adapter | Configuration for the [Secondary Adatper](#seconday-adapter). | {} | true |
 
 ## Validation
 - configuration file written in yaml can be validated using the [cli](../cmd/hexctl/).
