@@ -34,7 +34,7 @@ Primary adapter can be type of server, repository, or cosumer and only one of th
 | consumer      | Configuration for [consumer](#consumer).      | {}          | false       |
 | steps         | List of secondary adapters attached to primary adapter. | [] | false |
 | steps[].concurrent | Whether to execute the step concurrently. | false      | false        |
-| steps[].adapter | Configuration for the [Secondary Adatper](#seconday-adapter). | {} | true |
+| steps[].adapter | Configuration for the [Secondary Adatper](#secondary-adapter). | {} | true |
 
 #### Server
 Server configuration is defined in the unit of individual routes in REST APi.
