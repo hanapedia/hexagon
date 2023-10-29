@@ -19,7 +19,4 @@ type Gateway struct {
 
 	// Duration given in minutes
 	Duration int32 `json:"duration,omitempty"`
-
-	// Resource request for loadgenerator pod
-	Resource *corev1.ResourceRequirements `json:"resource,omitempty"`
 }
