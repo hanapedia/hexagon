@@ -1,11 +1,11 @@
 # Hexagon
-A highly configurable microservices benchmark application.
-Each microservice in the benchmark application can be configured with their own sets of ingress and egress handling logic. 
+A highly configurable microservices benchmark application generator.
+Hexagon can configure each microservice in the benchmark application to expose APIs and invoke APIs exposed by other services. 
 
 ## Objective
 Hexagon is a microservices benchmark suite with configurablity in mind.
 It aims to solve the limited benchmarking possibilites for researchers studying microservices.
-Using Hexagon researchers can easily construct a benchmark microservices application with highly configured compositions.
+Using Hexagon, researchers can easily construct a benchmark microservices application with highly configured compositions.
 
 ## Terminology
 see [terminologies](./docs/terminology.md).
@@ -14,8 +14,8 @@ see [terminologies](./docs/terminology.md).
 ### Application generation
 Hexagon allows configuration of following features for generated application
 #### Stateless services
-Each stateless service in Hexagon can be [configured](./docs/configuration.md) to serve and make various types of network protocols.
-The types of network protocols include:
+Hexagon can [configure](./docs/configuration.md) APIs that each service expose and invoke using yaml.
+The types of APIs include:
 
 Synchronous protocols such as:
 - HTTP REST
@@ -30,8 +30,8 @@ Database connections such as:
 
 #### Service Internal Workload
 Hexagon supports the configuration of internal workload for each service.
-Using this feature, any stateless services can simulate various types of resources intensive tasks.
-Currently CPU intesive workload is supported
+Using this feature, Hexagon can simulate resources intensive tasks performed by each service.
+Currently CPU intesive workload is supported.
 
 
 ### Deployment manifest generation
@@ -41,17 +41,11 @@ The generated manifests include resources such as:
 - Service
 - ConfigMap
 
-Configuration of fields in Deployment such as number of replicas or resource limit and requirement will be supported in the future. 
+Deployment can also configured with number of replicas for the service, resource limits and requests, and extra environmental variables.
 
-#### Physical network topology [WIP]
-By configuring the deployment strategies, Physical network topology of the benchmark microservices application can be altered. Features such as Service Mesh type, pod affinity, replicas, and load balancers can be configured via Kubernetes resources.
-
-### Anomaly simulation [WIP]
-Hexagon extends chaos engineering tools to simulate more complex and realistic set of anomalies, faults, and failures in microservices.
-
-## Project Structure
-- `./cmd/service-unit/main.go` is the entry point for service unit binary.
-- `./cmd/hexctl/main.go` is the entry point for cli program that can be used to validate the service-unit configuration and generate the Kubernetes manifests. 
+## Components
+- *service unit*: service unit is the primary container image that can be used by the stateless services.
+- *hexctl*: hexctl is the cli program that can validate the configuration files and generate kubernetes deployment manifests for the configured application.
 
 ## How it works
 see [internals](./docs/internals.md).
