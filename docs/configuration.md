@@ -4,7 +4,7 @@ see [terminologies](./docs/terminology.md) for unclear terms.
 - Each service unit can be configured using yaml.
 - Each service unit can be defined by configuring set of primary adapters that is exposes to other serivce units.
 - Each primary adapter can be defined by assigning an array of secondary adapters.
-- Both primary and secondary adapters can be a variant of stateless, stateful, or broker. see [Configuration](#configuration)for possible values.
+- see [Configuration](#configuration) for possible configuration values.
 
 ## Configuration
 ### Service Unit
