@@ -3,7 +3,7 @@ A highly configurable microservices benchmark application generator.
 Hexagon can configure each microservice in the benchmark application to expose APIs and invoke APIs exposed by other services. 
 
 ## Objective
-Hexagon is a microservices benchmark suite with configurablity in mind.
+Hexagon is a microservices benchmark application generation tool with configurablity in mind.
 It aims to solve the limited benchmarking possibilites for researchers studying microservices.
 Using Hexagon, researchers can easily construct a benchmark microservices application with highly configured compositions.
 
