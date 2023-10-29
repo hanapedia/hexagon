@@ -75,7 +75,7 @@ Each secondary adapter should match existing primary adapters on other services.
 |---------------|-----------------------------------------------|-------------|-------------|
 | invocation    | Configuration for [invocation](#invocation). This will invoke server primary adapters on other services. | {} | false |
 | repository    | Configuration for [repository](#repository-client). This will read from or write to stateful services. | {} | false |
-| consumer      | Configuration for [consumer](#consumer). This will produce message to specified topic. | {} | false |
+| producer      | Configuration for [producer](#producer). This will produce message to specified topic. | {} | false |
 | stressor      | Configuration for [stressor](#stressor). This will create internal stress within the service. | {} | false |
 
 #### Invocation
