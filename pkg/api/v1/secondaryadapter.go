@@ -12,7 +12,6 @@ type SecondaryAdapterConfig struct {
 	RepositoryConfig *RepositoryClientConfig `json:"repository,omitempty"`
 	ProducerConfig   *ProducerConfig         `json:"producer,omitempty"`
 	StressorConfig   *StressorConfig         `json:"stressor,omitempty"`
-	Id               *string                 `json:"id,omitempty"`
 }
 
 // Config fields for server services
@@ -46,7 +45,7 @@ type ProducerConfig struct {
 type StressorConfig struct {
 	Name        string                       `json:"name,omitempty" validate:"required"`
 	Variant     constants.StressorValiant    `json:"variant,omitempty" validate:"required,oneof=cpu memory disk"`
-	Duration    string                       `json:"duration,omitempty" validate:"required,oneof=small medium large"`
+	Duration    string                       `json:"duration,omitempty" validate:"required"`
 	ThreadCount int                          `json:"threads,omitempty" validate:"omitempty"`
 	Payload     constants.PayloadSizeVariant `json:"payload,omitempty" validate:"omitempty,oneof=small medium large"`
 }
