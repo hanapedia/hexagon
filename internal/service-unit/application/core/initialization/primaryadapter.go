@@ -35,7 +35,7 @@ func (su *ServiceUnit) initializeConsumerAdapter(config *model.ConsumerConfig) {
 	consumerKey := config.GetGroupByKey()
 	_, ok := su.ConsumerAdapters[consumerKey]
 	if !ok {
-		su.ConsumerAdapters[consumerKey] = primary.NewConsumerAdapter(config)
+		su.ConsumerAdapters[consumerKey] = primary.NewConsumerAdapter(config, su.Name)
 	}
 }
 

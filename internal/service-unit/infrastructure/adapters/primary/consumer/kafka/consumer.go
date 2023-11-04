@@ -23,15 +23,16 @@ type KafkaConsumer struct {
 	handler *ports.PrimaryHandler
 }
 
-func NewKafkaConsumerAdapter(topic string) *KafkaConsumerAdapter {
-	kafkaConsumer := NewKafkaConsumer(topic)
+func NewKafkaConsumerAdapter(topic, group string) *KafkaConsumerAdapter {
+	kafkaConsumer := NewKafkaConsumer(topic, group)
 	adapter := KafkaConsumerAdapter{addr: config.GetKafkaBrokerAddr(), kafkaConsumer: kafkaConsumer}
 	return &adapter
 }
 
-func NewKafkaConsumer(topic string) *KafkaConsumer {
+func NewKafkaConsumer(topic, group string) *KafkaConsumer {
 	reader := kafka.NewReader(kafka.ReaderConfig{
 		Brokers:     []string{config.GetKafkaBrokerAddr()},
+		GroupID:     group,
 		Topic:       topic,
 		StartOffset: kafka.FirstOffset,
 	})
