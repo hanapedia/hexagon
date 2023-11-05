@@ -8,4 +8,5 @@ resources:
   # - ./rest
   # - ./redis
   # - ./mongo
-  - ./grpc
+  # - ./grpc
+  - ./kafka

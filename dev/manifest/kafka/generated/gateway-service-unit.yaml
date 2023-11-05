@@ -3,23 +3,23 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   creationTimestamp: null
-  name: chain1
+  name: gateway
   namespace: hexagon
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: chain1
+      app: gateway
   strategy: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: chain1
+        app: gateway
     spec:
       containers:
       - image: hiroki11hanada/service-unit:dev
-        name: chain1
+        name: gateway
         ports:
         - containerPort: 8080
           name: http
@@ -38,7 +38,7 @@ spec:
           items:
           - key: config
             path: service-unit.yaml
-          name: chain1-config
+          name: gateway-config
         name: config
 status: {}
 
@@ -47,7 +47,7 @@ apiVersion: v1
 kind: Service
 metadata:
   creationTimestamp: null
-  name: chain1
+  name: gateway
   namespace: hexagon
 spec:
   ports:
@@ -60,7 +60,7 @@ spec:
     protocol: TCP
     targetPort: 0
   selector:
-    app: chain1
+    app: gateway
 status:
   loadBalancer: {}
 
@@ -69,22 +69,22 @@ apiVersion: v1
 data:
   config: |
     version: dev
-    name: chain1
+    name: gateway
     adapters:
+    # kafka secondary adapter
     - server:
         action: read
         variant: rest
-        route: get
-        payload: large
-      steps: []
-    - server:
-        action: write
-        variant: rest
-        route: post
-      steps: []
+        route: topic1
+        weight: 1 # load generator specific
+      steps:
+      - adapter:
+          producer:
+            variant: kafka
+            topic: topic1
 kind: ConfigMap
 metadata:
   creationTimestamp: null
-  name: chain1-config
+  name: gateway-config
   namespace: hexagon
 

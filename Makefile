@@ -18,6 +18,8 @@ devstart:
 	kubectl rollout restart deployment -n kafka strimzi-cluster-operator
 	kubectl -n kafka wait --for=condition=available --timeout=180s --all deployments
 
+	sleep 10
+
 	kubectl apply -f https://raw.githubusercontent.com/hanapedia/lab-cluster-apps/main/kafka/kafka/overlays/dev/manifests.yaml -n kafka
 	kubectl wait -n kafka kafka/my-cluster --for=condition=Ready --timeout=300s
 
@@ -38,6 +40,7 @@ devstop:
 devmanifests:
 	rm -f ./dev/manifest/all/generated/* && ./bin/hexctl generate -f ./dev/config/all -o ./dev/manifest/all/generated
 	rm -f ./dev/manifest/rest/generated/* && ./bin/hexctl generate -f ./dev/config/rest -o ./dev/manifest/rest/generated/
+	rm -f ./dev/manifest/kafka/generated/* && ./bin/hexctl generate -f ./dev/config/kafka -o ./dev/manifest/kafka/generated
 	rm -f ./dev/manifest/redis/generated/* && ./bin/hexctl generate -f ./dev/config/redis -o ./dev/manifest/redis/generated
 	rm -f ./dev/manifest/mongo/generated/* && ./bin/hexctl generate -f ./dev/config/mongo -o ./dev/manifest/mongo/generated
 	rm -f ./dev/manifest/grpc/generated/* && ./bin/hexctl generate -f ./dev/config/grpc -o ./dev/manifest/grpc/generated/

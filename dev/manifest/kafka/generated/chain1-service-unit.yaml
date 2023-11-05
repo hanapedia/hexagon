@@ -77,11 +77,6 @@ data:
         route: get
         payload: large
       steps: []
-    - server:
-        action: write
-        variant: rest
-        route: post
-      steps: []
 kind: ConfigMap
 metadata:
   creationTimestamp: null

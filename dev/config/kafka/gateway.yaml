@@ -1,0 +1,14 @@
+version: dev
+name: gateway
+adapters:
+# kafka secondary adapter
+- server:
+    action: read
+    variant: rest
+    route: topic1
+    weight: 1 # load generator specific
+  steps:
+  - adapter:
+      producer:
+        variant: kafka
+        topic: topic1
