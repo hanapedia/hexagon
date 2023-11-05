@@ -14,6 +14,7 @@ func NewKafkaClient(addr string, topic string) *KafkaProducerClient {
 		Addr:     kafka.TCP(addr),
 		Topic:    topic,
 		Balancer: &kafka.RoundRobin{},
+		BatchSize: 1,
 	}
 	producerClient := KafkaProducerClient{Client: &client}
 	return &producerClient
