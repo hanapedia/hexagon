@@ -1,0 +1,15 @@
+version: dev
+name: consumer1
+deployment:
+  replicas: 2
+adapters:
+- consumer:
+    variant: kafka
+    topic: topic1
+  steps:
+  - adapter:
+      invocation:
+        variant: rest
+        service: chain1
+        action: read
+        route: get

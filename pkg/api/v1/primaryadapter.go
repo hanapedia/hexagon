@@ -129,3 +129,13 @@ func (bac ConsumerConfig) GetGroupByKey() string {
 		bac.Topic,
 	)
 }
+
+// Get consumer group id
+func (bac ConsumerConfig) GetConsumerGroupId(serviceName string) string {
+	return fmt.Sprintf(
+		"%s.%s.%s",
+		serviceName,
+		bac.Variant,
+		bac.Topic,
+	)
+}

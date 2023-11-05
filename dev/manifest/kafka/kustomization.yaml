@@ -1,0 +1,11 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - generated/chain1-service-unit.yaml
+  - generated/consumer1-broker.yaml
+  - generated/consumer1-service-unit.yaml
+  # - generated/consumer2-broker.yaml
+  - generated/consumer2-service-unit.yaml
+  - generated/gateway-service-unit.yaml

@@ -2,7 +2,6 @@ package kafka
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/core/runtime"
@@ -23,15 +22,16 @@ type KafkaConsumer struct {
 	handler *ports.PrimaryHandler
 }
 
-func NewKafkaConsumerAdapter(topic string) *KafkaConsumerAdapter {
-	kafkaConsumer := NewKafkaConsumer(topic)
+func NewKafkaConsumerAdapter(topic, group string) *KafkaConsumerAdapter {
+	kafkaConsumer := NewKafkaConsumer(topic, group)
 	adapter := KafkaConsumerAdapter{addr: config.GetKafkaBrokerAddr(), kafkaConsumer: kafkaConsumer}
 	return &adapter
 }
 
-func NewKafkaConsumer(topic string) *KafkaConsumer {
+func NewKafkaConsumer(topic, group string) *KafkaConsumer {
 	reader := kafka.NewReader(kafka.ReaderConfig{
 		Brokers:     []string{config.GetKafkaBrokerAddr()},
+		GroupID:     group,
 		Topic:       topic,
 		StartOffset: kafka.FirstOffset,
 	})
@@ -47,7 +47,6 @@ func (kca KafkaConsumerAdapter) Serve() error {
 		if err != nil {
 			break
 		}
-		fmt.Println(message.Headers)
 
 		ctx := context.Background()
 

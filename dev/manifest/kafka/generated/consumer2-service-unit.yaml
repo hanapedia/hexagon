@@ -3,23 +3,23 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   creationTimestamp: null
-  name: chain1
+  name: consumer2
   namespace: hexagon
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
-      app: chain1
+      app: consumer2
   strategy: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: chain1
+        app: consumer2
     spec:
       containers:
       - image: hiroki11hanada/service-unit:dev
-        name: chain1
+        name: consumer2
         ports:
         - containerPort: 8080
           name: http
@@ -38,7 +38,7 @@ spec:
           items:
           - key: config
             path: service-unit.yaml
-          name: chain1-config
+          name: consumer2-config
         name: config
 status: {}
 
@@ -47,7 +47,7 @@ apiVersion: v1
 kind: Service
 metadata:
   creationTimestamp: null
-  name: chain1
+  name: consumer2
   namespace: hexagon
 spec:
   ports:
@@ -60,7 +60,7 @@ spec:
     protocol: TCP
     targetPort: 0
   selector:
-    app: chain1
+    app: consumer2
 status:
   loadBalancer: {}
 
@@ -69,22 +69,23 @@ apiVersion: v1
 data:
   config: |
     version: dev
-    name: chain1
+    name: consumer2
+    deployment:
+      replicas: 2
     adapters:
-    - server:
-        action: read
-        variant: rest
-        route: get
-        payload: large
-      steps: []
-    - server:
-        action: write
-        variant: rest
-        route: post
-      steps: []
+    - consumer:
+        variant: kafka
+        topic: topic1
+      steps:
+      - adapter:
+          invocation:
+            variant: rest
+            service: chain1
+            action: read
+            route: get
 kind: ConfigMap
 metadata:
   creationTimestamp: null
-  name: chain1-config
+  name: consumer2-config
   namespace: hexagon
 

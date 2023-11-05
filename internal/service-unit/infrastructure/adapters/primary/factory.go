@@ -25,12 +25,12 @@ func NewServerAdapter(config *model.ServerConfig) ports.PrimaryPort {
 	return serverAdapter
 }
 
-func NewConsumerAdapter(config *model.ConsumerConfig) ports.PrimaryPort {
+func NewConsumerAdapter(config *model.ConsumerConfig, name string) ports.PrimaryPort {
 	var consumerAdapter ports.PrimaryPort
 
 	switch config.Variant {
 	case constants.KAFKA:
-		consumerAdapter = kafka.NewKafkaConsumerAdapter(config.Topic)
+		consumerAdapter = kafka.NewKafkaConsumerAdapter(config.Topic, config.GetConsumerGroupId(name))
 	default:
 		logger.Logger.Fatal("Adapter currently unsupported.")
 	}
