@@ -59,7 +59,6 @@ func CreateKafkaProducerSpan(ctx context.Context, message *kafka.Message) (conte
 	propagator.Inject(spanCtx, carrier)
 	message.Headers = []kafka.Header(carrier.Headers)
 
-	fmt.Println(message.Headers)
 	producerSpan.SetAttributes(
 		attribute.String("messaging.system", "kafka"),
 		attribute.String("messaging.destination_kind", "topic"),

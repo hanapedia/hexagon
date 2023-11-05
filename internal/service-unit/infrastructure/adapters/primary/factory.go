@@ -30,7 +30,7 @@ func NewConsumerAdapter(config *model.ConsumerConfig, name string) ports.Primary
 
 	switch config.Variant {
 	case constants.KAFKA:
-		consumerAdapter = kafka.NewKafkaConsumerAdapter(config.Topic, config.GetId(name))
+		consumerAdapter = kafka.NewKafkaConsumerAdapter(config.Topic, config.GetConsumerGroupId(name))
 	default:
 		logger.Logger.Fatal("Adapter currently unsupported.")
 	}

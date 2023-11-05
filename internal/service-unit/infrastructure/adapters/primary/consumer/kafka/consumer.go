@@ -2,7 +2,6 @@ package kafka
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/core/runtime"
@@ -48,7 +47,6 @@ func (kca KafkaConsumerAdapter) Serve() error {
 		if err != nil {
 			break
 		}
-		fmt.Println(message.Headers)
 
 		ctx := context.Background()
 
