@@ -1,0 +1,13 @@
+version: dev
+name: productcatalog
+adapters:
+- server:
+    action: simpleRpc
+    variant: grpc
+    route: ListProducts
+  steps: []
+- server:
+    action: simpleRpc
+    variant: grpc
+    route: GetProduct
+  steps: []

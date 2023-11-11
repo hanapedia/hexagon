@@ -1,0 +1,13 @@
+version: dev
+name: shipping
+adapters:
+- server:
+    action: simpleRpc
+    variant: grpc
+    route: GetQuote
+  steps: []
+- server:
+    action: simpleRpc
+    variant: grpc
+    route: ShipOrder
+  steps: []

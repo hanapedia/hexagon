@@ -1,0 +1,5 @@
+version: dev
+name: cartredis
+adapters:
+- repository:
+    variant: redis

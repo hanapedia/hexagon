@@ -44,6 +44,7 @@ devmanifests:
 	rm -f ./dev/manifest/redis/generated/* && ./bin/hexctl generate -f ./dev/config/redis -o ./dev/manifest/redis/generated
 	rm -f ./dev/manifest/mongo/generated/* && ./bin/hexctl generate -f ./dev/config/mongo -o ./dev/manifest/mongo/generated
 	rm -f ./dev/manifest/grpc/generated/* && ./bin/hexctl generate -f ./dev/config/grpc -o ./dev/manifest/grpc/generated/
+	rm -f ./dev/manifest/onlineboutique/generated/* && ./bin/hexctl generate -f ./dev/config/onlineboutique -o ./dev/manifest/onlineboutique/generated/
 
 .PHONY: devbuild
 devbuild:

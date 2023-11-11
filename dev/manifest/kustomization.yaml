@@ -9,4 +9,5 @@ resources:
   # - ./redis
   # - ./mongo
   # - ./grpc
-  - ./kafka
+  # - ./kafka
+  - ./onlineboutique

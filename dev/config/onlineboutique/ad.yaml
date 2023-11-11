@@ -1,0 +1,8 @@
+version: dev
+name: ad
+adapters:
+- server:
+    action: simpleRpc
+    variant: grpc
+    route: GetAds
+  steps: []

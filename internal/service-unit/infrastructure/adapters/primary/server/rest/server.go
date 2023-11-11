@@ -12,6 +12,7 @@ import (
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
 	"github.com/hanapedia/hexagon/internal/service-unit/domain/contract"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
+	"github.com/hanapedia/hexagon/pkg/operator/constants"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 	"github.com/hanapedia/hexagon/pkg/service-unit/payload"
 )
@@ -50,7 +51,7 @@ func (rsa *RestServerAdapter) Register(handler *ports.PrimaryHandler) error {
 
 	var err error
 	switch handler.ServerConfig.Action {
-	case "read":
+	case constants.GET:
 		rsa.server.Get("/"+handler.ServerConfig.Route, func(c *fiber.Ctx) error {
 			// record time for logging
 			startTime := time.Now()
@@ -82,7 +83,7 @@ func (rsa *RestServerAdapter) Register(handler *ports.PrimaryHandler) error {
 			}
 			return c.Status(fiber.StatusOK).JSON(restResponse)
 		})
-	case "write":
+	case constants.POST:
 		rsa.server.Post("/"+handler.ServerConfig.Route, func(c *fiber.Ctx) error {
 			// record time for logging
 			startTime := time.Now()

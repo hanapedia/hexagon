@@ -18,7 +18,7 @@ type SecondaryAdapterConfig struct {
 type InvocationConfig struct {
 	Variant constants.SeverAdapterVariant `json:"variant,omitempty" validate:"required,oneof=rest grpc"`
 	Service string                        `json:"service,omitempty" validate:"required"`
-	Action  constants.Action              `json:"action,omitempty" validate:"required,oneof=read write"`
+	Action  constants.Action              `json:"action,omitempty" validate:"required"`
 	Route   string                        `json:"route,omitempty" validate:"required"`
 	Payload constants.PayloadSizeVariant  `json:"payload,omitempty" validate:"omitempty,oneof=small medium large"`
 
@@ -30,7 +30,7 @@ type InvocationConfig struct {
 type RepositoryClientConfig struct {
 	Name    string                       `json:"name,omitempty" validate:"required"`
 	Variant constants.RepositoryVariant  `json:"variant,omitempty" validate:"required,oneof=mongo redis postgre"`
-	Action  constants.Action             `json:"action,omitempty" validate:"omitempty,oneof=read write"`
+	Action  constants.Action             `json:"action,omitempty" validate:"omitempty"`
 	Payload constants.PayloadSizeVariant `json:"payload,omitempty" validate:"omitempty,oneof=small medium large"`
 }
 
@@ -51,7 +51,7 @@ type StressorConfig struct {
 }
 
 // Get secondary adapter id
-func (sac SecondaryAdapterConfig) GetId() string {
+func (sac *SecondaryAdapterConfig) GetId() string {
 	var id string
 	if sac.InvocationConfig != nil {
 		id = sac.InvocationConfig.GetId()
@@ -82,7 +82,7 @@ func (sac SecondaryAdapterConfig) GetGroupByKey() string {
 }
 
 // Get server secondary adapter id
-func (sac InvocationConfig) GetId() string {
+func (sac *InvocationConfig) GetId() string {
 	return fmt.Sprintf(
 		"%s.%s.%s.%s",
 		sac.Service,
@@ -93,15 +93,18 @@ func (sac InvocationConfig) GetId() string {
 }
 
 // Get group key
-func (sac InvocationConfig) GetGroupByKey() string {
-	return fmt.Sprintf(
-		"%s",
-		sac.Variant,
-	)
+func (sac *InvocationConfig) GetGroupByKey() string {
+	if sac.Variant == constants.REST {
+		return fmt.Sprintf("%s", sac.Variant)
+	}
+	if sac.Variant == constants.GRPC {
+		return fmt.Sprintf("%s.%s", sac.Service, sac.Variant)
+	}
+	return fmt.Sprintf("%s", sac.Variant)
 }
 
 // Get repository secondary adapter id
-func (sac RepositoryClientConfig) GetId() string {
+func (sac *RepositoryClientConfig) GetId() string {
 	return fmt.Sprintf(
 		"%s.%s",
 		sac.Variant,
@@ -110,12 +113,12 @@ func (sac RepositoryClientConfig) GetId() string {
 }
 
 // Get repository secondary adapter group by key
-func (sac RepositoryClientConfig) GetGroupByKey() string {
+func (sac *RepositoryClientConfig) GetGroupByKey() string {
 	return sac.GetId()
 }
 
 // Get broker secondary adapter id
-func (bac ProducerConfig) GetId() string {
+func (bac *ProducerConfig) GetId() string {
 	return fmt.Sprintf(
 		"%s.%s",
 		bac.Variant,
@@ -124,11 +127,11 @@ func (bac ProducerConfig) GetId() string {
 }
 
 // Get broker secondary adapter group by key
-func (bac ProducerConfig) GetGroupByKey() string {
+func (bac *ProducerConfig) GetGroupByKey() string {
 	return bac.GetId()
 }
 
 // Get internal adapter id
-func (iac StressorConfig) GetId() string {
+func (iac *StressorConfig) GetId() string {
 	return iac.Name
 }

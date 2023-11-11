@@ -3,23 +3,23 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   creationTimestamp: null
-  name: mongo-gateway
+  name: email
   namespace: hexagon
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mongo-gateway
+      app: email
   strategy: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: mongo-gateway
+        app: email
     spec:
       containers:
       - image: hiroki11hanada/service-unit:dev
-        name: mongo-gateway
+        name: email
         ports:
         - containerPort: 8080
           name: http
@@ -38,7 +38,7 @@ spec:
           items:
           - key: config
             path: service-unit.yaml
-          name: mongo-gateway-config
+          name: email-config
         name: config
 status: {}
 
@@ -47,20 +47,20 @@ apiVersion: v1
 kind: Service
 metadata:
   creationTimestamp: null
-  name: mongo-gateway
+  name: email
   namespace: hexagon
 spec:
   ports:
-  - name: grpc
-    port: 9090
-    protocol: TCP
-    targetPort: 0
   - name: http
     port: 8080
     protocol: TCP
     targetPort: 0
+  - name: grpc
+    port: 9090
+    protocol: TCP
+    targetPort: 0
   selector:
-    app: mongo-gateway
+    app: email
 status:
   loadBalancer: {}
 
@@ -69,40 +69,16 @@ apiVersion: v1
 data:
   config: |
     version: dev
-    name: mongo-gateway
-    # deployment:
-    #   gateway: # load generator specific
-    #     virtualUsers: 3
-    #     duration: 60
+    name: email
     adapters:
-    # mongo secondary adapter
     - server:
-        action: read
-        variant: rest
-        route: mongoread
-        weight: 1 # load generator specific
-      steps:
-      - adapter:
-          repository:
-            name: mongorepo
-            variant: mongo
-            action: read
-            payload: small
-    - server:
-        action: read
-        variant: rest
-        route: mongowrite
-        weight: 1 # load generator specific
-      steps:
-      - adapter:
-          repository:
-            name: mongorepo
-            variant: mongo
-            action: write
-            payload: large
+        action: simpleRpc
+        variant: grpc
+        route: SendOrderConfirmation
+      steps: []
 kind: ConfigMap
 metadata:
   creationTimestamp: null
-  name: mongo-gateway-config
+  name: email-config
   namespace: hexagon
 
