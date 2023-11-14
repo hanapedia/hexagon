@@ -25,9 +25,9 @@ func RestInvocationAdapterFactory(adapterConfig *model.InvocationConfig, client 
 			}
 		case constants.WRITE:
 			restAdapter = &restWriteAdapter{
-				url:     fmt.Sprintf("http://%s:%s/%s", adapterConfig.Service, port, adapterConfig.Route),
-				client:  restClient.Client,
-				payload: adapterConfig.Payload,
+				url:         fmt.Sprintf("http://%s:%s/%s", adapterConfig.Service, port, adapterConfig.Route),
+				client:      restClient.Client,
+				payloadSize: model.GetPayloadSize(adapterConfig.Payload),
 			}
 		default:
 			err = errors.New("No matching protocol found when creating rest secondary adapter.")
