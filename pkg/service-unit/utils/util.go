@@ -1,15 +1,12 @@
-package utils
+package util
 
 import (
 	crand "crypto/rand"
 	"encoding/base64"
 	mrand "math/rand"
-
-	"github.com/hanapedia/hexagon/pkg/operator/constants"
 )
 
-func GenerateRandomString(kbSize constants.PayloadSize) (string, error) {
-	byteSize := kbSize * 1024
+func GenerateRandomString(byteSize int64) (string, error) {
 	rawByteSize := byteSize * 3 / 4
 	bytes := make([]byte, rawByteSize)
 	_, err := crand.Read(bytes)
