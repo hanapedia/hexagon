@@ -5,24 +5,23 @@ import (
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
 	tracing "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/telemetry/tracing/kafka"
-	"github.com/hanapedia/hexagon/pkg/operator/constants"
-	"github.com/hanapedia/hexagon/pkg/service-unit/payload"
+	"github.com/hanapedia/hexagon/pkg/service-unit/utils"
 	"github.com/segmentio/kafka-go"
 )
 
-type KafkaProducerAdapter struct {
-	writer *kafka.Writer
-	payload constants.PayloadSizeVariant
+type kafkaProducerAdapter struct {
+	writer      *kafka.Writer
+	payloadSize int64
 	ports.SecondaryPortBase
 }
 
-func (kpa *KafkaProducerAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
+func (kpa *kafkaProducerAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
 	// prepare payload
-	payload, err := payload.GeneratePayload(kpa.payload)
+	payload, err := utils.GenerateRandomString(kpa.payloadSize)
 	if err != nil {
-        return ports.SecondaryPortCallResult{
+		return ports.SecondaryPortCallResult{
 			Payload: nil,
-			Error: err,
+			Error:   err,
 		}
 	}
 	message := kafka.Message{
@@ -33,14 +32,14 @@ func (kpa *KafkaProducerAdapter) Call(ctx context.Context) ports.SecondaryPortCa
 	defer (*span).End()
 
 	if err = kpa.writer.WriteMessages(ctx, message); err != nil {
-        return ports.SecondaryPortCallResult{
+		return ports.SecondaryPortCallResult{
 			Payload: nil,
-			Error: err,
+			Error:   err,
 		}
 	}
 
 	return ports.SecondaryPortCallResult{
 		Payload: &payload,
-		Error: nil,
+		Error:   nil,
 	}
 }
