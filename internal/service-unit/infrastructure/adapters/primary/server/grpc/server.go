@@ -125,7 +125,7 @@ func (gsa *GrpcServerAdapter) SimpleRPC(ctx context.Context, req *pb.StreamReque
 	}
 
 	rpcResponse := pb.StreamResponse{
-		Message: fmt.Sprintf("Successfully ran %s, sending %s payload.", handler.GetId(), handler.ServerConfig.Payload),
+		Message: fmt.Sprintf("Successfully ran %s, sending %v bytes.", handler.GetId(), gsa.payloadSize),
 		Payload: payload,
 	}
 
@@ -170,7 +170,7 @@ func (gsa *GrpcServerAdapter) ClientStreaming(stream pb.Grpc_ClientStreamingServ
 			}
 
 			rpcResponse := pb.StreamResponse{
-				Message: fmt.Sprintf("Successfully ran %s, sending %s payload.", handler.GetId(), handler.ServerConfig.Payload),
+				Message: fmt.Sprintf("Successfully ran %s, sending %v bytes.", handler.GetId(), gsa.payloadSize),
 				Payload: payload,
 			}
 			return stream.SendAndClose(&rpcResponse)
@@ -214,7 +214,7 @@ func (gsa *GrpcServerAdapter) ServerStreaming(req *pb.StreamRequest, stream pb.G
 		}
 
 		rpcResponse := pb.StreamResponse{
-			Message: fmt.Sprintf("Successfully ran %s, sending %s payload.", handler.GetId(), handler.ServerConfig.Payload),
+			Message: fmt.Sprintf("Successfully ran %s, sending %v bytes.", handler.GetId(), gsa.payloadSize),
 			Payload: payload,
 		}
 		if err := stream.Send(&rpcResponse); err != nil {
@@ -266,7 +266,7 @@ func (gsa *GrpcServerAdapter) BidirectionalStreaming(stream pb.Grpc_Bidirectiona
 		}
 
 		rpcResponse := pb.StreamResponse{
-			Message: fmt.Sprintf("Successfully ran %s, sending %s payload.", handler.GetId(), handler.ServerConfig.Payload),
+			Message: fmt.Sprintf("Successfully ran %s, sending %v bytes.", handler.GetId(), gsa.payloadSize),
 			Payload: payload,
 		}
 		if err := stream.Send(&rpcResponse); err != nil {
