@@ -13,32 +13,33 @@ func GrpcInvocationAdapterFactory(adapterConfig *model.InvocationConfig, client 
 	var err error
 
 	if grpcClient, ok := (client).(*GrpcClient); ok {
+		payloadSize := model.GetPayloadSize(adapterConfig.Payload)
 		switch adapterConfig.Action {
 		case constants.SIMPLE_RPC:
 			grpcAdapter = &simpleRpcAdapter{
-				route:   adapterConfig.Route,
-				client:  grpcClient.Connection,
-				payload: adapterConfig.Payload,
+				route:       adapterConfig.Route,
+				client:      grpcClient.Connection,
+				payloadSize: payloadSize,
 			}
 		case constants.SERVER_STREAM:
 			grpcAdapter = &serverStreamAdapter{
-				route:   adapterConfig.Route,
-				client:  grpcClient.Connection,
-				payload: adapterConfig.Payload,
+				route:       adapterConfig.Route,
+				client:      grpcClient.Connection,
+				payloadSize: payloadSize,
 			}
 		case constants.CLIENT_STREAM:
 			grpcAdapter = &clientStreamAdapter{
 				route:        adapterConfig.Route,
 				client:       grpcClient.Connection,
-				payload:      adapterConfig.Payload,
-				payloadCount: adapterConfig.PayloadCount,
+				payloadSize:  payloadSize,
+				payloadCount: adapterConfig.Payload.Count,
 			}
 		case constants.BI_STREAM:
 			grpcAdapter = &biStreamAdapter{
 				route:        adapterConfig.Route,
 				client:       grpcClient.Connection,
-				payload:      adapterConfig.Payload,
-				payloadCount: adapterConfig.PayloadCount,
+				payloadSize:  payloadSize,
+				payloadCount: adapterConfig.Payload.Count,
 			}
 		default:
 			err = errors.New("No matching protocol found when creating rest secondary adapter.")

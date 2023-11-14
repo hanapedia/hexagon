@@ -12,18 +12,41 @@ type PayloadSpec struct {
 	Count   int                          `json:"payloadCount,omitempty"`
 }
 
-func GetPayloadSize(payloadSpec PayloadSpec) int64 {
+func ParseResource(payloadSpec PayloadSpec) (int64, bool) {
 	if payloadSpec.Size != "" {
 		quantity, err := resource.ParseQuantity(payloadSpec.Size)
 		if err == nil {
-			if size, ok := quantity.AsInt64(); ok {
-				return size
-			}
+			return quantity.AsInt64()
 		}
+	}
+	return 0, false
+}
+
+func GetPayloadSize(payloadSpec PayloadSpec) int64 {
+	if size, ok := ParseResource(payloadSpec); ok {
+		return size
 	}
 	size, ok := constants.PayloadSizeMap[payloadSpec.Variant]
 	if !ok {
 		size = constants.PayloadSizeMap[constants.DefaultPayloadSize]
 	}
 	return size
+}
+
+func GetPayloadVariant(payloadSpec PayloadSpec) constants.PayloadSizeVariant {
+	if size, ok := ParseResource(payloadSpec); ok {
+		if size < constants.PayloadSizeMap[constants.SMALL] {
+			return constants.SMALL
+		}
+		if size < constants.PayloadSizeMap[constants.MEDIUM] {
+			return constants.MEDIUM
+		}
+		if size >= constants.PayloadSizeMap[constants.MEDIUM] {
+			return constants.LARGE
+		}
+	}
+	if payloadSpec.Variant == "" {
+		return constants.DefaultPayloadSize
+	}
+	return payloadSpec.Variant
 }
