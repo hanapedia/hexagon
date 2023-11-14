@@ -21,8 +21,8 @@ func CpuStressorAdapterFactory(adapterConfig *model.StressorConfig) (ports.Secod
 		threadCount = 1
 	}
 
-	cpuStressor = &CpuStressorAdapter{
-		payload:     adapterConfig.Payload,
+	cpuStressor = &cpuStressorAdapter{
+		payloadSize: model.GetPayloadSize(adapterConfig.Payload),
 		duration:    duration,
 		threadCount: threadCount,
 	}
