@@ -7,13 +7,13 @@ import (
 	"github.com/hanapedia/hexagon/internal/service-unit/domain/contract"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
 	tracing "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/telemetry/tracing/mongo"
-	"github.com/hanapedia/hexagon/pkg/common/utils"
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
+	"github.com/hanapedia/hexagon/pkg/service-unit/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type MongoReadAdapter struct {
+type mongoReadAdapter struct {
 	name       string
 	database   string
 	client     *mongo.Client
@@ -22,7 +22,7 @@ type MongoReadAdapter struct {
 }
 
 // Read the document in the intial set of data
-func (mra *MongoReadAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
+func (mra *mongoReadAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
 	// create span if tracing is enabled
 	if config.GetEnvs().TRACING {
 		span := tracing.CreateWriteSpan(ctx, mra.name, mra.database, string(mra.collection))
