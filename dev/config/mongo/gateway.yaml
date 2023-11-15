@@ -17,7 +17,8 @@ adapters:
         name: mongorepo
         variant: mongo
         action: read
-        payload: small
+        payload:
+          variant: large
 - server:
     action: read
     variant: rest
@@ -29,4 +30,5 @@ adapters:
         name: mongorepo
         variant: mongo
         action: write
-        payload: large
+        payload:
+          variant: large

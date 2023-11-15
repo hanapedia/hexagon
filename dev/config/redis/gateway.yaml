@@ -17,7 +17,8 @@ adapters:
         name: redisrepo
         variant: redis
         action: read
-        payload: small
+        payload:
+          variant: small
 
 # redis secondary adapters
 - server:
@@ -31,4 +32,5 @@ adapters:
         name: redisrepo
         variant: redis
         action: write
-        payload: large
+        payload:
+          variant: large

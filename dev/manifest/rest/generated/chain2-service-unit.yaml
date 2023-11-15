@@ -75,7 +75,8 @@ data:
         action: read
         variant: rest
         route: get
-        payload: large
+        payload:
+          variant: large
       steps:
       - adapter:
           invocation:
@@ -94,7 +95,8 @@ data:
             service: chain3
             action: write
             route: post
-            payload: large
+            payload:
+              variant: large
 kind: ConfigMap
 metadata:
   creationTimestamp: null

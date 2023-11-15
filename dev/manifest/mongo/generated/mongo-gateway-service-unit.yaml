@@ -51,12 +51,12 @@ metadata:
   namespace: hexagon
 spec:
   ports:
-  - name: grpc
-    port: 9090
-    protocol: TCP
-    targetPort: 0
   - name: http
     port: 8080
+    protocol: TCP
+    targetPort: 0
+  - name: grpc
+    port: 9090
     protocol: TCP
     targetPort: 0
   selector:
@@ -87,7 +87,8 @@ data:
             name: mongorepo
             variant: mongo
             action: read
-            payload: small
+            payload:
+              variant: large
     - server:
         action: read
         variant: rest
@@ -99,7 +100,8 @@ data:
             name: mongorepo
             variant: mongo
             action: write
-            payload: large
+            payload:
+              variant: large
 kind: ConfigMap
 metadata:
   creationTimestamp: null

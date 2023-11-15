@@ -51,12 +51,12 @@ metadata:
   namespace: hexagon
 spec:
   ports:
-  - name: http
-    port: 8080
-    protocol: TCP
-    targetPort: 0
   - name: grpc
     port: 9090
+    protocol: TCP
+    targetPort: 0
+  - name: http
+    port: 8080
     protocol: TCP
     targetPort: 0
   selector:
@@ -100,7 +100,8 @@ data:
             service: chain1
             action: write
             route: post
-            payload: large
+            payload:
+              variant: large
     - server:
         action: read
         variant: rest
@@ -113,7 +114,8 @@ data:
             service: chain1
             action: write
             route: post
-            payload: large
+            payload:
+              variant: large
       - adapter:
           invocation:
             variant: rest
