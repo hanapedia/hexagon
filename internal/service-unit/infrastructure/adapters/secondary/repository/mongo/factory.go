@@ -6,6 +6,7 @@ import (
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
 func MongoClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {
@@ -37,5 +38,6 @@ func MongoClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, clie
 	// set destionation id
 	mongoAdapter.SetDestId(adapterConfig.GetId())
 
+	logger.Logger.Debugf("Successfully initialized mongo repository adapter: %s", adapterConfig.GetId())
 	return mongoAdapter, err
 }

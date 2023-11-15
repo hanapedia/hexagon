@@ -2,6 +2,7 @@ package v1
 
 import (
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 	"k8s.io/apimachinery/pkg/api/resource"
 )
 
@@ -24,11 +25,13 @@ func ParseResource(payloadSpec PayloadSpec) (int64, bool) {
 
 func GetPayloadSize(payloadSpec PayloadSpec) int64 {
 	if size, ok := ParseResource(payloadSpec); ok {
+		logger.Logger.Debugf("parsed payload size, %v", size)
 		return size
 	}
 	size, ok := constants.PayloadSizeMap[payloadSpec.Variant]
 	if !ok {
 		size = constants.PayloadSizeMap[constants.DefaultPayloadSize]
+		logger.Logger.Debugf("resorting to default payload size, %v", size)
 	}
 	return size
 }

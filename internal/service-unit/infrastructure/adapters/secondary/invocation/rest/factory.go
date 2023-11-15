@@ -8,6 +8,7 @@ import (
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
 func RestInvocationAdapterFactory(adapterConfig *model.InvocationConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {
@@ -39,5 +40,6 @@ func RestInvocationAdapterFactory(adapterConfig *model.InvocationConfig, client 
 	// set destionation id
 	restAdapter.SetDestId(adapterConfig.GetId())
 
+	logger.Logger.Debugf("Successfully initialized Rest invocation adapter: %s", adapterConfig.GetId())
 	return restAdapter, err
 }

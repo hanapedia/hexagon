@@ -6,6 +6,7 @@ import (
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
 func GrpcInvocationAdapterFactory(adapterConfig *model.InvocationConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {
@@ -51,5 +52,6 @@ func GrpcInvocationAdapterFactory(adapterConfig *model.InvocationConfig, client 
 	// set destionation id
 	grpcAdapter.SetDestId(adapterConfig.GetId())
 
+	logger.Logger.Debugf("Successfully initialized gRPC invocation adapter: %s", adapterConfig.GetId())
 	return grpcAdapter, err
 }

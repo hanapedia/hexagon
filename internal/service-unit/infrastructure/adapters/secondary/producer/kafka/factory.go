@@ -5,6 +5,7 @@ import (
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
 func KafkaProducerAdapterFactory(adapterConfig *model.ProducerConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {
@@ -22,5 +23,6 @@ func KafkaProducerAdapterFactory(adapterConfig *model.ProducerConfig, client por
 	// set destionation id
 	kafkaAdapter.SetDestId(adapterConfig.GetId())
 
+	logger.Logger.Debugf("Successfully initialized kafka producer adapter: %s", adapterConfig.GetId())
 	return kafkaAdapter, err
 }

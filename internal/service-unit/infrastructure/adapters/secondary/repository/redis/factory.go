@@ -6,6 +6,7 @@ import (
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
 func RedisClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {
@@ -36,5 +37,6 @@ func RedisClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, clie
 	// set destionation id
 	redisAdapter.SetDestId(adapterConfig.GetId())
 
+	logger.Logger.Debugf("Successfully initialized redis repository adapter: %s", adapterConfig.GetId())
 	return redisAdapter, err
 }
