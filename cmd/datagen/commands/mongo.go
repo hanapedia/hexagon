@@ -13,26 +13,26 @@ var mongoCmd = &cobra.Command{
 	Use:   "mongo",
 	Short: "Generate dummy data for mongo.",
 	Run: func(cmd *cobra.Command, args []string) {
-		size := constants.LARGE
+		size := constants.PayloadSizeMap[constants.LARGE]
 		// generate large data
 		data := mongo.GenerateMongoData(constants.NumInitialEntries, size)
-		err := mongo.WriteMongoDataToFile(fmt.Sprintf("%s.json", size), data)
+		err := mongo.WriteMongoDataToFile(fmt.Sprintf("%s.json", constants.LARGE), data)
 		if err != nil {
 			logger.Logger.Panicf("Error writing to file: %s", err)
 		}
 
 		// generate medium data
-		size = constants.MEDIUM
+		size = constants.PayloadSizeMap[constants.MEDIUM]
 		data = mongo.GenerateMongoData(constants.NumInitialEntries, size)
-		err = mongo.WriteMongoDataToFile(fmt.Sprintf("%s.json", size), data)
+		err = mongo.WriteMongoDataToFile(fmt.Sprintf("%s.json", constants.MEDIUM), data)
 		if err != nil {
 			logger.Logger.Panicf("Error writing to file: %s", err)
 		}
 
 		// generate small data
-		size = constants.SMALL
+		size = constants.PayloadSizeMap[constants.SMALL]
 		data = mongo.GenerateMongoData(constants.NumInitialEntries, size)
-		err = mongo.WriteMongoDataToFile(fmt.Sprintf("%s.json", size), data)
+		err = mongo.WriteMongoDataToFile(fmt.Sprintf("%s.json", constants.SMALL), data)
 		if err != nil {
 			logger.Logger.Panicf("Error writing to file: %s", err)
 		}
@@ -42,4 +42,3 @@ var mongoCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(mongoCmd)
 }
-

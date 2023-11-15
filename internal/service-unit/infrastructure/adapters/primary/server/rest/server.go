@@ -14,16 +14,17 @@ import (
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
-	"github.com/hanapedia/hexagon/pkg/service-unit/payload"
+	util "github.com/hanapedia/hexagon/pkg/service-unit/utils"
 )
 
 // must implement ports.PrimaryPort
 type RestServerAdapter struct {
-	addr   string
-	server *fiber.App
+	addr        string
+	server      *fiber.App
+	payloadSize int64
 }
 
-func NewRestServerAdapter() *RestServerAdapter {
+func NewRestServerAdapter(payloadSize int64) *RestServerAdapter {
 	app := fiber.New()
 
 	// enable tracing
@@ -32,8 +33,9 @@ func NewRestServerAdapter() *RestServerAdapter {
 	}
 
 	adapter := RestServerAdapter{
-		addr:   config.GetRestServerAddr(),
-		server: app,
+		addr:        config.GetRestServerAddr(),
+		server:      app,
+		payloadSize: payloadSize,
 	}
 
 	return &adapter
@@ -72,13 +74,13 @@ func (rsa *RestServerAdapter) Register(handler *ports.PrimaryHandler) error {
 			}
 
 			// write response
-			payload, err := payload.GeneratePayload(handler.ServerConfig.Payload)
+			payload, err := util.GenerateRandomString(rsa.payloadSize)
 			if err != nil {
 				return err
 			}
 
 			restResponse := contract.RestResponseBody{
-				Message: fmt.Sprintf("Successfully ran %s, sending %s payload.", handler.GetId(), handler.ServerConfig.Payload),
+				Message: fmt.Sprintf("Successfully ran %s, sending %v bytes.", handler.GetId(), rsa.payloadSize),
 				Payload: &payload,
 			}
 			return c.Status(fiber.StatusOK).JSON(restResponse)

@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/hanapedia/hexagon/pkg/operator/constants"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
-	"github.com/hanapedia/hexagon/pkg/service-unit/payload"
+	util "github.com/hanapedia/hexagon/pkg/service-unit/utils"
 )
 
 type MongoData struct {
@@ -16,10 +15,10 @@ type MongoData struct {
 
 // count is the number of entries to generate
 // size is the size of each data for each entry
-func GenerateMongoData(count int, size constants.PayloadSizeVariant) []MongoData {
+func GenerateMongoData(count int, size int64) []MongoData {
 	dataSlice := make([]MongoData, count)
 	for i := 1; i <= count; i++ {
-		payload, err := payload.GeneratePayload(size)
+		payload, err := util.GenerateRandomString(size)
 		if err != nil {
 			logger.Logger.Panicf("Error generating random string %s", err)
 		}

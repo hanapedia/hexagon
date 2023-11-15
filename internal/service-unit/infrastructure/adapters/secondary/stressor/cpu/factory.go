@@ -5,6 +5,7 @@ import (
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
 func CpuStressorAdapterFactory(adapterConfig *model.StressorConfig) (ports.SecodaryPort, error) {
@@ -21,8 +22,8 @@ func CpuStressorAdapterFactory(adapterConfig *model.StressorConfig) (ports.Secod
 		threadCount = 1
 	}
 
-	cpuStressor = &CpuStressorAdapter{
-		payload:     adapterConfig.Payload,
+	cpuStressor = &cpuStressorAdapter{
+		payloadSize: model.GetPayloadSize(adapterConfig.Payload),
 		duration:    duration,
 		threadCount: threadCount,
 	}
@@ -30,5 +31,6 @@ func CpuStressorAdapterFactory(adapterConfig *model.StressorConfig) (ports.Secod
 	// set destionation id
 	cpuStressor.SetDestId(adapterConfig.GetId())
 
+	logger.Logger.Debugf("Successfully initialized cpu stressor adapter: %s", adapterConfig.GetId())
 	return cpuStressor, err
 }

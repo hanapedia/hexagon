@@ -6,6 +6,7 @@ import (
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
 func RedisClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {
@@ -15,15 +16,16 @@ func RedisClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, clie
 		switch adapterConfig.Action {
 		case constants.READ:
 			redisAdapter = &redisReadAdapter{
-				name:   adapterConfig.Name,
-				client: redisClient.Client,
-				size:   adapterConfig.Payload,
+				name:           adapterConfig.Name,
+				client:         redisClient.Client,
+				payloadVariant: model.GetPayloadVariant(adapterConfig.Payload),
 			}
 		case constants.WRITE:
 			redisAdapter = &redisWriteAdapter{
-				name:   adapterConfig.Name,
-				client: redisClient.Client,
-				size:   adapterConfig.Payload,
+				name:           adapterConfig.Name,
+				client:         redisClient.Client,
+				payloadSize:    model.GetPayloadSize(adapterConfig.Payload),
+				payloadVariant: model.GetPayloadVariant(adapterConfig.Payload),
 			}
 		default:
 			err = errors.New("No matching action found when creating redis client adapter.")
@@ -35,5 +37,6 @@ func RedisClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, clie
 	// set destionation id
 	redisAdapter.SetDestId(adapterConfig.GetId())
 
+	logger.Logger.Debugf("Successfully initialized redis repository adapter: %s", adapterConfig.GetId())
 	return redisAdapter, err
 }

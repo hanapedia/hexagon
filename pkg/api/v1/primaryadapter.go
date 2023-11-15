@@ -30,15 +30,12 @@ type ServerConfig struct {
 	Variant constants.SeverAdapterVariant `json:"variant,omitempty" validate:"required,oneof=rest grpc"`
 	Action  constants.Action              `json:"action,omitempty" validate:"required"`
 	Route   string                        `json:"route,omitempty" validate:"required"`
-	Payload constants.PayloadSizeVariant  `json:"payload,omitempty" validate:"omitempty,oneof=small medium large"`
+	Payload PayloadSpec                   `json:"payload,omitempty"`
 
 	// applies to only gateway service
 	// refers to the weight applied to the route
 	// intentionally a pointer to destinguish 0
 	Weight *int32 `json:"weight,omitempty"`
-
-	// applies to only serverStreams via grpc
-	PayloadCount int `json:"payloadCount,omitempty"`
 }
 
 // Config fields for repository services

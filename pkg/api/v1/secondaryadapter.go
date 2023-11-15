@@ -20,34 +20,31 @@ type InvocationConfig struct {
 	Service string                        `json:"service,omitempty" validate:"required"`
 	Action  constants.Action              `json:"action,omitempty" validate:"required"`
 	Route   string                        `json:"route,omitempty" validate:"required"`
-	Payload constants.PayloadSizeVariant  `json:"payload,omitempty" validate:"omitempty,oneof=small medium large"`
-
-	// applies to only clientStreams and biStream via grpc
-	PayloadCount int `json:"payloadCount,omitempty"`
+	Payload PayloadSpec                   `json:"payload,omitempty"`
 }
 
 // Config fields for repository services
 type RepositoryClientConfig struct {
-	Name    string                       `json:"name,omitempty" validate:"required"`
-	Variant constants.RepositoryVariant  `json:"variant,omitempty" validate:"required,oneof=mongo redis postgre"`
-	Action  constants.Action             `json:"action,omitempty" validate:"omitempty"`
-	Payload constants.PayloadSizeVariant `json:"payload,omitempty" validate:"omitempty,oneof=small medium large"`
+	Name    string                      `json:"name,omitempty" validate:"required"`
+	Variant constants.RepositoryVariant `json:"variant,omitempty" validate:"required,oneof=mongo redis postgre"`
+	Action  constants.Action            `json:"action,omitempty" validate:"omitempty"`
+	Payload PayloadSpec                 `json:"payload,omitempty"`
 }
 
 // Config fields for Brokers
 type ProducerConfig struct {
-	Variant constants.BrokerVariant      `json:"variant,omitempty" validate:"required,oneof=kafka rabbitmq pulsar"`
-	Topic   string                       `json:"topic,omitempty" validate:"required"`
-	Payload constants.PayloadSizeVariant `json:"payload,omitempty" validate:"omitempty,oneof=small medium large"`
+	Variant constants.BrokerVariant `json:"variant,omitempty" validate:"required,oneof=kafka rabbitmq pulsar"`
+	Topic   string                  `json:"topic,omitempty" validate:"required"`
+	Payload PayloadSpec             `json:"payload,omitempty"`
 }
 
 // Config fields for Stressor
 type StressorConfig struct {
-	Name        string                       `json:"name,omitempty" validate:"required"`
-	Variant     constants.StressorValiant    `json:"variant,omitempty" validate:"required,oneof=cpu memory disk"`
-	Duration    string                       `json:"duration,omitempty" validate:"required"`
-	ThreadCount int                          `json:"threads,omitempty" validate:"omitempty"`
-	Payload     constants.PayloadSizeVariant `json:"payload,omitempty" validate:"omitempty,oneof=small medium large"`
+	Name        string                    `json:"name,omitempty" validate:"required"`
+	Variant     constants.StressorValiant `json:"variant,omitempty" validate:"required,oneof=cpu memory disk"`
+	Duration    string                    `json:"duration,omitempty" validate:"required"`
+	ThreadCount int                       `json:"threads,omitempty" validate:"omitempty"`
+	Payload     PayloadSpec               `json:"payload,omitempty"`
 }
 
 // Get secondary adapter id

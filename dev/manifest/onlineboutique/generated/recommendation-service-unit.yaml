@@ -51,12 +51,12 @@ metadata:
   namespace: hexagon
 spec:
   ports:
-  - name: http
-    port: 8080
-    protocol: TCP
-    targetPort: 0
   - name: grpc
     port: 9090
+    protocol: TCP
+    targetPort: 0
+  - name: http
+    port: 8080
     protocol: TCP
     targetPort: 0
   selector:

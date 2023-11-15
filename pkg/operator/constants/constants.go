@@ -43,19 +43,21 @@ const (
 )
 
 type PayloadSizeVariant string
-type PayloadSize int
 
 const (
-	SMALL      PayloadSizeVariant = "small"  // 1kb entries
-	MEDIUM     PayloadSizeVariant = "medium" // 4kb entries
-	LARGE      PayloadSizeVariant = "large"  // 16kb entries
-	SMALLSIZE  PayloadSize        = 1        // 1kb entries
-	MEDIUMSIZE PayloadSize        = 4        // 1kb entries
-	LARGESIZE  PayloadSize        = 16       // 1kb entries
+	SMALL  PayloadSizeVariant = "small"  // 1kb entries
+	MEDIUM PayloadSizeVariant = "medium" // 4kb entries
+	LARGE  PayloadSizeVariant = "large"  // 16kb entries
 )
 
+var PayloadSizeMap = map[PayloadSizeVariant]int64{
+	SMALL:  1024,
+	MEDIUM: 4096,
+	LARGE:  16384,
+}
+
 const (
-	DefaultPayloadSize = MEDIUMSIZE
+	DefaultPayloadSize = MEDIUM
 )
 
 const (

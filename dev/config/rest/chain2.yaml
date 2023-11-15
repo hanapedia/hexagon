@@ -5,7 +5,8 @@ adapters:
     action: read
     variant: rest
     route: get
-    payload: large
+    payload:
+      variant: large
   steps:
   - adapter:
       invocation:
@@ -24,4 +25,5 @@ adapters:
         service: chain3
         action: write
         route: post
-        payload: large
+        payload:
+          variant: large

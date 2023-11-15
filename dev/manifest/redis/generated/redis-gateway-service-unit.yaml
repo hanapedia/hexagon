@@ -87,7 +87,8 @@ data:
             name: redisrepo
             variant: redis
             action: read
-            payload: small
+            payload:
+              variant: small
 
     # redis secondary adapters
     - server:
@@ -101,7 +102,8 @@ data:
             name: redisrepo
             variant: redis
             action: write
-            payload: large
+            payload:
+              variant: large
 kind: ConfigMap
 metadata:
   creationTimestamp: null

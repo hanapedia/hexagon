@@ -8,20 +8,19 @@ import (
 	"time"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
-	"github.com/hanapedia/hexagon/pkg/operator/constants"
-	"github.com/hanapedia/hexagon/pkg/service-unit/payload"
+	"github.com/hanapedia/hexagon/pkg/service-unit/utils"
 )
 
-type CpuStressorAdapter struct {
-	payload     constants.PayloadSizeVariant
+type cpuStressorAdapter struct {
+	payloadSize int64
 	duration    time.Duration
 	threadCount int
 	ports.SecondaryPortBase
 }
 
-func (csa *CpuStressorAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
+func (csa *cpuStressorAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
 	// prepare payload
-	payload, err := payload.GeneratePayload(csa.payload)
+	payload, err := utils.GenerateRandomString(csa.payloadSize)
 	if err != nil {
 		return ports.SecondaryPortCallResult{
 			Payload: nil,

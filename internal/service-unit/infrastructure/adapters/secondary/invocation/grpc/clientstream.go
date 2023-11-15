@@ -7,14 +7,14 @@ import (
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
 	pb "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/generated/grpc"
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
-	"github.com/hanapedia/hexagon/pkg/service-unit/payload"
+	"github.com/hanapedia/hexagon/pkg/service-unit/utils"
 	"google.golang.org/grpc"
 )
 
 type clientStreamAdapter struct {
 	route        string
 	client       *grpc.ClientConn
-	payload      constants.PayloadSizeVariant
+	payloadSize  int64
 	payloadCount int
 	ports.SecondaryPortBase
 }
@@ -37,7 +37,7 @@ func (csa *clientStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCal
 	}
 
 	for i := 0; i < payloadCount; i++ {
-		payload, err := payload.GeneratePayload(csa.payload)
+		payload, err := utils.GenerateRandomString(csa.payloadSize)
 		if err != nil {
 			return ports.SecondaryPortCallResult{
 				Payload: nil,
@@ -47,7 +47,7 @@ func (csa *clientStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCal
 
 		request := pb.StreamRequest{
 			Route:   csa.route,
-			Message: fmt.Sprintf("Posting %s payload of random text to %s", csa.payload, csa.GetDestId()),
+			Message: fmt.Sprintf("Sending %v bytes to %s", csa.payloadSize, csa.GetDestId()),
 			Payload: payload,
 		}
 

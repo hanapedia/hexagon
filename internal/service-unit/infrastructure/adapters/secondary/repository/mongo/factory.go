@@ -6,6 +6,7 @@ import (
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
 func MongoClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {
@@ -14,18 +15,18 @@ func MongoClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, clie
 	if mongoClient, ok := (client).(*MongoClient); ok {
 		switch adapterConfig.Action {
 		case constants.READ:
-			mongoAdapter = &MongoReadAdapter{
+			mongoAdapter = &mongoReadAdapter{
 				name:       adapterConfig.Name,
 				database:   string(adapterConfig.Variant),
 				client:     mongoClient.Client,
-				collection: adapterConfig.Payload,
+				collection: model.GetPayloadVariant(adapterConfig.Payload),
 			}
 		case constants.WRITE:
-			mongoAdapter = &MongoWriteAdapter{
+			mongoAdapter = &mongoWriteAdapter{
 				name:       adapterConfig.Name,
 				database:   string(adapterConfig.Variant),
 				client:     mongoClient.Client,
-				collection: adapterConfig.Payload,
+				collection: model.GetPayloadVariant(adapterConfig.Payload),
 			}
 		default:
 			err = errors.New("No matching action found when creating mongo client adapter.")
@@ -37,5 +38,6 @@ func MongoClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, clie
 	// set destionation id
 	mongoAdapter.SetDestId(adapterConfig.GetId())
 
+	logger.Logger.Debugf("Successfully initialized mongo repository adapter: %s", adapterConfig.GetId())
 	return mongoAdapter, err
 }

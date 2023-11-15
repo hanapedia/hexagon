@@ -30,7 +30,8 @@ adapters:
         service: chain1
         action: write
         route: post
-        payload: large
+        payload:
+          variant: large
 - server:
     action: read
     variant: rest
@@ -43,7 +44,8 @@ adapters:
         service: chain1
         action: write
         route: post
-        payload: large
+        payload:
+          variant: large
   - adapter:
       invocation:
         variant: rest

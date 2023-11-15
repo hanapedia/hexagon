@@ -5,7 +5,8 @@ adapters:
     action: read
     variant: rest
     route: get
-    payload: large
+    payload:
+      variant: large
   steps: []
 - server:
     action: write

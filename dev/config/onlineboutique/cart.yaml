@@ -11,7 +11,8 @@ adapters:
         name: cartredis
         variant: redis
         action: read
-        payload: small
+        payload:
+          variant: small
 
 - server:
     action: simpleRpc
@@ -23,7 +24,8 @@ adapters:
         name: cartredis
         variant: redis
         action: write
-        payload: small
+        payload:
+          variant: small
 
 - server:
     action: simpleRpc
@@ -35,4 +37,5 @@ adapters:
         name: cartredis
         variant: redis
         action: write
-        payload: small
+        payload:
+          variant: small
