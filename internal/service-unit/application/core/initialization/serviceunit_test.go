@@ -19,7 +19,7 @@ func setupServiceUnit(testDir string) {
 	serviceUnitConfig := initialization.GetConfig(configLoader)
 
 	// init telemetry
-	initialization.InitTelemetry(serviceUnitConfig.Name)
+	initialization.InitTracing(serviceUnitConfig.Name)
 
 	serviceUnit := initialization.NewServiceUnit(serviceUnitConfig)
 

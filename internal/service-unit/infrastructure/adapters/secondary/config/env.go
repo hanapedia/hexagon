@@ -9,6 +9,7 @@ import (
 )
 
 type EnvVars struct {
+	LOG_LEVEL                string
 	DEP_ENV                  string
 	TRACING                  bool
 	HTTP_PORT                string
@@ -38,6 +39,7 @@ func GetEnvs() *EnvVars {
 
 func loadEnvVariables() *EnvVars {
 	return &EnvVars{
+		LOG_LEVEL:                readEnv("LOG_LEVEL", defaults.LOG_LEVEL),
 		DEP_ENV:                  readEnv("DEP_ENV", "k8s"),
 		TRACING:                  readBoolEnv("TRACING", defaults.TRACING),
 		HTTP_PORT:                readEnv("HTTP_PORT", strconv.Itoa(defaults.HTTP_PORT)),

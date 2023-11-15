@@ -10,12 +10,15 @@ import (
 )
 
 func main() {
+	// set log level
+	initialization.InitLogging()
+
 	// load config from yaml
 	yamlConfigLoader := config.NewConfigLoader("yaml")
 	serviceUnitConfig := initialization.GetConfig(yamlConfigLoader)
 
 	// init telemetry
-	initialization.InitTelemetry(serviceUnitConfig.Name)
+	initialization.InitTracing(serviceUnitConfig.Name)
 
 	serviceUnit := initialization.NewServiceUnit(serviceUnitConfig)
 	logger.Logger.Println("Service unit successfully loaded.")
