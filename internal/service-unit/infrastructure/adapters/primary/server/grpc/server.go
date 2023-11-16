@@ -82,16 +82,16 @@ func (gsa *GrpcServerAdapter) Register(handler *ports.PrimaryHandler) error {
 
 	switch handler.ServerConfig.Action {
 	case constants.SIMPLE_RPC:
-		logger.Logger.Infof("Registered simple rpc at %s", handler.ServerConfig.Route)
+		logger.Logger.Debugf("Registered simple rpc at %s", handler.ServerConfig.Route)
 		gsa.configs.simpleRpc[handler.ServerConfig.Route] = handler
 	case constants.CLIENT_STREAM:
-		logger.Logger.Infof("Registered client stream at %s", handler.ServerConfig.Route)
+		logger.Logger.Debugf("Registered client stream at %s", handler.ServerConfig.Route)
 		gsa.configs.clientStream[handler.ServerConfig.Route] = handler
 	case constants.SERVER_STREAM:
-		logger.Logger.Infof("Registered server stream at %s", handler.ServerConfig.Route)
+		logger.Logger.Debugf("Registered server stream at %s", handler.ServerConfig.Route)
 		gsa.configs.serverStream[handler.ServerConfig.Route] = handler
 	case constants.BI_STREAM:
-		logger.Logger.Infof("Registered bi stream at %s", handler.ServerConfig.Route)
+		logger.Logger.Debugf("Registered bi stream at %s", handler.ServerConfig.Route)
 		gsa.configs.biStream[handler.ServerConfig.Route] = handler
 	}
 	return nil
@@ -125,9 +125,10 @@ func (gsa *GrpcServerAdapter) SimpleRPC(ctx context.Context, req *pb.StreamReque
 	}
 
 	rpcResponse := pb.StreamResponse{
-		Message: fmt.Sprintf("Successfully ran %s, sending %v bytes.", handler.GetId(), gsa.payloadSize),
 		Payload: payload,
 	}
+
+	logger.Logger.Debugf("Ran %s, responding with %v bytes.", handler.GetId(), gsa.payloadSize)
 
 	return &rpcResponse, nil
 }
@@ -170,9 +171,9 @@ func (gsa *GrpcServerAdapter) ClientStreaming(stream pb.Grpc_ClientStreamingServ
 			}
 
 			rpcResponse := pb.StreamResponse{
-				Message: fmt.Sprintf("Successfully ran %s, sending %v bytes.", handler.GetId(), gsa.payloadSize),
 				Payload: payload,
 			}
+			logger.Logger.Debugf("Ran %s, responding with %v bytes.", handler.GetId(), gsa.payloadSize)
 			return stream.SendAndClose(&rpcResponse)
 		}
 		if err != nil {
@@ -214,9 +215,11 @@ func (gsa *GrpcServerAdapter) ServerStreaming(req *pb.StreamRequest, stream pb.G
 		}
 
 		rpcResponse := pb.StreamResponse{
-			Message: fmt.Sprintf("Successfully ran %s, sending %v bytes.", handler.GetId(), gsa.payloadSize),
 			Payload: payload,
 		}
+
+		logger.Logger.Debugf("Ran %s, responding with %v bytes.", handler.GetId(), gsa.payloadSize)
+
 		if err := stream.Send(&rpcResponse); err != nil {
 			return err
 		}
@@ -266,9 +269,11 @@ func (gsa *GrpcServerAdapter) BidirectionalStreaming(stream pb.Grpc_Bidirectiona
 		}
 
 		rpcResponse := pb.StreamResponse{
-			Message: fmt.Sprintf("Successfully ran %s, sending %v bytes.", handler.GetId(), gsa.payloadSize),
 			Payload: payload,
 		}
+
+		logger.Logger.Debugf("Ran %s, responding with %v bytes.", handler.GetId(), gsa.payloadSize)
+
 		if err := stream.Send(&rpcResponse); err != nil {
 			return err
 		}

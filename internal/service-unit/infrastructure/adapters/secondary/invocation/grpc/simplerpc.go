@@ -2,10 +2,10 @@ package grpc
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
 	pb "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/generated/grpc"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 	"github.com/hanapedia/hexagon/pkg/service-unit/utils"
 	"google.golang.org/grpc"
 )
@@ -30,9 +30,10 @@ func (sra *simpleRpcAdapter) Call(ctx context.Context) ports.SecondaryPortCallRe
 
 	request := pb.StreamRequest{
 		Route:   sra.route,
-		Message: fmt.Sprintf("Sending %v bytes to %s", sra.payloadSize, sra.GetDestId()),
 		Payload: payload,
 	}
+
+	logger.Logger.Debugf("Sending request with %v bytes to %s", sra.payloadSize, sra.GetDestId())
 
 	// Regular RPC
 	response, err := client.SimpleRPC(ctx, &request)

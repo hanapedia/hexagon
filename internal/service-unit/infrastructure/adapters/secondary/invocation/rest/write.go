@@ -10,6 +10,7 @@ import (
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
 	"github.com/hanapedia/hexagon/internal/service-unit/domain/contract"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 	"github.com/hanapedia/hexagon/pkg/service-unit/utils"
 )
 
@@ -30,9 +31,11 @@ func (rwa *restWriteAdapter) Call(ctx context.Context) ports.SecondaryPortCallRe
 	}
 
 	restRequestBody := contract.RestRequestBody{
-		Message: fmt.Sprintf("Sending %v bytes to %s", rwa.payloadSize, rwa.GetDestId()),
 		Payload: &payload,
 	}
+
+	logger.Logger.Debugf("Sending request with %v bytes to %s", rwa.payloadSize, rwa.GetDestId())
+
 	jsonRestRequestBody, err := json.Marshal(restRequestBody)
 	if err != nil {
 		return ports.SecondaryPortCallResult{

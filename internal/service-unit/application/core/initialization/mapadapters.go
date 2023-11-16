@@ -33,7 +33,7 @@ func (su *ServiceUnit) mapSecondaryToPrimary() {
 		if err != nil {
 			l.Logger.Fatalf("Error registering handler to server adapter: %v", err)
 		}
-		l.Logger.Infof("Successfully mapped '%s' handler", handler.GetId())
+		l.Logger.Infof("Mapped '%s' handler", handler.GetId())
 	}
 }
 

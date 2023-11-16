@@ -21,7 +21,7 @@ func main() {
 	initialization.InitTracing(serviceUnitConfig.Name)
 
 	serviceUnit := initialization.NewServiceUnit(serviceUnitConfig)
-	logger.Logger.Println("Service unit successfully loaded.")
+	logger.Logger.Println("Service unit loaded")
 
 	// setup service unit
 	serviceUnit.Setup()

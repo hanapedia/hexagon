@@ -40,6 +40,6 @@ func RestInvocationAdapterFactory(adapterConfig *model.InvocationConfig, client 
 	// set destionation id
 	restAdapter.SetDestId(adapterConfig.GetId())
 
-	logger.Logger.Debugf("Successfully initialized Rest invocation adapter: %s", adapterConfig.GetId())
+	logger.Logger.Debugf("Initialized Rest invocation adapter: %s", adapterConfig.GetId())
 	return restAdapter, err
 }

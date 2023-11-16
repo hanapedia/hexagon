@@ -52,6 +52,6 @@ func GrpcInvocationAdapterFactory(adapterConfig *model.InvocationConfig, client 
 	// set destionation id
 	grpcAdapter.SetDestId(adapterConfig.GetId())
 
-	logger.Logger.Debugf("Successfully initialized gRPC invocation adapter: %s", adapterConfig.GetId())
+	logger.Logger.Debugf("Initialized gRPC invocation adapter: %s", adapterConfig.GetId())
 	return grpcAdapter, err
 }

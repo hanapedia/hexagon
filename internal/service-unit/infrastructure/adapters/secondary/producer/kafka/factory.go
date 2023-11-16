@@ -23,6 +23,6 @@ func KafkaProducerAdapterFactory(adapterConfig *model.ProducerConfig, client por
 	// set destionation id
 	kafkaAdapter.SetDestId(adapterConfig.GetId())
 
-	logger.Logger.Debugf("Successfully initialized kafka producer adapter: %s", adapterConfig.GetId())
+	logger.Logger.Debugf("Initialized kafka producer adapter: %s", adapterConfig.GetId())
 	return kafkaAdapter, err
 }
