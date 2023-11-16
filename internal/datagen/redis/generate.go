@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
-	"github.com/hanapedia/hexagon/pkg/operator/logger"
 	"github.com/hanapedia/hexagon/pkg/service-unit/utils"
 )
 
@@ -20,10 +19,7 @@ func GenerateRedisData(count int, sizeVariant constants.PayloadSizeVariant) []Re
 	dataSlice := make([]RedisData, count)
 	size := constants.PayloadSizeMap[sizeVariant]
 	for i := 1; i <= count; i++ {
-		payload, err := utils.GenerateRandomString(size)
-		if err != nil {
-			logger.Logger.Panicf("Error generating random string %s", err)
-		}
+		payload := utils.GenerateRandomString(size)
 		dataSlice = append(dataSlice, RedisData{
 			key:  fmt.Sprintf("%s%v", sizeVariant, i),
 			data: payload,

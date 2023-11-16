@@ -18,15 +18,8 @@ type simpleRpcAdapter struct {
 }
 
 func (sra *simpleRpcAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
-	payload, err := utils.GenerateRandomString(sra.payloadSize)
-	if err != nil {
-		return ports.SecondaryPortCallResult{
-			Payload: nil,
-			Error:   err,
-		}
-	}
-
 	client := pb.NewGrpcClient(sra.client)
+	payload := utils.GenerateRandomString(sra.payloadSize)
 
 	request := pb.StreamRequest{
 		Route:   sra.route,

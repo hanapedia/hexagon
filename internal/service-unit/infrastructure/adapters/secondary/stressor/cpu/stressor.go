@@ -20,13 +20,7 @@ type cpuStressorAdapter struct {
 
 func (csa *cpuStressorAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
 	// prepare payload
-	payload, err := utils.GenerateRandomString(csa.payloadSize)
-	if err != nil {
-		return ports.SecondaryPortCallResult{
-			Payload: nil,
-			Error:   err,
-		}
-	}
+	payload := utils.GenerateRandomString(csa.payloadSize)
 
 	// Convert the duration to CPU time
 	targetTime := currentCPUTime() + csa.duration.Nanoseconds()

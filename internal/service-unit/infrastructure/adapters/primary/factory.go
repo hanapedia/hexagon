@@ -13,13 +13,11 @@ import (
 func NewServerAdapter(config *model.ServerConfig) ports.PrimaryPort {
 	var serverAdapter ports.PrimaryPort
 
-	payloadSize := model.GetPayloadSize(config.Payload)
-
 	switch config.Variant {
 	case constants.REST:
-		serverAdapter = rest.NewRestServerAdapter(payloadSize)
+		serverAdapter = rest.NewRestServerAdapter()
 	case constants.GRPC:
-		serverAdapter = grpc.NewGrpcServerAdapter(payloadSize)
+		serverAdapter = grpc.NewGrpcServerAdapter()
 	default:
 		logger.Logger.Fatal("Adapter currently unsupported.")
 	}

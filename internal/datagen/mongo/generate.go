@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/hanapedia/hexagon/pkg/operator/logger"
 	util "github.com/hanapedia/hexagon/pkg/service-unit/utils"
 )
 
@@ -18,10 +17,7 @@ type MongoData struct {
 func GenerateMongoData(count int, size int64) []MongoData {
 	dataSlice := make([]MongoData, count)
 	for i := 1; i <= count; i++ {
-		payload, err := util.GenerateRandomString(size)
-		if err != nil {
-			logger.Logger.Panicf("Error generating random string %s", err)
-		}
+		payload := util.GenerateRandomString(size)
 		dataSlice = append(dataSlice, MongoData{
 			ID:      i + 1,
 			Payload: payload,

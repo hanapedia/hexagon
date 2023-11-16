@@ -37,14 +37,7 @@ func (csa *clientStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCal
 	}
 
 	for i := 0; i < payloadCount; i++ {
-		payload, err := utils.GenerateRandomString(csa.payloadSize)
-		if err != nil {
-			return ports.SecondaryPortCallResult{
-				Payload: nil,
-				Error:   err,
-			}
-		}
-
+		payload := utils.GenerateRandomString(csa.payloadSize)
 		request := pb.StreamRequest{
 			Route:   csa.route,
 			Payload: payload,

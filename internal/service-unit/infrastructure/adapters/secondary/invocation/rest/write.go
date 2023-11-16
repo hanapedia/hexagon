@@ -22,14 +22,7 @@ type restWriteAdapter struct {
 }
 
 func (rwa *restWriteAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
-	payload, err := utils.GenerateRandomString(rwa.payloadSize)
-	if err != nil {
-		return ports.SecondaryPortCallResult{
-			Payload: nil,
-			Error:   err,
-		}
-	}
-
+	payload := utils.GenerateRandomString(rwa.payloadSize)
 	restRequestBody := contract.RestRequestBody{
 		Payload: &payload,
 	}

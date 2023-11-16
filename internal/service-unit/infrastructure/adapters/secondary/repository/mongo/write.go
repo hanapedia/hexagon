@@ -32,13 +32,13 @@ func (mra *mongoWriteAdapter) Call(ctx context.Context) ports.SecondaryPortCallR
 	db := mra.client.Database(mra.database)
 	collection := db.Collection(string(mra.collection))
 
-	payload, err := utils.GenerateRandomString(constants.PayloadSizeMap[mra.collection])
+	payload := utils.GenerateRandomString(constants.PayloadSizeMap[mra.collection])
 	id := utils.GetRandomId(constants.NumInitialEntries+1, constants.NumInitialEntries*2)
 	filter := bson.M{"id": id}
 	update := bson.M{"$set": bson.M{"payload": payload}}
 	updateOpts := options.Update().SetUpsert(true)
 
-	_, err = collection.UpdateOne(ctx, filter, update, updateOpts)
+	_, err := collection.UpdateOne(ctx, filter, update, updateOpts)
 	if err != nil {
 		return ports.SecondaryPortCallResult{
 			Payload: nil,
