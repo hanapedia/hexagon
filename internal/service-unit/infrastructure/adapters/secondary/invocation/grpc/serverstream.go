@@ -19,15 +19,8 @@ type serverStreamAdapter struct {
 }
 
 func (ssa *serverStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
-	payload, err := utils.GenerateRandomString(ssa.payloadSize)
-	if err != nil {
-		return ports.SecondaryPortCallResult{
-			Payload: nil,
-			Error:   err,
-		}
-	}
-
 	client := pb.NewGrpcClient(ssa.client)
+	payload := utils.GenerateRandomString(ssa.payloadSize)
 
 	request := pb.StreamRequest{
 		Route:   ssa.route,

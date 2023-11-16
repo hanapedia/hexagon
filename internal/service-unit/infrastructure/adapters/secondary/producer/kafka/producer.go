@@ -17,13 +17,7 @@ type kafkaProducerAdapter struct {
 
 func (kpa *kafkaProducerAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
 	// prepare payload
-	payload, err := utils.GenerateRandomString(kpa.payloadSize)
-	if err != nil {
-		return ports.SecondaryPortCallResult{
-			Payload: nil,
-			Error:   err,
-		}
-	}
+	payload := utils.GenerateRandomString(kpa.payloadSize)
 	message := kafka.Message{
 		Value: []byte(payload),
 	}
@@ -31,7 +25,7 @@ func (kpa *kafkaProducerAdapter) Call(ctx context.Context) ports.SecondaryPortCa
 	ctx, span := tracing.CreateKafkaProducerSpan(ctx, &message)
 	defer (*span).End()
 
-	if err = kpa.writer.WriteMessages(ctx, message); err != nil {
+	if err := kpa.writer.WriteMessages(ctx, message); err != nil {
 		return ports.SecondaryPortCallResult{
 			Payload: nil,
 			Error:   err,

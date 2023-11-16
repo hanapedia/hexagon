@@ -1,21 +1,22 @@
 package utils
 
 import (
-	crand "crypto/rand"
-	"encoding/base64"
 	mrand "math/rand"
+	"strings"
 )
 
-func GenerateRandomString(byteSize int64) (string, error) {
-	rawByteSize := byteSize * 3 / 4
-	bytes := make([]byte, rawByteSize)
-	_, err := crand.Read(bytes)
-	if err != nil {
-		return "", err
-	}
-	encoded := make([]byte, byteSize)
-	base64.StdEncoding.Encode(encoded, bytes)
-	return string(encoded[:byteSize]), nil
+const chars = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ultrices mollis finibus. Nullam justo tellus, blandit quis urna quis, aliquam luctus dui. Morbi luctus dolor magna, a dictum tortor elementum eget. Vestibulum finibus faucibus commodo. Suspendisse potenti. Cras vulputate ultrices metus at dignissim. Suspendisse porta lectus ipsum, quis faucibus ligula venenatis in. Nam et nisl tellus. In vehicula vitae orci ut dignissim."
+
+func GenerateRandomString(byteSize int64) string {
+    // Create a string builder for efficient string concatenation
+    var sb strings.Builder
+
+    // Iterate and append characters until we reach the desired byte size
+    for i := 0; i < int(byteSize); i++ {
+        sb.WriteByte(chars[i%len(chars)])
+    }
+
+    return sb.String()
 }
 
 // generates random integer from 1 to 100

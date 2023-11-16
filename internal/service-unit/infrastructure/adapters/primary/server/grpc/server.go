@@ -12,6 +12,7 @@ import (
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
 	pb "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/generated/grpc"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
+	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 	util "github.com/hanapedia/hexagon/pkg/service-unit/utils"
@@ -24,7 +25,6 @@ type GrpcServerAdapter struct {
 	addr        string
 	server      *grpc.Server
 	configs     GrpcVariantConfigs
-	payloadSize int64
 	pb.UnimplementedGrpcServer
 }
 
@@ -36,7 +36,7 @@ type GrpcVariantConfigs struct {
 	biStream     map[string]*ports.PrimaryHandler
 }
 
-func NewGrpcServerAdapter(payloadSize int64) *GrpcServerAdapter {
+func NewGrpcServerAdapter() *GrpcServerAdapter {
 	var opts []grpc.ServerOption
 
 	// enable tracing
@@ -56,7 +56,6 @@ func NewGrpcServerAdapter(payloadSize int64) *GrpcServerAdapter {
 			serverStream: make(map[string]*ports.PrimaryHandler),
 			biStream:     make(map[string]*ports.PrimaryHandler),
 		},
-		payloadSize: payloadSize,
 	}
 	return &adapter
 }
@@ -119,16 +118,14 @@ func (gsa *GrpcServerAdapter) SimpleRPC(ctx context.Context, req *pb.StreamReque
 	}
 
 	// write response
-	payload, err := util.GenerateRandomString(gsa.payloadSize)
-	if err != nil {
-		return nil, err
-	}
+	payloadSize := model.GetPayloadSize(handler.ServerConfig.Payload)
+	payload := util.GenerateRandomString(payloadSize)
 
 	rpcResponse := pb.StreamResponse{
 		Payload: payload,
 	}
 
-	logger.Logger.Debugf("Ran %s, responding with %v bytes.", handler.GetId(), gsa.payloadSize)
+	logger.Logger.Debugf("Ran %s, responding with %v bytes.", handler.GetId(), payloadSize)
 
 	return &rpcResponse, nil
 }
@@ -165,15 +162,13 @@ func (gsa *GrpcServerAdapter) ClientStreaming(stream pb.Grpc_ClientStreamingServ
 		_, err := stream.Recv()
 		if err == io.EOF {
 			// write response
-			payload, err := util.GenerateRandomString(gsa.payloadSize)
-			if err != nil {
-				return err
-			}
+			payloadSize := model.GetPayloadSize(handler.ServerConfig.Payload)
+			payload := util.GenerateRandomString(payloadSize)
 
 			rpcResponse := pb.StreamResponse{
 				Payload: payload,
 			}
-			logger.Logger.Debugf("Ran %s, responding with %v bytes.", handler.GetId(), gsa.payloadSize)
+			logger.Logger.Debugf("Ran %s, responding with %v bytes.", handler.GetId(), payloadSize)
 			return stream.SendAndClose(&rpcResponse)
 		}
 		if err != nil {
@@ -209,16 +204,15 @@ func (gsa *GrpcServerAdapter) ServerStreaming(req *pb.StreamRequest, stream pb.G
 	}
 
 	for i := 0; i < payloadCount; i++ {
-		payload, err := util.GenerateRandomString(gsa.payloadSize)
-		if err != nil {
-			return err
-		}
+		// write response
+		payloadSize := model.GetPayloadSize(handler.ServerConfig.Payload)
+		payload := util.GenerateRandomString(payloadSize)
 
 		rpcResponse := pb.StreamResponse{
 			Payload: payload,
 		}
 
-		logger.Logger.Debugf("Ran %s, responding with %v bytes.", handler.GetId(), gsa.payloadSize)
+		logger.Logger.Debugf("Ran %s, responding with %v bytes.", handler.GetId(), payloadSize)
 
 		if err := stream.Send(&rpcResponse); err != nil {
 			return err
@@ -263,16 +257,15 @@ func (gsa *GrpcServerAdapter) BidirectionalStreaming(stream pb.Grpc_Bidirectiona
 			return err
 		}
 
-		payload, err := util.GenerateRandomString(gsa.payloadSize)
-		if err != nil {
-			return err
-		}
+		// write response
+		payloadSize := model.GetPayloadSize(handler.ServerConfig.Payload)
+		payload := util.GenerateRandomString(payloadSize)
 
 		rpcResponse := pb.StreamResponse{
 			Payload: payload,
 		}
 
-		logger.Logger.Debugf("Ran %s, responding with %v bytes.", handler.GetId(), gsa.payloadSize)
+		logger.Logger.Debugf("Ran %s, responding with %v bytes.", handler.GetId(), payloadSize)
 
 		if err := stream.Send(&rpcResponse); err != nil {
 			return err

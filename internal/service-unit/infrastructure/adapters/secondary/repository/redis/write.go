@@ -20,17 +20,11 @@ type redisWriteAdapter struct {
 
 // Update or insert to random id in range from number of initial data to twice the size of the initial data
 func (rwa *redisWriteAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
-	payload, err := utils.GenerateRandomString(rwa.payloadSize)
-	if err != nil {
-		return ports.SecondaryPortCallResult{
-			Payload: nil,
-			Error:   err,
-		}
-	}
+	payload := utils.GenerateRandomString(rwa.payloadSize)
 
 	id := utils.GetRandomId(constants.NumInitialEntries+1, constants.NumInitialEntries*2)
 	key := fmt.Sprintf("%s%v", rwa.payloadVariant, id)
-	err = rwa.client.Set(ctx, key, payload, 0).Err()
+	err := rwa.client.Set(ctx, key, payload, 0).Err()
 	if err != nil {
 		return ports.SecondaryPortCallResult{
 			Payload: nil,

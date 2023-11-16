@@ -12,6 +12,7 @@ import (
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
 	"github.com/hanapedia/hexagon/internal/service-unit/domain/contract"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
+	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 	util "github.com/hanapedia/hexagon/pkg/service-unit/utils"
@@ -21,10 +22,9 @@ import (
 type RestServerAdapter struct {
 	addr        string
 	server      *fiber.App
-	payloadSize int64
 }
 
-func NewRestServerAdapter(payloadSize int64) *RestServerAdapter {
+func NewRestServerAdapter() *RestServerAdapter {
 	app := fiber.New()
 
 	// enable tracing
@@ -35,7 +35,6 @@ func NewRestServerAdapter(payloadSize int64) *RestServerAdapter {
 	adapter := RestServerAdapter{
 		addr:        config.GetRestServerAddr(),
 		server:      app,
-		payloadSize: payloadSize,
 	}
 
 	return &adapter
@@ -72,16 +71,14 @@ func (rsa *RestServerAdapter) Register(handler *ports.PrimaryHandler) error {
 			}
 
 			// write response
-			payload, err := util.GenerateRandomString(rsa.payloadSize)
-			if err != nil {
-				return err
-			}
+			payloadSize := model.GetPayloadSize(handler.ServerConfig.Payload)
+			payload := util.GenerateRandomString(payloadSize)
 
 			restResponse := contract.RestResponseBody{
 				Payload: &payload,
 			}
 
-			logger.Logger.Debugf("Ran %s, responding with %v bytes.", handler.GetId(), rsa.payloadSize)
+			logger.Logger.Debugf("Ran %s, responding with %v bytes.", handler.GetId(), payloadSize)
 
 			return c.Status(fiber.StatusOK).JSON(restResponse)
 		})
@@ -103,17 +100,15 @@ func (rsa *RestServerAdapter) Register(handler *ports.PrimaryHandler) error {
 			}
 
 			// write response
-			payload, err := util.GenerateRandomString(rsa.payloadSize)
-			if err != nil {
-				return err
-			}
+			payloadSize := model.GetPayloadSize(handler.ServerConfig.Payload)
+			payload := util.GenerateRandomString(payloadSize)
 
 			// write response
 			restResponse := contract.RestResponseBody{
 				Payload: &payload,
 			}
 
-			logger.Logger.Debugf("Ran %s, responding with %v bytes.", handler.GetId(), rsa.payloadSize)
+			logger.Logger.Debugf("Ran %s, responding with %v bytes.", handler.GetId(), payloadSize)
 
 			return c.Status(fiber.StatusOK).JSON(restResponse)
 		})

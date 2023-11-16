@@ -38,14 +38,7 @@ func (bsa *biStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCallRes
 	}
 
 	for i := 0; i < payloadCount; i++ {
-		payload, err := utils.GenerateRandomString(bsa.payloadSize)
-		if err != nil {
-			return ports.SecondaryPortCallResult{
-				Payload: nil,
-				Error:   err,
-			}
-		}
-
+		payload := utils.GenerateRandomString(bsa.payloadSize)
 		request := pb.StreamRequest{
 			Route:   bsa.route,
 			Payload: payload,
