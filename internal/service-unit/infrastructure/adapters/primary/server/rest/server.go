@@ -67,9 +67,7 @@ func (rsa *RestServerAdapter) Register(handler *ports.PrimaryHandler) error {
 					handler.LogTaskError(c.UserContext(), err)
 				}
 
-				restResponse := contract.RestResponseBody{
-					Message: "Task failed",
-				}
+				restResponse := contract.RestResponseBody{}
 				return c.Status(fiber.StatusOK).JSON(restResponse)
 			}
 
@@ -80,9 +78,11 @@ func (rsa *RestServerAdapter) Register(handler *ports.PrimaryHandler) error {
 			}
 
 			restResponse := contract.RestResponseBody{
-				Message: fmt.Sprintf("Successfully ran %s, sending %v bytes.", handler.GetId(), rsa.payloadSize),
 				Payload: &payload,
 			}
+
+			logger.Logger.Debugf("Ran %s, responding with %v bytes.", handler.GetId(), rsa.payloadSize)
+
 			return c.Status(fiber.StatusOK).JSON(restResponse)
 		})
 	case constants.POST:
@@ -98,16 +98,23 @@ func (rsa *RestServerAdapter) Register(handler *ports.PrimaryHandler) error {
 				for _, err := range errs {
 					handler.LogTaskError(c.UserContext(), err)
 				}
-				restResponse := contract.RestResponseBody{
-					Message: "Task failed",
-				}
+				restResponse := contract.RestResponseBody{}
 				return c.Status(fiber.StatusOK).JSON(restResponse)
 			}
 
 			// write response
-			restResponse := contract.RestResponseBody{
-				Message: fmt.Sprintf("Successfully ran %s.", handler.GetId()),
+			payload, err := util.GenerateRandomString(rsa.payloadSize)
+			if err != nil {
+				return err
 			}
+
+			// write response
+			restResponse := contract.RestResponseBody{
+				Payload: &payload,
+			}
+
+			logger.Logger.Debugf("Ran %s, responding with %v bytes.", handler.GetId(), rsa.payloadSize)
+
 			return c.Status(fiber.StatusOK).JSON(restResponse)
 		})
 	default:

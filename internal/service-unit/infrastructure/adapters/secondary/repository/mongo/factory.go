@@ -38,6 +38,6 @@ func MongoClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, clie
 	// set destionation id
 	mongoAdapter.SetDestId(adapterConfig.GetId())
 
-	logger.Logger.Debugf("Successfully initialized mongo repository adapter: %s", adapterConfig.GetId())
+	logger.Logger.Debugf("Initialized mongo repository adapter: %s", adapterConfig.GetId())
 	return mongoAdapter, err
 }

@@ -37,6 +37,6 @@ func RedisClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, clie
 	// set destionation id
 	redisAdapter.SetDestId(adapterConfig.GetId())
 
-	logger.Logger.Debugf("Successfully initialized redis repository adapter: %s", adapterConfig.GetId())
+	logger.Logger.Debugf("Initialized redis repository adapter: %s", adapterConfig.GetId())
 	return redisAdapter, err
 }

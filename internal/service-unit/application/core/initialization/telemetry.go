@@ -14,7 +14,7 @@ func InitTracing(name string) {
 	}
 	collectorUrl := config.GetOtelCollectorUrl()
 	_ = tracing.InitTracer(name, collectorUrl)
-	logger.Logger.Info("Successfully initialized tracing.")
+	logger.Logger.Info("Initialized tracing.")
 	return
 }
 

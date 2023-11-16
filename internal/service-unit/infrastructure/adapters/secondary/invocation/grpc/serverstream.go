@@ -2,11 +2,11 @@ package grpc
 
 import (
 	"context"
-	"fmt"
 	"io"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
 	pb "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/generated/grpc"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 	"github.com/hanapedia/hexagon/pkg/service-unit/utils"
 	"google.golang.org/grpc"
 )
@@ -31,9 +31,10 @@ func (ssa *serverStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCal
 
 	request := pb.StreamRequest{
 		Route:   ssa.route,
-		Message: fmt.Sprintf("Sending %v bytes to %s", ssa.payloadSize, ssa.GetDestId()),
 		Payload: payload,
 	}
+
+	logger.Logger.Debugf("Sending request with %v bytes to %s", ssa.payloadSize, ssa.GetDestId())
 
 	// server stream
 	serverStream, err := client.ServerStreaming(ctx, &request)

@@ -31,6 +31,6 @@ func CpuStressorAdapterFactory(adapterConfig *model.StressorConfig) (ports.Secod
 	// set destionation id
 	cpuStressor.SetDestId(adapterConfig.GetId())
 
-	logger.Logger.Debugf("Successfully initialized cpu stressor adapter: %s", adapterConfig.GetId())
+	logger.Logger.Debugf("Initialized cpu stressor adapter: %s", adapterConfig.GetId())
 	return cpuStressor, err
 }
