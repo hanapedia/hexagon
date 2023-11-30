@@ -3,6 +3,18 @@ GO_MODULE := $(shell go list -m)
 COMMA := ,
 
 # Local development with tilt
+#
+.PHONY: devmini
+devmini:
+	ctlptl apply -f ./dev/cluster.yaml
+
+	# create namespaces
+	kubectl apply -f ./dev/namespaces.yaml
+
+	# create curl pod
+	kubectl apply -n hexagon -f ./dev/curl.yaml
+
+#
 .PHONY: devstart
 devstart:
 	ctlptl apply -f ./dev/cluster.yaml
