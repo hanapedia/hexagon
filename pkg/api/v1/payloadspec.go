@@ -9,7 +9,7 @@ import (
 // PayloadSpec contains configuration for payload sent by adapters
 type PayloadSpec struct {
 	Size    string                       `json:"size,omitempty"`
-	Variant constants.PayloadSizeVariant `json:"class,omitempty" validate:"omitempty,oneof=small medium large"`
+	Variant constants.PayloadSizeVariant `json:"variant,omitempty" validate:"omitempty,oneof=small medium large"`
 	Count   int                          `json:"payloadCount,omitempty"`
 }
 
