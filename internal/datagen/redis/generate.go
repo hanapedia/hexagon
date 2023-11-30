@@ -16,7 +16,7 @@ type RedisData struct {
 // count is the number of entries to generate
 // size is the size of each data for each entry
 func GenerateRedisData(count int, sizeVariant constants.PayloadSizeVariant) []RedisData {
-	dataSlice := make([]RedisData, count)
+	dataSlice := []RedisData{}
 	size := constants.PayloadSizeMap[sizeVariant]
 	for i := 1; i <= count; i++ {
 		payload := utils.GenerateRandomString(size)
@@ -37,7 +37,7 @@ func WriteRedisDataToFile(filename string, data []RedisData) error {
 	defer file.Close()
 
 	for _, entry := range data {
-		_, err := file.WriteString(fmt.Sprintf("%s %s\n", entry.key, entry.data))
+		_, err := file.WriteString(fmt.Sprintf("%s:%s\n", entry.key, entry.data))
 		if err != nil {
 			return err
 		}
