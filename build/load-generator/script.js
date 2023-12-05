@@ -5,9 +5,15 @@ import { SharedArray } from 'k6/data';
 // Read the configuration file
 const configData = JSON.parse(open('/data/config.json'));
 
+// Read the env var
+const testName = __ENV.TEST_NAME || "test"
+
 export let options = {
     vus: configData.vus,  // number of virtual users
     duration: configData.duration,  // duration of the test
+    tags: {
+        name: testName,
+    },
 };
 
 const urlPrefix = configData.urlPrefix;

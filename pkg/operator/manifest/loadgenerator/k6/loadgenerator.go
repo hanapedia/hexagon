@@ -34,8 +34,18 @@ func CreateLoadGeneratorDeployment(config *model.ServiceUnitConfig) *appsv1.Depl
 				"routes": "routes.json",
 			},
 		},
+		Envs: createLoadGeneratorDeploymentEnvs(config),
 	}
 	deployment := factory.NewDeployment(&deploymentArgs)
+
+	deployment.Spec.Template.Spec.Containers[0].Command = []string{
+		"k6",
+		"run",
+		"-o",
+		"experimental-prometheus-rw",
+		"/scripts/script.js",
+	}
+
 	return &deployment
 }
 
@@ -92,6 +102,14 @@ func createLoadGeneratorRoutes(route string, method constants.HttpMethod, weight
 		Route:  route,
 		Method: method,
 		Weight: weight,
+	}
+}
+
+func createLoadGeneratorDeploymentEnvs(config *model.ServiceUnitConfig) []corev1.EnvVar {
+	return []corev1.EnvVar{
+		{Name: "TEST_NAME", Value: fmt.Sprintf("%s-lg", config.Name)},
+		{Name: "K6_PROMETHEUS_RW_SERVER_URL", Value: defaults.LG_K6_PROMETHEUS_RW_SERVER_URL},
+		{Name: "K6_PROMETHEUS_RW_TREND_STATS", Value: defaults.LG_K6_PROMETHEUS_RW_TREND_STATS},
 	}
 }
 
