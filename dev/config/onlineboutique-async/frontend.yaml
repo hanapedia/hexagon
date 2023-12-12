@@ -1,0 +1,395 @@
+version: dev
+name: frontend
+deployment:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  env:
+    - name: TRACING
+      value: "false"
+adapters:
+  - server:
+      action: get
+      variant: rest
+      route: root
+      payload:
+        size: 10216
+    steps:
+      - adapter:
+          invocation:
+            variant: grpc
+            service: currency
+            action: simpleRpc
+            route: GetSupportedCurrency
+            payload:
+              size: 0
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: ListProducts
+            payload:
+              size: 0
+      - adapter:
+          invocation:
+            variant: grpc
+            service: cart
+            action: simpleRpc
+            route: GetCart
+            payload:
+              size: 0
+      - adapter:
+          invocation:
+            variant: grpc
+            service: currency
+            action: simpleRpc
+            route: Convert
+            payload:
+              size: 20
+      - adapter:
+          invocation:
+            variant: grpc
+            service: ad
+            action: simpleRpc
+            route: GetAds
+            payload:
+              size: 0
+  - server:
+      action: get
+      variant: rest
+      route: product
+      payload:
+        size: 7700
+    steps:
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: GetProduct
+            payload:
+              size: 10
+      - adapter:
+          invocation:
+            variant: grpc
+            service: currency
+            action: simpleRpc
+            route: GetSupportedCurrency
+            payload:
+              size: 0
+      - adapter:
+          invocation:
+            variant: grpc
+            service: cart
+            action: simpleRpc
+            route: GetCart
+            payload:
+              size: 0
+      - adapter:
+          invocation:
+            variant: grpc
+            service: currency
+            action: simpleRpc
+            route: Convert
+            payload:
+              size: 20
+      - adapter:
+          invocation:
+            variant: grpc
+            service: recommendation
+            action: simpleRpc
+            route: ListRecommendation
+            payload:
+              size: 26
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: GetProduct
+            payload:
+              size: 10
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: GetProduct
+            payload:
+              size: 10
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: GetProduct
+            payload:
+              size: 10
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: GetProduct
+            payload:
+              size: 10
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: GetProduct
+            payload:
+              size: 10
+      - adapter:
+          invocation:
+            variant: grpc
+            service: ad
+            action: simpleRpc
+            route: GetAds
+            payload:
+              size: 7
+  - server:
+      action: get
+      variant: rest
+      route: cart
+      payload:
+        size: 6650
+    steps:
+      - adapter:
+          invocation:
+            variant: grpc
+            service: currency
+            action: simpleRpc
+            route: GetSupportedCurrency
+            payload:
+              size: 0
+      - adapter:
+          invocation:
+            variant: grpc
+            service: cart
+            action: simpleRpc
+            route: GetCart
+            payload:
+              size: 0
+      - adapter:
+          invocation:
+            variant: grpc
+            service: recommendation
+            action: simpleRpc
+            route: ListRecommendation
+            payload:
+              size: 27 # under assumption that average number of products in cart are 1/8
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: GetProduct
+            payload:
+              size: 10
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: GetProduct
+            payload:
+              size: 10
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: GetProduct
+            payload:
+              size: 10
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: GetProduct
+            payload:
+              size: 10
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: GetProduct
+            payload:
+              size: 10
+      - adapter:
+          invocation:
+            variant: grpc
+            service: shipping
+            action: simpleRpc
+            route: GetQuote
+            payload:
+              size: 72
+      - adapter:
+          invocation:
+            variant: grpc
+            service: currency
+            action: simpleRpc
+            route: Convert
+            payload:
+              size: 20
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: GetProduct
+            payload:
+              size: 10
+      - adapter:
+          invocation:
+            variant: grpc
+            service: currency
+            action: simpleRpc
+            route: Convert
+            payload:
+              size: 20
+  - server:
+      action: post
+      variant: rest
+      route: cart
+      payload:
+        size: 3
+    steps:
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: GetProduct
+            payload:
+              size: 10
+      - adapter:
+          invocation:
+            variant: grpc
+            service: cart
+            action: simpleRpc
+            route: AddItem
+            payload:
+              size: 17
+  - server:
+      action: post
+      variant: rest
+      route: cart/empty
+      payload:
+        size: 3
+    steps:
+      - adapter:
+          invocation:
+            variant: grpc
+            service: cart
+            action: simpleRpc
+            route: EmptyCart
+            payload:
+              size: 16
+  - server:
+      action: post
+      variant: rest
+      route: setCurrency
+      payload:
+        size: 3
+    steps: []
+  - server:
+      action: post
+      variant: rest
+      route: logout
+      payload:
+        size: 3
+    steps: []
+  - server:
+      action: post
+      variant: rest
+      route: cart/checkout
+      payload:
+        size: 6242
+    steps:
+      # replace checkout with async
+      # - adapter:
+      #     invocation:
+      #       variant: grpc
+      #       service: checkout
+      #       action: simpleRpc
+      #       route: PlaceOrder
+      - adapter:
+          producer:
+            variant: kafka
+            topic: PlaceOrder
+            payload:
+              size: 6242
+      - adapter:
+          invocation:
+            variant: grpc
+            service: recommendation
+            action: simpleRpc
+            route: ListRecommendation
+            payload:
+              size: 16
+              # call GetProduct 5 times assuming that the number of recommendation returned is 5
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: GetProduct
+            payload:
+              size: 10
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: GetProduct
+            payload:
+              size: 10
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: GetProduct
+            payload:
+              size: 10
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: GetProduct
+            payload:
+              size: 10
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: GetProduct
+            payload:
+              size: 10
+      - adapter:
+          invocation:
+            variant: grpc
+            service: currency
+            action: simpleRpc
+            route: GetSupportedCurrency
+            payload:
+              size: 0
+  - server:
+      action: get
+      variant: rest
+      route: static
+      payload:
+        size: 50000
+    steps: []

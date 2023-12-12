@@ -1,0 +1,107 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: shipping
+  namespace: hexagon
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shipping
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: shipping
+    spec:
+      containers:
+      - env:
+        - name: TRACING
+          value: "false"
+        image: hiroki11hanada/service-unit:dev
+        name: shipping
+        ports:
+        - containerPort: 8080
+          name: http
+        resources:
+          limits:
+            cpu: 200m
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 64Mi
+        volumeMounts:
+        - mountPath: /app/config/
+          name: config
+      volumes:
+      - configMap:
+          items:
+          - key: config
+            path: service-unit.yaml
+          name: shipping-config
+        name: config
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  name: shipping
+  namespace: hexagon
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 0
+  - name: grpc
+    port: 9090
+    protocol: TCP
+    targetPort: 0
+  selector:
+    app: shipping
+status:
+  loadBalancer: {}
+
+---
+apiVersion: v1
+data:
+  config: |
+    version: dev
+    name: shipping
+    deployment:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 64Mi
+        limits:
+          cpu: 200m
+          memory: 128Mi
+      env:
+        - name: TRACING
+          value: "false"
+    adapters:
+      - server:
+          action: simpleRpc
+          variant: grpc
+          route: GetQuote
+          payload:
+            size: 16
+        steps: []
+      - server:
+          action: simpleRpc
+          variant: grpc
+          route: ShipOrder
+          payload:
+            size: 75
+        steps: []
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: shipping-config
+  namespace: hexagon
+

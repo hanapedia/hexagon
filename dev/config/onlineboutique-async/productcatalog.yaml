@@ -1,0 +1,28 @@
+version: dev
+name: productcatalog
+deployment:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  env:
+    - name: TRACING
+      value: "false"
+adapters:
+  - server:
+      action: simpleRpc
+      variant: grpc
+      route: ListProducts
+      payload:
+        size: 1260
+    steps: []
+  - server:
+      action: simpleRpc
+      variant: grpc
+      route: GetProduct
+      payload:
+        size: 140
+    steps: []

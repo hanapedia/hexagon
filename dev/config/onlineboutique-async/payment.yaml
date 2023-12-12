@@ -1,0 +1,21 @@
+version: dev
+name: payment
+deployment:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  env:
+    - name: TRACING
+      value: "false"
+adapters:
+  - server:
+      action: simpleRpc
+      variant: grpc
+      route: Charge
+      payload:
+        size: 16
+    steps: []

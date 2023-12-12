@@ -1,0 +1,100 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: ad
+  namespace: hexagon
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ad
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ad
+    spec:
+      containers:
+      - env:
+        - name: TRACING
+          value: "false"
+        image: hiroki11hanada/service-unit:dev
+        name: ad
+        ports:
+        - containerPort: 8080
+          name: http
+        resources:
+          limits:
+            cpu: 300m
+            memory: 300Mi
+          requests:
+            cpu: 200m
+            memory: 180Mi
+        volumeMounts:
+        - mountPath: /app/config/
+          name: config
+      volumes:
+      - configMap:
+          items:
+          - key: config
+            path: service-unit.yaml
+          name: ad-config
+        name: config
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  name: ad
+  namespace: hexagon
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 0
+  - name: grpc
+    port: 9090
+    protocol: TCP
+    targetPort: 0
+  selector:
+    app: ad
+status:
+  loadBalancer: {}
+
+---
+apiVersion: v1
+data:
+  config: |
+    version: dev
+    name: ad
+    deployment:
+      resources:
+        requests:
+          cpu: 200m
+          memory: 180Mi
+        limits:
+          cpu: 300m
+          memory: 300Mi
+      env:
+        - name: TRACING
+          value: "false"
+    adapters:
+      - server:
+          action: simpleRpc
+          variant: grpc
+          route: GetAds
+          payload:
+            size: 58
+        steps: []
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: ad-config
+  namespace: hexagon
+

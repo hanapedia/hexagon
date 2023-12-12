@@ -1,0 +1,145 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: cart
+  namespace: hexagon
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cart
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: cart
+    spec:
+      containers:
+      - env:
+        - name: TRACING
+          value: "false"
+        image: hiroki11hanada/service-unit:dev
+        name: cart
+        ports:
+        - containerPort: 8080
+          name: http
+        resources:
+          limits:
+            cpu: 300m
+            memory: 128Mi
+          requests:
+            cpu: 200m
+            memory: 64Mi
+        volumeMounts:
+        - mountPath: /app/config/
+          name: config
+      volumes:
+      - configMap:
+          items:
+          - key: config
+            path: service-unit.yaml
+          name: cart-config
+        name: config
+status: {}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  name: cart
+  namespace: hexagon
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 0
+  - name: grpc
+    port: 9090
+    protocol: TCP
+    targetPort: 0
+  selector:
+    app: cart
+status:
+  loadBalancer: {}
+
+---
+apiVersion: v1
+data:
+  config: |
+    version: dev
+    name: cart
+    deployment:
+      resources:
+        requests:
+          cpu: 200m
+          memory: 64Mi
+        limits:
+          cpu: 300m
+          memory: 128Mi
+      env:
+        - name: TRACING
+          value: "false"
+    adapters:
+      - server:
+          action: simpleRpc
+          variant: grpc
+          route: GetCart
+          payload:
+            size: 18
+        steps:
+          - adapter:
+              repository:
+                name: cartredis
+                variant: redis
+                action: read
+                payload:
+                  size: 2
+                  variant: small
+      - server:
+          action: simpleRpc
+          variant: grpc
+          route: AddItem
+          payload:
+            size: 0
+        steps:
+          - adapter:
+              repository:
+                name: cartredis
+                variant: redis
+                action: read
+                payload:
+                  size: 18
+                  variant: small
+              repository:
+                name: cartredis
+                variant: redis
+                action: write
+                payload:
+                  size: 2
+                  variant: small
+      - server:
+          action: simpleRpc
+          variant: grpc
+          route: EmptyCart
+          payload:
+            size: 0
+        steps:
+          - adapter:
+              repository:
+                name: cartredis
+                variant: redis
+                action: write
+                payload:
+                  size: 1
+                  variant: small
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: cart-config
+  namespace: hexagon
+
