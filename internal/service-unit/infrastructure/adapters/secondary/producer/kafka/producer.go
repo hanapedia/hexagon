@@ -23,7 +23,9 @@ func (kpa *kafkaProducerAdapter) Call(ctx context.Context) ports.SecondaryPortCa
 	}
 
 	ctx, span := tracing.CreateKafkaProducerSpan(ctx, &message)
-	defer (*span).End()
+	if span != nil {
+		defer (*span).End()
+	}
 
 	if err := kpa.writer.WriteMessages(ctx, message); err != nil {
 		return ports.SecondaryPortCallResult{
