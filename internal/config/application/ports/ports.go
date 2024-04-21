@@ -1,4 +1,4 @@
-package loader
+package ports
 
 import (
 	model "github.com/hanapedia/hexagon/pkg/api/v1"

@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	// "github.com/hanapedia/hexagon/config/model"
-	"github.com/hanapedia/hexagon/pkg/operator/yaml"
+	"github.com/hanapedia/hexagon/internal/config/infrastructure/yaml"
 )
 
 func TestYamlConfigLoader_InvalidIngressAdapter(t *testing.T) {

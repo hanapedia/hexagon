@@ -1,12 +1,12 @@
 package config
 
 import (
-	"github.com/hanapedia/hexagon/pkg/operator/loader"
-	"github.com/hanapedia/hexagon/pkg/operator/yaml"
+	"github.com/hanapedia/hexagon/internal/config/application/ports"
+	"github.com/hanapedia/hexagon/internal/config/infrastructure/yaml"
 )
 
-func NewConfigLoader(format string) loader.ConfigLoader {
-	var configLoader loader.ConfigLoader
+func NewConfigLoader(format string) ports.ConfigLoader {
+	var configLoader ports.ConfigLoader
 	switch format {
 	case "yaml":
 		configLoader = yaml.YamlConfigLoader{Path: "./config/service-unit.yaml"}

@@ -4,13 +4,13 @@ import (
 	"testing"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/core/initialization"
-	"github.com/hanapedia/hexagon/pkg/operator/loader"
-	"github.com/hanapedia/hexagon/pkg/operator/yaml"
+	ports "github.com/hanapedia/hexagon/internal/config/application/ports"
+	"github.com/hanapedia/hexagon/internal/config/infrastructure/yaml"
 )
 
 var testdataDir string = "../../../../testdata/config"
 
-func newConfigLoader(path string) loader.ConfigLoader {
+func newConfigLoader(path string) ports.ConfigLoader {
 	return yaml.YamlConfigLoader{Path: path}
 }
 
