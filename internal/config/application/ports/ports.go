@@ -5,5 +5,5 @@ import (
 )
 
 type ConfigLoader interface {
-	Load() (model.ServiceUnitConfig, error)
+	Load() (*model.ServiceUnitConfig, error)
 }

@@ -18,7 +18,7 @@ type ServiceUnit struct {
 }
 
 // NewServiceUnit initializes service unit object
-func NewServiceUnit(serviceUnitConfig model.ServiceUnitConfig) ServiceUnit {
+func NewServiceUnit(serviceUnitConfig *model.ServiceUnitConfig) ServiceUnit {
 	serverAdapters := make(map[string]ports.PrimaryPort)
 	consumerAdapters := make(map[string]ports.PrimaryPort)
 
@@ -26,7 +26,7 @@ func NewServiceUnit(serviceUnitConfig model.ServiceUnitConfig) ServiceUnit {
 
 	return ServiceUnit{
 		Name:                    serviceUnitConfig.Name,
-		Config:                  &serviceUnitConfig,
+		Config:                  serviceUnitConfig,
 		ServerAdapters:          serverAdapters,
 		ConsumerAdapters:        consumerAdapters,
 		SecondaryAdapterClients: secondaryAdapters,

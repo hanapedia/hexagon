@@ -13,7 +13,7 @@ type YamlConfigLoader struct {
 	Path string
 }
 
-func (ycl YamlConfigLoader) Load() (model.ServiceUnitConfig, error) {
+func (ycl YamlConfigLoader) Load() (*model.ServiceUnitConfig, error) {
 	data, err := os.ReadFile(ycl.Path)
 	if err != nil {
 		logger.Logger.Fatal("Failed to read config file ", "path=", ycl.Path, "err=", err)
@@ -25,5 +25,5 @@ func (ycl YamlConfigLoader) Load() (model.ServiceUnitConfig, error) {
 		logger.Logger.Fatal("Failed to load config from yaml ", "path=", ycl.Path, "err=", err)
 	}
 
-    return config, err
+    return &config, err
 }
