@@ -6,12 +6,12 @@ import (
 	"path/filepath"
 
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
-	"github.com/hanapedia/hexagon/pkg/operator/loader"
+	"github.com/hanapedia/hexagon/internal/config/application/ports"
+	"github.com/hanapedia/hexagon/internal/config/infrastructure/yaml"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
-	"github.com/hanapedia/hexagon/pkg/operator/yaml"
 )
 
-func newConfigLoader(path string) loader.ConfigLoader {
+func newConfigLoader(path string) ports.ConfigLoader {
 	return yaml.YamlConfigLoader{Path: path}
 }
 

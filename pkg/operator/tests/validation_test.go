@@ -6,7 +6,7 @@ import (
 
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/validation"
-	"github.com/hanapedia/hexagon/pkg/operator/yaml"
+	"github.com/hanapedia/hexagon/internal/config/infrastructure/yaml"
 )
 
 // test multiple valid config
