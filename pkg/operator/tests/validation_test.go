@@ -84,5 +84,5 @@ func getServiceUnitConfig(path string) model.ServiceUnitConfig {
 	if err != nil {
 		log.Fatalf("Failed to load config from path %s. error: %s", path, err)
 	}
-	return serviceConfig
+	return *serviceConfig
 }

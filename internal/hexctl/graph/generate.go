@@ -18,7 +18,7 @@ func newGraphGenerator(paths []string) GraphGenerator {
 	configs := make([]*model.ServiceUnitConfig, 0, len(paths))
 	for _, path := range paths {
 		config := loader.GetConfig(path)
-		configs = append(configs, &config)
+		configs = append(configs, config)
 	}
 
 	return GraphGenerator{

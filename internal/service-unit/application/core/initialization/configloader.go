@@ -8,13 +8,13 @@ import (
 )
 
 // GetConfig parses service-unit config via given formant
-func GetConfig(configLoader ports.ConfigLoader) model.ServiceUnitConfig {
+func GetConfig(configLoader ports.ConfigLoader) *model.ServiceUnitConfig {
 	config, err := configLoader.Load()
 	if err != nil {
 		l.Logger.Fatalf("Error loading config: %v", err)
 	}
 
-	errs := validation.ValidateServiceUnitConfigFields(&config)
+	errs := validation.ValidateServiceUnitConfigFields(config)
 	if errs.Exist() {
 		errs.Print()
 		l.Logger.Fatalln("Validation failed. Aborted.")

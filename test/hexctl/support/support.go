@@ -6,5 +6,5 @@ import (
 )
 
 func GetServiceUnitConfig(path string) model.ServiceUnitConfig {
-	return loader.GetConfig(path)
+	return *loader.GetConfig(path)
 }

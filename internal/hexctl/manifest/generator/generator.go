@@ -27,7 +27,7 @@ func NewManifestGenerator(input, output string) ManifestGenerator {
 	return ManifestGenerator{
 		Input:             input,
 		Output:            output,
-		ServiceUnitConfig: &config,
+		ServiceUnitConfig: config,
 	}
 }
 

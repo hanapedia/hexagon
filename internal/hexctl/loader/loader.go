@@ -12,10 +12,10 @@ import (
 )
 
 func newConfigLoader(path string) ports.ConfigLoader {
-	return yaml.YamlConfigLoader{Path: path}
+	return &yaml.YamlConfigLoader{Path: path}
 }
 
-func GetConfig(path string) model.ServiceUnitConfig {
+func GetConfig(path string) *model.ServiceUnitConfig {
 	configLoader := newConfigLoader(path)
 	config, err := configLoader.Load()
 	if err != nil {
