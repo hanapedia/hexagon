@@ -12,7 +12,7 @@ import (
 func RedisClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {
 	var redisAdapter ports.SecodaryPort
 	var err error
-	if redisClient, ok := (client).(*redisClient); ok {
+	if redisClient, ok := (client).(*RedisClient); ok {
 		switch adapterConfig.Action {
 		case constants.READ:
 			redisAdapter = &redisReadAdapter{
