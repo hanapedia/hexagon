@@ -7,12 +7,12 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-type redisClient struct {
+type RedisClient struct {
 	Client  *redis.Client
 }
 
 // Client client for redis
-func NewRedisClient(addr string) *redisClient {
+func NewRedisClient(addr string) *RedisClient {
 	client := redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Password: "",
@@ -27,10 +27,10 @@ func NewRedisClient(addr string) *redisClient {
 		}
 	}
 
-	redisClient := redisClient{Client: client}
+	redisClient := RedisClient{Client: client}
 	return &redisClient
 }
 
-func (redisClient *redisClient) Close() {
+func (redisClient *RedisClient) Close() {
 	redisClient.Client.Close()
 }
