@@ -52,7 +52,7 @@ func (rsa *RestServerAdapter) Register(handler *ports.PrimaryHandler) error {
 
 	var err error
 	switch handler.ServerConfig.Action {
-	case constants.GET:
+	case constants.GET, constants.READ:
 		rsa.server.Get("/"+handler.ServerConfig.Route, func(c *fiber.Ctx) error {
 			// record time for logging
 			startTime := time.Now()
@@ -82,7 +82,7 @@ func (rsa *RestServerAdapter) Register(handler *ports.PrimaryHandler) error {
 
 			return c.Status(fiber.StatusOK).JSON(restResponse)
 		})
-	case constants.POST:
+	case constants.POST, constants.WRITE:
 		rsa.server.Post("/"+handler.ServerConfig.Route, func(c *fiber.Ctx) error {
 			// record time for logging
 			startTime := time.Now()
