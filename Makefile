@@ -1,6 +1,18 @@
 GRPC_GENERATE_DIR := ./internal/service-unit/infrastructure/adapters/generated/grpc/
 GO_MODULE := $(shell go list -m)
 COMMA := ,
+TEST_PATH ?= ./...
+GO_VERSION := 1.21
+INTEGRATION_TEST_DOCKERFILE_PATH := ./test/integration/Dockerfile
+
+.PHONY: ctestbuild
+ctestbuild:
+	docker build --build-arg WORKDIR=$(CURDIR) -t test_container -f $(INTEGRATION_TEST_DOCKERFILE_PATH) $(CURDIR)
+
+.PHONY: ctest
+ctest: ctestbuild
+	docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(CURDIR):$(CURDIR) -e TC_HOST=host.docker.internal test_container go test -v $(TEST_PATH)
+
 
 # Local development with tilt
 #
