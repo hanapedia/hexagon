@@ -4,9 +4,9 @@ import (
 	"context"
 	"os"
 	"os/signal"
-	/* "reflect" */
+	"reflect"
 	"sync"
-    "syscall"
+	"syscall"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/core/initialization"
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
@@ -49,12 +49,16 @@ func main() {
 
 	// crate error chan
 	errChan := make(chan ports.PrimaryPortError)
+	go func() {
+		serverAdapterError := <-errChan
+		logger.Logger.Fatalf("%s failed: %s", reflect.TypeOf(serverAdapterError.PrimaryPort).Elem().Name(), serverAdapterError.Error)
+	}()
 
 	// start primary adapters
 	serviceUnit.Start(ctx, &wg, errChan)
-	logger.Logger.Info("waiting")
-
-	/* serverAdapterError := <-errChan */
-	/* logger.Logger.Fatalf("%s failed: %s", reflect.TypeOf(serverAdapterError.PrimaryPort).Elem().Name(), serverAdapterError.Error) */
 	wg.Wait()
+
+	// Close all client connections
+	serviceUnit.Close()
+	return
 }
