@@ -240,7 +240,7 @@ func (gsa *GrpcServerAdapter) BidirectionalStreaming(stream pb.Grpc_Bidirectiona
 		return err
 	}
 
-	handler, ok := gsa.configs.serverStream[req.Route]
+	handler, ok := gsa.configs.biStream[req.Route]
 	if !ok {
 		return errors.New(fmt.Sprintf("Route not found %s.", req.Route))
 	}
