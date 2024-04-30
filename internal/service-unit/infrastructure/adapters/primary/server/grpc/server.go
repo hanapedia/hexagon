@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"sync"
 	"time"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/core/runtime"
@@ -61,8 +62,15 @@ func NewGrpcServerAdapter() *GrpcServerAdapter {
 }
 
 // Serve starts the grpc server
-func (gsa *GrpcServerAdapter) Serve() error {
+func (gsa *GrpcServerAdapter) Serve(ctx context.Context, wg *sync.WaitGroup) error {
 	logger.Logger.Infof("Serving grpc server at %s", gsa.addr)
+	go func() {
+		<- ctx.Done()
+		logger.Logger.Infof("Context cancelled. GRPC Server shutting down.")
+		gsa.server.GracefulStop()
+		wg.Done()
+	}()
+
 	listen, err := net.Listen("tcp", gsa.addr)
 	if err != nil {
 		return err

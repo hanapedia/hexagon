@@ -1,6 +1,9 @@
 package initialization
 
 import (
+	"context"
+	"sync"
+
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	l "github.com/hanapedia/hexagon/pkg/operator/logger"
@@ -33,12 +36,13 @@ func NewServiceUnit(serviceUnitConfig *model.ServiceUnitConfig) ServiceUnit {
 	}
 }
 
-// Start primary adapters
-func (su *ServiceUnit) Start(errChan chan ports.PrimaryPortError) {
+// Start primary adapters. it propagates context to primary adapters
+func (su *ServiceUnit) Start(shutdownNotification context.Context, shutdownWaitGroup *sync.WaitGroup, errChan chan ports.PrimaryPortError) {
 	for _, serverAdapter := range su.ServerAdapters {
 		serverAdapterCopy := serverAdapter
+		shutdownWaitGroup.Add(1)
 		go func() {
-			if err := serverAdapterCopy.Serve(); err != nil {
+			if err := serverAdapterCopy.Serve(shutdownNotification, shutdownWaitGroup); err != nil {
 				errChan <- ports.PrimaryPortError{PrimaryPort: serverAdapterCopy, Error: err}
 			}
 		}()
@@ -47,8 +51,9 @@ func (su *ServiceUnit) Start(errChan chan ports.PrimaryPortError) {
 	for protocolAndAction, consumerAdapter := range su.ConsumerAdapters {
 		consumerAdapterCopy := consumerAdapter
 		l.Logger.Infof("Consumer '%s' started.", protocolAndAction)
+		shutdownWaitGroup.Add(1)
 		go func() {
-			if err := consumerAdapterCopy.Serve(); err != nil {
+			if err := consumerAdapterCopy.Serve(shutdownNotification, shutdownWaitGroup); err != nil {
 				errChan <- ports.PrimaryPortError{PrimaryPort: consumerAdapterCopy, Error: err}
 			}
 		}()
