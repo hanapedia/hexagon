@@ -7,7 +7,6 @@ import (
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
-	l "github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
 type ServiceUnit struct {
@@ -51,7 +50,7 @@ func (su *ServiceUnit) Start(shutdownNotification context.Context, shutdownWaitG
 
 	for protocolAndAction, consumerAdapter := range su.ConsumerAdapters {
 		consumerAdapterCopy := consumerAdapter
-		l.Logger.Infof("Consumer '%s' started.", protocolAndAction)
+		logger.Logger.Infof("Consumer '%s' started.", protocolAndAction)
 		shutdownWaitGroup.Add(1)
 		go func() {
 			if err := consumerAdapterCopy.Serve(shutdownNotification, shutdownWaitGroup); err != nil {
