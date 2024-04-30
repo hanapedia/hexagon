@@ -23,7 +23,10 @@ func main() {
 	serviceUnitConfig := initialization.GetConfig(yamlConfigLoader)
 
 	// init telemetry
-	initialization.InitTracing(serviceUnitConfig.Name)
+	traceProvider := initialization.InitTracing(serviceUnitConfig.Name)
+	if traceProvider != nil {
+		defer traceProvider.Shutdown(context.Background())
+	}
 
 	serviceUnit := initialization.NewServiceUnit(serviceUnitConfig)
 	logger.Logger.Println("Service unit loaded")
