@@ -6,6 +6,7 @@ import (
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 	l "github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
@@ -65,4 +66,12 @@ func (su *ServiceUnit) Setup() {
 	su.initializePrimaryAdapters()
 	su.initializeSecondaryAdaptersClients()
 	su.mapSecondaryToPrimary()
+}
+
+// Close closes all secondary adapter client connections
+func (su *ServiceUnit) Close() {
+	for key, client := range su.SecondaryAdapterClients	{
+		logger.Logger.Infof("Closing %s client.", key)
+		client.Close()
+	}
 }
