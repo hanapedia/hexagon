@@ -5,17 +5,20 @@ import (
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/telemetry/tracing"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 	"github.com/sirupsen/logrus"
+	"go.opentelemetry.io/otel/sdk/trace"
 )
 
-func InitTracing(name string) {
+// InitTracing initiates distributed tracing if enabled
+// TODO: encapsulate in to ports and adapters
+func InitTracing(name string) *trace.TracerProvider {
 	if !config.GetEnvs().TRACING {
 		logger.Logger.Info("Tracing is disabled.")
-		return
+		return nil
 	}
 	collectorUrl := config.GetOtelCollectorUrl()
-	_ = tracing.InitTracer(name, collectorUrl)
+	provider := tracing.InitTracer(name, collectorUrl)
 	logger.Logger.Info("Initialized tracing.")
-	return
+	return provider
 }
 
 func InitLogging() {
