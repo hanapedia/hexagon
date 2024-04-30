@@ -1,7 +1,12 @@
 package main
 
 import (
-	"reflect"
+	"context"
+	"os"
+	"os/signal"
+	/* "reflect" */
+	"sync"
+    "syscall"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/core/initialization"
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
@@ -26,10 +31,30 @@ func main() {
 	// setup service unit
 	serviceUnit.Setup()
 
-	// create error channel and start service unit
-	errChan := make(chan ports.PrimaryPortError)
-	serviceUnit.Start(errChan)
+	// create wait group to wait for graceful shutdown
+    var wg sync.WaitGroup
 
-	serverAdapterError := <-errChan
-	logger.Logger.Fatalf("%s failed: %s", reflect.TypeOf(serverAdapterError.PrimaryPort).Elem().Name(), serverAdapterError.Error)
+	// create context for triggering graceful shutdown
+    ctx, cancel := context.WithCancel(context.Background())
+    defer cancel()
+
+    // Handle OS signals
+    sigs := make(chan os.Signal, 1)
+    signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+    go func() {
+        <-sigs
+        logger.Logger.Info("Termination Signal received, cancelling context.")
+        cancel()
+    }()
+
+	// crate error chan
+	errChan := make(chan ports.PrimaryPortError)
+
+	// start primary adapters
+	serviceUnit.Start(ctx, &wg, errChan)
+	logger.Logger.Info("waiting")
+
+	/* serverAdapterError := <-errChan */
+	/* logger.Logger.Fatalf("%s failed: %s", reflect.TypeOf(serverAdapterError.PrimaryPort).Elem().Name(), serverAdapterError.Error) */
+	wg.Wait()
 }

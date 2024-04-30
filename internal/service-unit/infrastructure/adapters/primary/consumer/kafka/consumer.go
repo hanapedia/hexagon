@@ -2,6 +2,7 @@ package kafka
 
 import (
 	"context"
+	"sync"
 	"time"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/core/runtime"
@@ -38,15 +39,20 @@ func NewKafkaConsumer(topic, group string) *KafkaConsumer {
 	return &KafkaConsumer{reader: reader}
 }
 
-func (kca KafkaConsumerAdapter) Serve() error {
+func (kca KafkaConsumerAdapter) Serve(ctx context.Context, wg *sync.WaitGroup) error {
 	var err error
+	ConsumerLoop:
 	for {
-		startTime := time.Now()
-
-		message, err := kca.kafkaConsumer.reader.ReadMessage(context.Background())
+		message, err := kca.kafkaConsumer.reader.ReadMessage(ctx)
 		if err != nil {
-			break
+			if err == context.Canceled {
+				logger.Logger.Infof("Context cancelled, Kafka Consumer shutting.")
+				kca.kafkaConsumer.reader.Close()
+				wg.Done()
+			}
+			break ConsumerLoop
 		}
+		startTime := time.Now()
 
 		ctx := context.Background()
 

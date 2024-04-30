@@ -2,6 +2,7 @@ package ports
 
 import (
 	"context"
+	"sync"
 
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	l "github.com/hanapedia/hexagon/pkg/operator/logger"
@@ -15,7 +16,9 @@ import (
 //
 // It is intended to represent the individual interfaces on each exteranl service,
 type PrimaryPort interface {
-	Serve() error
+	// Serve starts primary port adapter with cancellable context and WaitGroup for graceful shutdown
+	Serve(context.Context, *sync.WaitGroup) error
+	// Register registers primary port handler to primary adapter instance
 	Register(*PrimaryHandler) error
 }
 
