@@ -2,17 +2,20 @@ package test
 
 import (
 	"context"
+	"sync"
 	"testing"
+	"time"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
 	restServer "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/primary/server/rest"
-	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/invocation/rest"
+	restClient "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/invocation/rest"
 	v1 "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
 func TestRestServerAndClient(t *testing.T) {
+	// 1. Setup server
 	server := restServer.NewRestServerAdapter()
 	server.Register(&ports.PrimaryHandler{
 		ServiceName: "test",
@@ -32,16 +35,22 @@ func TestRestServerAndClient(t *testing.T) {
 		},
 		TaskSet: []ports.Task{},
 	})
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	var wg sync.WaitGroup
+
 	errChan := make(chan ports.PrimaryPortError)
 	go func() {
-		// TODO: handle graceful shut down
-		if err := server.Serve(); err != nil {
+		wg.Add(1)
+		if err := server.Serve(ctx, &wg); err != nil {
 			errChan <- ports.PrimaryPortError{PrimaryPort: server, Error: err}
 		}
 	}()
 
-	client := rest.NewRestClient()
-	readAdapter, err := rest.RestInvocationAdapterFactory(
+	// 2. Setup client
+	client := restClient.NewRestClient()
+	readAdapter, err := restClient.RestInvocationAdapterFactory(
 		&v1.InvocationConfig{
 			Variant: "rest",
 			Service: "localhost",
@@ -56,17 +65,48 @@ func TestRestServerAndClient(t *testing.T) {
 		return
 	}
 
+	writeAdapter, err := restClient.RestInvocationAdapterFactory(
+		&v1.InvocationConfig{
+			Variant: "rest",
+			Service: "localhost",
+			Action: constants.POST,
+			Route: "post",
+		},
+		client,
+	)
+	if err != nil {
+		t.Fail()
+		logger.Logger.Error(err)
+		return
+	}
+
+	// TODO: replace with healthcheck probe
+	time.Sleep(2*time.Second)
 	res := readAdapter.Call(context.Background())
 	if res.Error != nil {
 		t.Fail()
 		logger.Logger.Error(res.Error)
 		return
 	}
-
-	serverAdapterError := <-errChan
-	if serverAdapterError.Error != nil {
+	res = writeAdapter.Call(context.Background())
+	if res.Error != nil {
 		t.Fail()
-		logger.Logger.Error(serverAdapterError.Error)
+		logger.Logger.Error(res.Error)
 		return
 	}
+
+	go func() {
+		serverAdapterError := <-errChan
+		if serverAdapterError.Error != nil {
+			t.Fail()
+			logger.Logger.Error(serverAdapterError.Error)
+			return
+		}
+	}()
+
+	// 3. shutdown server
+	logger.Logger.Info("Request successful. Cancelling server context for clean up.")
+	cancel()
+	wg.Wait()
+	client.Close()
 }
