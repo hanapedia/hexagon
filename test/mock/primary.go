@@ -1,13 +1,18 @@
 package mock
 
-import "github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+import (
+	"context"
+	"sync"
+
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+)
 
 type PrimaryAdapterMock struct {
 	addr string
 }
 
 // Serve mock implementation
-func (pam PrimaryAdapterMock) Serve() error {
+func (pam PrimaryAdapterMock) Serve(ctx context.Context, wg *sync.WaitGroup) error {
 	return nil
 }
 

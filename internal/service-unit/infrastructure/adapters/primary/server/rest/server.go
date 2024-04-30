@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/gofiber/contrib/otelfiber"
@@ -40,8 +41,15 @@ func NewRestServerAdapter() *RestServerAdapter {
 	return &adapter
 }
 
-func (rsa *RestServerAdapter) Serve() error {
+func (rsa *RestServerAdapter) Serve(ctx context.Context, wg *sync.WaitGroup) error {
 	logger.Logger.Infof("Serving rest server at %s", rsa.addr)
+	go func() {
+		<- ctx.Done()
+		logger.Logger.Infof("Context cancelled. GRPC Server shutting down.")
+		rsa.server.Shutdown()
+		wg.Done()
+	}()
+
 	return rsa.server.Listen(rsa.addr)
 }
 
