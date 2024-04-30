@@ -45,7 +45,7 @@ func (rsa *RestServerAdapter) Serve(ctx context.Context, wg *sync.WaitGroup) err
 	logger.Logger.Infof("Serving rest server at %s", rsa.addr)
 	go func() {
 		<- ctx.Done()
-		logger.Logger.Infof("Context cancelled. GRPC Server shutting down.")
+		logger.Logger.Infof("Context cancelled. Rest Server shutting down.")
 		rsa.server.Shutdown()
 		wg.Done()
 	}()
