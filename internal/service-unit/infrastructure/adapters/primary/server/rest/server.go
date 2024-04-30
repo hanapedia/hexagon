@@ -21,12 +21,14 @@ import (
 
 // must implement ports.PrimaryPort
 type RestServerAdapter struct {
-	addr        string
-	server      *fiber.App
+	addr   string
+	server *fiber.App
 }
 
 func NewRestServerAdapter() *RestServerAdapter {
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		DisableStartupMessage: true,
+	})
 
 	// enable tracing
 	if config.GetEnvs().TRACING {
@@ -34,8 +36,8 @@ func NewRestServerAdapter() *RestServerAdapter {
 	}
 
 	adapter := RestServerAdapter{
-		addr:        config.GetRestServerAddr(),
-		server:      app,
+		addr:   config.GetRestServerAddr(),
+		server: app,
 	}
 
 	return &adapter
@@ -44,7 +46,7 @@ func NewRestServerAdapter() *RestServerAdapter {
 func (rsa *RestServerAdapter) Serve(ctx context.Context, wg *sync.WaitGroup) error {
 	logger.Logger.Infof("Serving rest server at %s", rsa.addr)
 	go func() {
-		<- ctx.Done()
+		<-ctx.Done()
 		logger.Logger.Infof("Context cancelled. Rest Server shutting down.")
 		rsa.server.Shutdown()
 		wg.Done()
