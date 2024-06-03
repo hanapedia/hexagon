@@ -19,8 +19,9 @@ jobs:
             DOCKERFILE_PATH: ./build/service-unit/Dockerfile
           - IMAGE_NAME: hexagon-datagen
             DOCKERFILE_PATH: ./build/datagen/Dockerfile
-          - IMAGE_NAME: hexagon-load-generator
-            DOCKERFILE_PATH: ./build/load-generator/Dockerfile
+          # load generator build removed as it will be deprecated
+          # - IMAGE_NAME: hexagon-load-generator
+          #   DOCKERFILE_PATH: ./build/load-generator/Dockerfile
 
     steps:
       - name: Checkout
