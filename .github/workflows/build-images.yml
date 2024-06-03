@@ -21,10 +21,6 @@ jobs:
             DOCKERFILE_PATH: ./build/datagen/Dockerfile
           - IMAGE_NAME: hexagon-load-generator
             DOCKERFILE_PATH: ./build/load-generator/Dockerfile
-          - IMAGE_NAME: hexagon-mongo
-            DOCKERFILE_PATH: ./build/stateful-unit/mongo/Dockerfile
-          - IMAGE_NAME: hexagon-redis
-            DOCKERFILE_PATH: ./build/stateful-unit/redis/Dockerfile
 
     steps:
       - name: Checkout
