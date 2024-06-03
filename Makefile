@@ -2,7 +2,7 @@ GRPC_GENERATE_DIR := ./internal/service-unit/infrastructure/adapters/generated/g
 GO_MODULE := $(shell go list -m)
 COMMA := ,
 TEST_PATH ?= ./...
-GO_VERSION := 1.21
+GO_VERSION := 1.22
 INTEGRATION_TEST_DOCKERFILE_PATH := ./test/integration/Dockerfile
 
 .PHONY: ctestbuild
