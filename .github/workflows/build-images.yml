@@ -7,7 +7,7 @@ on:
     tags:
       - "v*.*.*"
 env:
-  DOCKERHUB_USERNAME: hiroki11hanada
+  DOCKER_HUB_USERNAME: hiroki11hanada
 
 jobs:
   build-core-images:
@@ -36,7 +36,7 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: |
-            ${{ env.DOCKERHUB_USERNAME }}/${{ matrix.IMAGE_NAME }}
+            ${{ env.DOCKER_HUB_USERNAME }}/${{ matrix.IMAGE_NAME }}
           # generate Docker tags based on the following events/attributes
           tags: |
             type=ref,event=branch
@@ -54,7 +54,7 @@ jobs:
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ env.DOCKERHUB_USERNAME }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push
@@ -90,7 +90,7 @@ jobs:
         with:
           # list of Docker images to use as base name for tags
           images: |
-            ${{ env.DOCKERHUB_USERNAME }}/${{ matrix.IMAGE_NAME }}
+            ${{ env.DOCKER_HUB_USERNAME }}/${{ matrix.IMAGE_NAME }}
           # generate Docker tags based on the following events/attributes
           tags: |
             type=ref,event=branch
@@ -98,27 +98,6 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
             type=sha
-
-      # Output the sha image tag that was pushed to the registry.
-      # The script uses ./jq to parse the JSON output from the docker/metadata-action@v4 action.
-      # See https://jqlang.github.io/jq/ for more information.
-      - name: Output SHA image tag
-        id: output_sha_image_tag
-        env:
-          DOCKER_METADATA: ${{ steps.meta.outputs.json}}
-        run: |
-          # pretty print the metadata
-          echo $DOCKER_METADATA | jq '.'
-
-          # get the image tag that contains 'sha-'
-          image_tag=$(echo "$DOCKER_METADATA" | jq -r '.tags[] | select(. | test("sha-"))')
-          echo $image_tag
-
-          # get the sha from the image tag, for example: sha-1234567890abcdef1234567890abcdef12345678
-          image_tag_sha=$(echo "$image_tag" | grep -o 'sha-[a-f0-9]\+')
-          echo $image_tag_sha
-
-          echo "image_tag_sha=$image_tag_sha" >> $GITHUB_OUTPUT
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -129,7 +108,7 @@ jobs:
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ env.DOCKERHUB_USERNAME }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and push
@@ -141,4 +120,4 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            BUILDER_IMAGE=${{ env.DOCKERHUB_USERNAME }}/${{ matrix.DEPENDENCY_IMAGE }}:${{ steps.output_sha_image_tag.outputs }}
+            BUILDER_IMAGE=${{ env.DOCKERHUB_USERNAME }}/${{ matrix.DEPENDENCY_IMAGE }}
