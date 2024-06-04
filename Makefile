@@ -9,10 +9,16 @@ INTEGRATION_TEST_DOCKERFILE_PATH := ./test/integration/Dockerfile
 ctestbuild:
 	docker build --build-arg WORKDIR=$(CURDIR) -t test_container -f $(INTEGRATION_TEST_DOCKERFILE_PATH) $(CURDIR)
 
+# Containerized testing for local testing.
+# This makes things easier by allowing port allocation for MacOS.
 .PHONY: ctest
 ctest: ctestbuild
 	docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v $(CURDIR):$(CURDIR) -e TC_HOST=host.docker.internal test_container go test -v $(TEST_PATH)
 
+# Alias for running tests.
+.PHONY: test
+test:
+	go test -v $(TEST_PATH)
 
 # Local development with tilt
 #
