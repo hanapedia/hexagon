@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 
@@ -45,7 +44,5 @@ ingressAdapters:
 	if !strings.Contains(string(configMapYAML), "namespace: test") {
 		t.Errorf("The 'namespace' field is incorrect or missing in the generated YAML")
 	}
-
-	fmt.Printf("%s", string(configMapYAML))
 }
 

@@ -11,13 +11,13 @@ import (
 
 func TestDeploymentFactory(t *testing.T) {
 	args := factory.DeploymentArgs{
-		Name:                   "test",
-		Namespace:              "test",
-		Image:                  "test",
-		Replicas:               1,
-		Resource: nil,
-		Ports:                  map[string]int32{"http": 8080},
-		VolumeMounts:           map[string]string{"config": "/config"},
+		Name:         "test",
+		Namespace:    "test",
+		Image:        "test",
+		Replicas:     1,
+		Resource:     nil,
+		Ports:        map[string]int32{"http": 8080},
+		VolumeMounts: map[string]string{"config": "/config"},
 		ConfigVolume: &factory.ConfigMapVolumeArgs{
 			Name:  "config",
 			Items: map[string]string{"config": "config.txt"},

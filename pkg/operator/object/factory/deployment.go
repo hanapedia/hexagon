@@ -62,11 +62,15 @@ func NewPodSpec(args *DeploymentArgs) corev1.PodSpec {
 
 // NewContainer create container
 func NewContainer(args *DeploymentArgs) []corev1.Container {
+	resources := corev1.ResourceRequirements{}
+	if args.Resource != nil {
+		resources = *args.Resource
+	}
 	return []corev1.Container{
 		{
 			Name:         args.Name,
 			Image:        args.Image,
-			Resources:    *args.Resource,
+			Resources:    resources,
 			Ports:        NewContainerPort(args.Ports),
 			VolumeMounts: NewVolumeMount(args.VolumeMounts),
 			Env:          args.Envs,
