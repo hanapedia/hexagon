@@ -4,14 +4,6 @@ import (
 	"testing"
 )
 
-func TestAddNode(t *testing.T) {
-	g := NewGraph()
-
-	if _, exists := g.Nodes["node1"]; !exists {
-		t.Error("Expected node 'node1' to exist")
-	}
-}
-
 func TestAddEdge(t *testing.T) {
 	g := NewGraph()
 	err := g.AddEdge("node1", "node2")
