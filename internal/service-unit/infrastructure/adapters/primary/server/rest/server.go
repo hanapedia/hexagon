@@ -77,7 +77,7 @@ func (rsa *RestServerAdapter) Register(handler *ports.PrimaryHandler) error {
 				}
 
 				restResponse := contract.RestResponseBody{}
-				return c.Status(fiber.StatusOK).JSON(restResponse)
+				return c.Status(fiber.StatusInternalServerError).JSON(restResponse)
 			}
 
 			// write response
@@ -106,7 +106,7 @@ func (rsa *RestServerAdapter) Register(handler *ports.PrimaryHandler) error {
 					handler.LogTaskError(c.UserContext(), err)
 				}
 				restResponse := contract.RestResponseBody{}
-				return c.Status(fiber.StatusOK).JSON(restResponse)
+				return c.Status(fiber.StatusInternalServerError).JSON(restResponse)
 			}
 
 			// write response
