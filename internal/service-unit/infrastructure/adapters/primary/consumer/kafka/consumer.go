@@ -65,6 +65,7 @@ func (kca KafkaConsumerAdapter) Serve(ctx context.Context, wg *sync.WaitGroup) e
 			for _, err := range errs {
 				kca.kafkaConsumer.handler.LogTaskError(ctx, err)
 			}
+			// TODO: Consider error handling for failed topic. Maybe requeueing?
 		}
 
 		kca.log(ctx, startTime)
