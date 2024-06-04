@@ -18,11 +18,10 @@ func NewGrpcClient(addr string) *GrpcClient {
 
 	// enable tracing
 	if config.GetEnvs().TRACING {
-		opts = append(opts, grpc.WithUnaryInterceptor(grpc.UnaryClientInterceptor(otelgrpc.UnaryClientInterceptor())))
-		opts = append(opts, grpc.WithStreamInterceptor(grpc.StreamClientInterceptor(otelgrpc.StreamClientInterceptor())))
+		opts = append(opts, grpc.WithStatsHandler(otelgrpc.NewClientHandler()))
 	}
 
-	conn, err := grpc.Dial(addr, opts...)
+	conn, err := grpc.NewClient(addr, opts...)
 	if err != nil {
 		logger.Logger.Panicf("Failed to connect to Grpc server. err=%v, addr=%s", err, addr)
 	}
