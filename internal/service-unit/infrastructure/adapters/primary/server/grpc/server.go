@@ -42,8 +42,7 @@ func NewGrpcServerAdapter() *GrpcServerAdapter {
 
 	// enable tracing
 	if config.GetEnvs().TRACING {
-		opts = append(opts, grpc.UnaryInterceptor(otelgrpc.UnaryServerInterceptor()))
-		opts = append(opts, grpc.StreamInterceptor(otelgrpc.StreamServerInterceptor()))
+		opts = append(opts, grpc.StatsHandler(otelgrpc.NewServerHandler()))
 	}
 
 	server := grpc.NewServer(opts...)
