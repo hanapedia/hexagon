@@ -21,6 +21,7 @@ type InvocationConfig struct {
 	Action  constants.Action              `json:"action,omitempty" validate:"required"`
 	Route   string                        `json:"route,omitempty" validate:"required"`
 	Payload PayloadSpec                   `json:"payload,omitempty"`
+	OnError OnErrorSpec                   `json:"onError,omitempty"`
 }
 
 // Config fields for repository services
