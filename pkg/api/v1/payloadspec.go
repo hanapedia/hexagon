@@ -23,6 +23,11 @@ func ParseResource(payloadSpec PayloadSpec) (int64, bool) {
 	return 0, false
 }
 
+// GetPayloadSize parses resource size using
+// "k8s.io/apimachinery/pkg/api/resource", Size is specified.
+// It then looks at Variant for size aliases.
+// Lastly, when none of them is given, default size is returned.
+// The default payload size is defined in "github.com/hanapedia/hexagon/pkg/operator/constants"
 func GetPayloadSize(payloadSpec PayloadSpec) int64 {
 	if size, ok := ParseResource(payloadSpec); ok {
 		logger.Logger.Debugf("parsed payload size, %v", size)
