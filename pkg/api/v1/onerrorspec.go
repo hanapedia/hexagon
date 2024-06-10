@@ -1,9 +1,5 @@
 package v1
 
-import (
-	"github.com/hanapedia/hexagon/pkg/api/helper"
-)
-
 // OnErrorSpec is the configuration for what the service unit will do
 // when the secondary adapter call fails
 type OnErrorSpec struct {
@@ -28,10 +24,14 @@ type OnErrorSpec struct {
 	// RetryMaxDuration specifies the max duration to retry for before giving up.
 	//
 	// If both RetryMaxAttempt is also specified, the one that expires first will take precedence.
-	RetryMaxDuration helper.Duration `json:"retryMaxDuration,omitempty"`
+	//
+	// Must be parsable using time.ParseDuration
+	RetryMaxDuration string `json:"retryMaxDuration,omitempty"`
 
 	// RetryInitialBackoff specifies the initial duration to backoff
-	RetryInitialBackoff helper.Duration `json:"retryInitialBackoff,omitempty"`
+	//
+	// Must be parsable using time.ParseDuration
+	RetryInitialBackoff string `json:"retryInitialBackoff,omitempty"`
 
 	// RetryBackoffScaling is the scaling factor for linear backoff policies.
 	//

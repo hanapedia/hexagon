@@ -2,6 +2,7 @@ package v1
 
 import (
 	"fmt"
+
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
 )
 
@@ -22,6 +23,9 @@ type InvocationConfig struct {
 	Route   string                        `json:"route,omitempty" validate:"required"`
 	Payload PayloadSpec                   `json:"payload,omitempty"`
 	OnError OnErrorSpec                   `json:"onError,omitempty"`
+	// Timeout is used as the value for request timeout of the invocation.
+	// Must be parsable with time.ParseDuration, otherwise default value will be used.
+	Timeout string                        `json:"timeout,omitempty"`
 }
 
 // Config fields for repository services
