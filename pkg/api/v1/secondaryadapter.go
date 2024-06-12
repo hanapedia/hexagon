@@ -13,6 +13,10 @@ type SecondaryAdapterConfig struct {
 	RepositoryConfig *RepositoryClientConfig `json:"repository,omitempty"`
 	ProducerConfig   *ProducerConfig         `json:"producer,omitempty"`
 	StressorConfig   *StressorConfig         `json:"stressor,omitempty"`
+	OnError          OnErrorSpec             `json:"onError,omitempty"`
+	// Timeout is used as the value for request timeout of the invocation.
+	// Must be parsable with time.ParseDuration, otherwise default value will be used.
+	Timeout string `json:"timeout,omitempty"`
 }
 
 // Config fields for server services
@@ -22,10 +26,6 @@ type InvocationConfig struct {
 	Action  constants.Action              `json:"action,omitempty" validate:"required"`
 	Route   string                        `json:"route,omitempty" validate:"required"`
 	Payload PayloadSpec                   `json:"payload,omitempty"`
-	OnError OnErrorSpec                   `json:"onError,omitempty"`
-	// Timeout is used as the value for request timeout of the invocation.
-	// Must be parsable with time.ParseDuration, otherwise default value will be used.
-	Timeout string                        `json:"timeout,omitempty"`
 }
 
 // Config fields for repository services
