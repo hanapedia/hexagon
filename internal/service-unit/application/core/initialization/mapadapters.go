@@ -70,7 +70,12 @@ func (su *ServiceUnit) newTaskSet(steps []model.Step) []ports.Task {
 			l.Logger.Infof("Skipped interface: %s", err)
 			continue
 		}
-		taskSet[i] = ports.Task{SecondaryPort: secondaryAdapter, Concurrent: step.Concurrent}
+		taskSet[i] = ports.Task{
+			SecondaryPort: secondaryAdapter,
+			Concurrent: step.Concurrent,
+			OnError: step.AdapterConfig.OnError,
+			Timeout: step.AdapterConfig.Timeout,
+		}
 	}
 
 	return taskSet

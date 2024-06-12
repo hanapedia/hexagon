@@ -116,11 +116,8 @@ func (gsa *GrpcServerAdapter) SimpleRPC(ctx context.Context, req *pb.StreamReque
 	// defer log
 	defer gsa.log(ctx, handler, startTime)
 
-	errs := runtime.TaskSetHandler(ctx, handler.TaskSet)
-	if errs != nil {
-		for _, err := range errs {
-			handler.LogTaskError(ctx, err)
-		}
+	result := runtime.TaskSetHandler(ctx, handler)
+	if result.ShouldFail {
 		return nil, errors.New(fmt.Sprintf("Simple RPC %s failed when handling tasks.", handler.GetId()))
 	}
 
@@ -156,11 +153,8 @@ func (gsa *GrpcServerAdapter) ClientStreaming(stream pb.Grpc_ClientStreamingServ
 	// defer log
 	defer gsa.log(stream.Context(), handler, startTime)
 
-	errs := runtime.TaskSetHandler(stream.Context(), handler.TaskSet)
-	if errs != nil {
-		for _, err := range errs {
-			handler.LogTaskError(stream.Context(), err)
-		}
+	result := runtime.TaskSetHandler(stream.Context(), handler)
+	if result.ShouldFail {
 		return errors.New(fmt.Sprintf("Client streaming %s failed when handling tasks.", handler.GetId()))
 	}
 
@@ -197,11 +191,8 @@ func (gsa *GrpcServerAdapter) ServerStreaming(req *pb.StreamRequest, stream pb.G
 	// defer log
 	defer gsa.log(stream.Context(), handler, startTime)
 
-	errs := runtime.TaskSetHandler(stream.Context(), handler.TaskSet)
-	if errs != nil {
-		for _, err := range errs {
-			handler.LogTaskError(stream.Context(), err)
-		}
+	result := runtime.TaskSetHandler(stream.Context(), handler)
+	if result.ShouldFail {
 		return errors.New(fmt.Sprintf("Server streaming %s failed when handling tasks.", handler.GetId()))
 	}
 
@@ -247,11 +238,8 @@ func (gsa *GrpcServerAdapter) BidirectionalStreaming(stream pb.Grpc_Bidirectiona
 	// defer log
 	defer gsa.log(stream.Context(), handler, startTime)
 
-	errs := runtime.TaskSetHandler(stream.Context(), handler.TaskSet)
-	if errs != nil {
-		for _, err := range errs {
-			handler.LogTaskError(stream.Context(), err)
-		}
+	result := runtime.TaskSetHandler(stream.Context(), handler)
+	if result.ShouldFail {
 		return errors.New(fmt.Sprintf("Bidirectional streaming %s failed when handling tasks.", handler.GetId()))
 	}
 
