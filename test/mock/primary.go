@@ -2,7 +2,9 @@ package mock
 
 import (
 	"context"
+	"fmt"
 	"sync"
+	"time"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
 )
@@ -25,7 +27,10 @@ func (pam PrimaryAdapterMock) Register(primaryHander *ports.PrimaryHandler) erro
 func NewPrimaryHandler(numTask int) ports.PrimaryHandler {
 	tasks := make([]ports.Task, numTask)
 	for i := 0; i < numTask; i++ {
-		tasks = append(tasks, ports.Task{SecondaryPort: NewSecondaryAdapter(), Concurrent: false})
+		tasks = append(tasks, ports.Task{
+			SecondaryPort: NewSecondaryAdapter(fmt.Sprintf("task%v", i), time.Millisecond, 0),
+			Concurrent:    false,
+		})
 	}
 	return ports.PrimaryHandler{
 		TaskSet: tasks,
