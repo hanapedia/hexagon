@@ -3,9 +3,14 @@ package ports
 import (
 	"context"
 	"sync"
+	"time"
 
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	l "github.com/hanapedia/hexagon/pkg/operator/logger"
+)
+
+var (
+	DEFAULT_TIMEOUT = 5 * time.Second
 )
 
 // PrimaryPort provides common interface for all the primary adapters.
@@ -38,15 +43,38 @@ type PrimaryHandler struct {
 type Task struct {
 	SecondaryPort SecodaryPort
 	Concurrent    bool
+	OnError       model.OnErrorSpec
+	Timeout       string
 }
 
-type TaskError struct {
-	task  Task
-	error error
+// TaskResult is returned for each individual task calls
+type TaskResult struct {
+	Task  Task
+	SecondaryPortCallResult
 }
 
-func NewTaskError(task Task, err error) *TaskError {
-	return &TaskError{task: task, error: err}
+// Get parsed timeout as time.Duration
+func (t Task) GetTimeout() time.Duration {
+	duration, err := time.ParseDuration(t.Timeout)
+	if err != nil {
+		return DEFAULT_TIMEOUT
+	}
+	if duration == 0 {
+		return DEFAULT_TIMEOUT
+	}
+	return duration
+}
+
+
+// TaskSetResult is returned for collection of task results
+// It may or may not fail the request based on error handling configuration.
+type TaskSetResult struct {
+	ShouldFail bool
+	TaskResults []*TaskResult
+}
+
+func NewTaskResult(task Task, result SecondaryPortCallResult) *TaskResult {
+	return &TaskResult{Task: task, SecondaryPortCallResult: result}
 }
 
 func (iah PrimaryHandler) GetId() string {
@@ -60,11 +88,19 @@ func (iah PrimaryHandler) GetId() string {
 	return id
 }
 
-func (iah PrimaryHandler) LogTaskError(ctx context.Context, taskError *TaskError) {
-	l.Logger.WithContext(ctx).Error(
-		"Call failed. ",
-		"sourceId=", iah.GetId(), ", ",
-		"destId=", taskError.task.SecondaryPort.GetDestId(), ", ",
-		"err=", taskError.error,
-	)
+func (iah PrimaryHandler) LogTaskResult(ctx context.Context, taskResult *TaskResult) {
+	if taskResult.Error != nil {
+		l.Logger.WithContext(ctx).Error(
+			"Call failed. ",
+			"sourceId=", iah.GetId(), ", ",
+			"destId=", taskResult.Task.SecondaryPort.GetDestId(), ", ",
+			"err=", taskResult.SecondaryPortCallResult.Error,
+		)
+	} else {
+		l.Logger.WithContext(ctx).Debug(
+			"Call succeeded. ",
+			"sourceId=", iah.GetId(), ", ",
+			"destId=", taskResult.Task.SecondaryPort.GetDestId(), ", ",
+		)
+	}
 }

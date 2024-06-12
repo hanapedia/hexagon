@@ -70,12 +70,8 @@ func (rsa *RestServerAdapter) Register(handler *ports.PrimaryHandler) error {
 			defer rsa.log(c.UserContext(), handler, startTime)
 
 			// call tasks
-			errs := runtime.TaskSetHandler(c.UserContext(), handler.TaskSet)
-			if errs != nil {
-				for _, err := range errs {
-					handler.LogTaskError(c.UserContext(), err)
-				}
-
+			result := runtime.TaskSetHandler(c.UserContext(), handler)
+			if result.ShouldFail {
 				restResponse := contract.RestResponseBody{}
 				return c.Status(fiber.StatusInternalServerError).JSON(restResponse)
 			}
@@ -100,11 +96,8 @@ func (rsa *RestServerAdapter) Register(handler *ports.PrimaryHandler) error {
 			defer rsa.log(c.UserContext(), handler, startTime)
 
 			// call tasks
-			errs := runtime.TaskSetHandler(c.UserContext(), handler.TaskSet)
-			if errs != nil {
-				for _, err := range errs {
-					handler.LogTaskError(c.UserContext(), err)
-				}
+			result := runtime.TaskSetHandler(c.UserContext(), handler)
+			if result.ShouldFail {
 				restResponse := contract.RestResponseBody{}
 				return c.Status(fiber.StatusInternalServerError).JSON(restResponse)
 			}

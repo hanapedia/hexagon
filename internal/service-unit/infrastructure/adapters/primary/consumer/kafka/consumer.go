@@ -41,7 +41,7 @@ func NewKafkaConsumer(topic, group string) *KafkaConsumer {
 
 func (kca KafkaConsumerAdapter) Serve(ctx context.Context, wg *sync.WaitGroup) error {
 	var err error
-	ConsumerLoop:
+ConsumerLoop:
 	for {
 		message, err := kca.kafkaConsumer.reader.ReadMessage(ctx)
 		if err != nil {
@@ -60,13 +60,10 @@ func (kca KafkaConsumerAdapter) Serve(ctx context.Context, wg *sync.WaitGroup) e
 		ctx, span := tracing.CreateKafkaConsumerSpan(ctx, &message)
 
 		// call tasks
-		errs := runtime.TaskSetHandler(ctx, kca.kafkaConsumer.handler.TaskSet)
-		if errs != nil {
-			for _, err := range errs {
-				kca.kafkaConsumer.handler.LogTaskError(ctx, err)
-			}
-			// TODO: Consider error handling for failed topic. Maybe requeueing?
-		}
+		_ = runtime.TaskSetHandler(ctx, kca.kafkaConsumer.handler)
+		// TODO: error handle consumer error
+		/* if result.ShouldFail { */
+		/* } */
 
 		kca.log(ctx, startTime)
 		if span != nil {
