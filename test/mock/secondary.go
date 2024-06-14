@@ -31,8 +31,9 @@ func (sacm *SecondaryAdapterMock) Call(ctx context.Context) ports.SecondaryPortC
 	defer sacm.mu.Unlock()
 	logger.Logger.Infof("Mock calling %s", sacm.name)
 	timer := time.NewTimer(sacm.duration)
+	defer timer.Stop()
 	select {
-	case <- ctx.Done():
+	case <-ctx.Done():
 		return ports.SecondaryPortCallResult{Payload: nil, Error: fmt.Errorf("Mocking Call Timed out")}
 	case <-timer.C:
 		if sacm.failCount > 0 {
