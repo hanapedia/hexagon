@@ -22,9 +22,6 @@ func (csa *cpuStressorAdapter) Call(ctx context.Context) ports.SecondaryPortCall
 	// prepare payload
 	payload := utils.GenerateRandomString(csa.payloadSize)
 
-	// Convert the duration to CPU time
-	targetTime := currentCPUTime() + csa.duration.Nanoseconds()
-
 	// Create a WaitGroup to wait for all goroutines to finish
 	var wg sync.WaitGroup
 
@@ -33,7 +30,7 @@ func (csa *cpuStressorAdapter) Call(ctx context.Context) ports.SecondaryPortCall
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			stressCPU(targetTime)
+			stressCPU(ctx, csa.duration)
 		}()
 	}
 
@@ -47,17 +44,17 @@ func (csa *cpuStressorAdapter) Call(ctx context.Context) ports.SecondaryPortCall
 }
 
 // stressCPU generates artifical stress to cpu
-func stressCPU(targetTime int64) {
+func stressCPU(ctx context.Context, duration time.Duration) {
+	timer := time.NewTimer(duration)
+	defer timer.Stop()
 	for {
-		math.Sqrt(rand.Float64())
-		// If the current CPU time exceeds the target, exit the goroutine
-		if currentCPUTime() >= targetTime {
-			break
+		select {
+		case <-ctx.Done():
+			return
+		case <-timer.C:
+			return
+		default:
+			_ = math.Sqrt(rand.Float64())
 		}
 	}
-}
-
-// currentCPUTime gets current CPU time in nanoseconds
-func currentCPUTime() int64 {
-	return time.Now().UnixNano()
 }
