@@ -1,8 +1,6 @@
 package cpu
 
 import (
-	"time"
-
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
@@ -12,9 +10,9 @@ func CpuStressorAdapterFactory(adapterConfig *model.StressorConfig) (ports.Secod
 	var cpuStressor ports.SecodaryPort
 	var err error
 
-	duration, err := time.ParseDuration(adapterConfig.Duration)
-	if err != nil {
-		return cpuStressor, err
+	iters := adapterConfig.Iterations
+	if adapterConfig.Iterations <= 0 {
+		iters = 1
 	}
 
 	threadCount := adapterConfig.ThreadCount
@@ -24,7 +22,7 @@ func CpuStressorAdapterFactory(adapterConfig *model.StressorConfig) (ports.Secod
 
 	cpuStressor = &cpuStressorAdapter{
 		payloadSize: model.GetPayloadSize(adapterConfig.Payload),
-		duration:    duration,
+		iterations:  iters,
 		threadCount: threadCount,
 	}
 
