@@ -68,15 +68,7 @@ devstop:
 
 .PHONY: devmanifests
 devmanifests:
-	rm -f ./dev/manifest/all/generated/* && ./bin/hexctl generate -f ./dev/config/all -o ./dev/manifest/all/generated
-	rm -f ./dev/manifest/rest/generated/* && ./bin/hexctl generate -f ./dev/config/rest -o ./dev/manifest/rest/generated/
-	rm -f ./dev/manifest/kafka/generated/* && ./bin/hexctl generate -f ./dev/config/kafka -o ./dev/manifest/kafka/generated
-	rm -f ./dev/manifest/redis/generated/* && ./bin/hexctl generate -f ./dev/config/redis -o ./dev/manifest/redis/generated
-	rm -f ./dev/manifest/mongo/generated/* && ./bin/hexctl generate -f ./dev/config/mongo -o ./dev/manifest/mongo/generated
-	rm -f ./dev/manifest/grpc/generated/* && ./bin/hexctl generate -f ./dev/config/grpc -o ./dev/manifest/grpc/generated/
-	rm -f ./dev/manifest/onlineboutique/generated/* && ./bin/hexctl generate -f ./dev/config/onlineboutique -o ./dev/manifest/onlineboutique/generated/
-	rm -f ./dev/manifest/onlineboutique-async/generated/* && ./bin/hexctl generate -f ./dev/config/onlineboutique-async -o ./dev/manifest/onlineboutique-async/generated/
-	rm -f ./dev/manifest/timeout-test/generated/* && ./bin/hexctl generate -f ./dev/config/timeout-test -o ./dev/manifest/timeout-test/generated/
+	bash ./dev/generate.sh
 
 .PHONY: devbuild
 devbuild:
