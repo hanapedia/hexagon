@@ -11,4 +11,5 @@ resources:
   # - ./grpc
   # - ./kafka
   # - ./onlineboutique
-  - ./onlineboutique-async
+  # - ./onlineboutique-async
+  - ./timeout-test
