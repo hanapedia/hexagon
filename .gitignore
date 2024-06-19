@@ -1,2 +1,5 @@
 # Binary
 bin/**
+
+# manifests for dev env
+dev/manifest/**/generated/**
