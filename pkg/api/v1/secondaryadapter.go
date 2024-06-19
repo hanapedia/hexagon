@@ -47,7 +47,7 @@ type ProducerConfig struct {
 type StressorConfig struct {
 	Name        string                    `json:"name,omitempty" validate:"required"`
 	Variant     constants.StressorValiant `json:"variant,omitempty" validate:"required,oneof=cpu memory disk"`
-	Duration    string                    `json:"duration,omitempty" validate:"required"`
+	Iterations  int                       `json:"iters,omitempty" validate:"omitempty"`
 	ThreadCount int                       `json:"threads,omitempty" validate:"omitempty"`
 	Payload     PayloadSpec               `json:"payload,omitempty"`
 }
