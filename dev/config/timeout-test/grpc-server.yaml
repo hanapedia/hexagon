@@ -1,0 +1,14 @@
+version: dev
+name: grpcserver
+adapters:
+- server:
+    action: simpleRpc
+    variant: grpc
+    route: get
+  steps:
+  - adapter:
+      stressor:
+        name: cpu-stressor
+        variant: cpu
+        iters: 1000000
+        threads: 1

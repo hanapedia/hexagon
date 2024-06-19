@@ -1,0 +1,24 @@
+version: dev
+name: grpc-gateway
+deployment:
+  env:
+  - name: LOG_LEVEL
+    value: debug
+adapters:
+# grpc secondary adapters
+- server:
+    action: read
+    variant: rest
+    route: grpc
+  steps:
+  - adapter:
+      invocation:
+        variant: grpc
+        service: grpcserver
+        action: simpleRpc
+        route: get
+      onError:
+        retryBackoffPolicy: exponential
+        retryMaxAttempt: 5
+        retryInitialBackoff: 1s
+      timeout: 15ms

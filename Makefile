@@ -76,6 +76,7 @@ devmanifests:
 	rm -f ./dev/manifest/grpc/generated/* && ./bin/hexctl generate -f ./dev/config/grpc -o ./dev/manifest/grpc/generated/
 	rm -f ./dev/manifest/onlineboutique/generated/* && ./bin/hexctl generate -f ./dev/config/onlineboutique -o ./dev/manifest/onlineboutique/generated/
 	rm -f ./dev/manifest/onlineboutique-async/generated/* && ./bin/hexctl generate -f ./dev/config/onlineboutique-async -o ./dev/manifest/onlineboutique-async/generated/
+	rm -f ./dev/manifest/timeout-test/generated/* && ./bin/hexctl generate -f ./dev/config/timeout-test -o ./dev/manifest/timeout-test/generated/
 
 .PHONY: devbuild
 devbuild:
