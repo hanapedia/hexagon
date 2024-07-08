@@ -10,8 +10,8 @@ This guide will walk you through basic steps for intallation and manifest genera
 
 ### Requirements
 
-| Dependency    | Version    | Description                            | Install |
-| ------------- | ---------- | -------------------------------------- | ------- |
+| Dependency    | Version    | Description                            |
+| ------------- | ---------- | -------------------------------------- |
 | [Go](https://go.dev/doc/install) | 1.22       | Should also work with 1.21, 1.20       | 
 | [kind](https://kind.sigs.k8s.io/docs/user/quick-start/) | 1.27+      | Should work with any standard Kubernetes cluster |
 
