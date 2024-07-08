@@ -1,4 +1,7 @@
 # Configuration language
+
+**This is work in progress. Some content may or may not be up to date, but most should be.**
+
 see [terminologies](./docs/terminology.md) for unclear terms.
 ## Basics
 - Each service unit can be configured using yaml.
