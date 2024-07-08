@@ -5,7 +5,9 @@ Hexagon can generate benchmark microservices applications of virtually unlimited
 ![Hexagon Diagram](./docs/assets/hexagon_main_diagram.png)
 
 ## Quick Start
-Follow this guide for testing out Hexagon.
+Follow this guide to test out Hexagon.
+This guide will walk you through basic steps for intallation and manifest generation.
+
 ### Requirements
 
 | Dependency    | Version    | Description                            |
@@ -17,20 +19,21 @@ Follow this guide for testing out Hexagon.
 Currently precompiled binary is not available but will be ready in the future.
 For now, you need to compile the CLI after cloning this repository.
 ```sh
-	go build -o ./hexctl cmd/hexctl/main.go
+go build -o ./hexctl cmd/hexctl/main.go
 ```
 
 ### 2. Start Kind Cluster
 You can skip this step if you already have a working cluster.
 ```sh
-    kind create cluster --name hexagon-cluster
+kind create cluster --name hexagon-cluster
 ```
 
 ### 3. Generate Manifests
-Generate manifest with the CLI built ealier. 
-This will generate manifests for example application that emulates [Online Boutique](https://github.com/GoogleCloudPlatform/microservices-demo).
+Generate manifest with the CLI built ealier.
+This will generate manifests for example application that emulates [Online Boutique](https://github.com/GoogleCloudPlatform/microservices-demo), using the example configuration available in example/config/onlineboutique.
+For more details on configuration values, please refer to the [documentaion](./docs/configuration.md).
 ```sh
-    ./hexctl generate -f example/config/onlineboutique/ -o example/manifest/
+./hexctl generate -f example/config/onlineboutique/ -o example/manifest/
 ```
 `-f` specifies the directory for the hexagon configuration files
 `-o` specifies the directory for the output Kubernetes manifets
@@ -38,29 +41,29 @@ This will generate manifests for example application that emulates [Online Bouti
 ### 4. Apply the manifest
 Create namespace and apply the manifests, nothing special.
 ```sh
-    # create namespace
-    kubectl create namespace hexagon
-    # hexagon generates manifests for `hexagon` namespace by default
-    kubectl apply -f example/manifest/
+# create namespace
+kubectl create namespace hexagon
+# hexagon generates manifests for `hexagon` namespace by default
+kubectl apply -f example/manifest/
 ```
 
 ### 5. (Optional) Run load generator
 There is a ready to use K6 loadgenerator deployment for the emulated application available in `example/loadgenerator`.
 Apply it to see the generated application handling traffic.
 ```sh
-    kubectl apply -n hexagon -f example/loadgenerator/manifests.yaml
+kubectl apply -n hexagon -f example/loadgenerator/manifests.yaml
 ```
 
 Currently, Hexagon cannot generate UIs so watch logs to see the application running.
 For example, Watch the logs for `frontend`.
 ```sh
-    kubectl logs -n hexagon --selector app=frontend -f
+kubectl logs -n hexagon --selector app=frontend -f
 ```
 
 ### Clean up
 Simply delete the Kind cluster if you created one.
 ```sh
-    kind delete cluster --name hexagon-cluster
+kind delete cluster --name hexagon-cluster
 ```
 
 ## Terminology
