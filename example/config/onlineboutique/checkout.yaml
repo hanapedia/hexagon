@@ -1,0 +1,62 @@
+version: v1.0.5
+name: checkout
+adapters:
+  - server:
+      action: simpleRpc
+      variant: grpc
+      route: PlaceOrder
+    steps:
+      - adapter:
+          invocation:
+            variant: grpc
+            service: cart
+            action: simpleRpc
+            route: GetCart
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: GetProduct
+      - adapter:
+          invocation:
+            variant: grpc
+            service: currency
+            action: simpleRpc
+            route: Convert
+      - adapter:
+          invocation:
+            variant: grpc
+            service: shipping
+            action: simpleRpc
+            route: GetQuote
+      - adapter:
+          invocation:
+            variant: grpc
+            service: currency
+            action: simpleRpc
+            route: Convert
+      - adapter:
+          invocation:
+            variant: grpc
+            service: payment
+            action: simpleRpc
+            route: Charge
+      - adapter:
+          invocation:
+            variant: grpc
+            service: shipping
+            action: simpleRpc
+            route: ShipOrder
+      - adapter:
+          invocation:
+            variant: grpc
+            service: cart
+            action: simpleRpc
+            route: EmptyCart
+      - adapter:
+          invocation:
+            variant: grpc
+            service: email
+            action: simpleRpc
+            route: SendOrderConfirmation

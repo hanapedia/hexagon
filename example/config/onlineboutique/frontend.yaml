@@ -1,0 +1,194 @@
+version: v1.0.5
+name: frontend
+adapters:
+  - server:
+      action: get
+      variant: rest
+      route: root
+    steps:
+      - adapter:
+          invocation:
+            variant: grpc
+            service: currency
+            action: simpleRpc
+            route: GetSupportedCurrency
+            payload:
+              size: 512
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: ListProducts
+      - adapter:
+          invocation:
+            variant: grpc
+            service: cart
+            action: simpleRpc
+            route: GetCart
+      - adapter:
+          invocation:
+            variant: grpc
+            service: currency
+            action: simpleRpc
+            route: Convert
+      - adapter:
+          invocation:
+            variant: grpc
+            service: ad
+            action: simpleRpc
+            route: GetAds
+  - server:
+      action: get
+      variant: rest
+      route: product
+    steps:
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: GetProduct
+      - adapter:
+          invocation:
+            variant: grpc
+            service: currency
+            action: simpleRpc
+            route: GetSupportedCurrency
+      - adapter:
+          invocation:
+            variant: grpc
+            service: cart
+            action: simpleRpc
+            route: GetCart
+      - adapter:
+          invocation:
+            variant: grpc
+            service: currency
+            action: simpleRpc
+            route: Convert
+      - adapter:
+          invocation:
+            variant: grpc
+            service: recommendation
+            action: simpleRpc
+            route: ListRecommendation
+      - adapter:
+          invocation:
+            variant: grpc
+            service: ad
+            action: simpleRpc
+            route: GetAds
+  - server:
+      action: get
+      variant: rest
+      route: cart
+    steps:
+      - adapter:
+          invocation:
+            variant: grpc
+            service: currency
+            action: simpleRpc
+            route: GetSupportedCurrency
+      - adapter:
+          invocation:
+            variant: grpc
+            service: cart
+            action: simpleRpc
+            route: GetCart
+      - adapter:
+          invocation:
+            variant: grpc
+            service: recommendation
+            action: simpleRpc
+            route: ListRecommendation
+      - adapter:
+          invocation:
+            variant: grpc
+            service: shipping
+            action: simpleRpc
+            route: GetQuote
+      - adapter:
+          invocation:
+            variant: grpc
+            service: currency
+            action: simpleRpc
+            route: Convert
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: GetProduct
+      - adapter:
+          invocation:
+            variant: grpc
+            service: currency
+            action: simpleRpc
+            route: Convert
+  - server:
+      action: post
+      variant: rest
+      route: cart
+    steps:
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: GetProduct
+      - adapter:
+          invocation:
+            variant: grpc
+            service: cart
+            action: simpleRpc
+            route: AddItem
+  - server:
+      action: post
+      variant: rest
+      route: cart/empty
+    steps:
+      - adapter:
+          invocation:
+            variant: grpc
+            service: cart
+            action: simpleRpc
+            route: EmptyCart
+  - server:
+      action: post
+      variant: rest
+      route: setCurrency
+    steps: []
+  - server:
+      action: post
+      variant: rest
+      route: logout
+    steps: []
+  - server:
+      action: post
+      variant: rest
+      route: cart/checkout
+    steps:
+      - adapter:
+          invocation:
+            variant: grpc
+            service: checkout
+            action: simpleRpc
+            route: PlaceOrder
+      - adapter:
+          invocation:
+            variant: grpc
+            service: recommendation
+            action: simpleRpc
+            route: ListRecommendation
+      - adapter:
+          invocation:
+            variant: grpc
+            service: currency
+            action: simpleRpc
+            route: GetSupportedCurrency
+  - server:
+      action: get
+      variant: rest
+      route: static
+    steps: []

@@ -1,0 +1,41 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lg
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lg
+  template:
+    metadata:
+      labels:
+        app: lg
+      annotations:
+        linkerd.io/inject: disabled
+    spec:
+      containers:
+      - image: grafana/k6:0.47.0
+        name: k6
+        resources:
+          limits:
+            cpu: 250m
+            memory: 1Gi
+          requests:
+            cpu: 125m
+            memory: 64Mi
+        command:
+          - "k6"
+          - "run"
+          - "/scripts/script.js"
+        volumeMounts:
+        - mountPath: /scripts/
+          name: script
+      volumes:
+      - configMap:
+          items:
+          - key: script.js
+            path: script.js
+          name: lg-script
+        name: script
