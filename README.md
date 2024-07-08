@@ -10,10 +10,10 @@ This guide will walk you through basic steps for intallation and manifest genera
 
 ### Requirements
 
-| Dependency    | Version    | Description                            |
-| ------------- | ---------- | -------------------------------------- |
-| Go            | 1.22       | Should also work with 1.21, 1.20       |
-| Kind          | 1.27+      | Should work with any standard Kubernetes cluster |
+| Dependency    | Version    | Description                            | Install |
+| ------------- | ---------- | -------------------------------------- | ------- |
+| [Go](https://go.dev/doc/install) | 1.22       | Should also work with 1.21, 1.20       | 
+| [kind](https://kind.sigs.k8s.io/docs/user/quick-start/) | 1.27+      | Should work with any standard Kubernetes cluster |
 
 ### 1. Build the CLI
 Currently precompiled binary is not available but will be ready in the future.
@@ -22,7 +22,7 @@ For now, you need to compile the CLI after cloning this repository.
 go build -o ./hexctl cmd/hexctl/main.go
 ```
 
-### 2. Start Kind Cluster
+### 2. Start kind Cluster
 You can skip this step if you already have a working cluster.
 ```sh
 kind create cluster --name hexagon-cluster
@@ -61,7 +61,7 @@ kubectl logs -n hexagon --selector app=frontend -f
 ```
 
 ### Clean up
-Simply delete the Kind cluster if you created one.
+Simply delete the kind cluster if you created one.
 ```sh
 kind delete cluster --name hexagon-cluster
 ```
