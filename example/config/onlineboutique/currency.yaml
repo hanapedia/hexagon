@@ -1,0 +1,13 @@
+version: v1.0.5
+name: currency
+adapters:
+  - server:
+      action: simpleRpc
+      variant: grpc
+      route: Convert
+    steps: []
+  - server:
+      action: simpleRpc
+      variant: grpc
+      route: GetSupportedCurrency
+    steps: []

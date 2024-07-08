@@ -1,0 +1,14 @@
+version: v1.0.5
+name: recommendation
+adapters:
+  - server:
+      action: simpleRpc
+      variant: grpc
+      route: ListRecommendation
+    steps:
+      - adapter:
+          invocation:
+            variant: grpc
+            service: productcatalog
+            action: simpleRpc
+            route: ListProducts

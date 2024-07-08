@@ -1,0 +1,39 @@
+version: v1.0.5
+name: cart
+adapters:
+  - server:
+      action: simpleRpc
+      variant: grpc
+      route: GetCart
+    steps:
+      - adapter:
+          repository:
+            name: cartredis
+            variant: redis
+            action: read
+            payload:
+              variant: small
+  - server:
+      action: simpleRpc
+      variant: grpc
+      route: AddItem
+    steps:
+      - adapter:
+          repository:
+            name: cartredis
+            variant: redis
+            action: write
+            payload:
+              variant: small
+  - server:
+      action: simpleRpc
+      variant: grpc
+      route: EmptyCart
+    steps:
+      - adapter:
+          repository:
+            name: cartredis
+            variant: redis
+            action: write
+            payload:
+              variant: small
