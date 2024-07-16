@@ -20,7 +20,7 @@ adapters:
   - consumer:
       variant: kafka
       topic: PlaceOrder
-    steps:
+    tasks:
       - adapter:
           invocation:
             variant: grpc

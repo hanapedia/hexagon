@@ -5,7 +5,7 @@ adapters:
     action: simpleRpc
     variant: grpc
     route: get
-  steps:
+  tasks:
   - adapter:
       stressor:
         name: cpu-stressor

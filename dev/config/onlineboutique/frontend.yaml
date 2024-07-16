@@ -5,7 +5,7 @@ adapters:
     action: get
     variant: rest
     route: root
-  steps:
+  tasks:
   - adapter:
       invocation:
         variant: grpc
@@ -43,7 +43,7 @@ adapters:
     action: get
     variant: rest
     route: product
-  steps:
+  tasks:
   - adapter:
       invocation:
         variant: grpc
@@ -85,7 +85,7 @@ adapters:
     action: get
     variant: rest
     route: cart
-  steps:
+  tasks:
   - adapter:
       invocation:
         variant: grpc
@@ -133,7 +133,7 @@ adapters:
     action: post
     variant: rest
     route: cart
-  steps:
+  tasks:
   - adapter:
       invocation:
         variant: grpc
@@ -151,7 +151,7 @@ adapters:
     action: post
     variant: rest
     route: cart/empty
-  steps:
+  tasks:
   - adapter:
       invocation:
         variant: grpc
@@ -163,19 +163,19 @@ adapters:
     action: post
     variant: rest
     route: setCurrency
-  steps: []
+  tasks: []
 
 - server:
     action: post
     variant: rest
     route: logout
-  steps: []
+  tasks: []
 
 - server:
     action: post
     variant: rest
     route: cart/checkout
-  steps:
+  tasks:
   - adapter:
       invocation:
         variant: grpc
@@ -199,4 +199,4 @@ adapters:
     action: get
     variant: rest
     route: static
-  steps: []
+  tasks: []

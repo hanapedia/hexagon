@@ -5,19 +5,19 @@ adapters:
     action: simpleRpc
     variant: grpc
     route: get
-  steps: []
+  tasks: []
 - server:
     action: clientStream
     variant: grpc
     route: get
-  steps: []
+  tasks: []
 - server:
     action: serverStream
     variant: grpc
     route: get
-  steps: []
+  tasks: []
 - server:
     action: biStream
     variant: grpc
     route: get
-  steps: []
+  tasks: []

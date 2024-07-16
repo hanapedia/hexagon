@@ -18,7 +18,7 @@ adapters:
       route: ListRecommendation
       payload:
         size: 50
-    steps:
+    tasks:
       - adapter:
           invocation:
             variant: grpc

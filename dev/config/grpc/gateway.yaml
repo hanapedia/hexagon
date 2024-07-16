@@ -11,7 +11,7 @@ adapters:
     variant: rest
     route: grpc
     weight: 1 # load generator specific
-  steps:
+  tasks:
   - adapter:
       invocation:
         variant: grpc

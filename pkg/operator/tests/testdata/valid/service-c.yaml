@@ -4,7 +4,7 @@ adapters:
   - consumer:
       variant: kafka
       topic: newUser
-    steps:
+    tasks:
       - adapter:
           producer:
             variant: kafka

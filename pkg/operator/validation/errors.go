@@ -91,7 +91,7 @@ func NewInvalidSecondaryAdapterError(id string) InvalidAdapterMappingError {
 }
 
 func NewInvalidStepFieldValueError(id string) InvalidStepFieldValueError {
-	return InvalidStepFieldValueError{message: fmt.Sprintf("No secondary adapter config found on one of steps on primary adapter with id: %s.", id)}
+	return InvalidStepFieldValueError{message: fmt.Sprintf("No secondary adapter config found on one of tasks on primary adapter with id: %s.", id)}
 }
 
 func mapInvalidServiceUnitFieldValueErrors(err error, serviceUnitConfig model.ServiceUnitConfig) []InvalidServiceUnitFieldValueError {

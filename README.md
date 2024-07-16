@@ -6,7 +6,7 @@ Hexagon can generate benchmark microservices applications of virtually unlimited
 
 ## Quick Start
 Follow this guide to test out Hexagon.
-This guide will walk you through basic steps for intallation and manifest generation.
+This guide will walk you through basic tasks for intallation and manifest generation.
 
 ### Requirements
 
@@ -23,7 +23,7 @@ go build -o ./hexctl cmd/hexctl/main.go
 ```
 
 ### 2. Start kind Cluster
-You can skip this step if you already have a working cluster.
+You can skip this task if you already have a working cluster.
 ```sh
 kind create cluster --name hexagon-cluster
 ```

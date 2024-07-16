@@ -5,7 +5,7 @@ adapters:
       action: write
       variant: rest
       route: updateUser
-    steps:
+    tasks:
       - adapter:
           repository:
             variant: mongo

@@ -7,14 +7,14 @@ import (
 // initializePrimaryAdapters prepare primary adapters
 func (su *ServiceUnit) initializeSecondaryAdaptersClients() {
 	for _, primaryConfig := range su.Config.AdapterConfigs {
-		for _, step := range primaryConfig.Tasks {
-			if step.AdapterConfig.StressorConfig != nil {
+		for _, task := range primaryConfig.Tasks {
+			if task.AdapterConfig.StressorConfig != nil {
 				continue
 			}
-			key := step.AdapterConfig.GetGroupByKey()
+			key := task.AdapterConfig.GetGroupByKey()
 			_, ok := su.SecondaryAdapterClients[key]
 			if !ok {
-				su.SecondaryAdapterClients[key] = secondary.NewSecondaryAdapterClient(step.AdapterConfig)
+				su.SecondaryAdapterClients[key] = secondary.NewSecondaryAdapterClient(task.AdapterConfig)
 			}
 		}
 	}

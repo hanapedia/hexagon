@@ -11,7 +11,7 @@ adapters:
     variant: rest
     route: grpc
     weight: 1 # load generator specific
-  steps:
+  tasks:
   - adapter:
       invocation:
         variant: grpc
@@ -43,7 +43,7 @@ adapters:
     variant: rest
     route: httprest
     weight: 1 # load generator specific
-  steps:
+  tasks:
   - adapter:
       invocation:
         variant: rest
@@ -65,7 +65,7 @@ adapters:
     variant: rest
     route: mongo
     weight: 1 # load generator specific
-  steps:
+  tasks:
   - adapter:
       repository:
         name: mongorepo
@@ -87,7 +87,7 @@ adapters:
     variant: rest
     route: redis
     weight: 1 # load generator specific
-  steps:
+  tasks:
   - adapter:
       repository:
         name: redisrepo
@@ -116,7 +116,7 @@ adapters:
     variant: rest
     route: produce
     weight: 1 # load generator specific
-  steps:
+  tasks:
   - adapter:
       producer:
         variant: kafka

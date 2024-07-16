@@ -18,11 +18,11 @@ adapters:
       route: Convert
       payload:
         size: 16
-    steps: []
+    tasks: []
   - server:
       action: simpleRpc
       variant: grpc
       route: GetSupportedCurrency
       payload:
         size: 100
-    steps: []
+    tasks: []

@@ -18,7 +18,7 @@ adapters:
       route: GetCart
       payload:
         size: 18
-    steps:
+    tasks:
       - adapter:
           repository:
             name: cartredis
@@ -33,7 +33,7 @@ adapters:
       route: AddItem
       payload:
         size: 0
-    steps:
+    tasks:
       - adapter:
           repository:
             name: cartredis
@@ -55,7 +55,7 @@ adapters:
       route: EmptyCart
       payload:
         size: 0
-    steps:
+    tasks:
       - adapter:
           repository:
             name: cartredis

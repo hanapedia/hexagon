@@ -18,11 +18,11 @@ adapters:
       route: GetQuote
       payload:
         size: 16
-    steps: []
+    tasks: []
   - server:
       action: simpleRpc
       variant: grpc
       route: ShipOrder
       payload:
         size: 75
-    steps: []
+    tasks: []

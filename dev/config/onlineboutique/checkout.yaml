@@ -5,7 +5,7 @@ adapters:
     action: simpleRpc
     variant: grpc
     route: PlaceOrder
-  steps:
+  tasks:
   - adapter:
       invocation:
         variant: grpc

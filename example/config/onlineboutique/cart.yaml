@@ -5,7 +5,7 @@ adapters:
       action: simpleRpc
       variant: grpc
       route: GetCart
-    steps:
+    tasks:
       - adapter:
           repository:
             name: cartredis
@@ -17,7 +17,7 @@ adapters:
       action: simpleRpc
       variant: grpc
       route: AddItem
-    steps:
+    tasks:
       - adapter:
           repository:
             name: cartredis
@@ -29,7 +29,7 @@ adapters:
       action: simpleRpc
       variant: grpc
       route: EmptyCart
-    steps:
+    tasks:
       - adapter:
           repository:
             name: cartredis

@@ -5,4 +5,4 @@ adapters:
       action: simpleRpc
       variant: grpc
       route: Charge
-    steps: []
+    tasks: []

@@ -7,4 +7,4 @@ adapters:
     route: get
     payload:
       variant: large
-  steps: []
+  tasks: []
