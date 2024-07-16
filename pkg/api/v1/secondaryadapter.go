@@ -6,7 +6,7 @@ import (
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
 )
 
-// secondary Adapter definition for a step.
+// secondary Adapter definition for a task.
 // one of the adapter type must be provided
 type SecondaryAdapterConfig struct {
 	InvocationConfig *InvocationConfig       `json:"invocation,omitempty"`

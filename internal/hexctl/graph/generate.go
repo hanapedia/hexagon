@@ -103,22 +103,22 @@ func addEdge(graph *graphml.Graph, source, destination, edgeLabel string) error 
 	return nil
 }
 
-// parseSteps parses steps and update graph.
-func parseSteps(graph *graphml.Graph, serviceName string, steps []model.TaskSpec) {
-	for _, step := range steps {
+// parseSteps parses tasks and update graph.
+func parseSteps(graph *graphml.Graph, serviceName string, tasks []model.TaskSpec) {
+	for _, task := range tasks {
 		var destination, edgeLabel string
-		if step.AdapterConfig.ProducerConfig != nil {
-			destination = step.AdapterConfig.ProducerConfig.Topic
+		if task.AdapterConfig.ProducerConfig != nil {
+			destination = task.AdapterConfig.ProducerConfig.Topic
 			edgeLabel = "publish"
 		}
 
-		if step.AdapterConfig.RepositoryConfig != nil {
-			destination = step.AdapterConfig.RepositoryConfig.Name
+		if task.AdapterConfig.RepositoryConfig != nil {
+			destination = task.AdapterConfig.RepositoryConfig.Name
 			edgeLabel = "tcp"
 		}
 
-		if step.AdapterConfig.InvocationConfig != nil {
-			destination = step.AdapterConfig.InvocationConfig.Service
+		if task.AdapterConfig.InvocationConfig != nil {
+			destination = task.AdapterConfig.InvocationConfig.Service
 			edgeLabel = "http"
 		}
 

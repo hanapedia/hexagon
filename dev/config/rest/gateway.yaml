@@ -11,7 +11,7 @@ adapters:
     variant: rest
     route: get
     weight: 1 # load generator specific
-  steps:
+  tasks:
   - adapter:
       invocation:
         variant: rest
@@ -23,7 +23,7 @@ adapters:
     variant: rest
     route: post
     weight: 1 # load generator specific
-  steps:
+  tasks:
   - adapter:
       invocation:
         variant: rest
@@ -37,7 +37,7 @@ adapters:
     variant: rest
     route: fanout
     weight: 1 # load generator specific
-  steps:
+  tasks:
   - adapter:
       invocation:
         variant: rest

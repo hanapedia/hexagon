@@ -16,7 +16,7 @@ ingressAdapters:
     action: read
     variant: rest
     route: get
-  steps:
+  tasks:
   - egressAdapter:
       stateless:
         variant: rest

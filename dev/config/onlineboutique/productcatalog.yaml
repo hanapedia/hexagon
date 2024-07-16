@@ -5,9 +5,9 @@ adapters:
     action: simpleRpc
     variant: grpc
     route: ListProducts
-  steps: []
+  tasks: []
 - server:
     action: simpleRpc
     variant: grpc
     route: GetProduct
-  steps: []
+  tasks: []

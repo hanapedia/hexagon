@@ -6,7 +6,7 @@ adapters:
 - consumer:
     variant: kafka
     topic: topic1
-  steps:
+  tasks:
   - adapter:
       invocation:
         variant: rest

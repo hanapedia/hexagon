@@ -18,4 +18,4 @@ adapters:
       route: GetAds
       payload:
         size: 58
-    steps: []
+    tasks: []

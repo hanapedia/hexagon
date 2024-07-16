@@ -5,7 +5,7 @@ adapters:
       action: read
       variant: rest
       route: getUser
-    steps:
+    tasks:
       - adapter:
           invocation:
             service: service-b
@@ -19,7 +19,7 @@ adapters:
   - consumer:
       variant: kafka
       topic: created
-    steps:
+    tasks:
       - adapter:
           invocation:
             service: service-b

@@ -7,9 +7,9 @@ adapters:
     route: get
     payload:
       variant: large
-  steps: []
+  tasks: []
 - server:
     action: write
     variant: rest
     route: post
-  steps: []
+  tasks: []

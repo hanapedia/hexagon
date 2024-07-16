@@ -18,4 +18,4 @@ adapters:
       route: SendOrderConfirmation
       payload:
         size: 0
-    steps: []
+    tasks: []

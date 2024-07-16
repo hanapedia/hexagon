@@ -57,25 +57,25 @@ func (su *ServiceUnit) newPrimaryAdapterHandler(primaryConfig model.PrimaryAdapt
 }
 
 // newTaskSet creates task set from config
-func (su *ServiceUnit) newTaskSet(steps []model.TaskSpec) []ports.Task {
-	taskSet := make([]ports.Task, len(steps))
-	for i, step := range steps {
-		key := step.AdapterConfig.GetGroupByKey()
+func (su *ServiceUnit) newTaskSet(tasks []model.TaskSpec) []ports.Task {
+	taskSet := make([]ports.Task, len(tasks))
+	for i, task := range tasks {
+		key := task.AdapterConfig.GetGroupByKey()
 		client, ok := su.SecondaryAdapterClients[key]
 		if !ok {
 			l.Logger.Error("Client does not exist. ", "key=", key)
 		}
-		secondaryAdapter, err := secondary.NewSecondaryAdapter(step.AdapterConfig, client)
+		secondaryAdapter, err := secondary.NewSecondaryAdapter(task.AdapterConfig, client)
 		if err != nil {
 			l.Logger.Infof("Skipped interface: %s", err)
 			continue
 		}
 		taskSet[i] = ports.Task{
 			SecondaryPort: secondaryAdapter,
-			Concurrent: step.Concurrent,
-			OnError: step.AdapterConfig.OnError,
-			TaskTimeout: step.AdapterConfig.TaskTimeout,
-			CallTimeout: step.AdapterConfig.CallTimeout,
+			Concurrent: task.Concurrent,
+			OnError: task.AdapterConfig.OnError,
+			TaskTimeout: task.AdapterConfig.TaskTimeout,
+			CallTimeout: task.AdapterConfig.CallTimeout,
 		}
 	}
 

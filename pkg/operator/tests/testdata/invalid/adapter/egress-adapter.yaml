@@ -5,7 +5,7 @@ ingressAdapters:
       action: read
       variant: rest
       route: getUser
-    steps:
+    tasks:
       - egressAdapter:
           stateless:
             service: service-b
@@ -19,7 +19,7 @@ ingressAdapters:
   - broker:
       variant: kafka
       topic: created
-    steps:
+    tasks:
       - egressAdapter:
           internal:
             name: kafka

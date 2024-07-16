@@ -18,11 +18,11 @@ adapters:
       route: ListProducts
       payload:
         size: 1260
-    steps: []
+    tasks: []
   - server:
       action: simpleRpc
       variant: grpc
       route: GetProduct
       payload:
         size: 140
-    steps: []
+    tasks: []

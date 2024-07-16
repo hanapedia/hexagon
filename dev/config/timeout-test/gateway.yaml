@@ -10,7 +10,7 @@ adapters:
     action: read
     variant: rest
     route: grpc
-  steps:
+  tasks:
   - adapter:
       invocation:
         variant: grpc

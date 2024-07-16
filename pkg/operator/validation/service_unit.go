@@ -16,11 +16,11 @@ func ValidateServiceUnitConfigFields(serviceUnitConfig *model.ServiceUnitConfig)
 	return ConfigValidationError{ServiceUnitFieldErrors: errs}
 }
 
-func ValidateStepFields(step model.TaskSpec, adapterConfig *model.PrimaryAdapterSpec, serviceName string) []InvalidStepFieldValueError {
-	var stepFieldErrors []InvalidStepFieldValueError
-	if step.AdapterConfig == nil {
-		stepFieldErrors = append(stepFieldErrors, NewInvalidStepFieldValueError(adapterConfig.GetId(serviceName)))
+func ValidateStepFields(task model.TaskSpec, adapterConfig *model.PrimaryAdapterSpec, serviceName string) []InvalidStepFieldValueError {
+	var taskFieldErrors []InvalidStepFieldValueError
+	if task.AdapterConfig == nil {
+		taskFieldErrors = append(taskFieldErrors, NewInvalidStepFieldValueError(adapterConfig.GetId(serviceName)))
 	}
 
-	return stepFieldErrors
+	return taskFieldErrors
 }
