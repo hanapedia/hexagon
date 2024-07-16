@@ -12,10 +12,14 @@ func TaskSetHandler(ctx context.Context, handler *ports.PrimaryHandler) ports.Ta
 	resultCh := make(chan *ports.TaskResult, len(handler.TaskSet))
 
 	for _, task := range handler.TaskSet {
+		// Add timeout to context
+		taskCtx, taskCancel := context.WithTimeout(ctx, task.GetTaskTimeout())
+		defer taskCancel()
+
 		if task.Concurrent {
-			go HandleTask(ctx, task, resultCh)
+			go HandleTask(taskCtx, task, resultCh)
 		} else {
-			HandleTask(ctx, task, resultCh)
+			HandleTask(taskCtx, task, resultCh)
 		}
 	}
 
@@ -39,14 +43,10 @@ func TaskSetHandler(ctx context.Context, handler *ports.PrimaryHandler) ports.Ta
 }
 
 // HandleTask calls the task with possible retries
-func HandleTask(ctx context.Context, task ports.Task, resultCh chan<- *ports.TaskResult) {
+func HandleTask(taskCtx context.Context, task ports.Task, resultCh chan<- *ports.TaskResult) {
 	// add 1 for the initial attempt
 	maxAttempt := task.OnError.RetryMaxAttempt + 1
 	var result ports.SecondaryPortCallResult
-
-	// Add timeout to context
-	taskCtx, taskCancel := context.WithTimeout(ctx, task.GetTaskTimeout())
-	defer taskCancel()
 
 	for i := 0; i < maxAttempt; i++ {
 		if i > 0 {
@@ -55,7 +55,7 @@ func HandleTask(ctx context.Context, task ports.Task, resultCh chan<- *ports.Tas
 			select {
 			// check for the parent context expiration
 			case <-taskCtx.Done():
-				resultCh <- ports.NewTaskResult(task, ports.SecondaryPortCallResult{Payload: nil, Error: ctx.Err()})
+				resultCh <- ports.NewTaskResult(task, ports.SecondaryPortCallResult{Payload: nil, Error: taskCtx.Err()})
 				timer.Stop()
 				return
 			case <-timer.C:
