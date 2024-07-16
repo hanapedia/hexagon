@@ -3,9 +3,9 @@ package graph
 import (
 	"os"
 
-	"github.com/hanapedia/hexagon/pkg/hexctl/graphml"
 	"github.com/hanapedia/hexagon/internal/hexctl/loader"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
+	"github.com/hanapedia/hexagon/pkg/hexctl/graphml"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
@@ -52,8 +52,8 @@ func (gg GraphGenerator) generate() []byte {
 				}
 			}
 
-			parseSteps(graph, serviceName, ia.Steps)
-			graph.SetNodeData(serviceName, "type" , "stateless")
+			parseSteps(graph, serviceName, ia.Tasks)
+			graph.SetNodeData(serviceName, "type", "stateless")
 		}
 	}
 
@@ -104,7 +104,7 @@ func addEdge(graph *graphml.Graph, source, destination, edgeLabel string) error 
 }
 
 // parseSteps parses steps and update graph.
-func parseSteps(graph *graphml.Graph, serviceName string, steps []model.Step) {
+func parseSteps(graph *graphml.Graph, serviceName string, steps []model.TaskSpec) {
 	for _, step := range steps {
 		var destination, edgeLabel string
 		if step.AdapterConfig.ProducerConfig != nil {
@@ -129,12 +129,12 @@ func parseSteps(graph *graphml.Graph, serviceName string, steps []model.Step) {
 			edgeLabel,
 		)
 		if err != nil {
-		logger.Logger.Fatalf(
-			"Error adding edge (%s, %s). %s",
-			serviceName,
-			destination,
-			err,
-		)
+			logger.Logger.Fatalf(
+				"Error adding edge (%s, %s). %s",
+				serviceName,
+				destination,
+				err,
+			)
 		}
 	}
 }

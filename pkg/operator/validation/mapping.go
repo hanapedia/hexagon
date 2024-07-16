@@ -44,7 +44,7 @@ func mapSecondaryAdapters(serviceAdapterIds []string, serviceUnitConfigs []model
 // conditionally handle the adapters
 func mapAdapters(serviceAdapterIds []string, primaryAdapterConfig model.PrimaryAdapterSpec) []InvalidAdapterMappingError {
 	var mappingErrors []InvalidAdapterMappingError
-	for _, step := range primaryAdapterConfig.Steps {
+	for _, step := range primaryAdapterConfig.Tasks {
 		// ensure that secondaryAdapter is defined
 		if step.AdapterConfig == nil {
 			continue

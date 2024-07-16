@@ -10,7 +10,8 @@ import (
 )
 
 var (
-	DEFAULT_TIMEOUT = 5 * time.Second
+	DEFAULT_TASK_TIMEOUT = 5 * time.Second
+	DEFAULT_CALL_TIMEOUT = 1 * time.Second
 )
 
 // PrimaryPort provides common interface for all the primary adapters.
@@ -44,32 +45,44 @@ type Task struct {
 	SecondaryPort SecodaryPort
 	Concurrent    bool
 	OnError       model.OnErrorSpec
-	Timeout       string
+	TaskTimeout   string
+	CallTimeout   string
 }
 
 // TaskResult is returned for each individual task calls
 type TaskResult struct {
-	Task  Task
+	Task Task
 	SecondaryPortCallResult
 }
 
-// Get parsed timeout as time.Duration
-func (t Task) GetTimeout() time.Duration {
-	duration, err := time.ParseDuration(t.Timeout)
+// Get parsed taskTimeout as time.Duration
+func (t Task) GetTaskTimeout() time.Duration {
+	duration, err := time.ParseDuration(t.TaskTimeout)
 	if err != nil {
-		return DEFAULT_TIMEOUT
+		return DEFAULT_TASK_TIMEOUT
 	}
 	if duration == 0 {
-		return DEFAULT_TIMEOUT
+		return DEFAULT_TASK_TIMEOUT
 	}
 	return duration
 }
 
+// Get parsed getCallTimeout as time.Duration
+func (t Task) GetCallTimeout() time.Duration {
+	duration, err := time.ParseDuration(t.CallTimeout)
+	if err != nil {
+		return DEFAULT_CALL_TIMEOUT
+	}
+	if duration == 0 {
+		return DEFAULT_CALL_TIMEOUT
+	}
+	return duration
+}
 
 // TaskSetResult is returned for collection of task results
 // It may or may not fail the request based on error handling configuration.
 type TaskSetResult struct {
-	ShouldFail bool
+	ShouldFail  bool
 	TaskResults []*TaskResult
 }
 

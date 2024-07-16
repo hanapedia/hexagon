@@ -7,7 +7,7 @@ import (
 // initializePrimaryAdapters prepare primary adapters
 func (su *ServiceUnit) initializeSecondaryAdaptersClients() {
 	for _, primaryConfig := range su.Config.AdapterConfigs {
-		for _, step := range primaryConfig.Steps {
+		for _, step := range primaryConfig.Tasks {
 			if step.AdapterConfig.StressorConfig != nil {
 				continue
 			}
