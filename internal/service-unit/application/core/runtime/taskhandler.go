@@ -44,13 +44,17 @@ func HandleTask(ctx context.Context, task ports.Task, resultCh chan<- *ports.Tas
 	maxAttempt := task.OnError.RetryMaxAttempt + 1
 	var result ports.SecondaryPortCallResult
 
+	// Add timeout to context
+	taskCtx, taskCancel := context.WithTimeout(ctx, task.GetTaskTimeout())
+	defer taskCancel()
+
 	for i := 0; i < maxAttempt; i++ {
 		if i > 0 {
 			backoff := task.OnError.GetNthBackoff(i)
 			timer := time.NewTimer(backoff)
 			select {
 			// check for the parent context expiration
-			case <-ctx.Done():
+			case <-taskCtx.Done():
 				resultCh <- ports.NewTaskResult(task, ports.SecondaryPortCallResult{Payload: nil, Error: ctx.Err()})
 				timer.Stop()
 				return
@@ -59,11 +63,11 @@ func HandleTask(ctx context.Context, task ports.Task, resultCh chan<- *ports.Tas
 			}
 		}
 
-		// derive new timeout for each calls because timeouts are meant to be per-call
-		ctxWithTimeout, cancel := context.WithTimeout(ctx, task.GetTimeout())
+		// derive new timeout for each calls
+		callCtx, callCancel := context.WithTimeout(taskCtx, task.GetCallTimeout())
 
-		result = task.SecondaryPort.Call(ctxWithTimeout)
-		cancel()
+		result = task.SecondaryPort.Call(callCtx)
+		callCancel()
 
 		if result.Error == nil {
 			resultCh <- ports.NewTaskResult(task, result)

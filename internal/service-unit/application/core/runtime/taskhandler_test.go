@@ -193,7 +193,7 @@ func TestTimeoutFailure(t *testing.T){
 		TaskSet: []ports.Task{
 			{
 				SecondaryPort: mock.NewSecondaryAdapter("TimeoutFailSecondaryAdapter1", 2 * time.Second, 0),
-				Timeout: "1s",
+				CallTimeout: "1s",
 			},
 		},
 	}

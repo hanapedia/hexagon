@@ -13,14 +13,14 @@ type PrimaryAdapterSpec struct {
 	ServerConfig     *ServerConfig     `json:"server,omitempty"`
 	ConsumerConfig   *ConsumerConfig   `json:"consumer,omitempty"`
 	RepositoryConfig *RepositoryConfig `json:"repository,omitempty"`
-	Steps            []Step            `json:"steps,omitempty" validate:"required"`
+	Tasks            []TaskSpec        `json:"tasks,omitempty" validate:"required"`
 
 	// +optional
 	Selector *metav1.LabelSelector `json:"selector,omitempty"`
 }
 
-// A task to be performed in a single step
-type Step struct {
+// A spec for atask to be performed
+type TaskSpec struct {
 	AdapterConfig *SecondaryAdapterConfig `json:"adapter,omitempty" validate:"required"`
 	Concurrent    bool                    `json:"concurrent,omitempty" `
 }

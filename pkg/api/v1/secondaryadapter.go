@@ -14,9 +14,11 @@ type SecondaryAdapterConfig struct {
 	ProducerConfig   *ProducerConfig         `json:"producer,omitempty"`
 	StressorConfig   *StressorConfig         `json:"stressor,omitempty"`
 	OnError          OnErrorSpec             `json:"onError,omitempty"`
-	// Timeout is used as the value for request timeout of the invocation.
+	// taskTimeout is used as the value for request timeout of the calls INCLUDING all retries.
 	// Must be parsable with time.ParseDuration, otherwise default value will be used.
-	Timeout string `json:"timeout,omitempty"`
+	TaskTimeout string `json:"taskTimeout,omitempty"`
+	// callTimeout refers to the timeout assigend to each call attempt
+	CallTimeout string `json:"callTimeout,omitempty"`
 }
 
 // Config fields for server services

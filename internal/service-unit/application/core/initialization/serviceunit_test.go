@@ -92,7 +92,7 @@ adapters:
     route: get
     payload:
       variant: large
-  steps:
+  tasks:
   - adapter:
       invocation:
         variant: rest
@@ -117,7 +117,7 @@ adapters:
     action: write
     variant: rest
     route: post
-  steps:
+  tasks:
   - adapter:
       invocation:
         variant: rest
@@ -144,7 +144,7 @@ adapters:
     action: simpleRpc
     variant: grpc
     route: get
-  steps:
+  tasks:
   - adapter:
       invocation:
         variant: grpc
@@ -169,7 +169,7 @@ adapters:
     action: clientStream
     variant: grpc
     route: get
-  steps:
+  tasks:
   - adapter:
       invocation:
         variant: grpc
@@ -194,7 +194,7 @@ adapters:
     action: serverStream
     variant: grpc
     route: get
-  steps:
+  tasks:
   - adapter:
       invocation:
         variant: grpc
@@ -219,7 +219,7 @@ adapters:
     action: biStream
     variant: grpc
     route: get
-  steps:
+  tasks:
   - adapter:
       invocation:
         variant: grpc
@@ -243,7 +243,7 @@ adapters:
 - consumer:
     variant: kafka
     topic: topic1
-  steps:
+  tasks:
   - adapter:
       producer:
         variant: kafka
@@ -266,7 +266,7 @@ adapters:
     action: read
     variant: rest
     route: redis
-  steps:
+  tasks:
   - adapter:
       repository:
         name: redisrepo

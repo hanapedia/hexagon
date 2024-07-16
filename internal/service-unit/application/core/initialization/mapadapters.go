@@ -13,7 +13,7 @@ import (
 // mapSecondaryToPrimary map secondary adapter to primary adapter
 func (su *ServiceUnit) mapSecondaryToPrimary() {
 	for _, primaryConfig := range su.Config.AdapterConfigs {
-		taskSet := su.newTaskSet(primaryConfig.Steps)
+		taskSet := su.newTaskSet(primaryConfig.Tasks)
 		handler, err := su.newPrimaryAdapterHandler(primaryConfig, taskSet)
 		if err != nil {
 			l.Logger.Fatalf("Error creating handler: %v", err)
@@ -57,7 +57,7 @@ func (su *ServiceUnit) newPrimaryAdapterHandler(primaryConfig model.PrimaryAdapt
 }
 
 // newTaskSet creates task set from config
-func (su *ServiceUnit) newTaskSet(steps []model.Step) []ports.Task {
+func (su *ServiceUnit) newTaskSet(steps []model.TaskSpec) []ports.Task {
 	taskSet := make([]ports.Task, len(steps))
 	for i, step := range steps {
 		key := step.AdapterConfig.GetGroupByKey()
@@ -74,7 +74,8 @@ func (su *ServiceUnit) newTaskSet(steps []model.Step) []ports.Task {
 			SecondaryPort: secondaryAdapter,
 			Concurrent: step.Concurrent,
 			OnError: step.AdapterConfig.OnError,
-			Timeout: step.AdapterConfig.Timeout,
+			TaskTimeout: step.AdapterConfig.TaskTimeout,
+			CallTimeout: step.AdapterConfig.CallTimeout,
 		}
 	}
 
