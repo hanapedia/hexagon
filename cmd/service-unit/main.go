@@ -9,7 +9,7 @@ import (
 	"syscall"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/core/initialization"
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/primary"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
@@ -51,7 +51,7 @@ func main() {
     }()
 
 	// crate error chan
-	errChan := make(chan ports.PrimaryPortError)
+	errChan := make(chan primary.PrimaryPortError)
 	go func() {
 		serverAdapterError := <-errChan
 		logger.Logger.Fatalf("%s failed: %s", reflect.TypeOf(serverAdapterError.PrimaryPort).Elem().Name(), serverAdapterError.Error)

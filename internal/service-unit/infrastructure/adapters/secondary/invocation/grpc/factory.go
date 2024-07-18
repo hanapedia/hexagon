@@ -3,14 +3,14 @@ package grpc
 import (
 	"errors"
 
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
-func GrpcInvocationAdapterFactory(adapterConfig *model.InvocationConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {
-	var grpcAdapter ports.SecodaryPort
+func GrpcInvocationAdapterFactory(adapterConfig *model.InvocationConfig, client secondary.SecondaryAdapterClient) (secondary.SecodaryPort, error) {
+	var grpcAdapter secondary.SecodaryPort
 	var err error
 
 	if grpcClient, ok := (client).(*GrpcClient); ok {

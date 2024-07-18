@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
@@ -14,11 +14,11 @@ import (
 // "github.com/hanapedia/hexagon/internal/service-unit/application/ports"
 type SecondaryAdapterMock struct {
 	mu        sync.Mutex
-	client    ports.SecondaryAdapterClient
+	client    secondary.SecondaryAdapterClient
 	name      string
 	duration  time.Duration
 	failCount int
-	ports.SecondaryPortBase
+	secondary.SecondaryPortBase
 }
 
 type SecondaryAdapterClientMock struct {
@@ -26,7 +26,7 @@ type SecondaryAdapterClientMock struct {
 }
 
 // Call mock implementation
-func (sacm *SecondaryAdapterMock) Call(ctx context.Context) ports.SecondaryPortCallResult {
+func (sacm *SecondaryAdapterMock) Call(ctx context.Context) secondary.SecondaryPortCallResult {
 	sacm.mu.Lock()
 	defer sacm.mu.Unlock()
 	logger.Logger.Infof("Mock calling %s", sacm.name)
@@ -34,14 +34,14 @@ func (sacm *SecondaryAdapterMock) Call(ctx context.Context) ports.SecondaryPortC
 	defer timer.Stop()
 	select {
 	case <-ctx.Done():
-		return ports.SecondaryPortCallResult{Payload: nil, Error: fmt.Errorf("Mocking Call Timed out")}
+		return secondary.SecondaryPortCallResult{Payload: nil, Error: fmt.Errorf("Mocking Call Timed out")}
 	case <-timer.C:
 		if sacm.failCount > 0 {
 			sacm.failCount--
-			return ports.SecondaryPortCallResult{Payload: nil, Error: fmt.Errorf("Mocking Call Fail")}
+			return secondary.SecondaryPortCallResult{Payload: nil, Error: fmt.Errorf("Mocking Call Fail")}
 		}
 	}
-	return ports.SecondaryPortCallResult{Payload: nil, Error: nil}
+	return secondary.SecondaryPortCallResult{Payload: nil, Error: nil}
 }
 
 // Close mock implementation
@@ -50,7 +50,7 @@ func (sacm SecondaryAdapterClientMock) Close() {
 }
 
 // NewSecondaryAdapter creates mocked implementation of ports.SecondaryPort
-func NewSecondaryAdapter(name string, duration time.Duration, failCount int) ports.SecodaryPort {
+func NewSecondaryAdapter(name string, duration time.Duration, failCount int) secondary.SecodaryPort {
 	return &SecondaryAdapterMock{
 		client:    NewSecondaryAdapterClient(),
 		name:      name,
@@ -59,6 +59,6 @@ func NewSecondaryAdapter(name string, duration time.Duration, failCount int) por
 	}
 }
 
-func NewSecondaryAdapterClient() ports.SecondaryAdapterClient {
+func NewSecondaryAdapterClient() secondary.SecondaryAdapterClient {
 	return SecondaryAdapterClientMock{client: nil}
 }

@@ -3,7 +3,7 @@ package mongo
 import (
 	"context"
 
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	"github.com/hanapedia/hexagon/internal/service-unit/domain/contract"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
 	tracing "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/telemetry/tracing/mongo"
@@ -18,11 +18,11 @@ type mongoReadAdapter struct {
 	database   string
 	client     *mongo.Client
 	collection constants.PayloadSizeVariant
-	ports.SecondaryPortBase
+	secondary.SecondaryPortBase
 }
 
 // Read the document in the intial set of data
-func (mra *mongoReadAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
+func (mra *mongoReadAdapter) Call(ctx context.Context) secondary.SecondaryPortCallResult {
 	// create span if tracing is enabled
 	if config.GetEnvs().TRACING {
 		span := tracing.CreateWriteSpan(ctx, mra.name, mra.database, string(mra.collection))
@@ -38,13 +38,13 @@ func (mra *mongoReadAdapter) Call(ctx context.Context) ports.SecondaryPortCallRe
 
 	err := collection.FindOne(ctx, filter).Decode(&foundRecord)
 	if err != nil {
-		return ports.SecondaryPortCallResult{
+		return secondary.SecondaryPortCallResult{
 			Payload: nil,
 			Error:   err,
 		}
 	}
 
-	return ports.SecondaryPortCallResult{
+	return secondary.SecondaryPortCallResult{
 		Payload: &foundRecord.Payload,
 		Error:   nil,
 	}

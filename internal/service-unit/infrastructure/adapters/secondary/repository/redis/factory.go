@@ -3,14 +3,14 @@ package redis
 import (
 	"errors"
 
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
-func RedisClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {
-	var redisAdapter ports.SecodaryPort
+func RedisClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, client secondary.SecondaryAdapterClient) (secondary.SecodaryPort, error) {
+	var redisAdapter secondary.SecodaryPort
 	var err error
 	if redisClient, ok := (client).(*RedisClient); ok {
 		switch adapterConfig.Action {

@@ -3,7 +3,7 @@ package grpc
 import (
 	"context"
 
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	pb "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/generated/grpc"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 	"github.com/hanapedia/hexagon/pkg/service-unit/utils"
@@ -14,10 +14,10 @@ type simpleRpcAdapter struct {
 	route       string
 	client      *grpc.ClientConn
 	payloadSize int64
-	ports.SecondaryPortBase
+	secondary.SecondaryPortBase
 }
 
-func (sra *simpleRpcAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
+func (sra *simpleRpcAdapter) Call(ctx context.Context) secondary.SecondaryPortCallResult {
 	client := pb.NewGrpcClient(sra.client)
 	payload := utils.GenerateRandomString(sra.payloadSize)
 
@@ -31,13 +31,13 @@ func (sra *simpleRpcAdapter) Call(ctx context.Context) ports.SecondaryPortCallRe
 	// Regular RPC
 	response, err := client.SimpleRPC(ctx, &request)
 	if err != nil {
-		return ports.SecondaryPortCallResult{
+		return secondary.SecondaryPortCallResult{
 			Payload: nil,
 			Error:   err,
 		}
 	}
 
-	return ports.SecondaryPortCallResult{
+	return secondary.SecondaryPortCallResult{
 		Payload: &response.Payload,
 		Error:   nil,
 	}

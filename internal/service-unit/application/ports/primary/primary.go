@@ -1,10 +1,11 @@
-package ports
+package primary
 
 import (
 	"context"
 	"sync"
 	"time"
 
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	l "github.com/hanapedia/hexagon/pkg/operator/logger"
 )
@@ -28,6 +29,16 @@ type PrimaryPort interface {
 	Register(*PrimaryHandler) error
 }
 
+type PrimaryAdapterHandler interface {
+	GetId() string
+	GetConfig() PrimaryAdapterConfig
+}
+
+type PrimaryAdapterConfig interface {
+	GetId(string) string
+	GetGroupByKey() string
+}
+
 type PrimaryPortError struct {
 	PrimaryPort PrimaryPort
 	Error       error
@@ -42,7 +53,7 @@ type PrimaryHandler struct {
 }
 
 type Task struct {
-	SecondaryPort SecodaryPort
+	SecondaryPort secondary.SecodaryPort
 	Concurrent    bool
 	OnError       model.OnErrorSpec
 	TaskTimeout   string
@@ -52,7 +63,7 @@ type Task struct {
 // TaskResult is returned for each individual task calls
 type TaskResult struct {
 	Task Task
-	SecondaryPortCallResult
+	secondary.SecondaryPortCallResult
 }
 
 // Get parsed taskTimeout as time.Duration
@@ -86,7 +97,7 @@ type TaskSetResult struct {
 	TaskResults []*TaskResult
 }
 
-func NewTaskResult(task Task, result SecondaryPortCallResult) *TaskResult {
+func NewTaskResult(task Task, result secondary.SecondaryPortCallResult) *TaskResult {
 	return &TaskResult{Task: task, SecondaryPortCallResult: result}
 }
 
@@ -101,18 +112,18 @@ func (iah PrimaryHandler) GetId() string {
 	return id
 }
 
-func (iah PrimaryHandler) LogTaskResult(ctx context.Context, taskResult *TaskResult) {
+func LogTaskResult(ctx context.Context, adapterId string, taskResult *TaskResult) {
 	if taskResult.Error != nil {
 		l.Logger.WithContext(ctx).Error(
 			"Call failed. ",
-			"sourceId=", iah.GetId(), ", ",
+			"sourceId=", adapterId, ", ",
 			"destId=", taskResult.Task.SecondaryPort.GetDestId(), ", ",
 			"err=", taskResult.SecondaryPortCallResult.Error,
 		)
 	} else {
 		l.Logger.WithContext(ctx).Debug(
 			"Call succeeded. ",
-			"sourceId=", iah.GetId(), ", ",
+			"sourceId=", adapterId, ", ",
 			"destId=", taskResult.Task.SecondaryPort.GetDestId(), ", ",
 		)
 	}

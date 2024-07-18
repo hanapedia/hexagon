@@ -4,7 +4,7 @@ import (
 	"context"
 	"io"
 
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	pb "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/generated/grpc"
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
@@ -17,16 +17,16 @@ type biStreamAdapter struct {
 	client       *grpc.ClientConn
 	payloadSize  int64
 	payloadCount int
-	ports.SecondaryPortBase
+	secondary.SecondaryPortBase
 }
 
-func (bsa *biStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
+func (bsa *biStreamAdapter) Call(ctx context.Context) secondary.SecondaryPortCallResult {
 	client := pb.NewGrpcClient(bsa.client)
 
 	// Client-side streaming
 	biStream, err := client.BidirectionalStreaming(ctx)
 	if err != nil {
-		return ports.SecondaryPortCallResult{
+		return secondary.SecondaryPortCallResult{
 			Payload: nil,
 			Error:   err,
 		}
@@ -57,7 +57,7 @@ func (bsa *biStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCallRes
 			break
 		}
 		if err != nil {
-			return ports.SecondaryPortCallResult{
+			return secondary.SecondaryPortCallResult{
 				Payload: nil,
 				Error:   err,
 			}
@@ -65,7 +65,7 @@ func (bsa *biStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCallRes
 		lastPayload = resp.Payload
 	}
 
-	return ports.SecondaryPortCallResult{
+	return secondary.SecondaryPortCallResult{
 		Payload: &lastPayload,
 		Error:   nil,
 	}

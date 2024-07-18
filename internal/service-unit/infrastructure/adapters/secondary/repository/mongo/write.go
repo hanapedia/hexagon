@@ -3,7 +3,7 @@ package mongo
 import (
 	"context"
 
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
 	tracing "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/telemetry/tracing/mongo"
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
@@ -18,11 +18,11 @@ type mongoWriteAdapter struct {
 	database   string
 	client     *mongo.Client
 	collection constants.PayloadSizeVariant
-	ports.SecondaryPortBase
+	secondary.SecondaryPortBase
 }
 
 // Update or insert to random id in range from number of initial data to twice the size of the initial data
-func (mra *mongoWriteAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
+func (mra *mongoWriteAdapter) Call(ctx context.Context) secondary.SecondaryPortCallResult {
 	// create span if tracing is enabled
 	if config.GetEnvs().TRACING {
 		span := tracing.CreateWriteSpan(ctx, mra.name, mra.database, string(mra.collection))
@@ -40,13 +40,13 @@ func (mra *mongoWriteAdapter) Call(ctx context.Context) ports.SecondaryPortCallR
 
 	_, err := collection.UpdateOne(ctx, filter, update, updateOpts)
 	if err != nil {
-		return ports.SecondaryPortCallResult{
+		return secondary.SecondaryPortCallResult{
 			Payload: nil,
 			Error:   err,
 		}
 	}
 
-	return ports.SecondaryPortCallResult{
+	return secondary.SecondaryPortCallResult{
 		Payload: &payload,
 		Error:   nil,
 	}

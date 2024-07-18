@@ -3,8 +3,7 @@ package initialization
 import (
 	"errors"
 
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
-	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/primary"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/primary"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	l "github.com/hanapedia/hexagon/pkg/operator/logger"
@@ -19,7 +18,7 @@ func (su *ServiceUnit) mapSecondaryToPrimary() {
 			l.Logger.Fatalf("Error creating handler: %v", err)
 		}
 
-		var primaryAdapter ports.PrimaryPort
+		var primaryAdapter primary.PrimaryPort
 		if primaryConfig.ServerConfig != nil {
 			serverKey := primaryConfig.ServerConfig.GetGroupByKey()
 			primaryAdapter = su.ServerAdapters[serverKey]
@@ -29,7 +28,7 @@ func (su *ServiceUnit) mapSecondaryToPrimary() {
 			primaryAdapter = su.ConsumerAdapters[consumerKey]
 		}
 
-		err = primary.RegiserHandlerToPrimaryAdapter(su.Name, primaryAdapter, &handler)
+		err = primaryAdapter.Register(&handler)
 		if err != nil {
 			l.Logger.Fatalf("Error registering handler to server adapter: %v", err)
 		}
@@ -38,27 +37,27 @@ func (su *ServiceUnit) mapSecondaryToPrimary() {
 }
 
 // newPrimaryAdapterHandler builds primary adapter with given task set
-func (su *ServiceUnit) newPrimaryAdapterHandler(primaryConfig model.PrimaryAdapterSpec, taskSet []ports.Task) (ports.PrimaryHandler, error) {
+func (su *ServiceUnit) newPrimaryAdapterHandler(primaryConfig model.PrimaryAdapterSpec, taskSet []primary.Task) (primary.PrimaryHandler, error) {
 	if primaryConfig.ServerConfig != nil {
-		return ports.PrimaryHandler{
+		return primary.PrimaryHandler{
 			ServiceName: su.Name,
 			ServerConfig: primaryConfig.ServerConfig,
 			TaskSet:     taskSet,
 		}, nil
 	}
 	if primaryConfig.ConsumerConfig != nil {
-		return ports.PrimaryHandler{
+		return primary.PrimaryHandler{
 			ServiceName: su.Name,
 			ConsumerConfig: primaryConfig.ConsumerConfig,
 			TaskSet:       taskSet,
 		}, nil
 	}
-	return ports.PrimaryHandler{}, errors.New("Failed to create primary adapter handler. No adapter config found.")
+	return primary.PrimaryHandler{}, errors.New("Failed to create primary adapter handler. No adapter config found.")
 }
 
 // newTaskSet creates task set from config
-func (su *ServiceUnit) newTaskSet(tasks []model.TaskSpec) []ports.Task {
-	taskSet := make([]ports.Task, len(tasks))
+func (su *ServiceUnit) newTaskSet(tasks []model.TaskSpec) []primary.Task {
+	taskSet := make([]primary.Task, len(tasks))
 	for i, task := range tasks {
 		key := task.AdapterConfig.GetGroupByKey()
 		client, ok := su.SecondaryAdapterClients[key]
@@ -70,7 +69,7 @@ func (su *ServiceUnit) newTaskSet(tasks []model.TaskSpec) []ports.Task {
 			l.Logger.Infof("Skipped interface: %s", err)
 			continue
 		}
-		taskSet[i] = ports.Task{
+		taskSet[i] = primary.Task{
 			SecondaryPort: secondaryAdapter,
 			Concurrent: task.Concurrent,
 			OnError: task.AdapterConfig.OnError,

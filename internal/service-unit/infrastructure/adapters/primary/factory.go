@@ -1,7 +1,7 @@
 package primary
 
 import (
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/primary"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/primary/consumer/kafka"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/primary/server/grpc"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/primary/server/rest"
@@ -10,8 +10,8 @@ import (
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
-func NewServerAdapter(config *model.ServerConfig) ports.PrimaryPort {
-	var serverAdapter ports.PrimaryPort
+func NewServerAdapter(config *model.ServerConfig) primary.PrimaryPort {
+	var serverAdapter primary.PrimaryPort
 
 	switch config.Variant {
 	case constants.REST:
@@ -25,8 +25,8 @@ func NewServerAdapter(config *model.ServerConfig) ports.PrimaryPort {
 	return serverAdapter
 }
 
-func NewConsumerAdapter(config *model.ConsumerConfig, name string) ports.PrimaryPort {
-	var consumerAdapter ports.PrimaryPort
+func NewConsumerAdapter(config *model.ConsumerConfig, name string) primary.PrimaryPort {
+	var consumerAdapter primary.PrimaryPort
 
 	switch config.Variant {
 	case constants.KAFKA:
@@ -36,13 +36,4 @@ func NewConsumerAdapter(config *model.ConsumerConfig, name string) ports.Primary
 	}
 
 	return consumerAdapter
-}
-
-// Takes the pointer to the slice of ServerAdapters
-// Update or insert ServiceAdapter based on the handler input.
-// Does not return any value
-func RegiserHandlerToPrimaryAdapter(serviceName string, serverAdapter ports.PrimaryPort, handler *ports.PrimaryHandler) error {
-	err := serverAdapter.Register(handler)
-
-	return err
 }

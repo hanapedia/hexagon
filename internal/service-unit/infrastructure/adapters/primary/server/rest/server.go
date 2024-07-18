@@ -10,7 +10,7 @@ import (
 	"github.com/gofiber/contrib/otelfiber"
 	"github.com/gofiber/fiber/v2"
 	"github.com/hanapedia/hexagon/internal/service-unit/application/core/runtime"
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/primary"
 	"github.com/hanapedia/hexagon/internal/service-unit/domain/contract"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
@@ -55,7 +55,7 @@ func (rsa *RestServerAdapter) Serve(ctx context.Context, wg *sync.WaitGroup) err
 	return rsa.server.Listen(rsa.addr)
 }
 
-func (rsa *RestServerAdapter) Register(handler *ports.PrimaryHandler) error {
+func (rsa *RestServerAdapter) Register(handler *primary.PrimaryHandler) error {
 	if handler.ServerConfig == nil {
 		return errors.New(fmt.Sprintf("Invalid configuartion for handler %s.", handler.GetId()))
 	}
@@ -121,7 +121,7 @@ func (rsa *RestServerAdapter) Register(handler *ports.PrimaryHandler) error {
 	return err
 }
 
-func (rsa *RestServerAdapter) log(ctx context.Context, handler *ports.PrimaryHandler, startTime time.Time) {
+func (rsa *RestServerAdapter) log(ctx context.Context, handler *primary.PrimaryHandler, startTime time.Time) {
 	elapsed := time.Since(startTime).Milliseconds()
 	unit := "ms"
 	if elapsed == 0 {

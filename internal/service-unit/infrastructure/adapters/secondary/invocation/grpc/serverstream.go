@@ -4,7 +4,7 @@ import (
 	"context"
 	"io"
 
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	pb "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/generated/grpc"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 	"github.com/hanapedia/hexagon/pkg/service-unit/utils"
@@ -15,10 +15,10 @@ type serverStreamAdapter struct {
 	route       string
 	client      *grpc.ClientConn
 	payloadSize int64
-	ports.SecondaryPortBase
+	secondary.SecondaryPortBase
 }
 
-func (ssa *serverStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
+func (ssa *serverStreamAdapter) Call(ctx context.Context) secondary.SecondaryPortCallResult {
 	client := pb.NewGrpcClient(ssa.client)
 	payload := utils.GenerateRandomString(ssa.payloadSize)
 
@@ -32,7 +32,7 @@ func (ssa *serverStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCal
 	// server stream
 	serverStream, err := client.ServerStreaming(ctx, &request)
 	if err != nil {
-		return ports.SecondaryPortCallResult{
+		return secondary.SecondaryPortCallResult{
 			Payload: nil,
 			Error:   err,
 		}
@@ -45,7 +45,7 @@ func (ssa *serverStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCal
 			break
 		}
 		if err != nil {
-			return ports.SecondaryPortCallResult{
+			return secondary.SecondaryPortCallResult{
 				Payload: nil,
 				Error:   err,
 			}
@@ -53,7 +53,7 @@ func (ssa *serverStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCal
 		lastPayload = resp.Payload
 	}
 
-	return ports.SecondaryPortCallResult{
+	return secondary.SecondaryPortCallResult{
 		Payload: &lastPayload,
 		Error:   nil,
 	}

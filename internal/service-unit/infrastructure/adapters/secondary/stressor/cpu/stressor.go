@@ -7,7 +7,7 @@ import (
 	"math/rand"
 	"sync"
 
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	"github.com/hanapedia/hexagon/pkg/service-unit/utils"
 )
 
@@ -15,10 +15,10 @@ type cpuStressorAdapter struct {
 	payloadSize int64
 	iterations  int
 	threadCount int
-	ports.SecondaryPortBase
+	secondary.SecondaryPortBase
 }
 
-func (csa *cpuStressorAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
+func (csa *cpuStressorAdapter) Call(ctx context.Context) secondary.SecondaryPortCallResult {
 	// Create a WaitGroup to wait for all goroutines to finish
 	var wg sync.WaitGroup
 
@@ -35,7 +35,7 @@ func (csa *cpuStressorAdapter) Call(ctx context.Context) ports.SecondaryPortCall
 	wg.Wait()
 
 	if ctx.Err() != nil {
-		return ports.SecondaryPortCallResult{
+		return secondary.SecondaryPortCallResult{
 			Payload: nil,
 			Error: fmt.Errorf("CPU stressor Call timeout exceeded"),
 		}
@@ -44,7 +44,7 @@ func (csa *cpuStressorAdapter) Call(ctx context.Context) ports.SecondaryPortCall
 	// prepare payload
 	payload := utils.GenerateRandomString(csa.payloadSize)
 
-	return ports.SecondaryPortCallResult{
+	return secondary.SecondaryPortCallResult{
 		Payload: &payload,
 		Error:   nil,
 	}

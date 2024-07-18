@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/core/runtime"
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/primary"
 	pb "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/generated/grpc"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
@@ -23,18 +23,18 @@ import (
 
 // must implement ports.PrimaryPort
 type GrpcServerAdapter struct {
-	addr        string
-	server      *grpc.Server
-	configs     GrpcVariantConfigs
+	addr    string
+	server  *grpc.Server
+	configs GrpcVariantConfigs
 	pb.UnimplementedGrpcServer
 }
 
 // GrpcVariantConfigs holds the config for each grpc variant
 type GrpcVariantConfigs struct {
-	simpleRpc    map[string]*ports.PrimaryHandler
-	clientStream map[string]*ports.PrimaryHandler
-	serverStream map[string]*ports.PrimaryHandler
-	biStream     map[string]*ports.PrimaryHandler
+	simpleRpc    map[string]*primary.PrimaryHandler
+	clientStream map[string]*primary.PrimaryHandler
+	serverStream map[string]*primary.PrimaryHandler
+	biStream     map[string]*primary.PrimaryHandler
 }
 
 func NewGrpcServerAdapter() *GrpcServerAdapter {
@@ -51,10 +51,10 @@ func NewGrpcServerAdapter() *GrpcServerAdapter {
 		addr:   config.GetGrpcServerAddr(),
 		server: server,
 		configs: GrpcVariantConfigs{
-			simpleRpc:    make(map[string]*ports.PrimaryHandler),
-			clientStream: make(map[string]*ports.PrimaryHandler),
-			serverStream: make(map[string]*ports.PrimaryHandler),
-			biStream:     make(map[string]*ports.PrimaryHandler),
+			simpleRpc:    make(map[string]*primary.PrimaryHandler),
+			clientStream: make(map[string]*primary.PrimaryHandler),
+			serverStream: make(map[string]*primary.PrimaryHandler),
+			biStream:     make(map[string]*primary.PrimaryHandler),
 		},
 	}
 	return &adapter
@@ -64,7 +64,7 @@ func NewGrpcServerAdapter() *GrpcServerAdapter {
 func (gsa *GrpcServerAdapter) Serve(ctx context.Context, wg *sync.WaitGroup) error {
 	logger.Logger.Infof("Serving grpc server at %s", gsa.addr)
 	go func() {
-		<- ctx.Done()
+		<-ctx.Done()
 		logger.Logger.Infof("Context cancelled. GRPC Server shutting down.")
 		gsa.server.GracefulStop()
 		wg.Done()
@@ -81,7 +81,7 @@ func (gsa *GrpcServerAdapter) Serve(ctx context.Context, wg *sync.WaitGroup) err
 }
 
 // Register registers tasks to the server
-func (gsa *GrpcServerAdapter) Register(handler *ports.PrimaryHandler) error {
+func (gsa *GrpcServerAdapter) Register(handler *primary.PrimaryHandler) error {
 	if handler.ServerConfig == nil {
 		return errors.New(fmt.Sprintf("Invalid configuartion for handler %s.", handler.GetId()))
 	}
@@ -269,7 +269,7 @@ func (gsa *GrpcServerAdapter) BidirectionalStreaming(stream pb.Grpc_Bidirectiona
 	return nil
 }
 
-func (gsa *GrpcServerAdapter) log(ctx context.Context, handler *ports.PrimaryHandler, startTime time.Time) {
+func (gsa *GrpcServerAdapter) log(ctx context.Context, handler *primary.PrimaryHandler, startTime time.Time) {
 	elapsed := time.Since(startTime).Milliseconds()
 	unit := "ms"
 	if elapsed == 0 {

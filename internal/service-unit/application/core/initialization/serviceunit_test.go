@@ -7,7 +7,8 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/core/initialization"
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/primary"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	kafkaPrimary "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/primary/consumer/kafka"
 	grpcPrimary "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/primary/server/grpc"
 	restPrimary "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/primary/server/rest"
@@ -101,10 +102,10 @@ adapters:
         route: get`,
 			expected: initialization.ServiceUnit{
 				Name: "test",
-				ServerAdapters: map[string]ports.PrimaryPort{
+				ServerAdapters: map[string]primary.PrimaryPort{
 					"rest": &restPrimary.RestServerAdapter{},
 				},
-				SecondaryAdapterClients: map[string]ports.SecondaryAdapterClient{
+				SecondaryAdapterClients: map[string]secondary.SecondaryAdapterClient{
 					"rest": &restSecondary.RestClient{},
 				},
 			},
@@ -128,10 +129,10 @@ adapters:
           variant: large`,
 			expected: initialization.ServiceUnit{
 				Name: "test",
-				ServerAdapters: map[string]ports.PrimaryPort{
+				ServerAdapters: map[string]primary.PrimaryPort{
 					"rest": &restPrimary.RestServerAdapter{},
 				},
-				SecondaryAdapterClients: map[string]ports.SecondaryAdapterClient{
+				SecondaryAdapterClients: map[string]secondary.SecondaryAdapterClient{
 					"rest": &restSecondary.RestClient{},
 				},
 			},
@@ -153,10 +154,10 @@ adapters:
         route: get`,
 			expected: initialization.ServiceUnit{
 				Name: "test",
-				ServerAdapters: map[string]ports.PrimaryPort{
+				ServerAdapters: map[string]primary.PrimaryPort{
 					"grpc": &grpcPrimary.GrpcServerAdapter{},
 				},
-				SecondaryAdapterClients: map[string]ports.SecondaryAdapterClient{
+				SecondaryAdapterClients: map[string]secondary.SecondaryAdapterClient{
 					"grpcserver.grpc": &grpcSecondary.GrpcClient{},
 				},
 			},
@@ -178,10 +179,10 @@ adapters:
         route: get`,
 			expected: initialization.ServiceUnit{
 				Name: "test",
-				ServerAdapters: map[string]ports.PrimaryPort{
+				ServerAdapters: map[string]primary.PrimaryPort{
 					"grpc": &grpcPrimary.GrpcServerAdapter{},
 				},
-				SecondaryAdapterClients: map[string]ports.SecondaryAdapterClient{
+				SecondaryAdapterClients: map[string]secondary.SecondaryAdapterClient{
 					"grpcserver.grpc": &grpcSecondary.GrpcClient{},
 				},
 			},
@@ -203,10 +204,10 @@ adapters:
         route: get`,
 			expected: initialization.ServiceUnit{
 				Name: "test",
-				ServerAdapters: map[string]ports.PrimaryPort{
+				ServerAdapters: map[string]primary.PrimaryPort{
 					"grpc": &grpcPrimary.GrpcServerAdapter{},
 				},
-				SecondaryAdapterClients: map[string]ports.SecondaryAdapterClient{
+				SecondaryAdapterClients: map[string]secondary.SecondaryAdapterClient{
 					"grpcserver.grpc": &grpcSecondary.GrpcClient{},
 				},
 			},
@@ -228,10 +229,10 @@ adapters:
         route: get`,
 			expected: initialization.ServiceUnit{
 				Name: "test",
-				ServerAdapters: map[string]ports.PrimaryPort{
+				ServerAdapters: map[string]primary.PrimaryPort{
 					"grpc": &grpcPrimary.GrpcServerAdapter{},
 				},
-				SecondaryAdapterClients: map[string]ports.SecondaryAdapterClient{
+				SecondaryAdapterClients: map[string]secondary.SecondaryAdapterClient{
 					"grpcserver.grpc": &grpcSecondary.GrpcClient{},
 				},
 			},
@@ -250,10 +251,10 @@ adapters:
         topic: topic1`,
 			expected: initialization.ServiceUnit{
 				Name: "test",
-				ConsumerAdapters: map[string]ports.PrimaryPort{
+				ConsumerAdapters: map[string]primary.PrimaryPort{
 					"kafka.topic1": &kafkaPrimary.KafkaConsumerAdapter{},
 				},
-				SecondaryAdapterClients: map[string]ports.SecondaryAdapterClient{
+				SecondaryAdapterClients: map[string]secondary.SecondaryAdapterClient{
 					"kafka.topic1": &kafkaSecondary.KafkaProducerClient{},
 				},
 			},
@@ -297,10 +298,10 @@ adapters:
           variant: large`,
 			expected: initialization.ServiceUnit{
 				Name: "test",
-				ServerAdapters: map[string]ports.PrimaryPort{
+				ServerAdapters: map[string]primary.PrimaryPort{
 					"rest": &restPrimary.RestServerAdapter{},
 				},
-				SecondaryAdapterClients: map[string]ports.SecondaryAdapterClient{
+				SecondaryAdapterClients: map[string]secondary.SecondaryAdapterClient{
 					"redis.redisrepo": &redis.RedisClient{},
 					"mongo.mongorepo": &mongo.MongoClient{},
 				},
