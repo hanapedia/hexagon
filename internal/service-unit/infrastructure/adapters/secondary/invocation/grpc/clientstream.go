@@ -3,7 +3,7 @@ package grpc
 import (
 	"context"
 
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	pb "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/generated/grpc"
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
@@ -16,16 +16,16 @@ type clientStreamAdapter struct {
 	client       *grpc.ClientConn
 	payloadSize  int64
 	payloadCount int
-	ports.SecondaryPortBase
+	secondary.SecondaryPortBase
 }
 
-func (csa *clientStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCallResult {
+func (csa *clientStreamAdapter) Call(ctx context.Context) secondary.SecondaryPortCallResult {
 	client := pb.NewGrpcClient(csa.client)
 
 	// Client-side streaming
 	clientStream, err := client.ClientStreaming(ctx)
 	if err != nil {
-		return ports.SecondaryPortCallResult{
+		return secondary.SecondaryPortCallResult{
 			Payload: nil,
 			Error:   err,
 		}
@@ -50,13 +50,13 @@ func (csa *clientStreamAdapter) Call(ctx context.Context) ports.SecondaryPortCal
 
 	response, err := clientStream.CloseAndRecv()
 	if err != nil {
-		return ports.SecondaryPortCallResult{
+		return secondary.SecondaryPortCallResult{
 			Payload: nil,
 			Error:   err,
 		}
 	}
 
-	return ports.SecondaryPortCallResult{
+	return secondary.SecondaryPortCallResult{
 		Payload: &response.Payload,
 		Error:   nil,
 	}

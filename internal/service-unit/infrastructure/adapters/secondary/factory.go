@@ -3,7 +3,7 @@ package secondary
 import (
 	"errors"
 
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/invocation"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/producer"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/repository"
@@ -12,7 +12,7 @@ import (
 	l "github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
-func NewSecondaryAdapter(config *model.SecondaryAdapterConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {
+func NewSecondaryAdapter(config *model.SecondaryAdapterConfig, client secondary.SecondaryAdapterClient) (secondary.SecodaryPort, error) {
 	if config.InvocationConfig != nil {
 		return invocation.NewSecondaryAdapter(config.InvocationConfig, client)
 	}
@@ -30,7 +30,7 @@ func NewSecondaryAdapter(config *model.SecondaryAdapterConfig, client ports.Seco
 	return nil, err
 }
 
-func NewSecondaryAdapterClient(config *model.SecondaryAdapterConfig) ports.SecondaryAdapterClient {
+func NewSecondaryAdapterClient(config *model.SecondaryAdapterConfig) secondary.SecondaryAdapterClient {
 	if config.InvocationConfig != nil {
 		return invocation.NewClient(config.InvocationConfig)
 	}

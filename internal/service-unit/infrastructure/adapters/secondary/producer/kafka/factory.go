@@ -3,13 +3,13 @@ package kafka
 import (
 	"errors"
 
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
-func KafkaProducerAdapterFactory(adapterConfig *model.ProducerConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {
-	var kafkaAdapter ports.SecodaryPort
+func KafkaProducerAdapterFactory(adapterConfig *model.ProducerConfig, client secondary.SecondaryAdapterClient) (secondary.SecodaryPort, error) {
+	var kafkaAdapter secondary.SecodaryPort
 	var err error
 	if kafkaProducerClient, ok := (client).(*KafkaProducerClient); ok {
 		kafkaAdapter = &kafkaProducerAdapter{

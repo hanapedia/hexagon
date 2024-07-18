@@ -3,7 +3,7 @@ package producer
 import (
 	"errors"
 
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/producer/kafka"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
@@ -11,7 +11,7 @@ import (
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
-func NewSecondaryAdapter(adapterConfig *model.ProducerConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {
+func NewSecondaryAdapter(adapterConfig *model.ProducerConfig, client secondary.SecondaryAdapterClient) (secondary.SecodaryPort, error) {
 	switch adapterConfig.Variant {
 	case constants.KAFKA:
 		return kafka.KafkaProducerAdapterFactory(adapterConfig, client)
@@ -22,7 +22,7 @@ func NewSecondaryAdapter(adapterConfig *model.ProducerConfig, client ports.Secon
 
 }
 
-func NewClient(adapterConfig *model.ProducerConfig) ports.SecondaryAdapterClient {
+func NewClient(adapterConfig *model.ProducerConfig) secondary.SecondaryAdapterClient {
 	switch adapterConfig.Variant {
 	case constants.KAFKA:
 		kafkaClient := kafka.NewKafkaClient(config.GetKafkaBrokerAddr(), adapterConfig.Topic)

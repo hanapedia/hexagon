@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/primary"
 	restServer "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/primary/server/rest"
 	restClient "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/invocation/rest"
 	v1 "github.com/hanapedia/hexagon/pkg/api/v1"
@@ -17,34 +17,34 @@ import (
 func TestRestServerAndClient(t *testing.T) {
 	// 1. Setup server
 	server := restServer.NewRestServerAdapter()
-	server.Register(&ports.PrimaryHandler{
+	server.Register(&primary.PrimaryHandler{
 		ServiceName: "test",
 		ServerConfig: &v1.ServerConfig{
 			Variant: "rest",
 			Action: constants.GET,
 			Route: "get",
 		},
-		TaskSet: []ports.Task{},
+		TaskSet: []primary.Task{},
 	})
-	server.Register(&ports.PrimaryHandler{
+	server.Register(&primary.PrimaryHandler{
 		ServiceName: "test",
 		ServerConfig: &v1.ServerConfig{
 			Variant: "rest",
 			Action: constants.POST,
 			Route: "post",
 		},
-		TaskSet: []ports.Task{},
+		TaskSet: []primary.Task{},
 	})
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	var wg sync.WaitGroup
 
-	errChan := make(chan ports.PrimaryPortError)
+	errChan := make(chan primary.PrimaryPortError)
 	go func() {
 		wg.Add(1)
 		if err := server.Serve(ctx, &wg); err != nil {
-			errChan <- ports.PrimaryPortError{PrimaryPort: server, Error: err}
+			errChan <- primary.PrimaryPortError{PrimaryPort: server, Error: err}
 		}
 	}()
 

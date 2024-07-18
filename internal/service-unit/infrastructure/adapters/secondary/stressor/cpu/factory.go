@@ -1,13 +1,13 @@
 package cpu
 
 import (
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
-func CpuStressorAdapterFactory(adapterConfig *model.StressorConfig) (ports.SecodaryPort, error) {
-	var cpuStressor ports.SecodaryPort
+func CpuStressorAdapterFactory(adapterConfig *model.StressorConfig) (secondary.SecodaryPort, error) {
+	var cpuStressor secondary.SecodaryPort
 	var err error
 
 	iters := adapterConfig.Iterations

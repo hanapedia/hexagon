@@ -3,7 +3,7 @@ package repository
 import (
 	"errors"
 
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/repository/mongo"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/repository/redis"
@@ -12,7 +12,7 @@ import (
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
-func NewSecondaryAdapter(adapterConfig *model.RepositoryClientConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {
+func NewSecondaryAdapter(adapterConfig *model.RepositoryClientConfig, client secondary.SecondaryAdapterClient) (secondary.SecodaryPort, error) {
 	switch adapterConfig.Variant {
 	case constants.MONGO:
 		return mongo.MongoClientAdapterFactory(adapterConfig, client)
@@ -26,7 +26,7 @@ func NewSecondaryAdapter(adapterConfig *model.RepositoryClientConfig, client por
 }
 
 // NewClient creates new client to stateful service
-func NewClient(adapterConfig *model.RepositoryClientConfig) ports.SecondaryAdapterClient {
+func NewClient(adapterConfig *model.RepositoryClientConfig) secondary.SecondaryAdapterClient {
 	switch adapterConfig.Variant {
 	case constants.MONGO:
 		connectionUri := config.GetMongoConnectionUri(adapterConfig)

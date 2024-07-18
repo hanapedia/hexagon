@@ -3,14 +3,14 @@ package mongo
 import (
 	"errors"
 
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
-func MongoClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, client ports.SecondaryAdapterClient) (ports.SecodaryPort, error) {
-	var mongoAdapter ports.SecodaryPort
+func MongoClientAdapterFactory(adapterConfig *model.RepositoryClientConfig, client secondary.SecondaryAdapterClient) (secondary.SecodaryPort, error) {
+	var mongoAdapter secondary.SecodaryPort
 	var err error
 	if mongoClient, ok := (client).(*MongoClient); ok {
 		switch adapterConfig.Action {

@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/primary"
 	grpcServer "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/primary/server/grpc"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
 	grpcClient "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/invocation/grpc"
@@ -18,52 +18,52 @@ import (
 func TestGrpcServerAndClient(t *testing.T) {
 	// 1. Setup server
 	server := grpcServer.NewGrpcServerAdapter()
-	server.Register(&ports.PrimaryHandler{
+	server.Register(&primary.PrimaryHandler{
 		ServiceName: "test",
 		ServerConfig: &v1.ServerConfig{
 			Variant: "grpc",
 			Action:  constants.SIMPLE_RPC,
 			Route:   "simple",
 		},
-		TaskSet: []ports.Task{},
+		TaskSet: []primary.Task{},
 	})
-	server.Register(&ports.PrimaryHandler{
+	server.Register(&primary.PrimaryHandler{
 		ServiceName: "test",
 		ServerConfig: &v1.ServerConfig{
 			Variant: "grpc",
 			Action:  constants.BI_STREAM,
 			Route:   "bistream",
 		},
-		TaskSet: []ports.Task{},
+		TaskSet: []primary.Task{},
 	})
-	server.Register(&ports.PrimaryHandler{
+	server.Register(&primary.PrimaryHandler{
 		ServiceName: "test",
 		ServerConfig: &v1.ServerConfig{
 			Variant: "grpc",
 			Action:  constants.CLIENT_STREAM,
 			Route:   "cstream",
 		},
-		TaskSet: []ports.Task{},
+		TaskSet: []primary.Task{},
 	})
-	server.Register(&ports.PrimaryHandler{
+	server.Register(&primary.PrimaryHandler{
 		ServiceName: "test",
 		ServerConfig: &v1.ServerConfig{
 			Variant: "grpc",
 			Action:  constants.SERVER_STREAM,
 			Route:   "sstream",
 		},
-		TaskSet: []ports.Task{},
+		TaskSet: []primary.Task{},
 	})
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	var wg sync.WaitGroup
 
-	errChan := make(chan ports.PrimaryPortError)
+	errChan := make(chan primary.PrimaryPortError)
 	go func() {
 		wg.Add(1)
 		if err := server.Serve(ctx, &wg); err != nil {
-			errChan <- ports.PrimaryPortError{PrimaryPort: server, Error: err}
+			errChan <- primary.PrimaryPortError{PrimaryPort: server, Error: err}
 		}
 	}()
 
@@ -185,4 +185,3 @@ func TestGrpcServerAndClient(t *testing.T) {
 	wg.Wait()
 	client.Close()
 }
-

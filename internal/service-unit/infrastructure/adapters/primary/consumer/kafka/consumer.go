@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/core/runtime"
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/primary"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
 	tracing "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/telemetry/tracing/kafka"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
@@ -20,7 +20,7 @@ type KafkaConsumerAdapter struct {
 
 type KafkaConsumer struct {
 	reader  *kafka.Reader
-	handler *ports.PrimaryHandler
+	handler *primary.PrimaryHandler
 }
 
 func NewKafkaConsumerAdapter(topic, group string) *KafkaConsumerAdapter {
@@ -73,7 +73,7 @@ ConsumerLoop:
 	return err
 }
 
-func (kca *KafkaConsumerAdapter) Register(handler *ports.PrimaryHandler) error {
+func (kca *KafkaConsumerAdapter) Register(handler *primary.PrimaryHandler) error {
 	kca.kafkaConsumer.handler = handler
 	return nil
 }

@@ -4,7 +4,8 @@ import (
 	"context"
 	"sync"
 
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/primary"
+	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
@@ -13,19 +14,19 @@ type ServiceUnit struct {
 	Name   string
 	Config *model.ServiceUnitConfig
 	// ServerAdapters hold the adapters for server processes from REST, gRPC
-	ServerAdapters map[string]ports.PrimaryPort
+	ServerAdapters map[string]primary.PrimaryPort
 	// ConsumerAdapters hold the adapters for consumer processes from Kafka, RabbitMQ, Pular, etc
-	ConsumerAdapters map[string]ports.PrimaryPort
+	ConsumerAdapters map[string]primary.PrimaryPort
 	// SecondaryAdapterClients hold the persistent clients for secondary adapters
-	SecondaryAdapterClients map[string]ports.SecondaryAdapterClient
+	SecondaryAdapterClients map[string]secondary.SecondaryAdapterClient
 }
 
 // NewServiceUnit initializes service unit object
 func NewServiceUnit(serviceUnitConfig *model.ServiceUnitConfig) ServiceUnit {
-	serverAdapters := make(map[string]ports.PrimaryPort)
-	consumerAdapters := make(map[string]ports.PrimaryPort)
+	serverAdapters := make(map[string]primary.PrimaryPort)
+	consumerAdapters := make(map[string]primary.PrimaryPort)
 
-	secondaryAdapters := make(map[string]ports.SecondaryAdapterClient)
+	secondaryAdapters := make(map[string]secondary.SecondaryAdapterClient)
 
 	return ServiceUnit{
 		Name:                    serviceUnitConfig.Name,
@@ -37,13 +38,13 @@ func NewServiceUnit(serviceUnitConfig *model.ServiceUnitConfig) ServiceUnit {
 }
 
 // Start primary adapters. it propagates context to primary adapters
-func (su *ServiceUnit) Start(shutdownNotification context.Context, shutdownWaitGroup *sync.WaitGroup, errChan chan ports.PrimaryPortError) {
+func (su *ServiceUnit) Start(shutdownNotification context.Context, shutdownWaitGroup *sync.WaitGroup, errChan chan primary.PrimaryPortError) {
 	for _, serverAdapter := range su.ServerAdapters {
 		serverAdapterCopy := serverAdapter
 		shutdownWaitGroup.Add(1)
 		go func() {
 			if err := serverAdapterCopy.Serve(shutdownNotification, shutdownWaitGroup); err != nil {
-				errChan <- ports.PrimaryPortError{PrimaryPort: serverAdapterCopy, Error: err}
+				errChan <- primary.PrimaryPortError{PrimaryPort: serverAdapterCopy, Error: err}
 			}
 		}()
 	}
@@ -54,7 +55,7 @@ func (su *ServiceUnit) Start(shutdownNotification context.Context, shutdownWaitG
 		shutdownWaitGroup.Add(1)
 		go func() {
 			if err := consumerAdapterCopy.Serve(shutdownNotification, shutdownWaitGroup); err != nil {
-				errChan <- ports.PrimaryPortError{PrimaryPort: consumerAdapterCopy, Error: err}
+				errChan <- primary.PrimaryPortError{PrimaryPort: consumerAdapterCopy, Error: err}
 			}
 		}()
 	}
