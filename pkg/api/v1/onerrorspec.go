@@ -26,28 +26,32 @@ type OnErrorSpec struct {
 	IsCritical bool `json:"concurrent,omitempty"`
 
 	// Retry configurations
-	// RetryBackoffPolicy configurs the backoff policy used for subsequent retries.
+	Retry RetrySpec `json:"retry,omitempty"`
+}
+
+type RetrySpec struct {
+	// BackoffPolicy configurs the backoff policy used for subsequent retries.
 	// Available configurations are
 	//   - none: Default. No retry backoff.
 	//   - constant: Retries without any backoffs.
 	//   - linear: Retries with linearly scaling backoff. Scaling can be configured from RetryBackoffScaling
 	//   - exponential: Retries with exponentially scaling backoff.
-	RetryBackoffPolicy RetryBackoffPolicy `json:"retryBackoffPolicy,omitempty"`
+	BackoffPolicy RetryBackoffPolicy `json:"backoffPolicy,omitempty"`
 
-	// RetryMaxAttempt specifies the max number of retries before giving up.
+	// MaxAttempt specifies the max number of retries before giving up.
 	//
 	// If both RetryMaxDuration is also specified, the one that expires first will take precedence.
-	RetryMaxAttempt int `json:"retryMaxAttempt,omitempty"`
+	MaxAttempt int `json:"maxAttempt,omitempty"`
 
-	// RetryInitialBackoff specifies the initial duration to backoff
+	// InitialBackoff specifies the initial duration to backoff
 	//
 	// Must be parsable using time.ParseDuration
-	RetryInitialBackoff string `json:"retryInitialBackoff,omitempty"`
+	InitialBackoff string `json:"initialBackoff,omitempty"`
 }
 
 // Get parsed timeout as time.Duration
-func (oes *OnErrorSpec) GetInitialBackoff() time.Duration {
-	duration, err := time.ParseDuration(oes.RetryInitialBackoff)
+func (rs *RetrySpec) GetInitialBackoff() time.Duration {
+	duration, err := time.ParseDuration(rs.InitialBackoff)
 	if err != nil {
 		return DEFAULT_RETRY_INITIAL_BACKOFF
 	}
@@ -55,14 +59,14 @@ func (oes *OnErrorSpec) GetInitialBackoff() time.Duration {
 }
 
 // GetNthBackoff returns the backoff duration for Nth retry attempt.
-func (oes *OnErrorSpec) GetNthBackoff(n int) time.Duration {
-	switch oes.RetryBackoffPolicy {
+func (rs *RetrySpec) GetNthBackoff(n int) time.Duration {
+	switch rs.BackoffPolicy {
 	case CONSTANT_BACKOFF:
-		return oes.GetInitialBackoff()
+		return rs.GetInitialBackoff()
 	case LINEAR_BACKOFF:
-		return oes.GetInitialBackoff() * time.Duration(n)
+		return rs.GetInitialBackoff() * time.Duration(n)
 	case EXPONENTIAL_BACKOFF:
-		return oes.GetInitialBackoff() * time.Duration(math.Pow(2, float64(n - 1)))
+		return rs.GetInitialBackoff() * time.Duration(math.Pow(2, float64(n-1)))
 	case NO_BACKOFF:
 	}
 	return 0

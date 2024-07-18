@@ -14,14 +14,14 @@ import (
 )
 
 // TestRegularCalls asserts that Call methods are called properly
-func TestRegularCalls(t *testing.T){
+func TestRegularCalls(t *testing.T) {
 	// 1. Prepare primary handler with tasks
 	handler := ports.PrimaryHandler{
 		ServiceName: "RegularCallHandler",
 		ServerConfig: &model.ServerConfig{
 			Variant: constants.REST,
-			Action: constants.GET,
-			Route: "test",
+			Action:  constants.GET,
+			Route:   "test",
 		},
 		TaskSet: []ports.Task{
 			{
@@ -41,23 +41,23 @@ func TestRegularCalls(t *testing.T){
 }
 
 // TestConcurrentCalls
-func TestConcurrentCalls(t *testing.T){
+func TestConcurrentCalls(t *testing.T) {
 	// 1. Prepare primary handler with tasks
 	handler := ports.PrimaryHandler{
 		ServiceName: "ConcurretCallHandler",
 		ServerConfig: &model.ServerConfig{
 			Variant: constants.REST,
-			Action: constants.GET,
-			Route: "test",
+			Action:  constants.GET,
+			Route:   "test",
 		},
 		TaskSet: []ports.Task{
 			{
 				SecondaryPort: mock.NewSecondaryAdapter("ConcurrentSecondaryAdapter1", time.Second, 0),
-				Concurrent: true,
+				Concurrent:    true,
 			},
 			{
 				SecondaryPort: mock.NewSecondaryAdapter("ConcurrentSecondaryAdapter2", time.Second, 0),
-				Concurrent: true,
+				Concurrent:    true,
 			},
 		},
 	}
@@ -70,22 +70,24 @@ func TestConcurrentCalls(t *testing.T){
 }
 
 // TestRetrySuccess asserts that the call succeeds after retry
-func TestRetrySuccess(t *testing.T){
+func TestRetrySuccess(t *testing.T) {
 	// 1. Prepare primary handler with tasks
 	handler := ports.PrimaryHandler{
 		ServiceName: "RetrySuccessCallHandler",
 		ServerConfig: &model.ServerConfig{
 			Variant: constants.REST,
-			Action: constants.GET,
-			Route: "test",
+			Action:  constants.GET,
+			Route:   "test",
 		},
 		TaskSet: []ports.Task{
 			{
 				SecondaryPort: mock.NewSecondaryAdapter("RetrySuccessSecondaryAdapter1", time.Second, 1),
 				OnError: model.OnErrorSpec{
-					RetryBackoffPolicy: model.NO_BACKOFF,
-					RetryMaxAttempt: 2,
-					RetryInitialBackoff: "1s",
+					Retry: model.RetrySpec{
+						BackoffPolicy:  model.NO_BACKOFF,
+						MaxAttempt:     2,
+						InitialBackoff: "1s",
+					},
 				},
 			},
 		},
@@ -98,22 +100,24 @@ func TestRetrySuccess(t *testing.T){
 }
 
 // TestRetryFail asserts that the call fails after retry
-func TestRetryFail(t *testing.T){
+func TestRetryFail(t *testing.T) {
 	// 1. Prepare primary handler with tasks
 	handler := ports.PrimaryHandler{
 		ServiceName: "RetryFailCallHandler",
 		ServerConfig: &model.ServerConfig{
 			Variant: constants.REST,
-			Action: constants.GET,
-			Route: "test",
+			Action:  constants.GET,
+			Route:   "test",
 		},
 		TaskSet: []ports.Task{
 			{
 				SecondaryPort: mock.NewSecondaryAdapter("RetryFailSecondaryAdapter1", time.Second, 5),
 				OnError: model.OnErrorSpec{
-					RetryBackoffPolicy: model.NO_BACKOFF,
-					RetryMaxAttempt: 2,
-					RetryInitialBackoff: "1s",
+					Retry: model.RetrySpec{
+						BackoffPolicy:  model.NO_BACKOFF,
+						MaxAttempt:     2,
+						InitialBackoff: "1s",
+					},
 				},
 			},
 		},
@@ -126,14 +130,14 @@ func TestRetryFail(t *testing.T){
 }
 
 // TestNonCriticalFailure
-func TestNonCriticalFailure(t *testing.T){
+func TestNonCriticalFailure(t *testing.T) {
 	// 1. Prepare primary handler with tasks
 	handler := ports.PrimaryHandler{
 		ServiceName: "NonCriticalFailCallHandler",
 		ServerConfig: &model.ServerConfig{
 			Variant: constants.REST,
-			Action: constants.GET,
-			Route: "test",
+			Action:  constants.GET,
+			Route:   "test",
 		},
 		TaskSet: []ports.Task{
 			{
@@ -153,19 +157,19 @@ func TestNonCriticalFailure(t *testing.T){
 }
 
 // TestCriticalFailure
-func TestCriticalFailure(t *testing.T){
+func TestCriticalFailure(t *testing.T) {
 	// 1. Prepare primary handler with tasks
 	handler := ports.PrimaryHandler{
 		ServiceName: "CriticalFailCallHandler",
 		ServerConfig: &model.ServerConfig{
 			Variant: constants.REST,
-			Action: constants.GET,
-			Route: "test",
+			Action:  constants.GET,
+			Route:   "test",
 		},
 		TaskSet: []ports.Task{
 			{
 				SecondaryPort: mock.NewSecondaryAdapter("CriticalSecondaryAdapter1", time.Second, 1),
-				OnError: model.OnErrorSpec{IsCritical: true},
+				OnError:       model.OnErrorSpec{IsCritical: true},
 			},
 			{
 				SecondaryPort: mock.NewSecondaryAdapter("NonCriticalSecondaryAdapter1", time.Second, 0),
@@ -181,19 +185,19 @@ func TestCriticalFailure(t *testing.T){
 }
 
 // TestTimeoutFailure
-func TestTimeoutFailure(t *testing.T){
+func TestTimeoutFailure(t *testing.T) {
 	// 1. Prepare primary handler with tasks
 	handler := ports.PrimaryHandler{
 		ServiceName: "TimeoutFailCallHandler",
 		ServerConfig: &model.ServerConfig{
 			Variant: constants.REST,
-			Action: constants.GET,
-			Route: "test",
+			Action:  constants.GET,
+			Route:   "test",
 		},
 		TaskSet: []ports.Task{
 			{
-				SecondaryPort: mock.NewSecondaryAdapter("TimeoutFailSecondaryAdapter1", 2 * time.Second, 0),
-				CallTimeout: "1s",
+				SecondaryPort: mock.NewSecondaryAdapter("TimeoutFailSecondaryAdapter1", 2*time.Second, 0),
+				CallTimeout:   "1s",
 			},
 		},
 	}
