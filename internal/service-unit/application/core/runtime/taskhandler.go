@@ -45,12 +45,12 @@ func TaskSetHandler(ctx context.Context, handler *ports.PrimaryHandler) ports.Ta
 // HandleTask calls the task with possible retries
 func HandleTask(taskCtx context.Context, task ports.Task, resultCh chan<- *ports.TaskResult) {
 	// add 1 for the initial attempt
-	maxAttempt := task.OnError.RetryMaxAttempt + 1
+	maxAttempt := task.OnError.Retry.MaxAttempt + 1
 	var result ports.SecondaryPortCallResult
 
 	for i := 0; i < maxAttempt; i++ {
 		if i > 0 {
-			backoff := task.OnError.GetNthBackoff(i)
+			backoff := task.OnError.Retry.GetNthBackoff(i)
 			timer := time.NewTimer(backoff)
 			select {
 			// check for the parent context expiration
