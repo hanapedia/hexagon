@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/core/runtime"
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/primary"
+	"github.com/hanapedia/hexagon/internal/service-unit/domain"
 	pb "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/generated/grpc"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
@@ -31,10 +31,10 @@ type GrpcServerAdapter struct {
 
 // GrpcVariantConfigs holds the config for each grpc variant
 type GrpcVariantConfigs struct {
-	simpleRpc    map[string]*primary.PrimaryHandler
-	clientStream map[string]*primary.PrimaryHandler
-	serverStream map[string]*primary.PrimaryHandler
-	biStream     map[string]*primary.PrimaryHandler
+	simpleRpc    map[string]*domain.PrimaryHandler
+	clientStream map[string]*domain.PrimaryHandler
+	serverStream map[string]*domain.PrimaryHandler
+	biStream     map[string]*domain.PrimaryHandler
 }
 
 func NewGrpcServerAdapter() *GrpcServerAdapter {
@@ -51,10 +51,10 @@ func NewGrpcServerAdapter() *GrpcServerAdapter {
 		addr:   config.GetGrpcServerAddr(),
 		server: server,
 		configs: GrpcVariantConfigs{
-			simpleRpc:    make(map[string]*primary.PrimaryHandler),
-			clientStream: make(map[string]*primary.PrimaryHandler),
-			serverStream: make(map[string]*primary.PrimaryHandler),
-			biStream:     make(map[string]*primary.PrimaryHandler),
+			simpleRpc:    make(map[string]*domain.PrimaryHandler),
+			clientStream: make(map[string]*domain.PrimaryHandler),
+			serverStream: make(map[string]*domain.PrimaryHandler),
+			biStream:     make(map[string]*domain.PrimaryHandler),
 		},
 	}
 	return &adapter
@@ -81,7 +81,7 @@ func (gsa *GrpcServerAdapter) Serve(ctx context.Context, wg *sync.WaitGroup) err
 }
 
 // Register registers tasks to the server
-func (gsa *GrpcServerAdapter) Register(handler *primary.PrimaryHandler) error {
+func (gsa *GrpcServerAdapter) Register(handler *domain.PrimaryHandler) error {
 	if handler.ServerConfig == nil {
 		return errors.New(fmt.Sprintf("Invalid configuartion for handler %s.", handler.GetId()))
 	}
@@ -269,7 +269,7 @@ func (gsa *GrpcServerAdapter) BidirectionalStreaming(stream pb.Grpc_Bidirectiona
 	return nil
 }
 
-func (gsa *GrpcServerAdapter) log(ctx context.Context, handler *primary.PrimaryHandler, startTime time.Time) {
+func (gsa *GrpcServerAdapter) log(ctx context.Context, handler *domain.PrimaryHandler, startTime time.Time) {
 	elapsed := time.Since(startTime).Milliseconds()
 	unit := "ms"
 	if elapsed == 0 {
