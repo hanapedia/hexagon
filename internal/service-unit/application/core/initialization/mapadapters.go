@@ -38,22 +38,22 @@ func (su *ServiceUnit) mapSecondaryToPrimary() {
 }
 
 // newPrimaryAdapterHandler builds primary adapter with given task set
-func (su *ServiceUnit) newPrimaryAdapterHandler(primaryConfig model.PrimaryAdapterSpec, taskSet []domain.Task) (domain.PrimaryHandler, error) {
+func (su *ServiceUnit) newPrimaryAdapterHandler(primaryConfig model.PrimaryAdapterSpec, taskSet []domain.Task) (domain.PrimaryAdapterHandler, error) {
 	if primaryConfig.ServerConfig != nil {
-		return domain.PrimaryHandler{
+		return domain.PrimaryAdapterHandler{
 			ServiceName: su.Name,
 			ServerConfig: primaryConfig.ServerConfig,
 			TaskSet:     taskSet,
 		}, nil
 	}
 	if primaryConfig.ConsumerConfig != nil {
-		return domain.PrimaryHandler{
+		return domain.PrimaryAdapterHandler{
 			ServiceName: su.Name,
 			ConsumerConfig: primaryConfig.ConsumerConfig,
 			TaskSet:       taskSet,
 		}, nil
 	}
-	return domain.PrimaryHandler{}, errors.New("Failed to create primary adapter handler. No adapter config found.")
+	return domain.PrimaryAdapterHandler{}, errors.New("Failed to create primary adapter handler. No adapter config found.")
 }
 
 // newTaskSet creates task set from config

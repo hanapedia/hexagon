@@ -20,7 +20,7 @@ type KafkaConsumerAdapter struct {
 
 type KafkaConsumer struct {
 	reader  *kafka.Reader
-	handler *domain.PrimaryHandler
+	handler *domain.PrimaryAdapterHandler
 }
 
 func NewKafkaConsumerAdapter(topic, group string) *KafkaConsumerAdapter {
@@ -73,7 +73,7 @@ ConsumerLoop:
 	return err
 }
 
-func (kca *KafkaConsumerAdapter) Register(handler *domain.PrimaryHandler) error {
+func (kca *KafkaConsumerAdapter) Register(handler *domain.PrimaryAdapterHandler) error {
 	kca.kafkaConsumer.handler = handler
 	return nil
 }

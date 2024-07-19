@@ -19,7 +19,7 @@ import (
 func TestGrpcServerAndClient(t *testing.T) {
 	// 1. Setup server
 	server := grpcServer.NewGrpcServerAdapter()
-	server.Register(&domain.PrimaryHandler{
+	server.Register(&domain.PrimaryAdapterHandler{
 		ServiceName: "test",
 		ServerConfig: &v1.ServerConfig{
 			Variant: "grpc",
@@ -28,7 +28,7 @@ func TestGrpcServerAndClient(t *testing.T) {
 		},
 		TaskSet: []domain.Task{},
 	})
-	server.Register(&domain.PrimaryHandler{
+	server.Register(&domain.PrimaryAdapterHandler{
 		ServiceName: "test",
 		ServerConfig: &v1.ServerConfig{
 			Variant: "grpc",
@@ -37,7 +37,7 @@ func TestGrpcServerAndClient(t *testing.T) {
 		},
 		TaskSet: []domain.Task{},
 	})
-	server.Register(&domain.PrimaryHandler{
+	server.Register(&domain.PrimaryAdapterHandler{
 		ServiceName: "test",
 		ServerConfig: &v1.ServerConfig{
 			Variant: "grpc",
@@ -46,7 +46,7 @@ func TestGrpcServerAndClient(t *testing.T) {
 		},
 		TaskSet: []domain.Task{},
 	})
-	server.Register(&domain.PrimaryHandler{
+	server.Register(&domain.PrimaryAdapterHandler{
 		ServiceName: "test",
 		ServerConfig: &v1.ServerConfig{
 			Variant: "grpc",

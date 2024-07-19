@@ -20,12 +20,12 @@ func (pam PrimaryAdapterMock) Serve(ctx context.Context, wg *sync.WaitGroup) err
 }
 
 // Register mock implementation
-func (pam PrimaryAdapterMock) Register(primaryHander *domain.PrimaryHandler) error {
+func (pam PrimaryAdapterMock) Register(primaryHander *domain.PrimaryAdapterHandler) error {
 	return nil
 }
 
 // NewPrimaryHandler returns mocked ports.PrimaryHandler with given number of tasks
-func NewPrimaryHandler(numTask int) domain.PrimaryHandler {
+func NewPrimaryHandler(numTask int) domain.PrimaryAdapterHandler {
 	tasks := make([]domain.Task, numTask)
 	for i := 0; i < numTask; i++ {
 		tasks = append(tasks, domain.Task{
@@ -33,7 +33,7 @@ func NewPrimaryHandler(numTask int) domain.PrimaryHandler {
 			Concurrent:    false,
 		})
 	}
-	return domain.PrimaryHandler{
+	return domain.PrimaryAdapterHandler{
 		TaskSet: tasks,
 	}
 }

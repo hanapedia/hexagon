@@ -55,7 +55,7 @@ func (rsa *RestServerAdapter) Serve(ctx context.Context, wg *sync.WaitGroup) err
 	return rsa.server.Listen(rsa.addr)
 }
 
-func (rsa *RestServerAdapter) Register(handler *domain.PrimaryHandler) error {
+func (rsa *RestServerAdapter) Register(handler *domain.PrimaryAdapterHandler) error {
 	if handler.ServerConfig == nil {
 		return errors.New(fmt.Sprintf("Invalid configuartion for handler %s.", handler.GetId()))
 	}
@@ -121,7 +121,7 @@ func (rsa *RestServerAdapter) Register(handler *domain.PrimaryHandler) error {
 	return err
 }
 
-func (rsa *RestServerAdapter) log(ctx context.Context, handler *domain.PrimaryHandler, startTime time.Time) {
+func (rsa *RestServerAdapter) log(ctx context.Context, handler *domain.PrimaryAdapterHandler, startTime time.Time) {
 	elapsed := time.Since(startTime).Milliseconds()
 	unit := "ms"
 	if elapsed == 0 {
