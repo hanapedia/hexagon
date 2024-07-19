@@ -16,7 +16,7 @@ import (
 // TestRegularCalls asserts that Call methods are called properly
 func TestRegularCalls(t *testing.T) {
 	// 1. Prepare primary handler with tasks
-	handler := domain.PrimaryHandler{
+	handler := domain.PrimaryAdapterHandler{
 		ServiceName: "RegularCallHandler",
 		ServerConfig: &model.ServerConfig{
 			Variant: constants.REST,
@@ -43,7 +43,7 @@ func TestRegularCalls(t *testing.T) {
 // TestConcurrentCalls
 func TestConcurrentCalls(t *testing.T) {
 	// 1. Prepare primary handler with tasks
-	handler := domain.PrimaryHandler{
+	handler := domain.PrimaryAdapterHandler{
 		ServiceName: "ConcurretCallHandler",
 		ServerConfig: &model.ServerConfig{
 			Variant: constants.REST,
@@ -72,7 +72,7 @@ func TestConcurrentCalls(t *testing.T) {
 // TestRetrySuccess asserts that the call succeeds after retry
 func TestRetrySuccess(t *testing.T) {
 	// 1. Prepare primary handler with tasks
-	handler := domain.PrimaryHandler{
+	handler := domain.PrimaryAdapterHandler{
 		ServiceName: "RetrySuccessCallHandler",
 		ServerConfig: &model.ServerConfig{
 			Variant: constants.REST,
@@ -102,7 +102,7 @@ func TestRetrySuccess(t *testing.T) {
 // TestRetryFail asserts that the call fails after retry
 func TestRetryFail(t *testing.T) {
 	// 1. Prepare primary handler with tasks
-	handler := domain.PrimaryHandler{
+	handler := domain.PrimaryAdapterHandler{
 		ServiceName: "RetryFailCallHandler",
 		ServerConfig: &model.ServerConfig{
 			Variant: constants.REST,
@@ -132,7 +132,7 @@ func TestRetryFail(t *testing.T) {
 // TestNonCriticalFailure
 func TestNonCriticalFailure(t *testing.T) {
 	// 1. Prepare primary handler with tasks
-	handler := domain.PrimaryHandler{
+	handler := domain.PrimaryAdapterHandler{
 		ServiceName: "NonCriticalFailCallHandler",
 		ServerConfig: &model.ServerConfig{
 			Variant: constants.REST,
@@ -159,7 +159,7 @@ func TestNonCriticalFailure(t *testing.T) {
 // TestCriticalFailure
 func TestCriticalFailure(t *testing.T) {
 	// 1. Prepare primary handler with tasks
-	handler := domain.PrimaryHandler{
+	handler := domain.PrimaryAdapterHandler{
 		ServiceName: "CriticalFailCallHandler",
 		ServerConfig: &model.ServerConfig{
 			Variant: constants.REST,
@@ -187,7 +187,7 @@ func TestCriticalFailure(t *testing.T) {
 // TestTimeoutFailure
 func TestTimeoutFailure(t *testing.T) {
 	// 1. Prepare primary handler with tasks
-	handler := domain.PrimaryHandler{
+	handler := domain.PrimaryAdapterHandler{
 		ServiceName: "TimeoutFailCallHandler",
 		ServerConfig: &model.ServerConfig{
 			Variant: constants.REST,

@@ -15,7 +15,7 @@ var (
 )
 
 // either StatelessAdapterConfig or BrokerAdapterConfig must be defined
-type PrimaryHandler struct {
+type PrimaryAdapterHandler struct {
 	ServiceName    string
 	ServerConfig   *model.ServerConfig
 	ConsumerConfig *model.ConsumerConfig
@@ -71,7 +71,7 @@ func NewTaskResult(task Task, result secondary.SecondaryPortCallResult) *TaskRes
 	return &TaskResult{Task: task, SecondaryPortCallResult: result}
 }
 
-func (iah PrimaryHandler) GetId() string {
+func (iah PrimaryAdapterHandler) GetId() string {
 	var id string
 	if iah.ServerConfig != nil {
 		id = iah.ServerConfig.GetId(iah.ServiceName)

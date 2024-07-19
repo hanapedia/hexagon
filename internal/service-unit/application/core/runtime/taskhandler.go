@@ -9,7 +9,7 @@ import (
 	"github.com/hanapedia/hexagon/internal/service-unit/domain"
 )
 
-func TaskSetHandler(ctx context.Context, handler *domain.PrimaryHandler) domain.TaskSetResult {
+func TaskSetHandler(ctx context.Context, handler *domain.PrimaryAdapterHandler) domain.TaskSetResult {
 	resultCh := make(chan *domain.TaskResult, len(handler.TaskSet))
 
 	for _, task := range handler.TaskSet {

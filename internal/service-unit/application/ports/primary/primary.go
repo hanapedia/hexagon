@@ -18,7 +18,7 @@ type PrimaryPort interface {
 	// Serve starts primary port adapter with cancellable context and WaitGroup for graceful shutdown
 	Serve(context.Context, *sync.WaitGroup) error
 	// Register registers primary port handler to primary adapter instance
-	Register(*domain.PrimaryHandler) error
+	Register(*domain.PrimaryAdapterHandler) error
 }
 
 type PrimaryPortError struct {
