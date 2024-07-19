@@ -2,15 +2,9 @@ package v1
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-)
-
-var (
-	DEFAULT_TASK_TIMEOUT = 5 * time.Second
-	DEFAULT_CALL_TIMEOUT = 2 * time.Second
 )
 
 // PrimaryAdapterSpec
@@ -30,30 +24,6 @@ type TaskSpec struct {
 	AdapterConfig *SecondaryAdapterConfig `json:"adapter,omitempty" validate:"required"`
 	Concurrent    bool                    `json:"concurrent,omitempty" `
 	Resiliency    ResiliencySpec          `json:"resiliency,omitempty"`
-}
-
-// Get parsed taskTimeout as time.Duration
-func (t TaskSpec) GetTaskTimeout() time.Duration {
-	duration, err := time.ParseDuration(t.Resiliency.TaskTimeout)
-	if err != nil {
-		return DEFAULT_TASK_TIMEOUT
-	}
-	if duration == 0 {
-		return DEFAULT_TASK_TIMEOUT
-	}
-	return duration
-}
-
-// Get parsed getCallTimeout as time.Duration
-func (t TaskSpec) GetCallTimeout() time.Duration {
-	duration, err := time.ParseDuration(t.Resiliency.CallTimeout)
-	if err != nil {
-		return DEFAULT_CALL_TIMEOUT
-	}
-	if duration == 0 {
-		return DEFAULT_CALL_TIMEOUT
-	}
-	return duration
 }
 
 // Config fields for repository services

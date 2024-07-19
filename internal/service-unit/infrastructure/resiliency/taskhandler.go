@@ -13,9 +13,9 @@ func NewTaskHandler(primaryAdapterId string, spec model.TaskSpec, adapter second
 		var handler func(context.Context) secondary.SecondaryPortCallResult
 
 		// TODO: build handler based on configuration such as precedence between retry and circuit breaker
-		handler = WithCallTimeout(spec.GetCallTimeout(), adapter.Call)
+		handler = WithCallTimeout(spec.Resiliency.GetCallTimeout(), adapter.Call)
 		handler = WithRetry(spec.Resiliency.Retry, handler)
-		handler = WithTaskTimeout(spec.GetTaskTimeout(), handler)
+		handler = WithTaskTimeout(spec.Resiliency.GetTaskTimeout(), handler)
 		handler = WithLogger(primaryAdapterId, adapter, handler)
 		handler = WithCriticalError(spec.Resiliency.IsCritical, handler)
 
