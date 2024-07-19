@@ -26,7 +26,7 @@ func TestGrpcServerAndClient(t *testing.T) {
 			Action:  constants.SIMPLE_RPC,
 			Route:   "simple",
 		},
-		TaskSet: []domain.Task{},
+		TaskSet: []domain.TaskHandler{},
 	})
 	server.Register(&domain.PrimaryAdapterHandler{
 		ServiceName: "test",
@@ -35,7 +35,7 @@ func TestGrpcServerAndClient(t *testing.T) {
 			Action:  constants.BI_STREAM,
 			Route:   "bistream",
 		},
-		TaskSet: []domain.Task{},
+		TaskSet: []domain.TaskHandler{},
 	})
 	server.Register(&domain.PrimaryAdapterHandler{
 		ServiceName: "test",
@@ -44,7 +44,7 @@ func TestGrpcServerAndClient(t *testing.T) {
 			Action:  constants.CLIENT_STREAM,
 			Route:   "cstream",
 		},
-		TaskSet: []domain.Task{},
+		TaskSet: []domain.TaskHandler{},
 	})
 	server.Register(&domain.PrimaryAdapterHandler{
 		ServiceName: "test",
@@ -53,7 +53,7 @@ func TestGrpcServerAndClient(t *testing.T) {
 			Action:  constants.SERVER_STREAM,
 			Route:   "sstream",
 		},
-		TaskSet: []domain.Task{},
+		TaskSet: []domain.TaskHandler{},
 	})
 
 	ctx, cancel := context.WithCancel(context.Background())

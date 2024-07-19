@@ -2,12 +2,13 @@ package mock
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"time"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/primary"
 	"github.com/hanapedia/hexagon/internal/service-unit/domain"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/resiliency"
+	model "github.com/hanapedia/hexagon/pkg/api/v1"
 )
 
 type PrimaryAdapterMock struct {
@@ -26,12 +27,14 @@ func (pam PrimaryAdapterMock) Register(primaryHander *domain.PrimaryAdapterHandl
 
 // NewPrimaryHandler returns mocked ports.PrimaryHandler with given number of tasks
 func NewPrimaryHandler(numTask int) domain.PrimaryAdapterHandler {
-	tasks := make([]domain.Task, numTask)
+	tasks := make([]domain.TaskHandler, numTask)
 	for i := 0; i < numTask; i++ {
-		tasks = append(tasks, domain.Task{
-			SecondaryPort: NewSecondaryAdapter(fmt.Sprintf("task%v", i), time.Millisecond, 0),
-			Concurrent:    false,
-		})
+		tasks = append(tasks,
+			resiliency.NewTaskHandler(
+				"RegularCallHandler",
+				model.TaskSpec{},
+				NewSecondaryAdapter("RegularSecondaryAdapter1", time.Second, 0),
+			))
 	}
 	return domain.PrimaryAdapterHandler{
 		TaskSet: tasks,

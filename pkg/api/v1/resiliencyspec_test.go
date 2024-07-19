@@ -18,7 +18,7 @@ func TestGetInitialBackoff(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			oes := &OnErrorSpec{
+			oes := &ResiliencySpec{
 				Retry: RetrySpec{
 					InitialBackoff: tt.retryInitialBackoff,
 				},
@@ -47,7 +47,7 @@ func TestGetNthBackoff(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			oes := &OnErrorSpec{
+			oes := &ResiliencySpec{
 				Retry: RetrySpec{
 					BackoffPolicy:  tt.policy,
 					InitialBackoff: tt.initialBackoff,
