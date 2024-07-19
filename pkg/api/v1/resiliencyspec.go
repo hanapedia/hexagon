@@ -18,15 +18,21 @@ var (
 	DEFAULT_RETRY_INITIAL_BACKOFF time.Duration = time.Millisecond
 )
 
-// OnErrorSpec is the configuration for what the service unit will do
+// ResiliencySpec is the configuration for what the service unit will do
 // when the secondary adapter call fails
-type OnErrorSpec struct {
+type ResiliencySpec struct {
 	// IsCritical takes boolean specifying whether to fail
 	// the parent primary adapter call when this secondary adapter call fails.
 	IsCritical bool `json:"concurrent,omitempty"`
 
 	// Retry configurations
 	Retry RetrySpec `json:"retry,omitempty"`
+
+	// taskTimeout is used as the value for request timeout of the calls INCLUDING all retries.
+	// Must be parsable with time.ParseDuration, otherwise default value will be used.
+	TaskTimeout string `json:"taskTimeout,omitempty"`
+	// callTimeout refers to the timeout assigend to each call attempt
+	CallTimeout string `json:"callTimeout,omitempty"`
 }
 
 type RetrySpec struct {

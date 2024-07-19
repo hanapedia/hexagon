@@ -13,7 +13,7 @@ func ValidateFields(serviceUnitConfig *model.ServiceUnitConfig) ConfigValidation
 
 	for i := range serviceUnitConfig.AdapterConfigs {
 		configValidationError.Extend(validatePrimaryAdapterConfigFields(serviceUnitConfig, &serviceUnitConfig.AdapterConfigs[i]))
-		for _, task := range serviceUnitConfig.AdapterConfigs[i].Tasks {
+		for _, task := range serviceUnitConfig.AdapterConfigs[i].TaskSpecs {
 			// ensure that secondary adapter is defined
 			if task.AdapterConfig == nil {
 				continue
@@ -64,8 +64,8 @@ func validatePrimaryAdapterConfigFields(serviceUnitConfig *model.ServiceUnitConf
 		)
 	}
 	if primaryAdapterConfig.RepositoryConfig != nil {
-		if len(primaryAdapterConfig.Tasks) > 0 {
-			primaryAdapterConfig.Tasks = []model.TaskSpec{} // makes sure that repository service unit config have no tasks defined
+		if len(primaryAdapterConfig.TaskSpecs) > 0 {
+			primaryAdapterConfig.TaskSpecs = []model.TaskSpec{} // makes sure that repository service unit config have no tasks defined
 			logger.Logger.Warnf(
 				"Steps definition found on repository config for %s. These Steps will be ignored.\n",
 				serviceUnitConfig.Name,
@@ -77,7 +77,7 @@ func validatePrimaryAdapterConfigFields(serviceUnitConfig *model.ServiceUnitConf
 		)
 	}
 	var taskFieldErrors []InvalidStepFieldValueError
-	for _, task := range primaryAdapterConfig.Tasks {
+	for _, task := range primaryAdapterConfig.TaskSpecs {
 		errs := ValidateStepFields(task, primaryAdapterConfig, serviceUnitConfig.Name)
 		taskFieldErrors = append(taskFieldErrors, errs...)
 	}

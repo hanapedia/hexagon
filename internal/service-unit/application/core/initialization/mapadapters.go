@@ -6,6 +6,7 @@ import (
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/primary"
 	"github.com/hanapedia/hexagon/internal/service-unit/domain"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/resiliency"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	l "github.com/hanapedia/hexagon/pkg/operator/logger"
 )
@@ -13,7 +14,7 @@ import (
 // mapSecondaryToPrimary map secondary adapter to primary adapter
 func (su *ServiceUnit) mapSecondaryToPrimary() {
 	for _, primaryConfig := range su.Config.AdapterConfigs {
-		taskSet := su.newTaskSet(primaryConfig.Tasks)
+		taskSet := su.newTaskSet(primaryConfig.GetId(su.Name), primaryConfig.TaskSpecs)
 		handler, err := su.newPrimaryAdapterHandler(primaryConfig, taskSet)
 		if err != nil {
 			l.Logger.Fatalf("Error creating handler: %v", err)
@@ -38,45 +39,40 @@ func (su *ServiceUnit) mapSecondaryToPrimary() {
 }
 
 // newPrimaryAdapterHandler builds primary adapter with given task set
-func (su *ServiceUnit) newPrimaryAdapterHandler(primaryConfig model.PrimaryAdapterSpec, taskSet []domain.Task) (domain.PrimaryAdapterHandler, error) {
+func (su *ServiceUnit) newPrimaryAdapterHandler(primaryConfig model.PrimaryAdapterSpec, taskSet []domain.TaskHandler) (domain.PrimaryAdapterHandler, error) {
 	if primaryConfig.ServerConfig != nil {
 		return domain.PrimaryAdapterHandler{
-			ServiceName: su.Name,
+			ServiceName:  su.Name,
 			ServerConfig: primaryConfig.ServerConfig,
-			TaskSet:     taskSet,
+			TaskSet:      taskSet,
 		}, nil
 	}
 	if primaryConfig.ConsumerConfig != nil {
 		return domain.PrimaryAdapterHandler{
-			ServiceName: su.Name,
+			ServiceName:    su.Name,
 			ConsumerConfig: primaryConfig.ConsumerConfig,
-			TaskSet:       taskSet,
+			TaskSet:        taskSet,
 		}, nil
 	}
 	return domain.PrimaryAdapterHandler{}, errors.New("Failed to create primary adapter handler. No adapter config found.")
 }
 
 // newTaskSet creates task set from config
-func (su *ServiceUnit) newTaskSet(tasks []model.TaskSpec) []domain.Task {
-	taskSet := make([]domain.Task, len(tasks))
-	for i, task := range tasks {
-		key := task.AdapterConfig.GetGroupByKey()
+func (su *ServiceUnit) newTaskSet(primaryAdapterId string, taskSpecs []model.TaskSpec) []domain.TaskHandler {
+	taskSet := make([]domain.TaskHandler, len(taskSpecs))
+	for i, taskSpec := range taskSpecs {
+		key := taskSpec.AdapterConfig.GetGroupByKey()
 		client, ok := su.SecondaryAdapterClients[key]
 		if !ok {
 			l.Logger.Error("Client does not exist. ", "key=", key)
 		}
-		secondaryAdapter, err := secondary.NewSecondaryAdapter(task.AdapterConfig, client)
+		secondaryAdapter, err := secondary.NewSecondaryAdapter(taskSpec.AdapterConfig, client)
 		if err != nil {
 			l.Logger.Infof("Skipped interface: %s", err)
 			continue
 		}
-		taskSet[i] = domain.Task{
-			SecondaryPort: secondaryAdapter,
-			Concurrent: task.Concurrent,
-			OnError: task.AdapterConfig.OnError,
-			TaskTimeout: task.AdapterConfig.TaskTimeout,
-			CallTimeout: task.AdapterConfig.CallTimeout,
-		}
+
+		taskSet[i] = resiliency.NewTaskHandler(primaryAdapterId, taskSpec, secondaryAdapter)
 	}
 
 	return taskSet

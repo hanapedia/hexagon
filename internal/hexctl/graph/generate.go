@@ -52,7 +52,7 @@ func (gg GraphGenerator) generate() []byte {
 				}
 			}
 
-			parseSteps(graph, serviceName, ia.Tasks)
+			parseSteps(graph, serviceName, ia.TaskSpecs)
 			graph.SetNodeData(serviceName, "type", "stateless")
 		}
 	}

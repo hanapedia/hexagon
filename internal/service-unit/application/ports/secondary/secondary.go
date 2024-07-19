@@ -26,6 +26,7 @@ type SecodaryPort interface {
 type SecondaryAdapterClient interface {
 	Close()
 }
+
 //
 // type SecondaryPortError struct {
 // 	SecondaryPort *SecodaryPort
@@ -33,8 +34,17 @@ type SecondaryAdapterClient interface {
 // }
 
 type SecondaryPortCallResult struct {
-	Payload *string
-	Error error
+	Payload    *string
+	Error      error
+	isCritical bool
+}
+
+func (spcr *SecondaryPortCallResult) SetIsCritical(isCritical bool) {
+	spcr.isCritical = isCritical
+}
+
+func (spcr SecondaryPortCallResult) GetIsCritical() bool {
+	return spcr.isCritical
 }
 
 type SecondaryPortBase struct {

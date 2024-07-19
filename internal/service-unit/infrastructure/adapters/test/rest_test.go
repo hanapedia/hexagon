@@ -25,7 +25,7 @@ func TestRestServerAndClient(t *testing.T) {
 			Action:  constants.GET,
 			Route:   "get",
 		},
-		TaskSet: []domain.Task{},
+		TaskSet: []domain.TaskHandler{},
 	})
 	server.Register(&domain.PrimaryAdapterHandler{
 		ServiceName: "test",
@@ -34,7 +34,7 @@ func TestRestServerAndClient(t *testing.T) {
 			Action:  constants.POST,
 			Route:   "post",
 		},
-		TaskSet: []domain.Task{},
+		TaskSet: []domain.TaskHandler{},
 	})
 
 	ctx, cancel := context.WithCancel(context.Background())
