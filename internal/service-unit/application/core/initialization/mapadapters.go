@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/primary"
+	"github.com/hanapedia/hexagon/internal/service-unit/domain"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	l "github.com/hanapedia/hexagon/pkg/operator/logger"
@@ -37,27 +38,27 @@ func (su *ServiceUnit) mapSecondaryToPrimary() {
 }
 
 // newPrimaryAdapterHandler builds primary adapter with given task set
-func (su *ServiceUnit) newPrimaryAdapterHandler(primaryConfig model.PrimaryAdapterSpec, taskSet []primary.Task) (primary.PrimaryHandler, error) {
+func (su *ServiceUnit) newPrimaryAdapterHandler(primaryConfig model.PrimaryAdapterSpec, taskSet []domain.Task) (domain.PrimaryHandler, error) {
 	if primaryConfig.ServerConfig != nil {
-		return primary.PrimaryHandler{
+		return domain.PrimaryHandler{
 			ServiceName: su.Name,
 			ServerConfig: primaryConfig.ServerConfig,
 			TaskSet:     taskSet,
 		}, nil
 	}
 	if primaryConfig.ConsumerConfig != nil {
-		return primary.PrimaryHandler{
+		return domain.PrimaryHandler{
 			ServiceName: su.Name,
 			ConsumerConfig: primaryConfig.ConsumerConfig,
 			TaskSet:       taskSet,
 		}, nil
 	}
-	return primary.PrimaryHandler{}, errors.New("Failed to create primary adapter handler. No adapter config found.")
+	return domain.PrimaryHandler{}, errors.New("Failed to create primary adapter handler. No adapter config found.")
 }
 
 // newTaskSet creates task set from config
-func (su *ServiceUnit) newTaskSet(tasks []model.TaskSpec) []primary.Task {
-	taskSet := make([]primary.Task, len(tasks))
+func (su *ServiceUnit) newTaskSet(tasks []model.TaskSpec) []domain.Task {
+	taskSet := make([]domain.Task, len(tasks))
 	for i, task := range tasks {
 		key := task.AdapterConfig.GetGroupByKey()
 		client, ok := su.SecondaryAdapterClients[key]
@@ -69,7 +70,7 @@ func (su *ServiceUnit) newTaskSet(tasks []model.TaskSpec) []primary.Task {
 			l.Logger.Infof("Skipped interface: %s", err)
 			continue
 		}
-		taskSet[i] = primary.Task{
+		taskSet[i] = domain.Task{
 			SecondaryPort: secondaryAdapter,
 			Concurrent: task.Concurrent,
 			OnError: task.AdapterConfig.OnError,

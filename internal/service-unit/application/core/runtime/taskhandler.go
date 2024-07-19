@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/primary"
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
+	"github.com/hanapedia/hexagon/internal/service-unit/domain"
 )
 
-func TaskSetHandler(ctx context.Context, handler *primary.PrimaryHandler) primary.TaskSetResult {
-	resultCh := make(chan *primary.TaskResult, len(handler.TaskSet))
+func TaskSetHandler(ctx context.Context, handler *domain.PrimaryHandler) domain.TaskSetResult {
+	resultCh := make(chan *domain.TaskResult, len(handler.TaskSet))
 
 	for _, task := range handler.TaskSet {
 		// Add timeout to context
@@ -24,13 +24,13 @@ func TaskSetHandler(ctx context.Context, handler *primary.PrimaryHandler) primar
 		}
 	}
 
-	var results []*primary.TaskResult
+	var results []*domain.TaskResult
 	shouldFail := false
 	errCount := 0
 	for i := 0; i < len(handler.TaskSet); i++ {
 		result := <-resultCh
 		results = append(results, result)
-		primary.LogTaskResult(ctx, handler.GetId(), result) //TODO: reimport
+		domain.LogTaskResult(ctx, handler.GetId(), result) //TODO: reimport
 		if result.Error != nil {
 			shouldFail = shouldFail || result.Task.OnError.IsCritical
 			errCount++
@@ -40,11 +40,11 @@ func TaskSetHandler(ctx context.Context, handler *primary.PrimaryHandler) primar
 	}
 	close(resultCh)
 
-	return primary.TaskSetResult{ShouldFail: shouldFail, TaskResults: results}
+	return domain.TaskSetResult{ShouldFail: shouldFail, TaskResults: results}
 }
 
 // HandleTask calls the task with possible retries
-func HandleTask(taskCtx context.Context, task primary.Task, resultCh chan<- *primary.TaskResult) {
+func HandleTask(taskCtx context.Context, task domain.Task, resultCh chan<- *domain.TaskResult) {
 	// add 1 for the initial attempt
 	maxAttempt := task.OnError.Retry.MaxAttempt + 1
 	var result secondary.SecondaryPortCallResult
@@ -56,7 +56,7 @@ func HandleTask(taskCtx context.Context, task primary.Task, resultCh chan<- *pri
 			select {
 			// check for the parent context expiration
 			case <-taskCtx.Done():
-				resultCh <- primary.NewTaskResult(task, secondary.SecondaryPortCallResult{Payload: nil, Error: taskCtx.Err()})
+				resultCh <- domain.NewTaskResult(task, secondary.SecondaryPortCallResult{Payload: nil, Error: taskCtx.Err()})
 				timer.Stop()
 				return
 			case <-timer.C:
@@ -71,9 +71,9 @@ func HandleTask(taskCtx context.Context, task primary.Task, resultCh chan<- *pri
 		callCancel()
 
 		if result.Error == nil {
-			resultCh <- primary.NewTaskResult(task, result)
+			resultCh <- domain.NewTaskResult(task, result)
 			return
 		}
 	}
-	resultCh <- primary.NewTaskResult(task, secondary.SecondaryPortCallResult{Payload: nil, Error: fmt.Errorf("max retry attempt exceeded, lastError=%s", result.Error)})
+	resultCh <- domain.NewTaskResult(task, secondary.SecondaryPortCallResult{Payload: nil, Error: fmt.Errorf("max retry attempt exceeded, lastError=%s", result.Error)})
 }

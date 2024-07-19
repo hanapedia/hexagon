@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/primary"
+	"github.com/hanapedia/hexagon/internal/service-unit/domain"
 	restServer "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/primary/server/rest"
 	restClient "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/invocation/rest"
 	v1 "github.com/hanapedia/hexagon/pkg/api/v1"
@@ -17,23 +18,23 @@ import (
 func TestRestServerAndClient(t *testing.T) {
 	// 1. Setup server
 	server := restServer.NewRestServerAdapter()
-	server.Register(&primary.PrimaryHandler{
+	server.Register(&domain.PrimaryHandler{
 		ServiceName: "test",
 		ServerConfig: &v1.ServerConfig{
 			Variant: "rest",
-			Action: constants.GET,
-			Route: "get",
+			Action:  constants.GET,
+			Route:   "get",
 		},
-		TaskSet: []primary.Task{},
+		TaskSet: []domain.Task{},
 	})
-	server.Register(&primary.PrimaryHandler{
+	server.Register(&domain.PrimaryHandler{
 		ServiceName: "test",
 		ServerConfig: &v1.ServerConfig{
 			Variant: "rest",
-			Action: constants.POST,
-			Route: "post",
+			Action:  constants.POST,
+			Route:   "post",
 		},
-		TaskSet: []primary.Task{},
+		TaskSet: []domain.Task{},
 	})
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -54,8 +55,8 @@ func TestRestServerAndClient(t *testing.T) {
 		&v1.InvocationConfig{
 			Variant: "rest",
 			Service: "localhost",
-			Action: constants.GET,
-			Route: "get",
+			Action:  constants.GET,
+			Route:   "get",
 		},
 		client,
 	)
@@ -69,8 +70,8 @@ func TestRestServerAndClient(t *testing.T) {
 		&v1.InvocationConfig{
 			Variant: "rest",
 			Service: "localhost",
-			Action: constants.POST,
-			Route: "post",
+			Action:  constants.POST,
+			Route:   "post",
 		},
 		client,
 	)
@@ -81,7 +82,7 @@ func TestRestServerAndClient(t *testing.T) {
 	}
 
 	// TODO: replace with healthcheck probe
-	time.Sleep(2*time.Second)
+	time.Sleep(2 * time.Second)
 	res := readAdapter.Call(context.Background())
 	if res.Error != nil {
 		t.Fail()

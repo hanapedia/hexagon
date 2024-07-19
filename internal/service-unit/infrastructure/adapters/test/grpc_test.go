@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/primary"
+	"github.com/hanapedia/hexagon/internal/service-unit/domain"
 	grpcServer "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/primary/server/grpc"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
 	grpcClient "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/invocation/grpc"
@@ -18,41 +19,41 @@ import (
 func TestGrpcServerAndClient(t *testing.T) {
 	// 1. Setup server
 	server := grpcServer.NewGrpcServerAdapter()
-	server.Register(&primary.PrimaryHandler{
+	server.Register(&domain.PrimaryHandler{
 		ServiceName: "test",
 		ServerConfig: &v1.ServerConfig{
 			Variant: "grpc",
 			Action:  constants.SIMPLE_RPC,
 			Route:   "simple",
 		},
-		TaskSet: []primary.Task{},
+		TaskSet: []domain.Task{},
 	})
-	server.Register(&primary.PrimaryHandler{
+	server.Register(&domain.PrimaryHandler{
 		ServiceName: "test",
 		ServerConfig: &v1.ServerConfig{
 			Variant: "grpc",
 			Action:  constants.BI_STREAM,
 			Route:   "bistream",
 		},
-		TaskSet: []primary.Task{},
+		TaskSet: []domain.Task{},
 	})
-	server.Register(&primary.PrimaryHandler{
+	server.Register(&domain.PrimaryHandler{
 		ServiceName: "test",
 		ServerConfig: &v1.ServerConfig{
 			Variant: "grpc",
 			Action:  constants.CLIENT_STREAM,
 			Route:   "cstream",
 		},
-		TaskSet: []primary.Task{},
+		TaskSet: []domain.Task{},
 	})
-	server.Register(&primary.PrimaryHandler{
+	server.Register(&domain.PrimaryHandler{
 		ServiceName: "test",
 		ServerConfig: &v1.ServerConfig{
 			Variant: "grpc",
 			Action:  constants.SERVER_STREAM,
 			Route:   "sstream",
 		},
-		TaskSet: []primary.Task{},
+		TaskSet: []domain.Task{},
 	})
 
 	ctx, cancel := context.WithCancel(context.Background())
