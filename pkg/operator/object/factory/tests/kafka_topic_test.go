@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 
@@ -29,6 +28,4 @@ func TestKafkaTopicFactory(t *testing.T) {
 	if !strings.Contains(string(kafkaTopicYAML), "namespace: test") {
 		t.Errorf("The 'namespace' field is incorrect or missing in the generated YAML")
 	}
-
-	fmt.Printf("%s", string(kafkaTopicYAML))
 }
