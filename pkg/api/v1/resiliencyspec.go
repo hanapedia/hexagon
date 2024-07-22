@@ -19,7 +19,8 @@ var (
 )
 
 var (
-	DEFAULT_CIRCUIT_BREAKER_INTERVAL time.Duration = time.Minute
+	DEFAULT_CIRCUIT_BREAKER_INTERVAL     time.Duration = time.Minute
+	DEFAULT_CIRCUIT_BREAKER_TIMEOUT      time.Duration = time.Minute
 )
 
 var (
@@ -57,37 +58,52 @@ type RetrySpec struct {
 	BackoffPolicy RetryBackoffPolicy `json:"backoffPolicy,omitempty"`
 
 	// MaxAttempt specifies the max number of retries before giving up.
-	//
-	// If both RetryMaxDuration is also specified, the one that expires first will take precedence.
 	MaxAttempt int `json:"maxAttempt,omitempty"`
 
 	// InitialBackoff specifies the initial duration to backoff
 	//
 	// Must be parsable using time.ParseDuration
 	InitialBackoff string `json:"initialBackoff,omitempty"`
+
+	// Disable is the flag to turn off retry feature entirely
+	Disable bool `json:"disable,omitempty"`
 }
 
 type CircuitBreakerSpec struct {
 	// MaxRequests is the max number of requests to go through when half open
-	MaxRequests int `json:"maxRequests,omitempty"`
+	// if MaxRequests is 0, circuit breaker will only allow 1 request
+	// Use GetMaxRequests to read the value with default values
+	MaxRequests uint32 `json:"maxRequests,omitempty"`
 
 	// Interval is the cycle duration to clear the internal count for request success / failure during closed state
 	// Must be parsable with time.ParseDuration, otherwise default value will be used
 	Interval string `json:"interval,omitempty"`
 
+	// Timeout is the amount of duration that the circuit breaker stays open after breaching the threshold
+	// Must be parsable with time.ParseDuration, otherwise default value will be used
+	Timeout string `json:"timeout,omitempty"`
+
 	// MinRequests is the min number of requests required to open the circuit
-	MinRequests int `json:"minRequests,omitempty"`
+	MinRequests uint32 `json:"minRequests,omitempty"`
 
 	// Ratio is the threshold ratio of failed request / total number of requests
-	Ratio float32 `json:"ratio,omitempty"`
+	// If ConsecutiveFails is set as well, whichever trips first will take precedence
+	// If neither is set, circuit breaker will trip on the first error
+	Ratio float64 `json:"ratio,omitempty"`
 
 	// ConsecutiveFails is the number of consecutive failures as threshold
-	ConsecutiveFails int `json:"consecutiveFails,omitempty"`
+	// If Ratio is set as well, whichever trips first will take precedence
+	// If neither is set, circuit breaker will trip on the first error
+	ConsecutiveFails uint32 `json:"consecutiveFails,omitempty"`
 
 	// CountRetries specify whether the retry attempts are counted by the circuit breaker.
 	// if set to `true`, the circuit breaker counts each attempt.
 	// if set to `false`, the circuit breaker counts all retry attempts as a single request.
+	// Note that circuit broken requests will also be retried when set to true.
 	CountRetries bool `json:"countRetries,omitempty"`
+
+	// Disable is the flag to turn off circuit breaker feature entirely
+	Disable bool `json:"disable,omitempty"`
 }
 
 // Get parsed initial backoff as time.Duration
@@ -114,10 +130,19 @@ func (rs *RetrySpec) GetNthBackoff(n int) time.Duration {
 }
 
 // Get parsed circuit breaker interval as time.Duration
-func (cbs *CircuitBreakerSpec) GetCircuitBreakerInterval() time.Duration {
+func (cbs *CircuitBreakerSpec) GetInterval() time.Duration {
 	duration, err := time.ParseDuration(cbs.Interval)
 	if err != nil {
 		return DEFAULT_CIRCUIT_BREAKER_INTERVAL
+	}
+	return duration
+}
+
+// Get parsed circuit breaker timeout as time.Duration
+func (cbs *CircuitBreakerSpec) GetTimeout() time.Duration {
+	duration, err := time.ParseDuration(cbs.Timeout)
+	if err != nil {
+		return DEFAULT_CIRCUIT_BREAKER_TIMEOUT
 	}
 	return duration
 }

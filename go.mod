@@ -12,6 +12,7 @@ require (
 	github.com/redis/go-redis/v9 v9.5.3
 	github.com/segmentio/kafka-go v0.4.47
 	github.com/sirupsen/logrus v1.9.3
+	github.com/sony/gobreaker/v2 v2.0.0
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.9.0
 	go.mongodb.org/mongo-driver v1.15.1

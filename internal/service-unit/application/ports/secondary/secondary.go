@@ -47,6 +47,10 @@ func (spcr SecondaryPortCallResult) GetIsCritical() bool {
 	return spcr.isCritical
 }
 
+func (spcr *SecondaryPortCallResult) SetError(err error) {
+	spcr.Error = err
+}
+
 type SecondaryPortBase struct {
 	destId string
 }
