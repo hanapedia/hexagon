@@ -1,7 +1,6 @@
 package tests
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 
@@ -39,6 +38,4 @@ func TestDeploymentFactory(t *testing.T) {
 	if !strings.Contains(string(deploymentYAML), "replicas: 1") {
 		t.Errorf("The 'replicas' field is incorrect or missing in the generated YAML")
 	}
-
-	fmt.Printf("%s", string(deploymentYAML))
 }
