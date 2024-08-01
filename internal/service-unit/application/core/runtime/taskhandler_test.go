@@ -28,7 +28,7 @@ func TestRegularCalls(t *testing.T) {
 		},
 		TaskSet: []domain.TaskHandler{
 			resiliency.NewTaskHandler(
-				name,
+				domain.TelemetryContext{PrimaryLabels: domain.PrimaryLabels{ServiceName: name}},
 				model.TaskSpec{Resiliency: model.ResiliencySpec{
 					Retry:         model.RetrySpec{Disable: true},
 					CircutBreaker: model.CircuitBreakerSpec{Disable: true},
@@ -36,7 +36,7 @@ func TestRegularCalls(t *testing.T) {
 				mock.NewSecondaryAdapter("RegularSecondaryAdapter1", time.Millisecond, 0),
 			),
 			resiliency.NewTaskHandler(
-				name,
+				domain.TelemetryContext{PrimaryLabels: domain.PrimaryLabels{ServiceName: name}},
 				model.TaskSpec{Resiliency: model.ResiliencySpec{
 					Retry:         model.RetrySpec{Disable: true},
 					CircutBreaker: model.CircuitBreakerSpec{Disable: true},
@@ -66,7 +66,7 @@ func TestConcurrentCalls(t *testing.T) {
 		},
 		TaskSet: []domain.TaskHandler{
 			resiliency.NewTaskHandler(
-				name,
+				domain.TelemetryContext{PrimaryLabels: domain.PrimaryLabels{ServiceName: name}},
 				model.TaskSpec{Resiliency: model.ResiliencySpec{
 					IsCritical:    true,
 					Retry:         model.RetrySpec{Disable: true},
@@ -75,7 +75,7 @@ func TestConcurrentCalls(t *testing.T) {
 				mock.NewSecondaryAdapter("ConcurrentSecondaryAdapter1", time.Millisecond, 0),
 			),
 			resiliency.NewTaskHandler(
-				name,
+				domain.TelemetryContext{PrimaryLabels: domain.PrimaryLabels{ServiceName: name}},
 				model.TaskSpec{Resiliency: model.ResiliencySpec{
 					IsCritical:    true,
 					Retry:         model.RetrySpec{Disable: true},
@@ -106,7 +106,7 @@ func TestRetrySuccess(t *testing.T) {
 		},
 		TaskSet: []domain.TaskHandler{
 			resiliency.NewTaskHandler(
-				name,
+				domain.TelemetryContext{PrimaryLabels: domain.PrimaryLabels{ServiceName: name}},
 				model.TaskSpec{
 					Resiliency: model.ResiliencySpec{
 						Retry: model.RetrySpec{
@@ -141,7 +141,7 @@ func TestRetryFail(t *testing.T) {
 		},
 		TaskSet: []domain.TaskHandler{
 			resiliency.NewTaskHandler(
-				name,
+				domain.TelemetryContext{PrimaryLabels: domain.PrimaryLabels{ServiceName: name}},
 				model.TaskSpec{
 					Resiliency: model.ResiliencySpec{
 						Retry: model.RetrySpec{
@@ -176,7 +176,7 @@ func TestNonCriticalFailure(t *testing.T) {
 		},
 		TaskSet: []domain.TaskHandler{
 			resiliency.NewTaskHandler(
-				name,
+				domain.TelemetryContext{PrimaryLabels: domain.PrimaryLabels{ServiceName: name}},
 				model.TaskSpec{Resiliency: model.ResiliencySpec{
 					Retry:         model.RetrySpec{Disable: true},
 					CircutBreaker: model.CircuitBreakerSpec{Disable: true},
@@ -184,7 +184,7 @@ func TestNonCriticalFailure(t *testing.T) {
 				mock.NewSecondaryAdapter("NonCriticalSecondaryAdapter1", time.Millisecond, 1),
 			),
 			resiliency.NewTaskHandler(
-				name,
+				domain.TelemetryContext{PrimaryLabels: domain.PrimaryLabels{ServiceName: name}},
 				model.TaskSpec{Resiliency: model.ResiliencySpec{
 					Retry:         model.RetrySpec{Disable: true},
 					CircutBreaker: model.CircuitBreakerSpec{Disable: true},
@@ -214,7 +214,7 @@ func TestCriticalFailure(t *testing.T) {
 		},
 		TaskSet: []domain.TaskHandler{
 			resiliency.NewTaskHandler(
-				name,
+				domain.TelemetryContext{PrimaryLabels: domain.PrimaryLabels{ServiceName: name}},
 				model.TaskSpec{Resiliency: model.ResiliencySpec{
 					IsCritical:    true,
 					Retry:         model.RetrySpec{Disable: true},
@@ -223,7 +223,7 @@ func TestCriticalFailure(t *testing.T) {
 				mock.NewSecondaryAdapter("CriticalSecondaryAdapter1", time.Millisecond, 1),
 			),
 			resiliency.NewTaskHandler(
-				name,
+				domain.TelemetryContext{PrimaryLabels: domain.PrimaryLabels{ServiceName: name}},
 				model.TaskSpec{Resiliency: model.ResiliencySpec{
 					Retry:         model.RetrySpec{Disable: true},
 					CircutBreaker: model.CircuitBreakerSpec{Disable: true},
@@ -253,7 +253,7 @@ func TestCallTimeoutFailure(t *testing.T) {
 		},
 		TaskSet: []domain.TaskHandler{
 			resiliency.NewTaskHandler(
-				name,
+				domain.TelemetryContext{PrimaryLabels: domain.PrimaryLabels{ServiceName: name}},
 				model.TaskSpec{Resiliency: model.ResiliencySpec{
 					CallTimeout:   "5ms",
 					Retry:         model.RetrySpec{Disable: true},
@@ -283,7 +283,7 @@ func TestTaskTimeoutFailure(t *testing.T) {
 		},
 		TaskSet: []domain.TaskHandler{
 			resiliency.NewTaskHandler(
-				name,
+				domain.TelemetryContext{PrimaryLabels: domain.PrimaryLabels{ServiceName: name}},
 				model.TaskSpec{Resiliency: model.ResiliencySpec{
 					TaskTimeout: "1s",
 					Retry: model.RetrySpec{
@@ -321,7 +321,7 @@ func TestCircuitBreakerWithoutThresh(t *testing.T) {
 		},
 		TaskSet: []domain.TaskHandler{
 			resiliency.NewTaskHandler(
-				name,
+				domain.TelemetryContext{PrimaryLabels: domain.PrimaryLabels{ServiceName: name}},
 				model.TaskSpec{Resiliency: model.ResiliencySpec{
 					CircutBreaker: model.CircuitBreakerSpec{
 						MaxRequests:      1,
@@ -374,7 +374,7 @@ func TestCircuitBreakerRatioThresh(t *testing.T) {
 		},
 		TaskSet: []domain.TaskHandler{
 			resiliency.NewTaskHandler(
-				name,
+				domain.TelemetryContext{PrimaryLabels: domain.PrimaryLabels{ServiceName: name}},
 				model.TaskSpec{Resiliency: model.ResiliencySpec{
 					CircutBreaker: model.CircuitBreakerSpec{
 						MaxRequests:      1,
@@ -428,7 +428,7 @@ func TestCircuitBreakerConsecutiveFailsThresh(t *testing.T) {
 		},
 		TaskSet: []domain.TaskHandler{
 			resiliency.NewTaskHandler(
-				name,
+				domain.TelemetryContext{PrimaryLabels: domain.PrimaryLabels{ServiceName: name}},
 				model.TaskSpec{Resiliency: model.ResiliencySpec{
 					CircutBreaker: model.CircuitBreakerSpec{
 						MaxRequests:      1,
@@ -482,7 +482,7 @@ func TestCircuitBreakerHalfOpen(t *testing.T) {
 		},
 		TaskSet: []domain.TaskHandler{
 			resiliency.NewTaskHandler(
-				name,
+				domain.TelemetryContext{PrimaryLabels: domain.PrimaryLabels{ServiceName: name}},
 				model.TaskSpec{Resiliency: model.ResiliencySpec{
 					CircutBreaker: model.CircuitBreakerSpec{
 						MaxRequests:      1,
@@ -548,7 +548,7 @@ func TestRetryThenCircuitBreak(t *testing.T) {
 		},
 		TaskSet: []domain.TaskHandler{
 			resiliency.NewTaskHandler(
-				name,
+				domain.TelemetryContext{PrimaryLabels: domain.PrimaryLabels{ServiceName: name}},
 				model.TaskSpec{Resiliency: model.ResiliencySpec{
 					CircutBreaker: model.CircuitBreakerSpec{
 						MaxRequests:      1,
@@ -605,7 +605,7 @@ func TestCircuitBreakThenRetry(t *testing.T) {
 		},
 		TaskSet: []domain.TaskHandler{
 			resiliency.NewTaskHandler(
-				name,
+				domain.TelemetryContext{PrimaryLabels: domain.PrimaryLabels{ServiceName: name}},
 				model.TaskSpec{Resiliency: model.ResiliencySpec{
 					CircutBreaker: model.CircuitBreakerSpec{
 						MaxRequests:      1,

@@ -3,18 +3,69 @@ package resiliency
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
+	"github.com/hanapedia/hexagon/internal/service-unit/domain"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 	"github.com/sirupsen/logrus"
 	"github.com/sony/gobreaker/v2"
 )
 
-func WithCriticalError(isCritical bool, next func(context.Context) secondary.SecondaryPortCallResult) func(context.Context) secondary.SecondaryPortCallResult {
-	return func(ctx context.Context) secondary.SecondaryPortCallResult {
-		result := next(ctx)
+type alias = secondary.SecondaryPortCallResult
+type CallAlias = func(context.Context) secondary.SecondaryPortCallResult
+type CallWithContextAlias = func(*TaskContext) secondary.SecondaryPortCallResult
+type CircuitBreaker = *gobreaker.CircuitBreaker[secondary.SecondaryPortCallResult]
+
+type TaskContext struct {
+	mu             sync.Mutex
+	ctx            context.Context
+	circuitBreaker CircuitBreaker
+	attempt        uint32
+	telemetryCtx   domain.TelemetryContext
+	isConcurrent   bool
+}
+
+func (tc *TaskContext) WithTimeout(duration time.Duration) context.CancelFunc {
+	newCtx, cancel := context.WithTimeout(tc.ctx, duration)
+
+	tc.mu.Lock()
+	tc.ctx = newCtx
+	tc.mu.Unlock()
+
+	return cancel
+}
+
+func (tc *TaskContext) IncAttempt() {
+	tc.mu.Lock()
+	tc.attempt += 1
+	tc.mu.Unlock()
+}
+
+// WithUnWrapTaskContext decorates `next` function with a decorator that unwraps TaskContext into context.Context
+// Should be the first decorator
+func WithUnWrapTaskContext(next CallAlias) CallWithContextAlias {
+	return func(taskCtx *TaskContext) secondary.SecondaryPortCallResult {
+		return next(taskCtx.ctx)
+	}
+}
+
+// WithWrapTaskContext decorates the `next` function with a decorator that wraps context.Context with TaskContext
+// Should be the last decorator
+/* func WithWrapTaskContext(telemetryCtx domain.TelemetryContext, cb CircuitBreaker, next CallWithContextAlias) CallAlias { */
+/* 	return func(ctx context.Context) secondary.SecondaryPortCallResult { */
+/* 		return next(&TaskContext{ */
+/* 			ctx:          ctx, */
+/* 			telemetryCtx: telemetryCtx, */
+/* 		}) */
+/* 	} */
+/* } */
+
+func WithCriticalError(isCritical bool, next CallWithContextAlias) CallWithContextAlias {
+	return func(taskCtx *TaskContext) secondary.SecondaryPortCallResult {
+		result := next(taskCtx)
 		if isCritical {
 			result.SetIsCritical(true)
 		}
@@ -22,26 +73,26 @@ func WithCriticalError(isCritical bool, next func(context.Context) secondary.Sec
 	}
 }
 
-func WithCallTimeout(timeout time.Duration, next func(context.Context) secondary.SecondaryPortCallResult) func(context.Context) secondary.SecondaryPortCallResult {
-	return func(ctx context.Context) secondary.SecondaryPortCallResult {
-		callCtx, callCancel := context.WithTimeout(ctx, timeout)
-		result := next(callCtx)
+func WithCallTimeout(timeout time.Duration, next CallWithContextAlias) CallWithContextAlias {
+	return func(taskCtx *TaskContext) secondary.SecondaryPortCallResult {
+		callCancel := taskCtx.WithTimeout(timeout)
+		result := next(taskCtx)
 		callCancel()
 		return result
 	}
 }
 
-func WithTaskTimeout(timeout time.Duration, next func(context.Context) secondary.SecondaryPortCallResult) func(context.Context) secondary.SecondaryPortCallResult {
-	return func(ctx context.Context) secondary.SecondaryPortCallResult {
-		callCtx, taskCancel := context.WithTimeout(ctx, timeout)
-		result := next(callCtx)
+func WithTaskTimeout(timeout time.Duration, next CallWithContextAlias) CallWithContextAlias {
+	return func(taskCtx *TaskContext) secondary.SecondaryPortCallResult {
+		taskCancel := taskCtx.WithTimeout(timeout)
+		result := next(taskCtx)
 		taskCancel()
 		return result
 	}
 }
 
-func WithRetry(spec model.RetrySpec, next func(context.Context) secondary.SecondaryPortCallResult) func(context.Context) secondary.SecondaryPortCallResult {
-	return func(ctx context.Context) secondary.SecondaryPortCallResult {
+func WithRetry(spec model.RetrySpec, next CallWithContextAlias) CallWithContextAlias {
+	return func(taskCtx *TaskContext) secondary.SecondaryPortCallResult {
 		// add 1 for the initial attempt
 		maxAttempt := spec.MaxAttempt + 1
 		var result secondary.SecondaryPortCallResult
@@ -52,15 +103,16 @@ func WithRetry(spec model.RetrySpec, next func(context.Context) secondary.Second
 				timer := time.NewTimer(backoff)
 				select {
 				// check for the parent context expiration
-				case <-ctx.Done():
+				case <-taskCtx.ctx.Done():
 					timer.Stop()
-					return secondary.SecondaryPortCallResult{Payload: nil, Error: ctx.Err()}
+					return secondary.SecondaryPortCallResult{Payload: nil, Error: taskCtx.ctx.Err()}
 				case <-timer.C:
 					timer.Stop()
 				}
 			}
 
-			result = next(ctx)
+			taskCtx.IncAttempt()
+			result = next(taskCtx)
 
 			if result.Error == nil {
 				return result
@@ -70,20 +122,20 @@ func WithRetry(spec model.RetrySpec, next func(context.Context) secondary.Second
 	}
 }
 
-func WithLogger(primaryAdapterId string, secondaryAdapter secondary.SecodaryPort, next func(context.Context) secondary.SecondaryPortCallResult) func(context.Context) secondary.SecondaryPortCallResult {
-	return func(ctx context.Context) secondary.SecondaryPortCallResult {
-		result := next(ctx)
+func WithLogger(telCtx domain.TelemetryContext, secondaryAdapter secondary.SecodaryPort, next CallWithContextAlias) CallWithContextAlias {
+	return func(taskCtx *TaskContext) secondary.SecondaryPortCallResult {
+		result := next(taskCtx)
 		if result.Error != nil {
-			logger.Logger.WithContext(ctx).Error(
+			logger.Logger.Error(
 				"Call failed. ",
-				"sourceId=", primaryAdapterId, ", ",
+				/* "sourceId=", primaryAdapterId, ", ", */
 				"destId=", secondaryAdapter.GetDestId(), ", ",
 				"err=", result.Error,
 			)
 		} else {
-			logger.Logger.WithContext(ctx).Debug(
+			logger.Logger.Debug(
 				"Call succeeded. ",
-				"sourceId=", primaryAdapterId, ", ",
+				/* "sourceId=", primaryAdapterId, ", ", */
 				"destId=", secondaryAdapter.GetDestId(), ", ",
 			)
 		}
@@ -91,7 +143,7 @@ func WithLogger(primaryAdapterId string, secondaryAdapter secondary.SecodaryPort
 	}
 }
 
-func WithCircuitBreaker(spec model.CircuitBreakerSpec, secondaryAdapter secondary.SecodaryPort, next func(context.Context) secondary.SecondaryPortCallResult) func(context.Context) secondary.SecondaryPortCallResult {
+func WithCircuitBreaker(spec model.CircuitBreakerSpec, secondaryAdapter secondary.SecodaryPort, next CallWithContextAlias) (CallWithContextAlias, CircuitBreaker) {
 	setting := gobreaker.Settings{
 		Name:        secondaryAdapter.GetDestId(),
 		MaxRequests: spec.MaxRequests,
@@ -114,9 +166,9 @@ func WithCircuitBreaker(spec model.CircuitBreakerSpec, secondaryAdapter secondar
 	}
 	cb := gobreaker.NewCircuitBreaker[secondary.SecondaryPortCallResult](setting)
 
-	return func(ctx context.Context) secondary.SecondaryPortCallResult {
+	return func(taskCtx *TaskContext) secondary.SecondaryPortCallResult {
 		result, err := cb.Execute(func() (secondary.SecondaryPortCallResult, error) {
-			result := next(ctx)
+			result := next(taskCtx)
 			return result, result.Error
 		})
 
@@ -125,5 +177,5 @@ func WithCircuitBreaker(spec model.CircuitBreakerSpec, secondaryAdapter secondar
 		}
 
 		return result
-	}
+	}, cb
 }
