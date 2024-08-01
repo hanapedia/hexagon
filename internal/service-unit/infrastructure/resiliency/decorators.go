@@ -8,6 +8,7 @@ import (
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	"github.com/hanapedia/hexagon/internal/service-unit/domain"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/telemetry/metrics"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 	"github.com/sirupsen/logrus"
@@ -52,16 +53,67 @@ func WithUnWrapTaskContext(next CallAlias) CallWithContextAlias {
 	}
 }
 
-// WithWrapTaskContext decorates the `next` function with a decorator that wraps context.Context with TaskContext
-// Should be the last decorator
-/* func WithWrapTaskContext(telemetryCtx domain.TelemetryContext, cb CircuitBreaker, next CallWithContextAlias) CallAlias { */
-/* 	return func(ctx context.Context) secondary.SecondaryPortCallResult { */
-/* 		return next(&TaskContext{ */
-/* 			ctx:          ctx, */
-/* 			telemetryCtx: telemetryCtx, */
-/* 		}) */
-/* 	} */
-/* } */
+func WithCallDurationMetrics(next CallWithContextAlias) CallWithContextAlias {
+	return func(tc *TaskContext) secondary.SecondaryPortCallResult {
+		startTime := time.Now()
+		result := next(tc)
+		elapsed := time.Since(startTime)
+
+		go func() {
+			var status domain.Status
+			if result.Error == nil {
+				status = domain.Ok
+			} else {
+				status = domain.Err
+			}
+
+			var circuitBreakerState = ""
+			if tc.circuitBreaker != nil {
+				circuitBreakerState = tc.circuitBreaker.State().String()
+			}
+
+			metrics.ObserveSecondaryAdapterCallDuration(elapsed, domain.SecondaryAdapterCallDurationLabels{
+				Ctx:                 tc.telemetryCtx,
+				Status:              status,
+				NthAttmpt:           tc.attempt,
+				CircuitBreakerState: circuitBreakerState,
+				IsConcurrent:        tc.isConcurrent,
+			})
+		}()
+		return result
+	}
+}
+
+func WithTaskDurationMetrics(next CallWithContextAlias) CallWithContextAlias {
+	return func(tc *TaskContext) secondary.SecondaryPortCallResult {
+		startTime := time.Now()
+		result := next(tc)
+		elapsed := time.Since(startTime)
+
+		go func() {
+			var status domain.Status
+			if result.Error == nil {
+				status = domain.Ok
+			} else {
+				status = domain.Err
+			}
+
+			var circuitBreakerState = ""
+			if tc.circuitBreaker != nil {
+				circuitBreakerState = tc.circuitBreaker.State().String()
+			}
+
+			metrics.ObserveSecondaryAdapterTaskDuration(elapsed, domain.SecondaryAdapterTaskDurationLabels{
+				Ctx:                 tc.telemetryCtx,
+				Status:              status,
+				TotalAttempts:       tc.attempt,
+				CircuitBreakerState: circuitBreakerState,
+				IsConcurrent:        tc.isConcurrent,
+			})
+		}()
+		return result
+	}
+}
 
 func WithCriticalError(isCritical bool, next CallWithContextAlias) CallWithContextAlias {
 	return func(taskCtx *TaskContext) secondary.SecondaryPortCallResult {
