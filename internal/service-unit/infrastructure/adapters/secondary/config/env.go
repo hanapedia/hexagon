@@ -25,6 +25,7 @@ type EnvVars struct {
 	OTEL_COLLECTOR_NAME      string
 	OTEL_COLLECTOR_NAMESPACE string
 	OTEL_COLLECTOR_PORT      string
+	METRICS_PORT             string
 }
 
 var envVars *EnvVars
@@ -55,6 +56,7 @@ func loadEnvVariables() *EnvVars {
 		OTEL_COLLECTOR_NAME:      readEnv("OTEL_COLLECTOR_NAME", defaults.OTEL_COLLECTOR_NAME),
 		OTEL_COLLECTOR_NAMESPACE: readEnv("OTEL_COLLECTOR_NAMESPACE", defaults.OTEL_COLLECTOR_NAMESPACE),
 		OTEL_COLLECTOR_PORT:      readEnv("OTEL_COLLECTOR_PORT", strconv.Itoa(defaults.OTEL_COLLECTOR_PORT)),
+		METRICS_PORT:             readEnv("METRICS_PORT", strconv.Itoa(defaults.METRICS_PORT)),
 	}
 }
 
