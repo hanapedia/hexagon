@@ -21,10 +21,8 @@ func InitTracer(name, collectorUrl string) *sdktrace.TracerProvider {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	conn, err := grpc.DialContext(ctx, collectorUrl,
-		// Note the use of insecure transport here. TLS is recommended in production.
+	conn, err := grpc.NewClient(collectorUrl,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithBlock(),
 	)
 	if err != nil {
 		logger.Logger.Errorf("failed to create gRPC connection to collector: %s, setting TRACING=false", err)
