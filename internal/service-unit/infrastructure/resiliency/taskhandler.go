@@ -5,6 +5,7 @@ import (
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	"github.com/hanapedia/hexagon/internal/service-unit/domain"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/telemetry/metrics"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 )
 
@@ -16,6 +17,9 @@ func NewTaskHandler(telCtx domain.TelemetryContext, spec model.TaskSpec, adapter
 	if spec.Resiliency.CallTimeout != "" {
 		handler = WithCallTimeout(spec.Resiliency.GetCallTimeout(), handler)
 	}
+
+	// record Call duration
+	handler = WithCallDurationMetrics(handler)
 
 	if !spec.Resiliency.Retry.Disable && !spec.Resiliency.CircutBreaker.Disable {
 		if spec.Resiliency.CircutBreaker.CountRetries {
@@ -39,9 +43,15 @@ func NewTaskHandler(telCtx domain.TelemetryContext, spec model.TaskSpec, adapter
 		handler = WithTaskTimeout(spec.Resiliency.GetTaskTimeout(), handler)
 	}
 
+	// record Task duration
+	handler = WithTaskDurationMetrics(handler)
+
 	// Always include
 	handler = WithCriticalError(spec.Resiliency.IsCritical, handler)
 	handler = WithLogger(telCtx, adapter, handler)
+
+	// Set Gauge metrics for the adapter
+	metrics.SetGaugeMetricsFromSpecs(spec.Resiliency, telCtx)
 
 	return func(ctx context.Context, resultChan chan<- *secondary.SecondaryPortCallResult) {
 		// wrap ctx with TaskContext

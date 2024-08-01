@@ -183,7 +183,7 @@ type SecondaryAdapterCallDurationLabels struct {
 	Status              Status
 	NthAttmpt           uint32
 	CircuitBreakerState string
-	isConcurrent        bool
+	IsConcurrent        bool
 }
 
 func (sacdl SecondaryAdapterCallDurationLabels) AsMap() map[string]string {
@@ -191,7 +191,7 @@ func (sacdl SecondaryAdapterCallDurationLabels) AsMap() map[string]string {
 	base["status"] = sacdl.Status.AsString()
 	base["nth_attempt"] = fmt.Sprint(sacdl.NthAttmpt)
 	base["circuit_breaker_state"] = sacdl.CircuitBreakerState
-	base["is_concurrent"] = utils.Btos(sacdl.isConcurrent)
+	base["is_concurrent"] = utils.Btos(sacdl.IsConcurrent)
 	return base
 }
 
@@ -200,7 +200,7 @@ type SecondaryAdapterTaskDurationLabels struct {
 	Status              Status
 	TotalAttempts       uint32
 	CircuitBreakerState string
-	isConcurrent        bool
+	IsConcurrent        bool
 }
 
 func (satdl SecondaryAdapterTaskDurationLabels) AsMap() map[string]string {
@@ -208,7 +208,7 @@ func (satdl SecondaryAdapterTaskDurationLabels) AsMap() map[string]string {
 	base["status"] = satdl.Status.AsString()
 	base["total_attempts"] = fmt.Sprint(satdl.TotalAttempts)
 	base["circuit_breaker_state"] = satdl.CircuitBreakerState
-	base["is_concurrent"] = utils.Btos(satdl.isConcurrent)
+	base["is_concurrent"] = utils.Btos(satdl.IsConcurrent)
 	return base
 }
 
