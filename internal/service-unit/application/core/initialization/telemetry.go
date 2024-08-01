@@ -1,24 +1,33 @@
 package initialization
 
 import (
+	"context"
+	"sync"
+
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/telemetry/tracing"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 	"github.com/sirupsen/logrus"
-	"go.opentelemetry.io/otel/sdk/trace"
 )
 
 // InitTracing initiates distributed tracing if enabled
 // TODO: encapsulate in to ports and adapters
-func InitTracing(name string) *trace.TracerProvider {
+func InitTracing(name string, ctx context.Context, wg *sync.WaitGroup) {
 	if !config.GetEnvs().TRACING {
 		logger.Logger.Info("Tracing is disabled.")
-		return nil
 	}
+	wg.Add(1)
+
 	collectorUrl := config.GetOtelCollectorUrl()
 	provider := tracing.InitTracer(name, collectorUrl)
 	logger.Logger.Info("Initialized tracing.")
-	return provider
+
+	go func() {
+		<-ctx.Done()
+		logger.Logger.Infof("Context cancelled. Trace provider shutting down.")
+		provider.Shutdown(context.Background())
+		wg.Done()
+	}()
 }
 
 func InitLogging() {
