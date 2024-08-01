@@ -14,8 +14,8 @@ import (
 // mapSecondaryToPrimary map secondary adapter to primary adapter
 func (su *ServiceUnit) mapSecondaryToPrimary() {
 	for _, primaryConfig := range su.Config.AdapterConfigs {
-		taskSet := su.newTaskSet(primaryConfig.GetId(su.Name), primaryConfig.TaskSpecs)
-		handler, err := su.newPrimaryAdapterHandler(primaryConfig, taskSet)
+		taskSet := su.newTaskSet(&primaryConfig)
+		handler, err := su.newPrimaryAdapterHandler(&primaryConfig, taskSet)
 		if err != nil {
 			l.Logger.Fatalf("Error creating handler: %v", err)
 		}
@@ -39,7 +39,7 @@ func (su *ServiceUnit) mapSecondaryToPrimary() {
 }
 
 // newPrimaryAdapterHandler builds primary adapter with given task set
-func (su *ServiceUnit) newPrimaryAdapterHandler(primaryConfig model.PrimaryAdapterSpec, taskSet []domain.TaskHandler) (domain.PrimaryAdapterHandler, error) {
+func (su *ServiceUnit) newPrimaryAdapterHandler(primaryConfig *model.PrimaryAdapterSpec, taskSet []domain.TaskHandler) (domain.PrimaryAdapterHandler, error) {
 	if primaryConfig.ServerConfig != nil {
 		return domain.PrimaryAdapterHandler{
 			ServiceName:  su.Name,
@@ -58,9 +58,9 @@ func (su *ServiceUnit) newPrimaryAdapterHandler(primaryConfig model.PrimaryAdapt
 }
 
 // newTaskSet creates task set from config
-func (su *ServiceUnit) newTaskSet(primaryAdapterId string, taskSpecs []model.TaskSpec) []domain.TaskHandler {
-	taskSet := make([]domain.TaskHandler, len(taskSpecs))
-	for i, taskSpec := range taskSpecs {
+func (su *ServiceUnit) newTaskSet(primaryConfig *model.PrimaryAdapterSpec) []domain.TaskHandler {
+	taskSet := make([]domain.TaskHandler, len(primaryConfig.TaskSpecs))
+	for i, taskSpec := range primaryConfig.TaskSpecs {
 		key := taskSpec.AdapterConfig.GetGroupByKey()
 		client, ok := su.SecondaryAdapterClients[key]
 		if !ok {
@@ -72,7 +72,9 @@ func (su *ServiceUnit) newTaskSet(primaryAdapterId string, taskSpecs []model.Tas
 			continue
 		}
 
-		taskSet[i] = resiliency.NewTaskHandler(primaryAdapterId, taskSpec, secondaryAdapter)
+		telemetryCtx := domain.NewTelemetryContext(su.Name, primaryConfig, taskSpec.AdapterConfig)
+
+		taskSet[i] = resiliency.NewTaskHandler(telemetryCtx, taskSpec, secondaryAdapter)
 	}
 
 	return taskSet
