@@ -12,4 +12,5 @@ resources:
   # - ./kafka
   # - ./onlineboutique
   # - ./onlineboutique-async
-  - ./timeout-test
+  # - ./timeout-test
+  - ./rest-monitored

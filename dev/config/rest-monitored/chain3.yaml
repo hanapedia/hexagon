@@ -1,0 +1,15 @@
+version: dev
+name: chain3
+adapters:
+- server:
+    action: read
+    variant: rest
+    route: get
+    payload:
+      variant: large
+  tasks: []
+- server:
+    action: write
+    variant: rest
+    route: post
+  tasks: []
