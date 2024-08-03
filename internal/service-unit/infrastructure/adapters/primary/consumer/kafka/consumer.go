@@ -7,6 +7,7 @@ import (
 
 	"github.com/hanapedia/hexagon/internal/service-unit/application/core/runtime"
 	"github.com/hanapedia/hexagon/internal/service-unit/domain"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/primary/consumer"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
 	tracing "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/telemetry/tracing/kafka"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
@@ -60,10 +61,18 @@ ConsumerLoop:
 		ctx, span := tracing.CreateKafkaConsumerSpan(ctx, &message)
 
 		// call tasks
-		_ = runtime.TaskSetHandler(ctx, kca.kafkaConsumer.handler)
+		result := runtime.TaskSetHandler(ctx, kca.kafkaConsumer.handler)
 		// TODO: error handle consumer error
 		/* if result.ShouldFail { */
 		/* } */
+
+		// record metrics
+		go consumer.ObserveConsumerAdapterDuration(
+			startTime,
+			kca.kafkaConsumer.handler.ServiceName,
+			kca.kafkaConsumer.handler.ConsumerConfig,
+			result.ShouldFail,
+		)
 
 		kca.log(ctx, startTime)
 		if span != nil {

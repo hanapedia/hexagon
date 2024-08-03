@@ -12,6 +12,7 @@ import (
 	"github.com/hanapedia/hexagon/internal/service-unit/application/core/runtime"
 	"github.com/hanapedia/hexagon/internal/service-unit/domain"
 	"github.com/hanapedia/hexagon/internal/service-unit/domain/contract"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/primary/server"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
@@ -71,6 +72,11 @@ func (rsa *RestServerAdapter) Register(handler *domain.PrimaryAdapterHandler) er
 
 			// call tasks
 			result := runtime.TaskSetHandler(c.UserContext(), handler)
+			defer func() {
+				// record metrics
+				go server.ObserveServerAdapterDuration(startTime, handler.ServiceName, handler.ServerConfig, result.ShouldFail)
+			}()
+
 			if result.ShouldFail {
 				restResponse := contract.RestResponseBody{}
 				return c.Status(fiber.StatusInternalServerError).JSON(restResponse)
@@ -97,6 +103,11 @@ func (rsa *RestServerAdapter) Register(handler *domain.PrimaryAdapterHandler) er
 
 			// call tasks
 			result := runtime.TaskSetHandler(c.UserContext(), handler)
+			defer func() {
+				// record metrics
+				go server.ObserveServerAdapterDuration(startTime, handler.ServiceName, handler.ServerConfig, result.ShouldFail)
+			}()
+
 			if result.ShouldFail {
 				restResponse := contract.RestResponseBody{}
 				return c.Status(fiber.StatusInternalServerError).JSON(restResponse)

@@ -12,6 +12,7 @@ import (
 	"github.com/hanapedia/hexagon/internal/service-unit/application/core/runtime"
 	"github.com/hanapedia/hexagon/internal/service-unit/domain"
 	pb "github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/generated/grpc"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/primary/server"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
@@ -117,6 +118,11 @@ func (gsa *GrpcServerAdapter) SimpleRPC(ctx context.Context, req *pb.StreamReque
 	defer gsa.log(ctx, handler, startTime)
 
 	result := runtime.TaskSetHandler(ctx, handler)
+	defer func() {
+		// record metrics
+		go server.ObserveServerAdapterDuration(startTime, handler.ServiceName, handler.ServerConfig, result.ShouldFail)
+	}()
+
 	if result.ShouldFail {
 		return nil, errors.New(fmt.Sprintf("Simple RPC %s failed when handling tasks.", handler.GetId()))
 	}
@@ -154,6 +160,11 @@ func (gsa *GrpcServerAdapter) ClientStreaming(stream pb.Grpc_ClientStreamingServ
 	defer gsa.log(stream.Context(), handler, startTime)
 
 	result := runtime.TaskSetHandler(stream.Context(), handler)
+	defer func() {
+		// record metrics
+		go server.ObserveServerAdapterDuration(startTime, handler.ServiceName, handler.ServerConfig, result.ShouldFail)
+	}()
+
 	if result.ShouldFail {
 		return errors.New(fmt.Sprintf("Client streaming %s failed when handling tasks.", handler.GetId()))
 	}
@@ -192,6 +203,11 @@ func (gsa *GrpcServerAdapter) ServerStreaming(req *pb.StreamRequest, stream pb.G
 	defer gsa.log(stream.Context(), handler, startTime)
 
 	result := runtime.TaskSetHandler(stream.Context(), handler)
+	defer func() {
+		// record metrics
+		go server.ObserveServerAdapterDuration(startTime, handler.ServiceName, handler.ServerConfig, result.ShouldFail)
+	}()
+
 	if result.ShouldFail {
 		return errors.New(fmt.Sprintf("Server streaming %s failed when handling tasks.", handler.GetId()))
 	}
@@ -239,6 +255,11 @@ func (gsa *GrpcServerAdapter) BidirectionalStreaming(stream pb.Grpc_Bidirectiona
 	defer gsa.log(stream.Context(), handler, startTime)
 
 	result := runtime.TaskSetHandler(stream.Context(), handler)
+	defer func() {
+		// record metrics
+		go server.ObserveServerAdapterDuration(startTime, handler.ServiceName, handler.ServerConfig, result.ShouldFail)
+	}()
+
 	if result.ShouldFail {
 		return errors.New(fmt.Sprintf("Bidirectional streaming %s failed when handling tasks.", handler.GetId()))
 	}
