@@ -8,14 +8,16 @@ import (
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 	"github.com/hanapedia/hexagon/pkg/operator/manifest/serviceunit"
 	"github.com/hanapedia/hexagon/pkg/operator/yaml"
+	promv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 )
 
 type ServiceUnitManifest struct {
-	deployment *appsv1.Deployment
-	service    *corev1.Service
-	configMap  *corev1.ConfigMap
+	deployment     *appsv1.Deployment
+	service        *corev1.Service
+	configMap      *corev1.ConfigMap
+	serviceMonitor *promv1.ServiceMonitor
 }
 
 func NewServiceUnitManifest(config *model.ServiceUnitConfig, configPath string) *ServiceUnitManifest {
@@ -24,9 +26,10 @@ func NewServiceUnitManifest(config *model.ServiceUnitConfig, configPath string) 
 		logger.Logger.Panic("Failed to read config file.")
 	}
 	manifest := ServiceUnitManifest{
-		deployment: serviceunit.CreateStatelessUnitDeployment(config),
-		service:    serviceunit.CreateStatelessUnitService(config),
-		configMap:  serviceunit.CreateStatelessUnitYamlConfigMap(config, string(data)),
+		deployment:     serviceunit.CreateStatelessUnitDeployment(config),
+		service:        serviceunit.CreateStatelessUnitService(config),
+		configMap:      serviceunit.CreateStatelessUnitYamlConfigMap(config, string(data)),
+		serviceMonitor: serviceunit.CreateServiceMonitor(config),
 	}
 
 	return &manifest
@@ -70,6 +73,16 @@ func (sum *ServiceUnitManifest) Generate(config *model.ServiceUnitConfig, path s
 		return core.ManifestErrors{
 			Stateless: []core.StatelessManifestError{
 				core.NewStatelessManifestError(config, "Failed to write config map manifest"),
+			},
+		}
+	}
+
+	serviceMonitorYaml := yaml.GenerateManifest(sum.serviceMonitor)
+	_, err = file.WriteString(core.FormatManifest(serviceMonitorYaml))
+	if err != nil {
+		return core.ManifestErrors{
+			Stateless: []core.StatelessManifestError{
+				core.NewStatelessManifestError(config, "Failed to write ServiceMonitor manifest"),
 			},
 		}
 	}
