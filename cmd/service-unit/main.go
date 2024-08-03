@@ -36,17 +36,17 @@ func main() {
 	yamlConfigLoader := config.NewConfigLoader("yaml")
 	serviceUnitConfig := initialization.GetConfig(yamlConfigLoader)
 
-	var telemetryWg sync.WaitGroup
-
-	// start telemetry
-	initialization.InitTracing(serviceUnitConfig.Name, ctx, &telemetryWg)
-	metrics.ServeMetrics(ctx, &telemetryWg)
 
 	serviceUnit := initialization.NewServiceUnit(serviceUnitConfig)
 	logger.Logger.Println("Service unit loaded")
 
 	// setup service unit
 	serviceUnit.Setup()
+
+	var telemetryWg sync.WaitGroup
+	// start telemetry
+	initialization.InitTracing(serviceUnitConfig.Name, ctx, &telemetryWg)
+	metrics.ServeMetrics(ctx, &telemetryWg)
 
 	// create wait group to wait for graceful shutdown
 	var primaryWg sync.WaitGroup
