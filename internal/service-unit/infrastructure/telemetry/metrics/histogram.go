@@ -22,7 +22,7 @@ func ObserveSecondaryAdapterCallDuration(duration time.Duration, labels domain.S
 
 func ObserveSecondaryAdapterTaskDuration(duration time.Duration, labels domain.SecondaryAdapterTaskDurationLabels) {
 	metrics := GetInstance()
-	metrics.SecondaryAdapterCallDuration.
+	metrics.SecondaryAdapterTaskDuration.
 		With(labels.AsMap()).
 		Observe(float64(duration.Milliseconds()))
 }
