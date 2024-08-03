@@ -6,6 +6,7 @@ import (
 	"github.com/hanapedia/hexagon/pkg/api/defaults"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/object/factory"
+	promv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -29,7 +30,7 @@ func CreateStatelessUnitDeployment(config *model.ServiceUnitConfig) *appsv1.Depl
 		Image:        fmt.Sprintf("%s:%s", defaults.SERVICE_UNIT_IMAGE_NAME, config.Version),
 		Replicas:     replica,
 		Resource:     resource,
-		Ports:        map[string]int32{"http": defaults.HTTP_PORT},
+		Ports:        getDefaultPorts(),
 		VolumeMounts: map[string]string{"config": "/app/config/"},
 		Envs:         config.DeploymentSpec.EnvVar,
 		ConfigVolume: &factory.ConfigMapVolumeArgs{
@@ -48,10 +49,7 @@ func CreateStatelessUnitService(config *model.ServiceUnitConfig) *corev1.Service
 	serviceArgs := factory.ServiceArgs{
 		Name:      config.Name,
 		Namespace: defaults.NAMESPACE,
-		Ports: map[string]int32{
-			"http": defaults.HTTP_PORT,
-			"grpc": defaults.GRPC_PORT,
-		},
+		Ports:     getDefaultPorts(),
 	}
 	service := factory.NewSerivce(&serviceArgs)
 	return &service
@@ -68,4 +66,13 @@ func CreateStatelessUnitYamlConfigMap(config *model.ServiceUnitConfig, rawConfig
 	}
 	configMap := factory.NewConfigMap(&configMapArgs)
 	return &configMap
+}
+
+func CreateServiceMonitor(config *model.ServiceUnitConfig) *promv1.ServiceMonitor {
+	serviceMonitorArgs := factory.ServiceMonitorArgs{
+		Name:      config.Name,
+		Namespace: defaults.NAMESPACE,
+	}
+	serviceMonitor := factory.NewServiceMonitor(&serviceMonitorArgs)
+	return &serviceMonitor
 }

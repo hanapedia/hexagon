@@ -38,7 +38,7 @@ func NewDeployment(args *DeploymentArgs) appsv1.Deployment {
 func NewDeploymentSpec(args *DeploymentArgs) appsv1.DeploymentSpec {
 	return appsv1.DeploymentSpec{
 		Replicas: utils.Int32Ptr(args.Replicas),
-		Selector: NewLabelSelector(map[string]string{"app": args.Name}),
+		Selector: NewLabelSelector(map[string]string{AppLabel: args.Name}),
 		Template: NewPodTemplate(args),
 	}
 
@@ -47,7 +47,7 @@ func NewDeploymentSpec(args *DeploymentArgs) appsv1.DeploymentSpec {
 // NewPodTemplate create pod template
 func NewPodTemplate(args *DeploymentArgs) corev1.PodTemplateSpec {
 	return corev1.PodTemplateSpec{
-		ObjectMeta: NewObjectMeta(ObjectMetaOptions{Labels: map[string]string{"app": args.Name}}),
+		ObjectMeta: NewObjectMeta(ObjectMetaOptions{Labels: map[string]string{AppLabel: args.Name}}),
 		Spec:       NewPodSpec(args),
 	}
 }

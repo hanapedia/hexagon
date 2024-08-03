@@ -14,7 +14,7 @@ func CreateNetworkDelay(name string) *crd.NetworkChaos {
 		Name:            fmt.Sprintf("%s-network-delay", name),
 		Namespace:       defaults.CHAOSMESH_NAMESPACE,
 		TargetNamespace: defaults.NAMESPACE,
-		Selector:        map[string]string{"app": name},
+		Selector:        map[string]string{factory.AppLabel: name},
 		Duration:        defaults.CHAOSMESH_DURATION,
 		Latency:         defaults.CHAOSMESH_LATENCY,
 		Jitter:          defaults.CHAOSMESH_LATENCY_JITTER,
