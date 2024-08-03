@@ -24,7 +24,7 @@ k8s_yaml(kustomize('./dev/manifest'))
 local_resource('Watch & Compile service-unit', 'make devbuild', deps=['cmd', 'pkg', 'internal'])
 
 # Re-compile hexctl
-local_resource('Watch & Compile hexctl', 'make devbuildcli', deps=['cmd/hexctl', 'pkg/hexctl', 'internal/hexctl'])
+local_resource('Watch & Compile hexctl', 'make devbuildcli', deps=['cmd/hexctl', 'pkg/hexctl', 'pkg/operator', 'internal/hexctl'])
 
 # Re-compile datage
 local_resource('Watch & Compile datagen', 'make devbuilddatagen', deps=['cmd/datagen', 'internal/datagen'])

@@ -1,0 +1,29 @@
+version: dev
+name: chain2
+adapters:
+- server:
+    action: read
+    variant: rest
+    route: get
+    payload:
+      variant: large
+  tasks:
+  - adapter:
+      invocation:
+        variant: rest
+        service: chain3
+        action: read
+        route: get
+- server:
+    action: write
+    variant: rest
+    route: post
+  tasks:
+  - adapter:
+      invocation:
+        variant: rest
+        service: chain3
+        action: write
+        route: post
+        payload:
+          variant: large
