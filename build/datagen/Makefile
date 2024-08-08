@@ -1,5 +1,5 @@
 # Variables
-DOCKER_HUB_USERNAME := hiroki11hanada
+DOCKER_HUB_USERNAME := hexagonbenchmark
 REPOSITORY_NAME := datagen
 TAG ?= v0.0.3
 IMAGE_NAME := $(DOCKER_HUB_USERNAME)/$(REPOSITORY_NAME):$(TAG)

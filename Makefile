@@ -4,6 +4,7 @@ COMMA := ,
 TEST_PATH ?= ./...
 GO_VERSION := 1.22
 INTEGRATION_TEST_DOCKERFILE_PATH := ./test/integration/Dockerfile
+DOCKER_USER ?= hexagonbenchmark
 
 .PHONY: ctestbuild
 ctestbuild:
@@ -68,7 +69,7 @@ devstop:
 
 .PHONY: devmanifests
 devmanifests:
-	bash ./dev/generate.sh
+	bash ./dev/generate.sh "$(DOCKER_USER)"
 
 .PHONY: devbuild
 devbuild:
