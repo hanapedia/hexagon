@@ -6,4 +6,5 @@ import (
 
 type ConfigLoader interface {
 	Load() (*model.ServiceUnitConfig, error)
+	LoadClusterConfig() (*model.ClusterConfig, error)
 }

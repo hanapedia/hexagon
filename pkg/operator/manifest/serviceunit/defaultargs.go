@@ -2,6 +2,7 @@ package serviceunit
 
 import (
 	"github.com/hanapedia/hexagon/pkg/api/defaults"
+	v1 "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/object/factory"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -25,10 +26,24 @@ func getDefaultResource() *corev1.ResourceRequirements {
 	}
 }
 
-func getDefaultPorts() map[string]int32 {
+func getPorts(clusterConfig *v1.ClusterConfig) map[string]int32 {
+	var http int32 = defaults.HTTP_PORT
+	var grpc int32 = defaults.GRPC_PORT
+	var metrics int32 = defaults.METRICS_PORT
+
+	if clusterConfig.HTTPPort != 0 {
+		http = clusterConfig.HTTPPort
+	}
+	if clusterConfig.GRPCPort != 0 {
+		grpc = clusterConfig.GRPCPort
+	}
+	if clusterConfig.MetricsPort != 0 {
+		metrics = clusterConfig.MetricsPort
+	}
+
 	return map[string]int32{
-		HTTP_PORT_NAME:            defaults.HTTP_PORT,
-		GRPC_PORT_NAME:            defaults.GRPC_PORT,
-		factory.METRICS_PORT_NAME: defaults.METRICS_PORT,
+		HTTP_PORT_NAME:            http,
+		GRPC_PORT_NAME:            grpc,
+		factory.METRICS_PORT_NAME: metrics,
 	}
 }

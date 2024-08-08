@@ -3,8 +3,8 @@ package mongo
 import (
 	"fmt"
 
-	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/api/defaults"
+	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/object/factory"
 
 	appsv1 "k8s.io/api/apps/v1"
@@ -12,18 +12,18 @@ import (
 )
 
 // CreateServiceUnitDeployment creates deployment for service unit
-func CreateMongoDeployment(config *model.ServiceUnitConfig) *appsv1.Deployment {
-	replica := config.DeploymentSpec.Replicas
+func CreateMongoDeployment(suc *model.ServiceUnitConfig, cc *model.ClusterConfig) *appsv1.Deployment {
+	replica := suc.DeploymentSpec.Replicas
 	if replica <= 0 {
 		replica = 1
 	}
 
-	resource := config.DeploymentSpec.Resource
+	resource := suc.DeploymentSpec.Resource
 	if resource == nil {
 		resource = getDefaultResource()
 	}
 
-	envs := config.DeploymentSpec.EnvVar
+	envs := suc.DeploymentSpec.EnvVar
 	if envs == nil {
 		envs = getDefaultEnvs()
 	} else {
@@ -31,13 +31,13 @@ func CreateMongoDeployment(config *model.ServiceUnitConfig) *appsv1.Deployment {
 	}
 
 	deploymentArgs := factory.DeploymentArgs{
-		Name:         config.Name,
-		Namespace:    defaults.NAMESPACE,
+		Name:         suc.Name,
+		Namespace:    cc.Namespace,
 		Annotations:  map[string]string{"rca": "ignore"},
-		Image:        fmt.Sprintf("%s:%s", defaults.MONGO_IMAGE_NAME, config.Version),
+		Image:        fmt.Sprintf("%s/%s:%s", cc.DockerHubUsername, defaults.MONGO_IMAGE_NAME, suc.Version),
 		Replicas:     replica,
 		Resource:     resource,
-		Ports:        map[string]int32{"mongo": defaults.MONGO_PORT},
+		Ports:        map[string]int32{"mongo": cc.Mongo.Port},
 		Envs:         envs,
 		VolumeMounts: map[string]string{},
 	}
@@ -46,11 +46,11 @@ func CreateMongoDeployment(config *model.ServiceUnitConfig) *appsv1.Deployment {
 }
 
 // CreateServiceUnitService creates service for service unit
-func CreateMongoService(config *model.ServiceUnitConfig) *corev1.Service {
+func CreateMongoService(suc *model.ServiceUnitConfig, cc *model.ClusterConfig) *corev1.Service {
 	serviceArgs := factory.ServiceArgs{
-		Name:      config.Name,
-		Namespace: defaults.NAMESPACE,
-		Ports:     map[string]int32{"mongo": defaults.MONGO_PORT},
+		Name:      suc.Name,
+		Namespace: cc.Namespace,
+		Ports:     map[string]int32{"mongo": cc.Mongo.Port},
 	}
 	service := factory.NewSerivce(&serviceArgs)
 	return &service

@@ -17,8 +17,8 @@ type StatefulUnitManifest struct {
 	service    *corev1.Service
 }
 
-func NewStatefulUnitManifest(config *model.ServiceUnitConfig) *StatefulUnitManifest {
-	repositoryAdapter := core.GetRepositoryAdapter(config)
+func NewStatefulUnitManifest(suc *model.ServiceUnitConfig, cc *model.ClusterConfig) *StatefulUnitManifest {
+	repositoryAdapter := core.GetRepositoryAdapter(suc)
 	if repositoryAdapter == nil {
 		logger.Logger.Panic("No repository adapter found.")
 	}
@@ -27,13 +27,13 @@ func NewStatefulUnitManifest(config *model.ServiceUnitConfig) *StatefulUnitManif
 	switch repositoryAdapter.Variant {
 	case constants.MONGO:
 		manifest = StatefulUnitManifest{
-			deployment: mongo.CreateMongoDeployment(config),
-			service: mongo.CreateMongoService(config),
+			deployment: mongo.CreateMongoDeployment(suc, cc),
+			service: mongo.CreateMongoService(suc, cc),
 		}
 	case constants.REDIS:
 		manifest = StatefulUnitManifest{
-			deployment: redis.CreateRedisDeployment(config),
-			service: redis.CreateRedisService(config),
+			deployment: redis.CreateRedisDeployment(suc, cc),
+			service: redis.CreateRedisService(suc, cc),
 		}
 	default:
 		logger.Logger.Panic("Invalid repository variant.")

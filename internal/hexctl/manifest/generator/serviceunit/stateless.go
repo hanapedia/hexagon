@@ -20,16 +20,16 @@ type ServiceUnitManifest struct {
 	serviceMonitor *promv1.ServiceMonitor
 }
 
-func NewServiceUnitManifest(config *model.ServiceUnitConfig, configPath string) *ServiceUnitManifest {
+func NewServiceUnitManifest(suc *model.ServiceUnitConfig, cc *model.ClusterConfig, configPath string) *ServiceUnitManifest {
 	data, err := os.ReadFile(configPath)
 	if err != nil {
 		logger.Logger.Panic("Failed to read config file.")
 	}
 	manifest := ServiceUnitManifest{
-		deployment:     serviceunit.CreateStatelessUnitDeployment(config),
-		service:        serviceunit.CreateStatelessUnitService(config),
-		configMap:      serviceunit.CreateStatelessUnitYamlConfigMap(config, string(data)),
-		serviceMonitor: serviceunit.CreateServiceMonitor(config),
+		deployment:     serviceunit.CreateStatelessUnitDeployment(suc, cc),
+		service:        serviceunit.CreateStatelessUnitService(suc, cc),
+		configMap:      serviceunit.CreateStatelessUnitYamlConfigMap(suc, cc, string(data)),
+		serviceMonitor: serviceunit.CreateServiceMonitor(suc, cc),
 	}
 
 	return &manifest

@@ -28,3 +28,13 @@ func (clm ConfigLoaderMock) Load() (*model.ServiceUnitConfig, error) {
 
 	return &config, nil
 }
+
+func (clm ConfigLoaderMock) LoadClusterConfig() (*model.ClusterConfig, error) {
+	var config model.ClusterConfig
+	err := k8syaml.Unmarshal(clm.data, &config)
+	if err != nil {
+		return nil, err
+	}
+
+	return &config, nil
+}

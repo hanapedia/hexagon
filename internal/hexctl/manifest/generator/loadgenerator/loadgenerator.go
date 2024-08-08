@@ -16,15 +16,15 @@ type LoadGeneratorManifest struct {
 	configMap  *corev1.ConfigMap
 }
 
-func NewLoadGeneratorManifest(config *model.ServiceUnitConfig) *LoadGeneratorManifest {
-	if !core.HasGatewayConfig(config) {
+func NewLoadGeneratorManifest(suc *model.ServiceUnitConfig, cc *model.ClusterConfig) *LoadGeneratorManifest {
+	if !core.HasGatewayConfig(suc) {
 		logger.Logger.Panic("Gateway config not found.")
 	}
 
 	manifest := LoadGeneratorManifest{
-		deployment: k6.CreateLoadGeneratorDeployment(config),
-		service:    k6.CreateLoadGeneratorService(config),
-		configMap:  k6.CreateLoadGeneratorYamlConfigMap(config),
+		deployment: k6.CreateLoadGeneratorDeployment(suc, cc),
+		service:    k6.CreateLoadGeneratorService(suc, cc),
+		configMap:  k6.CreateLoadGeneratorYamlConfigMap(suc, cc),
 	}
 
 	return &manifest
