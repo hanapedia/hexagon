@@ -12,27 +12,27 @@ import (
 )
 
 // CreateRedisDeployment creates deployment for redis
-func CreateRedisDeployment(config *model.ServiceUnitConfig) *appsv1.Deployment {
-	replica := config.DeploymentSpec.Replicas
+func CreateRedisDeployment(suc *model.ServiceUnitConfig, cc *model.ClusterConfig) *appsv1.Deployment {
+	replica := suc.DeploymentSpec.Replicas
 	if replica <= 0 {
 		replica = 1
 	}
 
-	resource := config.DeploymentSpec.Resource
+	resource := suc.DeploymentSpec.Resource
 	if resource == nil {
 		resource = getDefaultResource()
 	}
 
-	envs := config.DeploymentSpec.EnvVar
+	envs := suc.DeploymentSpec.EnvVar
 
 	deploymentArgs := factory.DeploymentArgs{
-		Name:         config.Name,
-		Namespace:    defaults.NAMESPACE,
+		Name:         suc.Name,
+		Namespace:    cc.Namespace,
 		Annotations:  map[string]string{"rca": "ignore"},
-		Image:        fmt.Sprintf("%s:%s", defaults.REDIS_IMAGE_NAME, config.Version),
+		Image:        fmt.Sprintf("%s/%s:%s", cc.Redis.ImageName, defaults.REDIS_IMAGE_NAME, suc.Version),
 		Replicas:     replica,
 		Resource:     resource,
-		Ports:        map[string]int32{"redis": defaults.REDIS_PORT},
+		Ports:        map[string]int32{"redis": cc.Redis.Port},
 		Envs:         envs,
 		VolumeMounts: map[string]string{},
 	}
@@ -41,11 +41,11 @@ func CreateRedisDeployment(config *model.ServiceUnitConfig) *appsv1.Deployment {
 }
 
 // CreateRedisService creates service for redis
-func CreateRedisService(config *model.ServiceUnitConfig) *corev1.Service {
+func CreateRedisService(suc *model.ServiceUnitConfig, cc *model.ClusterConfig) *corev1.Service {
 	serviceArgs := factory.ServiceArgs{
-		Name:      config.Name,
-		Namespace: defaults.NAMESPACE,
-		Ports:     map[string]int32{"redis": defaults.REDIS_PORT},
+		Name:      suc.Name,
+		Namespace: cc.Namespace,
+		Ports:     map[string]int32{"redis": cc.Redis.Port},
 	}
 	service := factory.NewSerivce(&serviceArgs)
 	return &service

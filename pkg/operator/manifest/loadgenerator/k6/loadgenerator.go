@@ -15,17 +15,17 @@ import (
 )
 
 // CreateServiceUnitDeployment creates deployment for service unit
-func CreateLoadGeneratorDeployment(config *model.ServiceUnitConfig) *appsv1.Deployment {
+func CreateLoadGeneratorDeployment(suc *model.ServiceUnitConfig, cc *model.ClusterConfig) *appsv1.Deployment {
 	resource := getDefaultResource()
-	name := fmt.Sprintf("%s-lg", config.Name)
+	name := fmt.Sprintf("%s-lg", suc.Name)
 	deploymentArgs := factory.DeploymentArgs{
 		Name:         name,
-		Namespace:    defaults.NAMESPACE,
+		Namespace:    cc.Namespace,
 		Annotations:  map[string]string{"rca": "ignore"},
-		Image:        fmt.Sprintf("%s:%s", defaults.LOAD_GENERATOR_IMAGE_NAME, config.Version),
+		Image:        fmt.Sprintf("%s/%s:%s", cc.DockerHubUsername, defaults.LOAD_GENERATOR_IMAGE_NAME, suc.Version),
 		Replicas:     1,
 		Resource:     resource,
-		Ports:        map[string]int32{"http": defaults.HTTP_PORT},
+		Ports:        map[string]int32{"http": cc.HTTPPort},
 		VolumeMounts: map[string]string{"config": "/data/"},
 		ConfigVolume: &factory.ConfigMapVolumeArgs{
 			Name: fmt.Sprintf("%s-config", name),
@@ -34,7 +34,7 @@ func CreateLoadGeneratorDeployment(config *model.ServiceUnitConfig) *appsv1.Depl
 				"routes": "routes.json",
 			},
 		},
-		Envs: createLoadGeneratorDeploymentEnvs(config),
+		Envs: createLoadGeneratorDeploymentEnvs(suc),
 	}
 	deployment := factory.NewDeployment(&deploymentArgs)
 
@@ -50,34 +50,34 @@ func CreateLoadGeneratorDeployment(config *model.ServiceUnitConfig) *appsv1.Depl
 }
 
 // CreateServiceUnitService creates service for service unit
-func CreateLoadGeneratorService(config *model.ServiceUnitConfig) *corev1.Service {
-	name := fmt.Sprintf("%s-lg", config.Name)
+func CreateLoadGeneratorService(suc *model.ServiceUnitConfig, cc *model.ClusterConfig) *corev1.Service {
+	name := fmt.Sprintf("%s-lg", suc.Name)
 	serviceArgs := factory.ServiceArgs{
 		Name:      name,
-		Namespace: defaults.NAMESPACE,
-		Ports:     map[string]int32{"http": defaults.HTTP_PORT},
+		Namespace: cc.Namespace,
+		Ports:     map[string]int32{"http": cc.HTTPPort},
 	}
 	service := factory.NewSerivce(&serviceArgs)
 	return &service
 }
 
 // CreateServiceUnitConfigMap creates config config map for service unit
-func CreateLoadGeneratorYamlConfigMap(config *model.ServiceUnitConfig) *corev1.ConfigMap {
-	name := fmt.Sprintf("%s-lg", config.Name)
+func CreateLoadGeneratorYamlConfigMap(suc *model.ServiceUnitConfig, cc *model.ClusterConfig) *corev1.ConfigMap {
+	name := fmt.Sprintf("%s-lg", suc.Name)
 
-	rawConfig, err := generateConfigJson(config)
+	rawConfig, err := generateConfigJson(suc)
 	if err != nil {
 		logger.Logger.Panicf("Failed to generate raw config. %s", err)
 	}
 
-	rawRoutes, err := generateRoutesJson(config)
+	rawRoutes, err := generateRoutesJson(suc)
 	if err != nil {
 		logger.Logger.Panicf("Failed to generate raw route. %s", err)
 	}
 
 	configMapArgs := factory.ConfigMapArgs{
 		Name:      fmt.Sprintf("%s-config", name),
-		Namespace: defaults.NAMESPACE,
+		Namespace: cc.Namespace,
 		Data: map[string]string{
 			"config": string(rawConfig),
 			"routes": string(rawRoutes),

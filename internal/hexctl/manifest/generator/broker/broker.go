@@ -15,8 +15,8 @@ type BrokerManifest struct {
 	// add other crds if new broker is added
 }
 
-func NewBrokerManifest(config *model.ServiceUnitConfig) *BrokerManifest {
-	consumerAdapters := core.GetConsumerAdapters(config)
+func NewBrokerManifest(suc *model.ServiceUnitConfig, cc *model.ClusterConfig) *BrokerManifest {
+	consumerAdapters := core.GetConsumerAdapters(suc)
 	if len(consumerAdapters) == 0 {
 		logger.Logger.Panic("No consumer adapter config found.")
 	}
@@ -25,7 +25,7 @@ func NewBrokerManifest(config *model.ServiceUnitConfig) *BrokerManifest {
 	for _, consumerAdapter := range consumerAdapters {
 		switch consumerAdapter.Variant {
 		case constants.KAFKA:
-			manifest.kafkaTopics = append(manifest.kafkaTopics, kafka.CreateKafkaTopic(consumerAdapter.Topic))
+			manifest.kafkaTopics = append(manifest.kafkaTopics, kafka.CreateKafkaTopic(consumerAdapter.Topic, cc))
 		default:
 			logger.Logger.Panic("Invalid broker variant.")
 		}

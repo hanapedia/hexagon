@@ -1,5 +1,12 @@
 package constants
 
+const (
+	// Name of the cluster cofig file
+	CLUSTER_CONFIG_FILE_NAME = "hexagon-cluster.yaml"
+	// Name of the config file mounted to the service unit pod
+	SERVICE_UNIT_CONFIG_FILE_NAME = "service-unit.yaml"
+)
+
 type SeverAdapterVariant string
 type BrokerVariant string
 type RepositoryVariant string

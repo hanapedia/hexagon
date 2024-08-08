@@ -8,7 +8,7 @@ import (
 )
 
 func ValidateFile(path string) v1validator.ConfigValidationError {
-	serviceUnitConfig := loader.GetConfig(path)
+	serviceUnitConfig := loader.GetServiceUnitConfig(path)
 	errs := v1validator.ValidateServiceUnitConfigFields(serviceUnitConfig)
 	if errs.Exist() {
 		errs.Print()
@@ -26,7 +26,7 @@ func ValidateDirectory(path string) v1validator.ConfigValidationError {
 
 	var serviceUnitConfigs []model.ServiceUnitConfig
 	for _, path = range paths {
-		serviceUnitConfigs = append(serviceUnitConfigs, *loader.GetConfig(path))
+		serviceUnitConfigs = append(serviceUnitConfigs, *loader.GetServiceUnitConfig(path))
 	}
 	errs := v1validator.ValidateServiceUnitConfigs(serviceUnitConfigs)
 	if errs.Exist() {

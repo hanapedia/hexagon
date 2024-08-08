@@ -1,6 +1,8 @@
 package generator
 
 import (
+	"path/filepath"
+
 	"github.com/hanapedia/hexagon/internal/hexctl/loader"
 	"github.com/hanapedia/hexagon/internal/hexctl/manifest/core"
 	"github.com/hanapedia/hexagon/internal/hexctl/manifest/generator/broker"
@@ -8,6 +10,7 @@ import (
 	"github.com/hanapedia/hexagon/internal/hexctl/manifest/generator/serviceunit"
 	"github.com/hanapedia/hexagon/internal/hexctl/manifest/generator/statefulunit"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
+	"github.com/hanapedia/hexagon/pkg/operator/constants"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
@@ -19,15 +22,17 @@ type ManifestGenerator struct {
 	// NOTE: not file name. file names are automatically assigned by service name
 	Output            string
 	ServiceUnitConfig *model.ServiceUnitConfig
+	ClusterConfig     *model.ClusterConfig
 }
 
-func NewManifestGenerator(input, output string) ManifestGenerator {
-	config := loader.GetConfig(input)
+func NewManifestGenerator(input, output string, clusterConfig *model.ClusterConfig) ManifestGenerator {
+	config := loader.GetServiceUnitConfig(input)
 
 	return ManifestGenerator{
 		Input:             input,
 		Output:            output,
 		ServiceUnitConfig: config,
+		ClusterConfig:     clusterConfig,
 	}
 }
 
@@ -40,13 +45,16 @@ func (mg ManifestGenerator) GenerateFromFile() {
 }
 
 func GenerateFromDirectory(input, output string) {
+	// Attempt to parse the cluster config file first
+	clusterConfig := loader.GetClusterConfig(filepath.Join(input, constants.CLUSTER_CONFIG_FILE_NAME))
+
 	paths, err := loader.GetYAMLFiles(input)
 	if err != nil {
 		logger.Logger.Fatalf("Error reading from directory %s. %s", input, err)
 	}
 
 	for _, inputFile := range paths {
-		mg := NewManifestGenerator(inputFile, output)
+		mg := NewManifestGenerator(inputFile, output, clusterConfig)
 		mg.GenerateFromFile()
 	}
 
@@ -57,7 +65,7 @@ func (mg ManifestGenerator) GenerateManifest() core.ManifestErrors {
 
 	// generate stateful unit manifest and exit if the config is for stateful unit
 	if core.HasRepositoryAdapter(mg.ServiceUnitConfig) {
-		statefuleManifest := statefulunit.NewStatefulUnitManifest(mg.ServiceUnitConfig)
+		statefuleManifest := statefulunit.NewStatefulUnitManifest(mg.ServiceUnitConfig, mg.ClusterConfig)
 		path := core.GetFilePath(mg.Output, mg.ServiceUnitConfig.Name, "stateful-unit")
 		manfiestErrors.Extend(statefuleManifest.Generate(mg.ServiceUnitConfig, path))
 		return manfiestErrors
@@ -65,19 +73,19 @@ func (mg ManifestGenerator) GenerateManifest() core.ManifestErrors {
 
 	// generate broker manifest if the config has consumer adapter
 	if core.HasConsumerAdapters(mg.ServiceUnitConfig) {
-		brokerManifest := broker.NewBrokerManifest(mg.ServiceUnitConfig)
+		brokerManifest := broker.NewBrokerManifest(mg.ServiceUnitConfig, mg.ClusterConfig)
 		path := core.GetFilePath(mg.Output, mg.ServiceUnitConfig.Name, "broker")
 		manfiestErrors.Extend(brokerManifest.Generate(mg.ServiceUnitConfig, path))
 	}
 
 	// generate loadgenerator manifest if the config has loadgenerator
 	if core.HasGatewayConfig(mg.ServiceUnitConfig) {
-		loadGeneratorManifest := loadgenerator.NewLoadGeneratorManifest(mg.ServiceUnitConfig)
+		loadGeneratorManifest := loadgenerator.NewLoadGeneratorManifest(mg.ServiceUnitConfig, mg.ClusterConfig)
 		path := core.GetFilePath(mg.Output, mg.ServiceUnitConfig.Name, "load-generator")
 		manfiestErrors.Extend(loadGeneratorManifest.Generate(mg.ServiceUnitConfig, path))
 	}
 
-	serviceUnitManifest := serviceunit.NewServiceUnitManifest(mg.ServiceUnitConfig, mg.Input)
+	serviceUnitManifest := serviceunit.NewServiceUnitManifest(mg.ServiceUnitConfig, mg.ClusterConfig, mg.Input)
 	path := core.GetFilePath(mg.Output, mg.ServiceUnitConfig.Name, "service-unit")
 	manfiestErrors.Extend(serviceUnitManifest.Generate(mg.ServiceUnitConfig, path))
 

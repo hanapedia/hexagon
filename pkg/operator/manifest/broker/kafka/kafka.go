@@ -1,19 +1,19 @@
 package kafka
 
 import (
-	"github.com/hanapedia/hexagon/pkg/api/defaults"
+	v1 "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/object/crd"
 	"github.com/hanapedia/hexagon/pkg/operator/object/factory"
 )
 
 // CreateKafkaTopic creates kafka topic
-func CreateKafkaTopic(topic string) *crd.KafkaTopic {
+func CreateKafkaTopic(topic string, cc *v1.ClusterConfig) *crd.KafkaTopic {
 	kafkaTopicArgs := factory.KafkaTopicArgs{
 		Topic:       topic,
-		Namespace:   defaults.KAFKA_NAMESPACE,
-		ClusterName: defaults.KAFKA_CLUSTER_NAME,
-		Replicas:    defaults.KAFKA_REPLICATIONS,
-		Partitions:  defaults.KAFKA_PARTITIONS,
+		Namespace:   cc.Kafka.Namespace,
+		ClusterName: cc.Kafka.ClusterName,
+		Partitions:  cc.Kafka.Partitions,
+		Replicas:    cc.Kafka.Replications,
 	}
 	kafkaTopic := factory.NewKafkaTopic(&kafkaTopicArgs)
 	return &kafkaTopic

@@ -1,11 +1,11 @@
 package commands
 
 import (
-	"fmt"
 	"os"
 	"strings"
 
 	"github.com/hanapedia/hexagon/internal/hexctl/manifest/generator"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 	"github.com/spf13/cobra"
 )
 
@@ -15,21 +15,18 @@ var generateCmd = &cobra.Command{
 	Short: "generate Kubernetes manifests for given service unit configuration.",
 	Run: func(cmd *cobra.Command, args []string) {
 		if strings.TrimSpace(inputPath) == "" {
-			fmt.Println("Error: Missing -f flag or empty file path")
-			return
+			logger.Logger.Fatalln("Missing -f flag or empty file path")
 		}
 
 		fileInfo, err := os.Stat(inputPath)
 		if err != nil {
-			fmt.Println("Error:", err)
-			return
+			logger.Logger.Fatalln(err)
 		}
-		if fileInfo.IsDir() {
-			generator.GenerateFromDirectory(inputPath, outputPath)
-		} else {
-			manifestGenerator := generator.NewManifestGenerator(inputPath, outputPath)
-			manifestGenerator.GenerateFromFile()
+		if !fileInfo.IsDir() {
+			logger.Logger.Fatalln("The input path is not a directory.")
 		}
+
+		generator.GenerateFromDirectory(inputPath, outputPath)
 	},
 }
 

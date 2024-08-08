@@ -1,7 +1,7 @@
 package defaults
 
 const (
-	SERVICE_UNIT_IMAGE_NAME = "hiroki11hanada/service-unit"
+	SERVICE_UNIT_IMAGE_NAME = "service-unit"
 	REPLICAS                = 1
 	REQUEST_CPU             = "125m"
 	REQUEST_MEM             = "64Mi"
