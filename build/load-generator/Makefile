@@ -1,5 +1,5 @@
 # Variables
-DOCKER_HUB_USERNAME := hiroki11hanada
+DOCKER_HUB_USERNAME := hexagonbenchmark
 REPOSITORY_NAME := tb-load-generator
 TAG ?= v0.0.3
 ENGINE ?= docker

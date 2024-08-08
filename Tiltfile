@@ -2,6 +2,15 @@
 
 load('ext://restart_process', 'docker_build_with_restart')
 
+# Define default values for your arguments
+config.define_string('docker_user', usage='Docker user name used to build images for local testing.')
+
+# Parse the arguments
+cfg = config.parse()
+
+# Access the arguments
+docker_user = cfg.get('docker_user', 'hexagonbenchmark')
+
 CONTROLLER_DOCKERFILE = '''FROM golang:alpine
 WORKDIR /app
 COPY ./bin/service-unit .
@@ -14,7 +23,7 @@ COPY ./bin/datagen .
 '''
 
 # Generate manifests and go files
-local_resource('service-unit manifests', cmd='make devmanifests', deps=['dev/config', 'bin/hexctl'])
+local_resource('service-unit manifests', cmd='make devmanifests DOCKER_USER=%s' % docker_user, deps=['dev/config', 'bin/hexctl'])
 
 # Deploy service units
 watch_file('./dev/manifest/')
@@ -31,7 +40,7 @@ local_resource('Watch & Compile datagen', 'make devbuilddatagen', deps=['cmd/dat
 
 # Build service-unit image
 docker_build_with_restart(
-    ref='hiroki11hanada/service-unit:dev',
+    ref='%s/service-unit:dev' % docker_user,
     context='.',
     dockerfile_contents=CONTROLLER_DOCKERFILE,
     entrypoint=['./service-unit'],
@@ -43,13 +52,13 @@ docker_build_with_restart(
 
 # Build load-generator image
 docker_build(
-    ref='hiroki11hanada/tb-load-generator:dev',
+    ref='%s/tb-load-generator:dev' % docker_user,
     context='./build/load-generator/',
 )
 
 # Build datagen image
 docker_build(
-    ref='hiroki11hanada/datagen:dev',
+    ref='%s/datagen:dev' % docker_user,
     context='.',
     dockerfile_contents=DATAGEN_DOCKERFILE,
     only=['./bin/datagen'],
@@ -60,18 +69,18 @@ docker_build(
 
 # Build mongo image
 docker_build(
-    ref='hiroki11hanada/stateful-unit-mongo:dev',
+    ref='%s/stateful-unit-mongo:dev' % docker_user,
     context='./build/stateful-unit/mongo/',
     build_args={
-        'BUILDER_IMAGE': 'hiroki11hanada/datagen:dev'
+        'BUILDER_IMAGE': 'datagen:dev'
     },
 )
 
 # Build redis image
 docker_build(
-    ref='hiroki11hanada/stateful-unit-redis:dev',
+    ref='%s/stateful-unit-redis:dev' % docker_user,
     context='./build/stateful-unit/redis/',
     build_args={
-        'BUILDER_IMAGE': 'hiroki11hanada/datagen:dev'
+        'BUILDER_IMAGE': 'datagen:dev'
     },
 )
