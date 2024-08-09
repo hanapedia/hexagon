@@ -25,7 +25,7 @@ func SetGaugeMetricsFromSpecs(spec model.ResiliencySpec, telemetryCtx domain.Tel
 
 	metrics.CircuitBreakerDisabled.
 		With(circuitBreakerGaugeLabels).
-		Set(utils.Btof64(spec.CircutBreaker.Disable))
+		Set(utils.Btof64(spec.CircutBreaker.Disabled))
 
 	metrics.CircuitBreakerCountRetries.
 		With(circuitBreakerGaugeLabels).
@@ -57,7 +57,7 @@ func SetGaugeMetricsFromSpecs(spec model.ResiliencySpec, telemetryCtx domain.Tel
 
 	metrics.RetryDisabled.
 		With(retryGaugeLabels).
-		Set(utils.Btof64(spec.Retry.Disable))
+		Set(utils.Btof64(spec.Retry.Disabled))
 
 	metrics.RetryMaxAttempt.
 		With(retryGaugeLabels).
