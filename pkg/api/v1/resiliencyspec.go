@@ -65,8 +65,8 @@ type RetrySpec struct {
 	// Must be parsable using time.ParseDuration
 	InitialBackoff string `json:"initialBackoff,omitempty"`
 
-	// Disable is the flag to turn off retry feature entirely
-	Disable bool `json:"disable,omitempty"`
+	// Disabled is the flag to turn off retry feature entirely
+	Disabled bool `json:"disabled,omitempty"`
 }
 
 type CircuitBreakerSpec struct {
@@ -102,8 +102,8 @@ type CircuitBreakerSpec struct {
 	// Note that circuit broken requests will also be retried when set to true.
 	CountRetries bool `json:"countRetries,omitempty"`
 
-	// Disable is the flag to turn off circuit breaker feature entirely
-	Disable bool `json:"disable,omitempty"`
+	// Disabled is the flag to turn off circuit breaker feature entirely
+	Disabled bool `json:"disabled,omitempty"`
 }
 
 // Get parsed initial backoff as time.Duration

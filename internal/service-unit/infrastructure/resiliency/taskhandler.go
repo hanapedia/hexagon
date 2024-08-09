@@ -21,7 +21,7 @@ func NewTaskHandler(telCtx domain.TelemetryContext, spec model.TaskSpec, adapter
 	// record Call duration
 	handler = WithCallDurationMetrics(handler)
 
-	if !spec.Resiliency.Retry.Disable && !spec.Resiliency.CircutBreaker.Disable {
+	if !spec.Resiliency.Retry.Disabled && !spec.Resiliency.CircutBreaker.Disabled {
 		if spec.Resiliency.CircutBreaker.CountRetries {
 			// must go through the circuit breaker first to count the retries
 			handler, circuitBreaker = WithCircuitBreaker(spec.Resiliency.CircutBreaker, adapter, handler)
@@ -31,10 +31,10 @@ func NewTaskHandler(telCtx domain.TelemetryContext, spec model.TaskSpec, adapter
 			handler, circuitBreaker = WithCircuitBreaker(spec.Resiliency.CircutBreaker, adapter, handler)
 		}
 	} else {
-		if !spec.Resiliency.Retry.Disable {
+		if !spec.Resiliency.Retry.Disabled {
 			handler = WithRetry(spec.Resiliency.Retry, handler)
 		}
-		if !spec.Resiliency.CircutBreaker.Disable {
+		if !spec.Resiliency.CircutBreaker.Disabled {
 			handler, circuitBreaker = WithCircuitBreaker(spec.Resiliency.CircutBreaker, adapter, handler)
 		}
 	}
