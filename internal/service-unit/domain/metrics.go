@@ -3,6 +3,7 @@ package domain
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/hanapedia/hexagon/pkg/operator/utils"
 	"github.com/prometheus/client_golang/prometheus"
@@ -33,11 +34,23 @@ const (
 	RetryInitialBackoff            GaugeVecName     = "retry_initial_backoff"
 )
 
+// Default Histogram bucket is []float64{.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10}
+// and desinged as response time in seconds
+// Adjust it so that it is in milliseconds
+var DurationHistogramBuckets = slices.Concat(
+	[]float64{0.1, 0.25, 0.5},
+	[]float64{1, 2.5, 5},
+	[]float64{10, 25, 50},
+	[]float64{100, 250, 500},
+	[]float64{1000, 2500, 5000, 10000},
+)
+
 var histogramVecs map[HistogramVecName]*prometheus.HistogramVec = map[string]*prometheus.HistogramVec{
 	PrimaryAdapterDuration: prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
 			Name: PrimaryAdapterDuration,
 			Help: "Duration for primary adapter execution in milliseconds.",
+			Buckets: DurationHistogramBuckets,
 		},
 		utils.GetMapKeys(PrimaryAdapterDurationLabels{}.AsMap()),
 	),
@@ -45,6 +58,7 @@ var histogramVecs map[HistogramVecName]*prometheus.HistogramVec = map[string]*pr
 		prometheus.HistogramOpts{
 			Name: SecondaryAdapterCallDuration,
 			Help: "Duration for secondary adapter call execution in milliseconds.",
+			Buckets: DurationHistogramBuckets,
 		},
 		utils.GetMapKeys(SecondaryAdapterCallDurationLabels{}.AsMap()),
 	),
@@ -52,6 +66,7 @@ var histogramVecs map[HistogramVecName]*prometheus.HistogramVec = map[string]*pr
 		prometheus.HistogramOpts{
 			Name: SecondaryAdapterTaskDuration,
 			Help: "Duration for secondary adapter task execution in milliseconds.",
+			Buckets: DurationHistogramBuckets,
 		},
 		utils.GetMapKeys(SecondaryAdapterTaskDurationLabels{}.AsMap()),
 	),
