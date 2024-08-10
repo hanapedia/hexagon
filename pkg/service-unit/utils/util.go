@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-const chars = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ultrices mollis finibus. Nullam justo tellus, blandit quis urna quis, aliquam luctus dui. Morbi luctus dolor magna, a dictum tortor elementum eget. Vestibulum finibus faucibus commodo. Suspendisse potenti. Cras vulputate ultrices metus at dignissim. Suspendisse porta lectus ipsum, quis faucibus ligula venenatis in. Nam et nisl tellus. In vehicula vitae orci ut dignissim."
+const LoremIpsum = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ultrices mollis finibus. Nullam justo tellus, blandit quis urna quis, aliquam luctus dui. Morbi luctus dolor magna, a dictum tortor elementum eget. Vestibulum finibus faucibus commodo. Suspendisse potenti. Cras vulputate ultrices metus at dignissim. Suspendisse porta lectus ipsum, quis faucibus ligula venenatis in. Nam et nisl tellus. In vehicula vitae orci ut dignissim."
 
 func GenerateRandomString(byteSize int64) string {
     // Create a string builder for efficient string concatenation
@@ -13,7 +13,7 @@ func GenerateRandomString(byteSize int64) string {
 
     // Iterate and append characters until we reach the desired byte size
     for i := 0; i < int(byteSize); i++ {
-        sb.WriteByte(chars[i%len(chars)])
+        sb.WriteByte(LoremIpsum[i%len(LoremIpsum)])
     }
 
     return sb.String()

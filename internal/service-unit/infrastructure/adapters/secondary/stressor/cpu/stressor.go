@@ -2,6 +2,7 @@ package cpu
 
 import (
 	"context"
+	"crypto/sha256"
 	"fmt"
 	"math"
 	"math/rand"
@@ -19,16 +20,19 @@ type cpuStressorAdapter struct {
 }
 
 func (csa *cpuStressorAdapter) Call(ctx context.Context) secondary.SecondaryPortCallResult {
+	// prepare payload
+	payload := utils.GenerateRandomString(csa.payloadSize)
+
 	// Create a WaitGroup to wait for all goroutines to finish
 	var wg sync.WaitGroup
 
 	// Start the desired number of goroutines
 	for i := 0; i < csa.threadCount; i++ {
 		wg.Add(1)
-		go func() {
+		go func(p string) {
 			defer wg.Done()
-			stressCPU(ctx, csa.iterations)
-		}()
+			stressCPU_sha256(ctx, csa.iterations, []byte(p))
+		}(payload)
 	}
 
 	// Wait for all goroutines to finish
@@ -37,12 +41,9 @@ func (csa *cpuStressorAdapter) Call(ctx context.Context) secondary.SecondaryPort
 	if ctx.Err() != nil {
 		return secondary.SecondaryPortCallResult{
 			Payload: nil,
-			Error: fmt.Errorf("CPU stressor Call timeout exceeded"),
+			Error:   fmt.Errorf("CPU stressor Call timeout exceeded"),
 		}
 	}
-
-	// prepare payload
-	payload := utils.GenerateRandomString(csa.payloadSize)
 
 	return secondary.SecondaryPortCallResult{
 		Payload: &payload,
@@ -58,6 +59,18 @@ func stressCPU(ctx context.Context, iter int) {
 			return
 		default:
 			_ = math.Sqrt(rand.Float64())
+		}
+	}
+}
+
+// stressCPU_sha256 generates artifical stress to cpu by calculating sha256 of payload
+func stressCPU_sha256(ctx context.Context, iter int, payload []byte) {
+	for i := 0; i < iter; i++ {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			_ = sha256.Sum256(payload)
 		}
 	}
 }
