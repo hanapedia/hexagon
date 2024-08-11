@@ -1,0 +1,23 @@
+version: v1.0.9
+name: grpcserver
+adapters:
+  - server:
+      action: simpleRpc
+      variant: grpc
+      route: get
+    tasks: []
+  - server:
+      action: clientStream
+      variant: grpc
+      route: get
+    tasks: []
+  - server:
+      action: serverStream
+      variant: grpc
+      route: get
+    tasks: []
+  - server:
+      action: biStream
+      variant: grpc
+      route: get
+    tasks: []

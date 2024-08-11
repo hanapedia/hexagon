@@ -1,10 +1,23 @@
 version: v1.0.9
 name: cart
+deployment:
+  resources:
+    requests:
+      cpu: 200m
+      memory: 64Mi
+    limits:
+      cpu: 300m
+      memory: 128Mi
+  env:
+    - name: TRACING
+      value: "false"
 adapters:
   - server:
       action: simpleRpc
       variant: grpc
       route: GetCart
+      payload:
+        size: 18
     tasks:
       - adapter:
           repository:
@@ -12,23 +25,36 @@ adapters:
             variant: redis
             action: read
             payload:
+              size: 2
               variant: small
   - server:
       action: simpleRpc
       variant: grpc
       route: AddItem
+      payload:
+        size: 0
     tasks:
       - adapter:
           repository:
             name: cartredis
             variant: redis
+            action: read
+            payload:
+              size: 18
+              variant: small
+          repository:
+            name: cartredis
+            variant: redis
             action: write
             payload:
+              size: 2
               variant: small
   - server:
       action: simpleRpc
       variant: grpc
       route: EmptyCart
+      payload:
+        size: 0
     tasks:
       - adapter:
           repository:
@@ -36,4 +62,5 @@ adapters:
             variant: redis
             action: write
             payload:
+              size: 1
               variant: small

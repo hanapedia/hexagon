@@ -1,0 +1,119 @@
+version: v1.0.9
+name: gateway
+deployment:
+  gateway: # load generator specific
+    virtualUsers: 3
+    duration: 60
+adapters:
+  # grpc secondary adapters
+  - server:
+      action: read
+      variant: rest
+      route: grpc
+      weight: 1 # load generator specific
+    tasks:
+      - adapter:
+          invocation:
+            variant: grpc
+            service: grpcserver
+            action: simpleRpc
+            route: get
+      - adapter:
+          invocation:
+            variant: grpc
+            service: grpcserver
+            action: clientStream
+            route: get
+      - adapter:
+          invocation:
+            variant: grpc
+            service: grpcserver
+            action: serverStream
+            route: get
+      - adapter:
+          invocation:
+            variant: grpc
+            service: grpcserver
+            action: biStream
+            route: get
+  # http secondary adapters
+  - server:
+      action: read
+      variant: rest
+      route: httprest
+      weight: 1 # load generator specific
+    tasks:
+      - adapter:
+          invocation:
+            variant: rest
+            service: chain1
+            action: read
+            route: get
+      - adapter:
+          invocation:
+            variant: rest
+            service: chain1
+            action: write
+            route: post
+            payload:
+              variant: large
+  # mongo secondary adapter
+  - server:
+      action: read
+      variant: rest
+      route: mongo
+      weight: 1 # load generator specific
+    tasks:
+      - adapter:
+          repository:
+            name: mongorepo
+            variant: mongo
+            action: read
+            payload:
+              variant: large
+      - adapter:
+          repository:
+            name: mongorepo
+            variant: mongo
+            action: write
+            payload:
+              variant: large
+  # redis secondary adapters
+  - server:
+      action: read
+      variant: rest
+      route: redis
+      weight: 1 # load generator specific
+    tasks:
+      - adapter:
+          repository:
+            name: redisrepo
+            variant: redis
+            action: read
+            payload:
+              variant: large
+      - adapter:
+          stressor:
+            name: cpu
+            variant: cpu
+            duration: 10ms
+            payload:
+              variant: large
+      - adapter:
+          repository:
+            name: redisrepo
+            variant: redis
+            action: write
+            payload:
+              variant: large
+  # kafka secondary adapter
+  - server:
+      action: read
+      variant: rest
+      route: produce
+      weight: 1 # load generator specific
+    tasks:
+      - adapter:
+          producer:
+            variant: kafka
+            topic: topic1

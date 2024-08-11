@@ -1,5 +1,5 @@
 version: v1.0.9
-name: cartredis
+name: mongorepo
 adapters:
   - repository:
-      variant: redis
+      variant: mongo
