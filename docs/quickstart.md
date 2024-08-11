@@ -25,10 +25,10 @@ kind create cluster --name hexagon-cluster
 
 ### 3. Generate Manifests
 Generate manifest with the CLI built ealier.
-This will generate manifests for example application that emulates [Online Boutique](https://github.com/GoogleCloudPlatform/microservices-demo), using the example configuration available in example/config/onlineboutique.
+This will generate manifests for example application that emulates [Online Boutique](https://github.com/GoogleCloudPlatform/microservices-demo), using the example configuration available in example/onlineboutique/config/.
 For more details on configuration values, please refer to the [documentaion](./docs/api/v1/configuration.md).
 ```sh
-./hexctl generate -f example/config/onlineboutique/ -o example/manifest/
+./hexctl generate -f example/onlineboutique/config/ -o example/onlineboutique/manifest/
 ```
 `-f` specifies the directory for the hexagon configuration files
 `-o` specifies the directory for the output Kubernetes manifets
@@ -64,6 +64,5 @@ kind delete cluster --name hexagon-cluster
 ### What's next?
 Check out other examples in the [examples directory](../example/) to see different types of adapter definitions.
 
-Also, 
-
+Also, see [configuration specs](./api/v1/) for more details.
 
