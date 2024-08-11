@@ -50,7 +50,7 @@ See [configurations](./docs/api/v1/configuration.md) for more details.
 
 ## Components
 - *service unit*: service unit is the primary container image that can be used by the stateless services.
-- *hexctl*: hexctl is the cli program that can validate the configuration files and generate kubernetes deployment manifests for the configured application.
+- *hexctl*: [hexctl](./docs/hexctl.md) is the cli program that can validate the configuration files and generate kubernetes deployment manifests for the configured application.
 
 ## How it works
 see [internals](./docs/internals.md).

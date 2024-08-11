@@ -12,7 +12,7 @@ At the end of this guide, you will have a Hexagon generated version of Online Bo
 
 ### 1. Build the CLI
 Currently precompiled binary is not available but will be ready in the future.
-For now, you need to compile the CLI after cloning this repository.
+For now, you need to compile the CLI after cloning this repository. 
 ```sh
 go build -o ./hexctl cmd/hexctl/main.go
 ```
@@ -26,7 +26,7 @@ kind create cluster --name hexagon-cluster
 ### 3. Generate Manifests
 Generate manifest with the CLI built ealier.
 This will generate manifests for example application that emulates [Online Boutique](https://github.com/GoogleCloudPlatform/microservices-demo), using the example configuration available in example/onlineboutique/config/.
-For more details on configuration values, please refer to the [documentaion](./docs/api/v1/configuration.md).
+For more details on configuration values, please refer to the [documentaion](./docs/api/v1/).
 ```sh
 ./hexctl generate -f example/onlineboutique/config/ -o example/onlineboutique/manifest/
 ```
@@ -65,4 +65,6 @@ kind delete cluster --name hexagon-cluster
 Check out other examples in the [examples directory](../example/) to see different types of adapter definitions.
 
 Also, see [configuration specs](./api/v1/) for more details.
+
+Also, see [`hexctl` docs](./hexctl.md) for available commands for hexctl.
 
