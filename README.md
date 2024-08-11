@@ -5,102 +5,48 @@ Hexagon can generate benchmark microservices applications of virtually unlimited
 ![Hexagon Diagram](./docs/assets/hexagon_main_diagram.png)
 
 ## Quick Start
-Follow this guide to test out Hexagon.
-This guide will walk you through basic tasks for intallation and manifest generation.
-
-### Requirements
-
-| Dependency    | Version    | Description                            |
-| ------------- | ---------- | -------------------------------------- |
-| [Go](https://go.dev/doc/install) | 1.22       | Should also work with 1.21, 1.20       | 
-| [kind](https://kind.sigs.k8s.io/docs/user/quick-start/) | 1.27+      | Should work with any standard Kubernetes cluster |
-
-### 1. Build the CLI
-Currently precompiled binary is not available but will be ready in the future.
-For now, you need to compile the CLI after cloning this repository.
-```sh
-go build -o ./hexctl cmd/hexctl/main.go
-```
-
-### 2. Start kind Cluster
-You can skip this task if you already have a working cluster.
-```sh
-kind create cluster --name hexagon-cluster
-```
-
-### 3. Generate Manifests
-Generate manifest with the CLI built ealier.
-This will generate manifests for example application that emulates [Online Boutique](https://github.com/GoogleCloudPlatform/microservices-demo), using the example configuration available in example/config/onlineboutique.
-For more details on configuration values, please refer to the [documentaion](./docs/configuration.md).
-```sh
-./hexctl generate -f example/config/onlineboutique/ -o example/manifest/
-```
-`-f` specifies the directory for the hexagon configuration files
-`-o` specifies the directory for the output Kubernetes manifets
-
-### 4. Apply the manifest
-Create namespace and apply the manifests, nothing special.
-```sh
-# create namespace
-kubectl create namespace hexagon
-# hexagon generates manifests for `hexagon` namespace by default
-kubectl apply -f example/manifest/
-```
-
-### 5. (Optional) Run load generator
-There is a ready to use K6 loadgenerator deployment for the emulated application available in `example/loadgenerator`.
-Apply it to see the generated application handling traffic.
-```sh
-kubectl apply -n hexagon -f example/loadgenerator/manifests.yaml
-```
-
-Currently, Hexagon cannot generate UIs so watch logs to see the application running.
-For example, Watch the logs for `frontend`.
-```sh
-kubectl logs -n hexagon --selector app=frontend -f
-```
-
-### Clean up
-Simply delete the kind cluster if you created one.
-```sh
-kind delete cluster --name hexagon-cluster
-```
-
-## Terminology
-see [terminologies](./docs/terminology.md).
+Follow [this guide](./docs/quickstart.md) to test out Hexagon, which will walk you through basic tasks for intallation and manifest generation.
 
 ## Features
-### Application generation
-Hexagon allows configuration of following features for generated application
-#### Stateless services
-Hexagon can [configure](./docs/configuration.md) APIs that each service expose and invoke using yaml.
-The types of APIs include:
+The main feature of Hexagon is generating microservices application with a fine-grain control over each service.
 
-Synchronous protocols such as:
-- HTTP REST
-- gRPC
+The behaviors and interactions between services are configured by, for each service, defining a list of **primary adapters** (APIs of the service that are exposed to other services) and lists of **secondary adapters** (APIs of other services that the service interacts with) for each primary adapter.
 
-Asynchrounous protocols such as:
-- Kafka
+When one of primary adapters on a service is accessed, the list of secondary adapters for that primary adapter will be invoked. Those secondary adapters will access primary adapters on other serivces, which consequentially triggers the list of secondary adapters on that service.
 
-Database connections such as:
-- MongoDB
-- Redis
+This would give you a full control over how services will interact with each other (and also the behavior of each API of the services).
 
-#### Service Internal Workload
-Hexagon supports the configuration of internal workload for each service.
-Using this feature, Hexagon can simulate resources intensive tasks performed by each service.
-Currently CPU intesive workload is supported.
+### Different types of APIs for Adapters
+Following types of APIs are currently supported for defining the primary and secondary adapters of a service.
 
+External APIs: (Both primary and secondary adapter)
+- Synchronous communication.
+    - HTTP REST
+    - gRPC
+- Asynchrounous communication using brokers.
+    - Apache Kafka
+- Database connections.
+    - MongoDB
+    - Redis
+
+Internal API: (Only for secondary adapter)
+- Resource stressor.
+    - CPU
+
+There are no limitations on defining two or more adapters of same type. Each adapters are implemented at the endpoint granularity (e.g. HTTP route), so defining the same type of adapter multiple times on a single service just creates multiple endpoints of that type.
+
+See [configurations](./docs/api/v1/configuration.md) for more details on how to configure each adapter.
+
+Adding support for more APIs should be relatively easy by design, so feel free to open an issue or pull request!
 
 ### Deployment manifest generation
-Using the [cli](./cmd/hexctl/) Hexagon can generate kubernetes manifests files from the configuration of each service.
-The generated manifests include resources such as:
-- Deployment
-- Service
-- ConfigMap
+Using the [cli](./cmd/hexctl/) Hexagon generates Kubernetes manifests files from the configuration of each service.
 
-Deployment can also configured with number of replicas for the service, resource limits and requests, and extra environmental variables.
+These manifests can also be configured with number of replicas for the service, resource limits and requests, and extra environmental variables. See [configurations](./docs/api/v1/configuration.md) for more details.
+
+### Resiliency patterns
+Resiliency patterns such as Request Retry, Request Timeout, and Client Circuit Breaker can be configured for **each** secondary adapter. For each resiliency pattern, you can tune parameters such as retry backoffs and circuit breaker thresholds.
+See [configurations](./docs/api/v1/configuration.md) for more details.
 
 ## Components
 - *service unit*: service unit is the primary container image that can be used by the stateless services.
@@ -109,3 +55,5 @@ Deployment can also configured with number of replicas for the service, resource
 ## How it works
 see [internals](./docs/internals.md).
 
+## Terminology
+see [terminology](./docs/terminology.md).
