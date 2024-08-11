@@ -1,0 +1,16 @@
+version: v1.0.9
+name: cartredis
+deployment:
+  resources:
+    limits:
+      memory: 256Mi
+      cpu: 125m
+    requests:
+      cpu: 70m
+      memory: 200Mi
+  env:
+    - name: TRACING
+      value: "false"
+adapters:
+  - repository:
+      variant: redis

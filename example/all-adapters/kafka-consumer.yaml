@@ -1,0 +1,13 @@
+version: v1.0.9
+name: consumer
+adapters:
+  - consumer:
+      variant: kafka
+      topic: topic1
+    tasks:
+      - adapter:
+          invocation:
+            variant: rest
+            service: chain1
+            action: read
+            route: get

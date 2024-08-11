@@ -1,10 +1,25 @@
 version: v1.0.9
 name: checkout
+deployment:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  env:
+    - name: TRACING
+      value: "false"
 adapters:
-  - server:
-      action: simpleRpc
-      variant: grpc
-      route: PlaceOrder
+  # replace checkout with async
+  # - server:
+  #     action: simpleRpc
+  #     variant: grpc
+  #     route: PlaceOrder
+  - consumer:
+      variant: kafka
+      topic: PlaceOrder
     tasks:
       - adapter:
           invocation:
@@ -12,51 +27,69 @@ adapters:
             service: cart
             action: simpleRpc
             route: GetCart
+            payload:
+              size: 0
       - adapter:
           invocation:
             variant: grpc
             service: productcatalog
             action: simpleRpc
             route: GetProduct
+            payload:
+              size: 10
       - adapter:
           invocation:
             variant: grpc
             service: currency
             action: simpleRpc
             route: Convert
+            payload:
+              size: 20
       - adapter:
           invocation:
             variant: grpc
             service: shipping
             action: simpleRpc
             route: GetQuote
+            payload:
+              size: 72
       - adapter:
           invocation:
             variant: grpc
             service: currency
             action: simpleRpc
             route: Convert
+            payload:
+              size: 20
       - adapter:
           invocation:
             variant: grpc
             service: payment
             action: simpleRpc
             route: Charge
+            payload:
+              size: 48
       - adapter:
           invocation:
             variant: grpc
             service: shipping
             action: simpleRpc
             route: ShipOrder
+            payload:
+              size: 72
       - adapter:
           invocation:
             variant: grpc
             service: cart
             action: simpleRpc
             route: EmptyCart
+            payload:
+              size: 16
       - adapter:
           invocation:
             variant: grpc
             service: email
             action: simpleRpc
             route: SendOrderConfirmation
+            payload:
+              size: 260

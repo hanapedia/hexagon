@@ -1,5 +1,5 @@
 version: v1.0.9
-name: cartredis
+name: redisrepo
 adapters:
   - repository:
       variant: redis

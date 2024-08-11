@@ -1,10 +1,23 @@
 version: v1.0.9
 name: recommendation
+deployment:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 220Mi
+    limits:
+      cpu: 200m
+      memory: 450Mi
+  env:
+    - name: TRACING
+      value: "false"
 adapters:
   - server:
       action: simpleRpc
       variant: grpc
       route: ListRecommendation
+      payload:
+        size: 50
     tasks:
       - adapter:
           invocation:
@@ -12,3 +25,5 @@ adapters:
             service: productcatalog
             action: simpleRpc
             route: ListProducts
+            payload:
+              size: 0
