@@ -1,32 +1,15 @@
-# Configuration language
+## Service Unit Config
+The definitions for Go struct is in:
+- service unit: [`pkg/api/v1/serviceunitconfig.go`](../../../pkg/api/v1/serviceunitconfig.go)
+- primary adapter: [`pkg/api/v1/primaryadapter.go`](../../../pkg/api/v1/primaryadapter.go)
+- secondary adapter: [`pkg/api/v1/secondaryadapter.go`](../../../pkg/api/v1/secondaryadapter.go)
 
-**This is work in progress. Some content may or may not be up to date, but most should be.**
-
-see [terminologies](./docs/terminology.md) for unclear terms.
-## Basics
-- Each service unit can be configured using yaml.
-- Each service unit can be defined by configuring set of primary adapters that is exposes to other serivce units.
-- Each primary adapter can be defined by assigning an array of secondary adapters.
-- see [Configuration](#configuration) for possible configuration values.
-
-## Configuration
-### Service Unit
 | Parameter     | Description                                   | Default     | Required    |
 |---------------|-----------------------------------------------|-------------|-------------|
 | name          | Name of the service.                          | ""          | true        |
 | version       | Version of the image used.                    | ""          | true        |
-| deployment    | [Deployment configs](#deployment).            | {}          | false       |
+| deployment    | [Deployment configs](./deployment-config.md). | {}          | false       |
 | adapters      | List of [Primary Adapter Configs](#primary-adapter).| []    | true        |
-
-### Deployment
-| Parameter     | Description                                   | Default     | Required    |
-|---------------|-----------------------------------------------|-------------|-------------|
-| replicas      | Number replicas for the service.              | 1           | false       |
-| gateway       | Configuration for load generator. Should be defined if you want to enable load generator for the service. | {} | false |
-| gateway.virtualUsers | Number of virtual users.               | 0           | true        |
-| gateway.duration     | Duration of the load test in minutes.  | 0           | true        |
-| resources     | Resource limit and request in k8s core v1 format.    | {}      | false    |
-| env           | Extra environmental variables in k8s core v1 format. | {}      | false    |
 
 ### Primary Adapter
 Primary adapter can be type of server, repository, or cosumer and only one of the configuration should be given.
@@ -35,11 +18,9 @@ Primary adapter can be type of server, repository, or cosumer and only one of th
 | server        | Configuration for [server](#server).          | {}          | false       |
 | repository    | Configuration for [repository](#repository).  | {}          | false       |
 | consumer      | Configuration for [consumer](#consumer).      | {}          | false       |
-| tasks         | List of secondary adapters attached to primary adapter. | [] | false |
-| tasks[].concurrent | Whether to execute the task concurrently. | false      | false        |
-| tasks[].adapter | Configuration for the [Secondary Adatper](#secondary-adapter). | {} | true |
+| tasks         | List of [tasks](#task) (secondary adapters) attached to primary adapter. | [] | false |
 
-#### Server
+### Server
 Server configuration is defined in the unit of individual routes in REST APi.
 Each definition of server primary adapter corresponds to a route attached to REST API.
 
@@ -54,7 +35,7 @@ meaning that each definition will represent independent execution of secondary a
 | weight        | Weight for the route to be called when load generator is enabled for the service. If load generator is not enabled, the field will be ignored | 0 | false |
 | payloadCount  | Number of payloads to return for grpc route with serverStream action. | 3 | false |
 
-#### Repository
+### Repository
 Repository configuration indicates that the service is a stateful service, which uses different image from regular service units.
 
 *When this configuration is given, any other primary adapter configuration in the adapters list will be ignored.*
@@ -62,7 +43,7 @@ Repository configuration indicates that the service is a stateful service, which
 |---------------|-----------------------------------------------|-------------|-------------|
 | variant       | Variant of the repository. "mongo" or "redis" | ""          | true        |
 
-#### Consumer
+### Consumer
 Consumer configuration is defined in the unit of topic that the service unit cosumes. 
 
 *When this configuration is given, the topic manifest for strimzi kafka will be generated*
@@ -70,6 +51,13 @@ Consumer configuration is defined in the unit of topic that the service unit cos
 |---------------|-----------------------------------------------|-------------|-------------|
 | variant       | Variant of the consumer. Only "kafka" is supported at the moment. | "" | true |
 | topic         | Name of the topic that the consumer subscribes to. | ""     | true        |
+
+### Task
+| Parameter     | Description                                   | Default     | Required    |
+|---------------|-----------------------------------------------|-------------|-------------|
+| adapter | Configuration for the [Secondary Adatper](#secondary-adapter). | {} | true |
+| concurrent | Whether to execute the task concurrently. | false      | false        |
+| resiliency | [Resiliency patterns](./resiliency-config.md) to apply for the secondary adapter. | {}      | false        |
 
 ### Secondary Adapter
 Secondary adapter can be type of invocation, repository, producer, or stressor and only one of the configuration should be given.
@@ -118,10 +106,3 @@ This is treated the same way as other secondary adapter, except it does not send
 | duration      | Duration with units.                          | ""          | true        |
 | threadCount   | Number of threads to spawn.                   | ""          | false       |
 | payload       | Size of the payload that this call sends. Can be "small", "medium", or "large" | "medium" | false |
-
-## Validation
-- configuration file written in yaml can be validated using the [cli](../cmd/hexctl/).
-- two types of validations:
-    - field validation: checks if fields of the configuration file is valid.
-    - mapping validation: checks if secondary adapter can be mapped to the destination primary adapter.
-- field validation is also ran inside of Service unit once the config file is loaded.
