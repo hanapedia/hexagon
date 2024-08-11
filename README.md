@@ -40,17 +40,16 @@ See [configurations](./docs/api/v1/configuration.md) for more details on how to 
 Adding support for more APIs should be relatively easy by design, so feel free to open an issue or pull request!
 
 ### Deployment manifest generation
-Using the [cli](./cmd/hexctl/) Hexagon generates Kubernetes manifests files from the configuration of each service.
+Using the [**hexctl** cli](./docs/hexctl.md) you can generate Kubernetes manifests files from the YAML configuration of each service.
 
-These manifests can also be configured with number of replicas for the service, resource limits and requests, and extra environmental variables. See [configurations](./docs/api/v1/configuration.md) for more details.
+These manifests can also be configured with number of replicas for the service, resource limits and requests, and extra environmental variables.
+
+See [configurations](./docs/api/v1/) for more details.
 
 ### Resiliency patterns
 Resiliency patterns such as Request Retry, Request Timeout, and Client Circuit Breaker can be configured for **each** secondary adapter. For each resiliency pattern, you can tune parameters such as retry backoffs and circuit breaker thresholds.
-See [configurations](./docs/api/v1/configuration.md) for more details.
 
-## Components
-- *service unit*: service unit is the primary container image that can be used by the stateless services.
-- *hexctl*: [hexctl](./docs/hexctl.md) is the cli program that can validate the configuration files and generate kubernetes deployment manifests for the configured application.
+See [configurations](./docs/api/v1/configuration.md) for more details.
 
 ## How it works
 see [internals](./docs/internals.md).
