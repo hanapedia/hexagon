@@ -9,9 +9,9 @@ import (
 	"github.com/hanapedia/hexagon/pkg/operator/utils"
 )
 
-func ObserveServerAdapterDuration(start time.Time, service string, config *v1.ServerConfig, shouldFail bool) {
+func ObserveServerAdapterDuration(duration time.Duration, service string, config *v1.ServerConfig, shouldFail bool) {
 	metrics.ObservePrimaryAdapterDuration(
-		time.Since(start),
+		duration,
 		domain.PrimaryAdapterDurationLabels{
 			PrimaryLabels: domain.PrimaryLabels{
 				ServiceName: service,

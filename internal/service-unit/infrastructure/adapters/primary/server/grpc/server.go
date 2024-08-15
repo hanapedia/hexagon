@@ -120,7 +120,7 @@ func (gsa *GrpcServerAdapter) SimpleRPC(ctx context.Context, req *pb.StreamReque
 	result := runtime.TaskSetHandler(ctx, handler)
 	defer func() {
 		// record metrics
-		go server.ObserveServerAdapterDuration(startTime, handler.ServiceName, handler.ServerConfig, result.ShouldFail)
+		go server.ObserveServerAdapterDuration(time.Since(startTime), handler.ServiceName, handler.ServerConfig, result.ShouldFail)
 	}()
 
 	if result.ShouldFail {
@@ -162,7 +162,7 @@ func (gsa *GrpcServerAdapter) ClientStreaming(stream pb.Grpc_ClientStreamingServ
 	result := runtime.TaskSetHandler(stream.Context(), handler)
 	defer func() {
 		// record metrics
-		go server.ObserveServerAdapterDuration(startTime, handler.ServiceName, handler.ServerConfig, result.ShouldFail)
+		go server.ObserveServerAdapterDuration(time.Since(startTime), handler.ServiceName, handler.ServerConfig, result.ShouldFail)
 	}()
 
 	if result.ShouldFail {
@@ -205,7 +205,7 @@ func (gsa *GrpcServerAdapter) ServerStreaming(req *pb.StreamRequest, stream pb.G
 	result := runtime.TaskSetHandler(stream.Context(), handler)
 	defer func() {
 		// record metrics
-		go server.ObserveServerAdapterDuration(startTime, handler.ServiceName, handler.ServerConfig, result.ShouldFail)
+		go server.ObserveServerAdapterDuration(time.Since(startTime), handler.ServiceName, handler.ServerConfig, result.ShouldFail)
 	}()
 
 	if result.ShouldFail {
@@ -257,7 +257,7 @@ func (gsa *GrpcServerAdapter) BidirectionalStreaming(stream pb.Grpc_Bidirectiona
 	result := runtime.TaskSetHandler(stream.Context(), handler)
 	defer func() {
 		// record metrics
-		go server.ObserveServerAdapterDuration(startTime, handler.ServiceName, handler.ServerConfig, result.ShouldFail)
+		go server.ObserveServerAdapterDuration(time.Since(startTime), handler.ServiceName, handler.ServerConfig, result.ShouldFail)
 	}()
 
 	if result.ShouldFail {
