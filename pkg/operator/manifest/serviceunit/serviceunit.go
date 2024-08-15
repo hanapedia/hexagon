@@ -50,6 +50,7 @@ func CreateStatelessUnitDeployment(suc *model.ServiceUnitConfig, cc *model.Clust
 				"config": constants.SERVICE_UNIT_CONFIG_FILE_NAME,
 			},
 		},
+		EnableTopologySpreadConstraint: suc.DeploymentSpec.EnableTopologySpreadConstraint,
 	}
 	deployment := factory.NewDeployment(&deploymentArgs)
 	return &deployment

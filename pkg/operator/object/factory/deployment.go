@@ -8,16 +8,17 @@ import (
 )
 
 type DeploymentArgs struct {
-	Name         string
-	Namespace    string
-	Annotations  map[string]string
-	Image        string
-	Replicas     int32
-	Resource     *corev1.ResourceRequirements
-	Ports        map[string]int32
-	VolumeMounts map[string]string
-	Envs         []corev1.EnvVar
-	ConfigVolume *ConfigMapVolumeArgs
+	Name                           string
+	Namespace                      string
+	Annotations                    map[string]string
+	Image                          string
+	Replicas                       int32
+	Resource                       *corev1.ResourceRequirements
+	Ports                          map[string]int32
+	VolumeMounts                   map[string]string
+	Envs                           []corev1.EnvVar
+	ConfigVolume                   *ConfigMapVolumeArgs
+	EnableTopologySpreadConstraint bool
 }
 
 type ConfigMapVolumeArgs struct {
@@ -55,8 +56,9 @@ func NewPodTemplate(args *DeploymentArgs) corev1.PodTemplateSpec {
 // NewPodSpec create pod spec
 func NewPodSpec(args *DeploymentArgs) corev1.PodSpec {
 	return corev1.PodSpec{
-		Containers: NewContainer(args),
-		Volumes:    NewVolume(args.ConfigVolume),
+		Containers:                NewContainer(args),
+		Volumes:                   NewVolume(args.ConfigVolume),
+		TopologySpreadConstraints: NewTopologySpreadConstraint(args),
 	}
 }
 
@@ -85,6 +87,19 @@ func NewVolume(configVolumeArgs *ConfigMapVolumeArgs) []corev1.Volume {
 		volumes = append(volumes, GetConfigMapVolume("config", configVolumeArgs))
 	}
 	return volumes
+}
+
+func NewTopologySpreadConstraint(args *DeploymentArgs) []corev1.TopologySpreadConstraint {
+	var tsc []corev1.TopologySpreadConstraint
+	if args.EnableTopologySpreadConstraint {
+		tsc = append(tsc, corev1.TopologySpreadConstraint{
+			MaxSkew: 1,
+			TopologyKey: HostnameLabel,
+			WhenUnsatisfiable: corev1.ScheduleAnyway,
+			LabelSelector: NewLabelSelector(map[string]string{AppLabel: args.Name}),
+		})
+	}
+	return tsc
 }
 
 // GetConfigMapVolume creates the cofigmap volume entry
