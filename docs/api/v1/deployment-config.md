@@ -8,6 +8,19 @@ The definitions for Go struct is in [`pkg/api/v1/deploymentspec.go`](../../../pk
 | gateway       | Configuration for load generator. Should be defined if you want to enable load generator for the service. [see](#gateway) | {} | false |
 | resources     | Resource limit and request in k8s core v1 format.    | {}      | false    |
 | env           | Extra environmental variables in k8s core v1 format. | {}      | false    |
+| topologySpreadConstraint | Whether to turn on topologySpreadConstraint. | false      | false    |
+
+\* TopologySpreadConstraint is applied with following values if turned on.
+This feature is just for generating manifests with sane default. Adjust if needed using tools like Kustomize
+```yaml
+    topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              hexagon.hanapedia.link/app: <<Service Unit Name>>
+```
 
 ### Gateway
 | Parameter     | Description                           | Default     | Required    |

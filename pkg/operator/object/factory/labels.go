@@ -2,6 +2,8 @@ package factory
 
 import "fmt"
 
+const HostnameLabel = "kubernetes.io/hostname"
+
 const LabelPrefix = "hexagon.hanapedia.link"
 
 var AppLabel = fmt.Sprintf("%v/app", LabelPrefix)
