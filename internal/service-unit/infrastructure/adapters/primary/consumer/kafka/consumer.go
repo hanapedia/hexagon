@@ -68,7 +68,7 @@ ConsumerLoop:
 
 		// record metrics
 		go consumer.ObserveConsumerAdapterDuration(
-			startTime,
+			time.Since(startTime),
 			kca.kafkaConsumer.handler.ServiceName,
 			kca.kafkaConsumer.handler.ConsumerConfig,
 			result.ShouldFail,
