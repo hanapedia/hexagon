@@ -60,6 +60,9 @@ func (sac *SecondaryAdapterConfig) GetId() string {
 	if sac.RepositoryConfig != nil {
 		id = sac.RepositoryConfig.GetId()
 	}
+	if sac.StressorConfig != nil {
+		id = sac.StressorConfig.GetId()
+	}
 	return id
 }
 
