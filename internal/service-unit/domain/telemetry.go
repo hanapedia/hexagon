@@ -25,6 +25,7 @@ type PrimaryLabels struct {
 	Action      string
 	Route       string
 	Topic       string
+	Id          string
 }
 
 type SecondaryLabels struct {
@@ -33,6 +34,7 @@ type SecondaryLabels struct {
 	DstAction      string
 	DstRoute       string
 	DstTopic       string
+	DstId          string
 }
 
 type TelemetryContext struct {
@@ -40,67 +42,42 @@ type TelemetryContext struct {
 	SecondaryLabels
 }
 
-var AllLabelKeys = []string{
-	"service",
-	"variant",
-	"action",
-	"route",
-	"topic",
-	"dst_service",
-	"dst_variant",
-	"dst_action",
-	"dst_route",
-	"dst_topic",
-}
-
-var PrimaryLabelKeys = []string{
-	"service",
-	"variant",
-	"action",
-	"route",
-	"topic",
-}
-
-var SecondaryLabelKeys = []string{
-	"dst_service",
-	"dst_variant",
-	"dst_action",
-	"dst_route",
-	"dst_topic",
-}
-
 func (tx TelemetryContext) AsMap() map[string]string {
 	return map[string]string{
-		"service":     tx.ServiceName,
-		"variant":     tx.Variant,
-		"action":      tx.Action,
-		"route":       tx.Route,
-		"topic":       tx.Topic,
-		"dst_service": tx.DstServiceName,
-		"dst_variant": tx.DstVariant,
-		"dst_action":  tx.DstAction,
-		"dst_route":   tx.DstRoute,
-		"dst_topic":   tx.DstTopic,
+		"service":      tx.ServiceName,
+		"variant":      tx.Variant,
+		"action":       tx.Action,
+		"route":        tx.Route,
+		"topic":        tx.Topic,
+		"primary_id":   tx.Id,
+		"dst_service":  tx.DstServiceName,
+		"dst_variant":  tx.DstVariant,
+		"dst_action":   tx.DstAction,
+		"dst_route":    tx.DstRoute,
+		"dst_topic":    tx.DstTopic,
+		"secondary_id": tx.DstId,
 	}
 }
 
 func (pl PrimaryLabels) GetPrimaryLabels() map[string]string {
 	return map[string]string{
-		"service": pl.ServiceName,
-		"variant": pl.Variant,
-		"action":  pl.Action,
-		"route":   pl.Route,
-		"topic":   pl.Topic,
+		"service":    pl.ServiceName,
+		"variant":    pl.Variant,
+		"action":     pl.Action,
+		"route":      pl.Route,
+		"topic":      pl.Topic,
+		"primary_id": pl.Id,
 	}
 }
 
 func (sl SecondaryLabels) GetSecondaryLabels() map[string]string {
 	return map[string]string{
-		"dst_service": sl.DstServiceName,
-		"dst_variant": sl.DstVariant,
-		"dst_action":  sl.DstAction,
-		"dst_route":   sl.DstRoute,
-		"dst_topic":   sl.DstTopic,
+		"dst_service":  sl.DstServiceName,
+		"dst_variant":  sl.DstVariant,
+		"dst_action":   sl.DstAction,
+		"dst_route":    sl.DstRoute,
+		"dst_topic":    sl.DstTopic,
+		"secondary_id": sl.DstId,
 	}
 }
 
@@ -108,6 +85,10 @@ func NewTelemetryContext(serviceName string, primaryConfig *model.PrimaryAdapter
 	telCtx := TelemetryContext{
 		PrimaryLabels: PrimaryLabels{
 			ServiceName: serviceName,
+			Id:          primaryConfig.GetId(serviceName),
+		},
+		SecondaryLabels: SecondaryLabels{
+			DstId: secondaryConfig.GetId(),
 		},
 	}
 

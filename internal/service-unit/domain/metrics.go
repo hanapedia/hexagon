@@ -9,9 +9,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-var primaryLabelNames = PrimaryLabelKeys
-var secondaryLabelNames = SecondaryLabelKeys
-
 type GaugeVecName = string
 type HistogramVecName = string
 
