@@ -17,6 +17,7 @@ func ObserveConsumerAdapterDuration(duration time.Duration, service string, conf
 				ServiceName: service,
 				Variant:     string(config.Variant),
 				Topic:       config.Topic,
+				Id:          config.GetId(service),
 			},
 			Status: domain.Status(utils.Btof64(shouldFail)),
 		},

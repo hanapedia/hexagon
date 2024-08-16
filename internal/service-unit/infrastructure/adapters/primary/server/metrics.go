@@ -18,6 +18,7 @@ func ObserveServerAdapterDuration(duration time.Duration, service string, config
 				Variant:     string(config.Variant),
 				Route:       config.Route,
 				Action:      string(config.Action),
+				Id:          config.GetId(service),
 			},
 			Status: domain.Status(utils.Btof64(shouldFail)),
 		},
