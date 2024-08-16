@@ -76,6 +76,9 @@ func (sac SecondaryAdapterConfig) GetGroupByKey() string {
 	if sac.RepositoryConfig != nil {
 		key = sac.RepositoryConfig.GetGroupByKey()
 	}
+	if sac.StressorConfig != nil {
+		key = sac.StressorConfig.GetGroupByKey()
+	}
 	return key
 }
 
@@ -131,5 +134,20 @@ func (bac *ProducerConfig) GetGroupByKey() string {
 
 // Get internal adapter id
 func (iac *StressorConfig) GetId() string {
-	return iac.Name
+	return fmt.Sprintf(
+		"%s.%s.%v.%v",
+		iac.Variant,
+		iac.Name,
+		iac.Iterations,
+		iac.ThreadCount,
+	)
+}
+
+// Get internal adapter id
+func (iac *StressorConfig) GetGroupByKey() string {
+	return fmt.Sprintf(
+		"%s.%s",
+		iac.Variant,
+		iac.Name,
+	)
 }

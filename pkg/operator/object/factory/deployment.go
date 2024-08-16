@@ -70,12 +70,13 @@ func NewContainer(args *DeploymentArgs) []corev1.Container {
 	}
 	return []corev1.Container{
 		{
-			Name:         args.Name,
-			Image:        args.Image,
-			Resources:    resources,
-			Ports:        NewContainerPort(args.Ports),
-			VolumeMounts: NewVolumeMount(args.VolumeMounts),
-			Env:          args.Envs,
+			Name:            args.Name,
+			Image:           args.Image,
+			ImagePullPolicy: corev1.PullAlways,
+			Resources:       resources,
+			Ports:           NewContainerPort(args.Ports),
+			VolumeMounts:    NewVolumeMount(args.VolumeMounts),
+			Env:             args.Envs,
 		},
 	}
 }
@@ -93,10 +94,10 @@ func NewTopologySpreadConstraint(args *DeploymentArgs) []corev1.TopologySpreadCo
 	var tsc []corev1.TopologySpreadConstraint
 	if args.EnableTopologySpreadConstraint {
 		tsc = append(tsc, corev1.TopologySpreadConstraint{
-			MaxSkew: 1,
-			TopologyKey: HostnameLabel,
+			MaxSkew:           1,
+			TopologyKey:       HostnameLabel,
 			WhenUnsatisfiable: corev1.ScheduleAnyway,
-			LabelSelector: NewLabelSelector(map[string]string{AppLabel: args.Name}),
+			LabelSelector:     NewLabelSelector(map[string]string{AppLabel: args.Name}),
 		})
 	}
 	return tsc
