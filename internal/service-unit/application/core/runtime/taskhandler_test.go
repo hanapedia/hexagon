@@ -304,6 +304,43 @@ func TestTaskTimeoutFailure(t *testing.T) {
 	assert.NotNil(t, result.TaskResults[0].Error)
 }
 
+//TestCallAndTaskTimeoutFailure
+func TestCallAndTaskTimeoutFailure(t *testing.T) {
+	// 1. Prepare primary handler with tasks
+	name := "TaskTimeoutFailCallHandler"
+	handler := domain.PrimaryAdapterHandler{
+		ServiceName: name,
+		ServerConfig: &model.ServerConfig{
+			Variant: constants.REST,
+			Action:  constants.GET,
+			Route:   "test",
+		},
+		TaskSet: []domain.TaskHandler{
+			resiliency.NewTaskHandler(
+				domain.TelemetryContext{PrimaryLabels: domain.PrimaryLabels{ServiceName: name}},
+				model.TaskSpec{Resiliency: model.ResiliencySpec{
+					CallTimeout: "1ms",
+					TaskTimeout: "1s",
+					Retry: model.RetrySpec{
+						BackoffPolicy:  model.CONSTANT_BACKOFF,
+						MaxAttempt:     5,
+						InitialBackoff: "500ms",
+					},
+					CircutBreaker: model.CircuitBreakerSpec{Disabled: true},
+				}},
+				mock.NewSecondaryAdapter("TimeoutFailSecondaryAdapter1", 10 * time.Millisecond, 0),
+			),
+		},
+	}
+
+	// Should Timeout before all retry attmpts
+	result := runtime.TaskSetHandler(context.Background(), &handler)
+	assert.True(t, result.ShouldFail)
+	assert.Equal(t, 1, len(result.TaskResults))
+	assert.NotNil(t, result.TaskResults[0].Error)
+}
+
+
 func TestCircuitBreakerWithoutThresh(t *testing.T) {
 	// 1. Prepare primary handler with tasks
 	name := "CircutBreakerWithoutThresh"

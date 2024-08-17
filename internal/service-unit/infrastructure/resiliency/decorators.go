@@ -17,26 +17,15 @@ import (
 
 type alias = secondary.SecondaryPortCallResult
 type CallAlias = func(context.Context) secondary.SecondaryPortCallResult
-type CallWithContextAlias = func(*TaskContext) secondary.SecondaryPortCallResult
+type CallWithContextAlias = func(context.Context, *TaskContext) secondary.SecondaryPortCallResult
 type CircuitBreaker = *gobreaker.CircuitBreaker[secondary.SecondaryPortCallResult]
 
 type TaskContext struct {
 	mu             sync.Mutex
-	ctx            context.Context
 	circuitBreaker CircuitBreaker
 	attempt        uint32
 	telemetryCtx   domain.TelemetryContext
 	isConcurrent   bool
-}
-
-func (tc *TaskContext) WithTimeout(duration time.Duration) context.CancelFunc {
-	newCtx, cancel := context.WithTimeout(tc.ctx, duration)
-
-	tc.mu.Lock()
-	tc.ctx = newCtx
-	tc.mu.Unlock()
-
-	return cancel
 }
 
 func (tc *TaskContext) IncAttempt() {
@@ -48,23 +37,30 @@ func (tc *TaskContext) IncAttempt() {
 // WithUnWrapTaskContext decorates `next` function with a decorator that unwraps TaskContext into context.Context
 // Should be the first decorator
 func WithUnWrapTaskContext(next CallAlias) CallWithContextAlias {
-	return func(taskCtx *TaskContext) secondary.SecondaryPortCallResult {
-		return next(taskCtx.ctx)
+	return func(ctx context.Context, taskCtx *TaskContext) secondary.SecondaryPortCallResult {
+		return next(ctx)
 	}
 }
 
 func WithCallDurationMetrics(next CallWithContextAlias) CallWithContextAlias {
-	return func(tc *TaskContext) secondary.SecondaryPortCallResult {
+	return func(ctx context.Context, tc *TaskContext) secondary.SecondaryPortCallResult {
 		startTime := time.Now()
-		result := next(tc)
+		result := next(ctx, tc)
 		elapsed := time.Since(startTime)
 
 		go func() {
 			var status domain.Status
-			if result.Error == nil {
+			switch result.Error {
+			case nil:
 				status = domain.Ok
-			} else {
-				status = domain.Err
+			case context.DeadlineExceeded:
+				status = domain.ErrCtxDeadlineExceeded
+			case context.Canceled:
+				status = domain.ErrCtxCanceled
+			case gobreaker.ErrOpenState:
+				status = domain.ErrCBOpen
+			default:
+				status = domain.ErrGeneric
 			}
 
 			var circuitBreakerState = ""
@@ -85,17 +81,24 @@ func WithCallDurationMetrics(next CallWithContextAlias) CallWithContextAlias {
 }
 
 func WithTaskDurationMetrics(next CallWithContextAlias) CallWithContextAlias {
-	return func(tc *TaskContext) secondary.SecondaryPortCallResult {
+	return func(ctx context.Context, tc *TaskContext) secondary.SecondaryPortCallResult {
 		startTime := time.Now()
-		result := next(tc)
+		result := next(ctx, tc)
 		elapsed := time.Since(startTime)
 
 		go func() {
 			var status domain.Status
-			if result.Error == nil {
+			switch result.Error {
+			case nil:
 				status = domain.Ok
-			} else {
-				status = domain.Err
+			case context.DeadlineExceeded:
+				status = domain.ErrCtxDeadlineExceeded
+			case context.Canceled:
+				status = domain.ErrCtxCanceled
+			case gobreaker.ErrOpenState:
+				status = domain.ErrCBOpen
+			default:
+				status = domain.ErrGeneric
 			}
 
 			var circuitBreakerState = ""
@@ -116,8 +119,8 @@ func WithTaskDurationMetrics(next CallWithContextAlias) CallWithContextAlias {
 }
 
 func WithCriticalError(isCritical bool, next CallWithContextAlias) CallWithContextAlias {
-	return func(taskCtx *TaskContext) secondary.SecondaryPortCallResult {
-		result := next(taskCtx)
+	return func(ctx context.Context, taskCtx *TaskContext) secondary.SecondaryPortCallResult {
+		result := next(ctx, taskCtx)
 		if isCritical {
 			result.SetIsCritical(true)
 		}
@@ -126,25 +129,25 @@ func WithCriticalError(isCritical bool, next CallWithContextAlias) CallWithConte
 }
 
 func WithCallTimeout(timeout time.Duration, next CallWithContextAlias) CallWithContextAlias {
-	return func(taskCtx *TaskContext) secondary.SecondaryPortCallResult {
-		callCancel := taskCtx.WithTimeout(timeout)
-		result := next(taskCtx)
-		callCancel()
+	return func(ctx context.Context, taskCtx *TaskContext) secondary.SecondaryPortCallResult {
+		newCtx, callCancel := context.WithTimeout(ctx, timeout)
+		defer callCancel()
+		result := next(newCtx, taskCtx)
 		return result
 	}
 }
 
 func WithTaskTimeout(timeout time.Duration, next CallWithContextAlias) CallWithContextAlias {
-	return func(taskCtx *TaskContext) secondary.SecondaryPortCallResult {
-		taskCancel := taskCtx.WithTimeout(timeout)
-		result := next(taskCtx)
-		taskCancel()
+	return func(ctx context.Context, taskCtx *TaskContext) secondary.SecondaryPortCallResult {
+		newCtx, taskCancel := context.WithTimeout(ctx, timeout)
+		defer taskCancel()
+		result := next(newCtx, taskCtx)
 		return result
 	}
 }
 
 func WithRetry(spec model.RetrySpec, next CallWithContextAlias) CallWithContextAlias {
-	return func(taskCtx *TaskContext) secondary.SecondaryPortCallResult {
+	return func(ctx context.Context, taskCtx *TaskContext) secondary.SecondaryPortCallResult {
 		// add 1 for the initial attempt
 		maxAttempt := spec.MaxAttempt + 1
 		var result secondary.SecondaryPortCallResult
@@ -155,16 +158,16 @@ func WithRetry(spec model.RetrySpec, next CallWithContextAlias) CallWithContextA
 				timer := time.NewTimer(backoff)
 				select {
 				// check for the parent context expiration
-				case <-taskCtx.ctx.Done():
+				case <-ctx.Done():
 					timer.Stop()
-					return secondary.SecondaryPortCallResult{Payload: nil, Error: taskCtx.ctx.Err()}
+					return secondary.SecondaryPortCallResult{Payload: nil, Error: ctx.Err()}
 				case <-timer.C:
 					timer.Stop()
 				}
 			}
 
 			taskCtx.IncAttempt()
-			result = next(taskCtx)
+			result = next(ctx, taskCtx)
 
 			if result.Error == nil {
 				return result
@@ -174,22 +177,20 @@ func WithRetry(spec model.RetrySpec, next CallWithContextAlias) CallWithContextA
 	}
 }
 
-func WithLogger(telCtx domain.TelemetryContext, secondaryAdapter secondary.SecodaryPort, next CallWithContextAlias) CallWithContextAlias {
-	return func(taskCtx *TaskContext) secondary.SecondaryPortCallResult {
-		result := next(taskCtx)
+func WithLogger(telCtx domain.TelemetryContext, timing string, secondaryAdapter secondary.SecodaryPort, next CallWithContextAlias) CallWithContextAlias {
+	return func(ctx context.Context, taskCtx *TaskContext) secondary.SecondaryPortCallResult {
+		result := next(ctx, taskCtx)
 		if result.Error != nil {
-			logger.Logger.Error(
-				"Call failed. ",
-				/* "sourceId=", primaryAdapterId, ", ", */
-				"destId=", secondaryAdapter.GetDestId(), ", ",
-				"err=", result.Error,
-			)
+			logger.Logger.
+				WithField("timing", timing).
+				WithField("destId", secondaryAdapter.GetDestId()).
+				WithField("err", result.Error).
+				Error("Call failed.")
 		} else {
-			logger.Logger.Debug(
-				"Call succeeded. ",
-				/* "sourceId=", primaryAdapterId, ", ", */
-				"destId=", secondaryAdapter.GetDestId(), ", ",
-			)
+			logger.Logger.
+				WithField("timing", timing).
+				WithField("destId", secondaryAdapter.GetDestId()).
+				Debug("Call succeeded.")
 		}
 		return result
 	}
@@ -218,9 +219,9 @@ func WithCircuitBreaker(spec model.CircuitBreakerSpec, secondaryAdapter secondar
 	}
 	cb := gobreaker.NewCircuitBreaker[secondary.SecondaryPortCallResult](setting)
 
-	return func(taskCtx *TaskContext) secondary.SecondaryPortCallResult {
+	return func(ctx context.Context, taskCtx *TaskContext) secondary.SecondaryPortCallResult {
 		result, err := cb.Execute(func() (secondary.SecondaryPortCallResult, error) {
-			result := next(taskCtx)
+			result := next(ctx, taskCtx)
 			return result, result.Error
 		})
 

@@ -6,15 +6,24 @@ type Status float64
 
 const (
 	Ok Status = iota
-	Err
+	ErrGeneric
+	ErrCtxDeadlineExceeded
+	ErrCtxCanceled
+	ErrCBOpen
 )
 
 func (s Status) AsString() string {
 	switch s {
 	case Ok:
 		return "ok"
-	case Err:
+	case ErrGeneric:
 		return "error"
+	case ErrCtxDeadlineExceeded:
+		return "error-ctx-timed-out"
+	case ErrCtxCanceled:
+		return "error-ctx-canceled"
+	case ErrCBOpen:
+		return "error-cb-open"
 	}
 	return "incomplete"
 }

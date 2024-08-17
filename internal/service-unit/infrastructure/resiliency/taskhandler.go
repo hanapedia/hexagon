@@ -18,6 +18,9 @@ func NewTaskHandler(telCtx domain.TelemetryContext, spec model.TaskSpec, adapter
 		handler = WithCallTimeout(spec.Resiliency.GetCallTimeout(), handler)
 	}
 
+	// Log each call
+	handler = WithLogger(telCtx, "after call", adapter, handler)
+
 	// record Call duration
 	handler = WithCallDurationMetrics(handler)
 
@@ -48,7 +51,7 @@ func NewTaskHandler(telCtx domain.TelemetryContext, spec model.TaskSpec, adapter
 
 	// Always include
 	handler = WithCriticalError(spec.Resiliency.IsCritical, handler)
-	handler = WithLogger(telCtx, adapter, handler)
+	handler = WithLogger(telCtx, "after task", adapter, handler)
 
 	// Set Gauge metrics for the adapter
 	metrics.SetGaugeMetricsFromSpecs(spec.Resiliency, telCtx)
@@ -56,7 +59,6 @@ func NewTaskHandler(telCtx domain.TelemetryContext, spec model.TaskSpec, adapter
 	return func(ctx context.Context, resultChan chan<- *secondary.SecondaryPortCallResult) {
 		// wrap ctx with TaskContext
 		taskCtx := &TaskContext{
-			ctx:            ctx,
 			circuitBreaker: circuitBreaker,
 			telemetryCtx:   telCtx,
 			isConcurrent:   spec.Concurrent,
@@ -64,11 +66,11 @@ func NewTaskHandler(telCtx domain.TelemetryContext, spec model.TaskSpec, adapter
 		// Call the handler
 		if spec.Concurrent {
 			go func(ctx context.Context) {
-				result := handler(taskCtx)
+				result := handler(ctx, taskCtx)
 				resultChan <- &result
 			}(ctx)
 		} else {
-			result := handler(taskCtx)
+			result := handler(ctx, taskCtx)
 			resultChan <- &result
 		}
 	}
