@@ -45,6 +45,7 @@ func TestRestServerAndClient(t *testing.T) {
 	errChan := make(chan primary.PrimaryPortError)
 	go func() {
 		swg.Add(1)
+		rwg.Add(1)
 		if err := server.Serve(ctx, &swg, &rwg); err != nil {
 			errChan <- primary.PrimaryPortError{PrimaryPort: server, Error: err}
 		}
