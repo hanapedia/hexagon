@@ -62,13 +62,13 @@ func NewGrpcServerAdapter() *GrpcServerAdapter {
 }
 
 // Serve starts the grpc server
-func (gsa *GrpcServerAdapter) Serve(ctx context.Context, wg *sync.WaitGroup) error {
+func (gsa *GrpcServerAdapter) Serve(ctx context.Context, shutdownWg, readyWg *sync.WaitGroup) error {
 	logger.Logger.Infof("Serving grpc server at %s", gsa.addr)
 	go func() {
 		<-ctx.Done()
 		logger.Logger.Infof("Context cancelled. GRPC Server shutting down.")
 		gsa.server.GracefulStop()
-		wg.Done()
+		shutdownWg.Done()
 	}()
 
 	listen, err := net.Listen("tcp", gsa.addr)
@@ -77,6 +77,9 @@ func (gsa *GrpcServerAdapter) Serve(ctx context.Context, wg *sync.WaitGroup) err
 	}
 
 	pb.RegisterGrpcServer(gsa.server, gsa)
+
+	// Mark Ready
+	readyWg.Done()
 
 	return gsa.server.Serve(listen)
 }

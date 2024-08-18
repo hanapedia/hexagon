@@ -11,6 +11,7 @@ import (
 	"github.com/hanapedia/hexagon/internal/service-unit/application/core/initialization"
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/primary"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/health"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/telemetry/metrics"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
@@ -49,7 +50,8 @@ func main() {
 	metrics.ServeMetrics(ctx, &telemetryWg)
 
 	// create wait group to wait for graceful shutdown
-	var primaryWg sync.WaitGroup
+	var shutdownWg sync.WaitGroup
+	var readyWg sync.WaitGroup
 
 	// crate error chan
 	errChan := make(chan primary.PrimaryPortError)
@@ -59,8 +61,14 @@ func main() {
 	}()
 
 	// start primary adapters
-	serviceUnit.Start(ctx, &primaryWg, errChan)
-	primaryWg.Wait()
+	serviceUnit.Start(ctx, &shutdownWg, &readyWg, errChan)
+
+	// Wait for primary adapter ready
+	readyWg.Wait()
+	health.ServeHealth(ctx, &shutdownWg)
+
+	// Wait for shutdown signal
+	shutdownWg.Wait()
 
 	// Close all client connections
 	serviceUnit.Close()

@@ -39,12 +39,13 @@ func TestRestServerAndClient(t *testing.T) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	var wg sync.WaitGroup
+	var swg sync.WaitGroup
+	var rwg sync.WaitGroup
 
 	errChan := make(chan primary.PrimaryPortError)
 	go func() {
-		wg.Add(1)
-		if err := server.Serve(ctx, &wg); err != nil {
+		swg.Add(1)
+		if err := server.Serve(ctx, &swg, &rwg); err != nil {
 			errChan <- primary.PrimaryPortError{PrimaryPort: server, Error: err}
 		}
 	}()
@@ -108,6 +109,6 @@ func TestRestServerAndClient(t *testing.T) {
 	// 3. shutdown server
 	logger.Logger.Info("Request successful. Cancelling server context for clean up.")
 	cancel()
-	wg.Wait()
+	swg.Wait()
 	client.Close()
 }
