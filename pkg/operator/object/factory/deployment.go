@@ -1,10 +1,12 @@
 package factory
 
 import (
+	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/health"
 	"github.com/hanapedia/hexagon/pkg/operator/utils"
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
 type DeploymentArgs struct {
@@ -19,6 +21,8 @@ type DeploymentArgs struct {
 	Envs                           []corev1.EnvVar
 	ConfigVolume                   *ConfigMapVolumeArgs
 	EnableTopologySpreadConstraint bool
+	DisableReadinessProbe          bool
+	ReadinessProbePort             intstr.IntOrString
 }
 
 type ConfigMapVolumeArgs struct {
@@ -77,6 +81,7 @@ func NewContainer(args *DeploymentArgs) []corev1.Container {
 			Ports:           NewContainerPort(args.Ports),
 			VolumeMounts:    NewVolumeMount(args.VolumeMounts),
 			Env:             args.Envs,
+			ReadinessProbe:  NewReadinessProbe(args),
 		},
 	}
 }
@@ -90,6 +95,7 @@ func NewVolume(configVolumeArgs *ConfigMapVolumeArgs) []corev1.Volume {
 	return volumes
 }
 
+// TODO: parameterize magic number
 func NewTopologySpreadConstraint(args *DeploymentArgs) []corev1.TopologySpreadConstraint {
 	var tsc []corev1.TopologySpreadConstraint
 	if args.EnableTopologySpreadConstraint {
@@ -101,6 +107,22 @@ func NewTopologySpreadConstraint(args *DeploymentArgs) []corev1.TopologySpreadCo
 		})
 	}
 	return tsc
+}
+
+// TODO: parameterize magic number
+func NewReadinessProbe(args *DeploymentArgs) *corev1.Probe {
+	if args.DisableReadinessProbe {
+		return nil
+	}
+	return &corev1.Probe{
+		ProbeHandler: corev1.ProbeHandler{HTTPGet: &corev1.HTTPGetAction{
+			Path: health.HEALTH_PATH,
+			Port: args.ReadinessProbePort,
+		}},
+		InitialDelaySeconds: 5,
+		TimeoutSeconds:      5,
+		PeriodSeconds:       10,
+	}
 }
 
 // GetConfigMapVolume creates the cofigmap volume entry

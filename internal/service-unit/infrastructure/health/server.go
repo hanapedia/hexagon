@@ -11,13 +11,17 @@ import (
 	logger "github.com/hanapedia/hexagon/pkg/operator/log"
 )
 
+const (
+	HEALTH_PATH = "/ready"
+)
+
 type ReadyResponse struct {
 	Ready bool `json:"ready"`
 }
 
 func ServeHealth(ctx context.Context, wg *sync.WaitGroup) {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/ready", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(HEALTH_PATH, func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(ReadyResponse{Ready: true})
 	})

@@ -31,15 +31,16 @@ func CreateMongoDeployment(suc *model.ServiceUnitConfig, cc *model.ClusterConfig
 	}
 
 	deploymentArgs := factory.DeploymentArgs{
-		Name:         suc.Name,
-		Namespace:    cc.Namespace,
-		Annotations:  map[string]string{"rca": "ignore"},
-		Image:        fmt.Sprintf("%s/%s:%s", cc.DockerHubUsername, defaults.MONGO_IMAGE_NAME, suc.Version),
-		Replicas:     replica,
-		Resource:     resource,
-		Ports:        map[string]int32{"mongo": cc.Mongo.Port},
-		Envs:         envs,
-		VolumeMounts: map[string]string{},
+		Name:                  suc.Name,
+		Namespace:             cc.Namespace,
+		Annotations:           map[string]string{"rca": "ignore"},
+		Image:                 fmt.Sprintf("%s/%s:%s", cc.DockerHubUsername, defaults.MONGO_IMAGE_NAME, suc.Version),
+		Replicas:              replica,
+		Resource:              resource,
+		Ports:                 map[string]int32{"mongo": cc.Mongo.Port},
+		Envs:                  envs,
+		VolumeMounts:          map[string]string{},
+		DisableReadinessProbe: true,
 	}
 	deployment := factory.NewDeployment(&deploymentArgs)
 	return &deployment

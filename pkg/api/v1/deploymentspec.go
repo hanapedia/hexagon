@@ -11,6 +11,7 @@ type DeploymentSpec struct {
 	Resource                       *corev1.ResourceRequirements `json:"resources,omitempty"`
 	EnvVar                         []corev1.EnvVar              `json:"env,omitempty"`
 	EnableTopologySpreadConstraint bool                         `json:"enableTopologySpreadConstraint,omitempty"`
+	DisableReadinessProbe          bool                         `json:"disableReadinessProbe,omitempty"`
 }
 
 // Gateway contains config information about loadgenerator

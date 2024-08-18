@@ -35,6 +35,7 @@ func CreateRedisDeployment(suc *model.ServiceUnitConfig, cc *model.ClusterConfig
 		Ports:        map[string]int32{"redis": cc.Redis.Port},
 		Envs:         envs,
 		VolumeMounts: map[string]string{},
+		DisableReadinessProbe: true,
 	}
 	deployment := factory.NewDeployment(&deploymentArgs)
 	return &deployment
