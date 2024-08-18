@@ -1,5 +1,5 @@
 package defaults
 
 const (
-	HEALTH_PORT int32 = 6060
+	HEALTH_PORT = 6060
 )

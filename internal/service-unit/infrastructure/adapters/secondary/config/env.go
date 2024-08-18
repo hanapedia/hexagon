@@ -60,6 +60,12 @@ func (e EnvVars) AsK8sEnvVars() []corev1.EnvVar {
 	if e.LOG_LEVEL != "" {
 		k8sEnvs = append(k8sEnvs, corev1.EnvVar{Name: "LOG_LEVEL", Value: e.LOG_LEVEL})
 	}
+	if e.HEALTH_PORT != "0" {
+		k8sEnvs = append(k8sEnvs, corev1.EnvVar{Name: "HEALTH_PORT", Value: e.HEALTH_PORT})
+	}
+	if e.METRICS_PORT != "0" {
+		k8sEnvs = append(k8sEnvs, corev1.EnvVar{Name: "METRICS_PORT", Value: e.METRICS_PORT})
+	}
 	if e.HTTP_PORT != "0" {
 		k8sEnvs = append(k8sEnvs, corev1.EnvVar{Name: "HTTP_PORT", Value: e.HTTP_PORT})
 	}
@@ -124,6 +130,7 @@ func loadEnvVariables() *EnvVars {
 		OTEL_COLLECTOR_NAMESPACE: readEnv("OTEL_COLLECTOR_NAMESPACE", defaults.OTEL_COLLECTOR_NAMESPACE),
 		OTEL_COLLECTOR_PORT:      readEnv("OTEL_COLLECTOR_PORT", strconv.Itoa(defaults.OTEL_COLLECTOR_PORT)),
 		METRICS_PORT:             readEnv("METRICS_PORT", strconv.Itoa(defaults.METRICS_PORT)),
+		HEALTH_PORT:              readEnv("HEALTH_PORT", strconv.Itoa(defaults.HEALTH_PORT)),
 	}
 }
 
