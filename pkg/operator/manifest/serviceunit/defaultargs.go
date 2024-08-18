@@ -9,8 +9,9 @@ import (
 )
 
 const (
-	HTTP_PORT_NAME = "http"
-	GRPC_PORT_NAME = "grpc"
+	HTTP_PORT_NAME   = "http"
+	GRPC_PORT_NAME   = "grpc"
+	HEALTH_PORT_NAME = "health"
 )
 
 func getDefaultResource() *corev1.ResourceRequirements {
@@ -27,10 +28,14 @@ func getDefaultResource() *corev1.ResourceRequirements {
 }
 
 func getPorts(clusterConfig *v1.ClusterConfig) map[string]int32 {
+	var health int32 = defaults.HEALTH_PORT
 	var http int32 = defaults.HTTP_PORT
 	var grpc int32 = defaults.GRPC_PORT
 	var metrics int32 = defaults.METRICS_PORT
 
+	if clusterConfig.HealthPort != 0 {
+		health = clusterConfig.HealthPort
+	}
 	if clusterConfig.HTTPPort != 0 {
 		http = clusterConfig.HTTPPort
 	}
@@ -42,6 +47,7 @@ func getPorts(clusterConfig *v1.ClusterConfig) map[string]int32 {
 	}
 
 	return map[string]int32{
+		HEALTH_PORT_NAME:          health,
 		HTTP_PORT_NAME:            http,
 		GRPC_PORT_NAME:            grpc,
 		factory.METRICS_PORT_NAME: metrics,

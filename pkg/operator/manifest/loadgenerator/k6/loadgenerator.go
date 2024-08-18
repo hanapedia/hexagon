@@ -34,7 +34,8 @@ func CreateLoadGeneratorDeployment(suc *model.ServiceUnitConfig, cc *model.Clust
 				"routes": "routes.json",
 			},
 		},
-		Envs: createLoadGeneratorDeploymentEnvs(suc),
+		Envs:                  createLoadGeneratorDeploymentEnvs(suc),
+		DisableReadinessProbe: true,
 	}
 	deployment := factory.NewDeployment(&deploymentArgs)
 

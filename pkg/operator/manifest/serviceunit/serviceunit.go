@@ -13,6 +13,7 @@ import (
 
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
 // CreateServiceUnitDeployment creates deployment for service unit
@@ -51,6 +52,8 @@ func CreateStatelessUnitDeployment(suc *model.ServiceUnitConfig, cc *model.Clust
 			},
 		},
 		EnableTopologySpreadConstraint: suc.DeploymentSpec.EnableTopologySpreadConstraint,
+		DisableReadinessProbe:          suc.DeploymentSpec.DisableReadinessProbe,
+		ReadinessProbePort:             intstr.FromString(HEALTH_PORT_NAME),
 	}
 	deployment := factory.NewDeployment(&deploymentArgs)
 	return &deployment
