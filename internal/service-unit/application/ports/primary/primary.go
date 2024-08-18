@@ -16,7 +16,7 @@ import (
 // It is intended to represent the individual interfaces on each exteranl service,
 type PrimaryPort interface {
 	// Serve starts primary port adapter with cancellable context and WaitGroup for graceful shutdown
-	Serve(context.Context, *sync.WaitGroup) error
+	Serve(ctx context.Context, shutdownWg *sync.WaitGroup, readinessWg *sync.WaitGroup) error
 	// Register registers primary port handler to primary adapter instance
 	Register(*domain.PrimaryAdapterHandler) error
 }

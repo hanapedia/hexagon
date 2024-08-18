@@ -16,7 +16,7 @@ type PrimaryAdapterMock struct {
 }
 
 // Serve mock implementation
-func (pam PrimaryAdapterMock) Serve(ctx context.Context, wg *sync.WaitGroup) error {
+func (pam PrimaryAdapterMock) Serve(ctx context.Context, swg, rwg *sync.WaitGroup) error {
 	return nil
 }
 

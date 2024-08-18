@@ -40,8 +40,10 @@ func NewKafkaConsumer(topic, group string) *KafkaConsumer {
 	return &KafkaConsumer{reader: reader}
 }
 
-func (kca KafkaConsumerAdapter) Serve(ctx context.Context, wg *sync.WaitGroup) error {
+func (kca KafkaConsumerAdapter) Serve(ctx context.Context, shutdownWg, readyWg *sync.WaitGroup) error {
 	var err error
+	// Mark Ready
+	readyWg.Done()
 ConsumerLoop:
 	for {
 		message, err := kca.kafkaConsumer.reader.ReadMessage(ctx)
@@ -49,7 +51,7 @@ ConsumerLoop:
 			if err == context.Canceled {
 				logger.Logger.Infof("Context cancelled, Kafka Consumer shutting.")
 				kca.kafkaConsumer.reader.Close()
-				wg.Done()
+				shutdownWg.Done()
 			}
 			break ConsumerLoop
 		}

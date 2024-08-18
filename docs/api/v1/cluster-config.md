@@ -13,6 +13,7 @@ The definitions for Go struct is in [`pkg/api/v1/clusterconfig.go`](../../../pkg
 | namespace     | Kubernetes Namespace to deploy the generated application. | "hexagon" | false |
 | logLevel      | Log Level for each service unit. | "info" | false |
 | dockerHubUsername | Container registry for the image used by the service units. | "hexagonbenchamrk" | false |
+| healthPort   | Port used to start health server. | 6060 | false |
 | metricsPort   | Port used to start metris server. | 7070 | false |
 | httpPort | Port used to start HTTP REST server. | 8080 | false |
 | grpcPort | Port used to start gRPC server. | 9090 | false |

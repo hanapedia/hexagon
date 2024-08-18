@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net"
 	"net/http"
 	"sync"
 	"time"
@@ -42,16 +43,24 @@ func NewRestServerAdapter() *RestServerAdapter {
 	return &adapter
 }
 
-func (rsa *RestServerAdapter) Serve(ctx context.Context, wg *sync.WaitGroup) error {
+func (rsa *RestServerAdapter) Serve(ctx context.Context, shutdownWg, readyWg *sync.WaitGroup) error {
 	logger.Logger.Infof("Serving rest server at %s", rsa.addr)
 	go func() {
 		<-ctx.Done()
 		logger.Logger.Infof("Context cancelled. Rest Server shutting down.")
 		rsa.server.Shutdown(context.Background())
-		wg.Done()
+		shutdownWg.Done()
 	}()
 
-	err := rsa.server.ListenAndServe()
+	listen, err := net.Listen("tcp", rsa.addr)
+	if err != nil {
+		return err
+	}
+
+	// Mark Ready
+	readyWg.Done()
+
+	err = rsa.server.Serve(listen)
 	if err != nil && err == http.ErrServerClosed {
 		return nil
 	}

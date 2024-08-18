@@ -8,6 +8,7 @@ type ClusterConfig struct {
 	LogLevel          string                     `json:"logLevel,omitempty"`
 	DockerHubUsername string                     `json:"dockerHubUsername,omitempty"`
 	MetricsPort       int32                      `json:"metricsPort,omitempty"`
+	HealthPort        int32                      `json:"healthPort,omitempty"`
 	HTTPPort          int32                      `json:"httpPort,omitempty"`
 	GRPCPort          int32                      `json:"grpcPort,omitempty"`
 	Tracing           TracingClusterConfig       `json:"tracing,omitempty"`
@@ -53,6 +54,7 @@ func NewClusterConfig() ClusterConfig {
 		LogLevel:          defaults.LOG_LEVEL,
 		DockerHubUsername: defaults.DOCKER_USERNAME,
 		MetricsPort:       defaults.METRICS_PORT,
+		HealthPort:        defaults.HEALTH_PORT,
 		HTTPPort:          defaults.HTTP_PORT,
 		GRPCPort:          defaults.GRPC_PORT,
 		Tracing:           TracingClusterConfig{Enabled: defaults.TRACING},

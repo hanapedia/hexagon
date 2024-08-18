@@ -38,12 +38,13 @@ func NewServiceUnit(serviceUnitConfig *model.ServiceUnitConfig) ServiceUnit {
 }
 
 // Start primary adapters. it propagates context to primary adapters
-func (su *ServiceUnit) Start(shutdownNotification context.Context, shutdownWaitGroup *sync.WaitGroup, errChan chan primary.PrimaryPortError) {
+func (su *ServiceUnit) Start(shutdownNotification context.Context, shutdownWaitGroup, readyWaitGroup *sync.WaitGroup, errChan chan primary.PrimaryPortError) {
 	for _, serverAdapter := range su.ServerAdapters {
 		serverAdapterCopy := serverAdapter
 		shutdownWaitGroup.Add(1)
+		readyWaitGroup.Add(1)
 		go func() {
-			if err := serverAdapterCopy.Serve(shutdownNotification, shutdownWaitGroup); err != nil {
+			if err := serverAdapterCopy.Serve(shutdownNotification, shutdownWaitGroup, readyWaitGroup); err != nil {
 				errChan <- primary.PrimaryPortError{PrimaryPort: serverAdapterCopy, Error: err}
 			}
 		}()
@@ -53,8 +54,9 @@ func (su *ServiceUnit) Start(shutdownNotification context.Context, shutdownWaitG
 		consumerAdapterCopy := consumerAdapter
 		logger.Logger.Infof("Consumer '%s' started.", protocolAndAction)
 		shutdownWaitGroup.Add(1)
+		readyWaitGroup.Add(1)
 		go func() {
-			if err := consumerAdapterCopy.Serve(shutdownNotification, shutdownWaitGroup); err != nil {
+			if err := consumerAdapterCopy.Serve(shutdownNotification, shutdownWaitGroup, readyWaitGroup); err != nil {
 				errChan <- primary.PrimaryPortError{PrimaryPort: consumerAdapterCopy, Error: err}
 			}
 		}()

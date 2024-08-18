@@ -27,6 +27,7 @@ type EnvVars struct {
 	OTEL_COLLECTOR_NAMESPACE string
 	OTEL_COLLECTOR_PORT      string
 	METRICS_PORT             string
+	HEALTH_PORT              string
 }
 
 var envVars *EnvVars
@@ -49,6 +50,7 @@ func FromClusterConfig(config model.ClusterConfig) *EnvVars {
 		OTEL_COLLECTOR_NAMESPACE: config.Otel.Namespace,
 		OTEL_COLLECTOR_PORT:      strconv.Itoa(int(config.Otel.Port)),
 		METRICS_PORT:             strconv.Itoa(int(config.MetricsPort)),
+		HEALTH_PORT:              strconv.Itoa(int(config.HealthPort)),
 	}
 }
 
