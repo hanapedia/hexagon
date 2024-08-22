@@ -78,9 +78,9 @@ var histogramVecs map[HistogramVecName]*prometheus.HistogramVec = map[string]*pr
 }
 
 var gaugeVecs map[GaugeVecName]*prometheus.GaugeVec = map[GaugeVecName]*prometheus.GaugeVec{
-	PrimaryAdapterDuration: prometheus.NewGaugeVec(
+	PrimaryAdapterInProgress: prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Name: PrimaryAdapterDuration,
+			Name: PrimaryAdapterInProgress,
 			Help: "Gauge for primary adapter in progress requests.",
 		},
 		utils.GetMapKeys(PrimaryAdapterInProgressLabels{}.AsMap()),
