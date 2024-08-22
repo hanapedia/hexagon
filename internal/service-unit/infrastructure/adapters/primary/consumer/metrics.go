@@ -23,3 +23,17 @@ func ObserveConsumerAdapterDuration(duration time.Duration, service string, conf
 		},
 	)
 }
+
+func SetConsumerAdapterInProgress(op domain.GaugeOp, service string, config *v1.ConsumerConfig) {
+	metrics.SetPrimaryAdapterInProgress(
+		op,
+		domain.PrimaryAdapterInProgressLabels{
+			PrimaryLabels: domain.PrimaryLabels{
+				ServiceName: service,
+				Variant:     string(config.Variant),
+				Topic:       config.Topic,
+				Id:          config.GetId(service),
+			},
+		},
+	)
+}

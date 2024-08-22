@@ -6,6 +6,16 @@ import (
 	"github.com/hanapedia/hexagon/pkg/operator/utils"
 )
 
+func SetPrimaryAdapterInProgress(op domain.GaugeOp, labels domain.PrimaryAdapterInProgressLabels) {
+	metrics := GetInstance()
+	switch op {
+	case domain.INC:
+		metrics.PrimaryAdapterInProgress.With(labels.AsMap()).Inc()
+	case domain.DEC:
+		metrics.PrimaryAdapterInProgress.With(labels.AsMap()).Dec()
+	}
+}
+
 // SetGaugeMetricsFromSpecs sets gauge metrics from resiliency spec.
 // `With` can panic, however, it shouldn't if the labels match what's defined in Metrics instance.
 func SetGaugeMetricsFromSpecs(spec model.ResiliencySpec, telemetryCtx domain.TelemetryContext) {

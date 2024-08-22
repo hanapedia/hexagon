@@ -9,6 +9,13 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
+type GaugeOp int
+
+const (
+	INC GaugeOp = iota
+	DEC
+)
+
 type GaugeVecName = string
 type HistogramVecName = string
 
@@ -16,6 +23,7 @@ const (
 	PrimaryAdapterDuration         HistogramVecName = "primary_adapter_duration_ms"
 	SecondaryAdapterCallDuration   HistogramVecName = "secondary_adapter_call_duration_ms"
 	SecondaryAdapterTaskDuration   HistogramVecName = "secondary_adapter_task_duration_ms"
+	PrimaryAdapterInProgress       GaugeVecName     = "primary_adapter_in_progress"
 	CallTimeout                    GaugeVecName     = "call_timeout_ms"
 	TaskTimeout                    GaugeVecName     = "task_timeout_ms"
 	CircuitBreakerDisabled         GaugeVecName     = "circuit_breaker_disabled"
@@ -45,24 +53,24 @@ var DurationHistogramBuckets = slices.Concat(
 var histogramVecs map[HistogramVecName]*prometheus.HistogramVec = map[string]*prometheus.HistogramVec{
 	PrimaryAdapterDuration: prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Name: PrimaryAdapterDuration,
-			Help: "Duration for primary adapter execution in milliseconds.",
+			Name:    PrimaryAdapterDuration,
+			Help:    "Duration for primary adapter execution in milliseconds.",
 			Buckets: DurationHistogramBuckets,
 		},
 		utils.GetMapKeys(PrimaryAdapterDurationLabels{}.AsMap()),
 	),
 	SecondaryAdapterCallDuration: prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Name: SecondaryAdapterCallDuration,
-			Help: "Duration for secondary adapter call execution in milliseconds.",
+			Name:    SecondaryAdapterCallDuration,
+			Help:    "Duration for secondary adapter call execution in milliseconds.",
 			Buckets: DurationHistogramBuckets,
 		},
 		utils.GetMapKeys(SecondaryAdapterCallDurationLabels{}.AsMap()),
 	),
 	SecondaryAdapterTaskDuration: prometheus.NewHistogramVec(
 		prometheus.HistogramOpts{
-			Name: SecondaryAdapterTaskDuration,
-			Help: "Duration for secondary adapter task execution in milliseconds.",
+			Name:    SecondaryAdapterTaskDuration,
+			Help:    "Duration for secondary adapter task execution in milliseconds.",
 			Buckets: DurationHistogramBuckets,
 		},
 		utils.GetMapKeys(SecondaryAdapterTaskDurationLabels{}.AsMap()),
@@ -70,6 +78,13 @@ var histogramVecs map[HistogramVecName]*prometheus.HistogramVec = map[string]*pr
 }
 
 var gaugeVecs map[GaugeVecName]*prometheus.GaugeVec = map[GaugeVecName]*prometheus.GaugeVec{
+	PrimaryAdapterDuration: prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: PrimaryAdapterDuration,
+			Help: "Gauge for primary adapter in progress requests.",
+		},
+		utils.GetMapKeys(PrimaryAdapterInProgressLabels{}.AsMap()),
+	),
 	CallTimeout: prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Name: CallTimeout,
@@ -187,6 +202,15 @@ type PrimaryAdapterDurationLabels struct {
 func (padl PrimaryAdapterDurationLabels) AsMap() map[string]string {
 	base := padl.GetPrimaryLabels()
 	base["status"] = padl.Status.AsString()
+	return base
+}
+
+type PrimaryAdapterInProgressLabels struct {
+	PrimaryLabels
+}
+
+func (p PrimaryAdapterInProgressLabels) AsMap() map[string]string {
+	base := p.GetPrimaryLabels()
 	return base
 }
 
