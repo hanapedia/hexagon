@@ -117,13 +117,18 @@ func (gsa *GrpcServerAdapter) SimpleRPC(ctx context.Context, req *pb.StreamReque
 		return nil, errors.New(fmt.Sprintf("Route not found %s.", req.Route))
 	}
 
+	// Increment in-progress counter
+	server.SetServerAdapterInProgress(domain.INC, handler.ServiceName, handler.ServerConfig)
+
 	// defer log
-	defer gsa.log(ctx, handler, startTime)
+	defer server.Log(handler, startTime)
 
 	result := runtime.TaskSetHandler(ctx, handler)
 	defer func() {
 		// record metrics
 		go server.ObserveServerAdapterDuration(time.Since(startTime), handler.ServiceName, handler.ServerConfig, result.ShouldFail)
+		// decrement in-progress counter
+		server.SetServerAdapterInProgress(domain.DEC, handler.ServiceName, handler.ServerConfig)
 	}()
 
 	if result.ShouldFail {
@@ -159,13 +164,18 @@ func (gsa *GrpcServerAdapter) ClientStreaming(stream pb.Grpc_ClientStreamingServ
 		return errors.New(fmt.Sprintf("Route not found %s.", req.Route))
 	}
 
+	// Increment in-progress counter
+	server.SetServerAdapterInProgress(domain.INC, handler.ServiceName, handler.ServerConfig)
+
 	// defer log
-	defer gsa.log(stream.Context(), handler, startTime)
+	defer server.Log(handler, startTime)
 
 	result := runtime.TaskSetHandler(stream.Context(), handler)
 	defer func() {
 		// record metrics
 		go server.ObserveServerAdapterDuration(time.Since(startTime), handler.ServiceName, handler.ServerConfig, result.ShouldFail)
+		// decrement in-progress counter
+		server.SetServerAdapterInProgress(domain.DEC, handler.ServiceName, handler.ServerConfig)
 	}()
 
 	if result.ShouldFail {
@@ -202,13 +212,18 @@ func (gsa *GrpcServerAdapter) ServerStreaming(req *pb.StreamRequest, stream pb.G
 		return errors.New(fmt.Sprintf("Route not found %s.", req.Route))
 	}
 
+	// Increment in-progress counter
+	server.SetServerAdapterInProgress(domain.INC, handler.ServiceName, handler.ServerConfig)
+
 	// defer log
-	defer gsa.log(stream.Context(), handler, startTime)
+	defer server.Log(handler, startTime)
 
 	result := runtime.TaskSetHandler(stream.Context(), handler)
 	defer func() {
 		// record metrics
 		go server.ObserveServerAdapterDuration(time.Since(startTime), handler.ServiceName, handler.ServerConfig, result.ShouldFail)
+		// decrement in-progress counter
+		server.SetServerAdapterInProgress(domain.DEC, handler.ServiceName, handler.ServerConfig)
 	}()
 
 	if result.ShouldFail {
@@ -254,13 +269,18 @@ func (gsa *GrpcServerAdapter) BidirectionalStreaming(stream pb.Grpc_Bidirectiona
 		return errors.New(fmt.Sprintf("Route not found %s.", req.Route))
 	}
 
+	// Increment in-progress counter
+	server.SetServerAdapterInProgress(domain.INC, handler.ServiceName, handler.ServerConfig)
+
 	// defer log
-	defer gsa.log(stream.Context(), handler, startTime)
+	defer server.Log(handler, startTime)
 
 	result := runtime.TaskSetHandler(stream.Context(), handler)
 	defer func() {
 		// record metrics
 		go server.ObserveServerAdapterDuration(time.Since(startTime), handler.ServiceName, handler.ServerConfig, result.ShouldFail)
+		// decrement in-progress counter
+		server.SetServerAdapterInProgress(domain.DEC, handler.ServiceName, handler.ServerConfig)
 	}()
 
 	if result.ShouldFail {
@@ -291,14 +311,4 @@ func (gsa *GrpcServerAdapter) BidirectionalStreaming(stream pb.Grpc_Bidirectiona
 		}
 	}
 	return nil
-}
-
-func (gsa *GrpcServerAdapter) log(ctx context.Context, handler *domain.PrimaryAdapterHandler, startTime time.Time) {
-	elapsed := time.Since(startTime).Milliseconds()
-	unit := "ms"
-	if elapsed == 0 {
-		elapsed = time.Since(startTime).Microseconds()
-		unit = "μs"
-	}
-	logger.Logger.WithContext(ctx).Infof("Invocation handled | %-40s | %10v %s", handler.GetId(), elapsed, unit)
 }

@@ -11,6 +11,7 @@ type Metrics struct {
 	PrimaryAdapterDuration         *prometheus.HistogramVec
 	SecondaryAdapterCallDuration   *prometheus.HistogramVec
 	SecondaryAdapterTaskDuration   *prometheus.HistogramVec
+	PrimaryAdapterInProgress       *prometheus.GaugeVec
 	CallTimeout                    *prometheus.GaugeVec
 	TaskTimeout                    *prometheus.GaugeVec
 	CircuitBreakerDisabled         *prometheus.GaugeVec
@@ -37,6 +38,7 @@ func GetInstance() *Metrics {
 			PrimaryAdapterDuration:         domain.GetHistogramVec(domain.PrimaryAdapterDuration),
 			SecondaryAdapterCallDuration:   domain.GetHistogramVec(domain.SecondaryAdapterCallDuration),
 			SecondaryAdapterTaskDuration:   domain.GetHistogramVec(domain.SecondaryAdapterTaskDuration),
+			PrimaryAdapterInProgress:       domain.GetGaugeVec(domain.PrimaryAdapterInProgress),
 			CallTimeout:                    domain.GetGaugeVec(domain.CallTimeout),
 			TaskTimeout:                    domain.GetGaugeVec(domain.TaskTimeout),
 			CircuitBreakerDisabled:         domain.GetGaugeVec(domain.CircuitBreakerDisabled),
@@ -56,6 +58,7 @@ func GetInstance() *Metrics {
 		PromRegistry.MustRegister(instance.PrimaryAdapterDuration)
 		PromRegistry.MustRegister(instance.SecondaryAdapterCallDuration)
 		PromRegistry.MustRegister(instance.SecondaryAdapterTaskDuration)
+		PromRegistry.MustRegister(instance.PrimaryAdapterInProgress)
 		PromRegistry.MustRegister(instance.CallTimeout)
 		PromRegistry.MustRegister(instance.TaskTimeout)
 		PromRegistry.MustRegister(instance.CircuitBreakerDisabled)

@@ -46,6 +46,11 @@ func (kca KafkaConsumerAdapter) Serve(ctx context.Context, shutdownWg, readyWg *
 	readyWg.Done()
 ConsumerLoop:
 	for {
+		consumer.SetConsumerAdapterInProgress(
+			domain.INC,
+			kca.kafkaConsumer.handler.ServiceName,
+			kca.kafkaConsumer.handler.ConsumerConfig,
+		)
 		message, err := kca.kafkaConsumer.reader.ReadMessage(ctx)
 		if err != nil {
 			if err == context.Canceled {
@@ -76,10 +81,15 @@ ConsumerLoop:
 			result.ShouldFail,
 		)
 
-		kca.log(ctx, startTime)
+		consumer.Log(kca.kafkaConsumer.handler, startTime)
 		if span != nil {
 			(*span).End()
 		}
+		consumer.SetConsumerAdapterInProgress(
+			domain.DEC,
+			kca.kafkaConsumer.handler.ServiceName,
+			kca.kafkaConsumer.handler.ConsumerConfig,
+		)
 	}
 	return err
 }
@@ -87,9 +97,4 @@ ConsumerLoop:
 func (kca *KafkaConsumerAdapter) Register(handler *domain.PrimaryAdapterHandler) error {
 	kca.kafkaConsumer.handler = handler
 	return nil
-}
-
-func (kca *KafkaConsumerAdapter) log(ctx context.Context, startTime time.Time) {
-	elapsed := time.Since(startTime).Milliseconds()
-	logger.Logger.WithContext(ctx).Infof("Message consumed | %-30s | %10v ms", kca.kafkaConsumer.handler.GetId(), elapsed)
 }

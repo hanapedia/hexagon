@@ -24,3 +24,18 @@ func ObserveServerAdapterDuration(duration time.Duration, service string, config
 		},
 	)
 }
+
+func SetServerAdapterInProgress(op domain.GaugeOp, service string, config *v1.ServerConfig) {
+	metrics.SetPrimaryAdapterInProgress(
+		op,
+		domain.PrimaryAdapterInProgressLabels{
+			PrimaryLabels: domain.PrimaryLabels{
+				ServiceName: service,
+				Variant:     string(config.Variant),
+				Route:       config.Route,
+				Action:      string(config.Action),
+				Id:          config.GetId(service),
+			},
+		},
+	)
+}

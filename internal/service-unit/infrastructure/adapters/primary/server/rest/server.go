@@ -76,16 +76,18 @@ func (rsa *RestServerAdapter) Register(handler *domain.PrimaryAdapterHandler) er
 	var handlerFunc http.Handler
 
 	handlerFunc = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		server.SetServerAdapterInProgress(domain.INC, handler.ServiceName, handler.ServerConfig)
 		// record time for logging
 		startTime := time.Now()
 		// defer log
-		defer rsa.log(r.Context(), handler, startTime)
+		defer server.Log(handler, startTime)
 
 		// call tasks
 		result := runtime.TaskSetHandler(r.Context(), handler)
 		defer func() {
 			// record metrics
 			go server.ObserveServerAdapterDuration(time.Since(startTime), handler.ServiceName, handler.ServerConfig, result.ShouldFail)
+			server.SetServerAdapterInProgress(domain.DEC, handler.ServiceName, handler.ServerConfig)
 		}()
 
 		if result.ShouldFail {
@@ -123,14 +125,4 @@ func (rsa *RestServerAdapter) Register(handler *domain.PrimaryAdapterHandler) er
 		err = errors.New("Handler has no matching action")
 	}
 	return err
-}
-
-func (rsa *RestServerAdapter) log(ctx context.Context, handler *domain.PrimaryAdapterHandler, startTime time.Time) {
-	elapsed := time.Since(startTime).Milliseconds()
-	unit := "ms"
-	if elapsed == 0 {
-		elapsed = time.Since(startTime).Microseconds()
-		unit = "μs"
-	}
-	logger.Logger.WithContext(ctx).Infof("Invocation handled | %-40s | %10v %s", handler.GetId(), elapsed, unit)
 }
