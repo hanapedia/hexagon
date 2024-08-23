@@ -4,11 +4,12 @@ adapters:
   - server:
       action: write
       variant: rest
-      route: foo
+      route: updateUser
     tasks:
       - adapter:
           repository:
             variant: mongo
             name: test
             action: write
-            size: small
+            payload:
+              size: small
