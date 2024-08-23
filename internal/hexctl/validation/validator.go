@@ -24,9 +24,9 @@ func ValidateDirectory(path string) v1validator.ConfigValidationError {
 		logger.Logger.Errorf("Error reading from directory %s. %s", path, err)
 	}
 
-	var serviceUnitConfigs []model.ServiceUnitConfig
+	var serviceUnitConfigs []*model.ServiceUnitConfig
 	for _, path = range paths {
-		serviceUnitConfigs = append(serviceUnitConfigs, *loader.GetServiceUnitConfig(path))
+		serviceUnitConfigs = append(serviceUnitConfigs, loader.GetServiceUnitConfig(path))
 	}
 	errs := v1validator.ValidateServiceUnitConfigs(serviceUnitConfigs)
 	if errs.Exist() {

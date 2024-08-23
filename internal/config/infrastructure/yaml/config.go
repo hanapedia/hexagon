@@ -20,23 +20,26 @@ func (ycl YamlConfigLoader) Load() (*model.ServiceUnitConfig, error) {
 		logger.Logger.
 			WithField("path", ycl.Path).
 			WithField("err", err).
-			Fatal("Failed to read config file ")
+			Error("Failed to read config file ")
+		return nil, err
 	}
 
 	var config model.ServiceUnitConfig
-	err = k8syaml.Unmarshal(data, &config)
+	err = k8syaml.UnmarshalStrict(data, &config)
 	if err != nil {
 		logger.Logger.
 			WithField("path", ycl.Path).
 			WithField("err", err).
-			Fatal("Failed to load config from yaml ")
+			Error("Failed to load config from yaml ")
+		return nil, err
 	}
 
 	if config.Kind == model.ClusterConfigKind {
 		logger.Logger.
 			WithField("path", ycl.Path).
 			WithField("err", "Cannot load ClusterConfig as ServiceUnit.").
-			Fatal("Failed to load config from yaml ")
+			Error("Failed to load config from yaml ")
+		return nil, err
 	}
 
 	if config.Kind == model.ServiceUnitKind {
@@ -61,7 +64,8 @@ func (ycl YamlConfigLoader) LoadClusterConfig() (*model.ClusterConfig, error) {
 		logger.Logger.
 			WithField("path", ycl.Path).
 			WithField("err", err).
-			Fatal("Failed to read config file ")
+			Error("Failed to read config file ")
+		return nil, err
 	}
 
 	var config model.ClusterConfig = model.NewClusterConfig()
@@ -70,14 +74,16 @@ func (ycl YamlConfigLoader) LoadClusterConfig() (*model.ClusterConfig, error) {
 		logger.Logger.
 			WithField("path", ycl.Path).
 			WithField("err", err).
-			Fatal("Failed to load config from yaml ")
+			Error("Failed to load config from yaml ")
+		return nil, err
 	}
 
 	if config.Kind != model.ClusterConfigKind {
 		logger.Logger.
 			WithField("path", ycl.Path).
 			WithField("err", "Invalid `kind` field.").
-			Fatal("Failed to load cluster config from yaml ")
+			Error("Failed to load cluster config from yaml ")
+		return nil, err
 	}
 
 	return &config, err
