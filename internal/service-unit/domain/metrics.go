@@ -47,7 +47,8 @@ var DurationHistogramBuckets = slices.Concat(
 	[]float64{1, 2.5, 5},
 	[]float64{10, 25, 50},
 	[]float64{100, 250, 500},
-	[]float64{1000, 2500, 5000, 10000},
+	[]float64{1000, 2500, 5000},
+	[]float64{10000, 25000, 50000, 100000},
 )
 
 var histogramVecs map[HistogramVecName]*prometheus.HistogramVec = map[string]*prometheus.HistogramVec{
