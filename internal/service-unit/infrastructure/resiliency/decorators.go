@@ -170,19 +170,19 @@ func WithAdaptiveTaskTimeout(spec model.AdaptiveTimeoutSpec, secondaryAdapter se
 		}
 		// record gauge metrics for timeout value
 		go metrics.SetAdaptiveTaskTimeoutDuration(timeoutDuration, domain.AdaptiveTimeoutGaugeLabels{Ctx: taskCtx.telemetryCtx})
+		newCtx, taskCancel := context.WithTimeout(ctx, timeoutDuration)
+		defer taskCancel()
 		go func() {
 			select {
-			case <-ctx.Done():
+			case <-newCtx.Done():
 				// Check if the context's deadline was exceeded
-				if ctx.Err() == context.DeadlineExceeded {
+				if newCtx.Err() == context.DeadlineExceeded {
 					didDeadlineExceed <- true
 				} else {
 					didDeadlineExceed <- false
 				}
 			}
 		}()
-		newCtx, taskCancel := context.WithTimeout(ctx, timeoutDuration)
-		defer taskCancel()
 		result := next(newCtx, taskCtx)
 		return result
 	}
@@ -211,19 +211,19 @@ func WithAdaptiveCallTimeout(spec model.AdaptiveTimeoutSpec, secondaryAdapter se
 		}
 		// record gauge metrics for timeout value
 		go metrics.SetAdaptiveCallTimeoutDuration(timeoutDuration, domain.AdaptiveTimeoutGaugeLabels{Ctx: taskCtx.telemetryCtx})
+		newCtx, callCancel := context.WithTimeout(ctx, timeoutDuration)
+		defer callCancel()
 		go func() {
 			select {
-			case <-ctx.Done():
+			case <-newCtx.Done():
 				// Check if the context's deadline was exceeded
-				if ctx.Err() == context.DeadlineExceeded {
+				if newCtx.Err() == context.DeadlineExceeded {
 					didDeadlineExceed <- true
 				} else {
 					didDeadlineExceed <- false
 				}
 			}
 		}()
-		newCtx, callCancel := context.WithTimeout(ctx, timeoutDuration)
-		defer callCancel()
 		result := next(newCtx, taskCtx)
 		return result
 	}
