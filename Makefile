@@ -2,7 +2,7 @@ GRPC_GENERATE_DIR := ./internal/service-unit/infrastructure/adapters/generated/g
 GO_MODULE := $(shell go list -m)
 COMMA := ,
 TEST_PATH ?= ./...
-GO_VERSION := 1.22
+GO_VERSION := 1.23
 INTEGRATION_TEST_DOCKERFILE_PATH := ./test/integration/Dockerfile
 DOCKER_USER ?= hexagonbenchmark
 

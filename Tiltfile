@@ -17,7 +17,7 @@ COPY ./bin/service-unit .
 CMD ["./service-unit"]
 '''
 
-DATAGEN_DOCKERFILE = '''FROM golang:1.22
+DATAGEN_DOCKERFILE = '''FROM golang:1.23
 WORKDIR /app
 COPY ./bin/datagen .
 '''
