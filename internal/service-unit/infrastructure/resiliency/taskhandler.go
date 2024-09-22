@@ -14,7 +14,9 @@ func NewTaskHandler(telCtx domain.TelemetryContext, spec model.TaskSpec, adapter
 	var circuitBreaker CircuitBreaker = nil
 
 	// Skip configurations if not set
-	if spec.Resiliency.CallTimeout != "" {
+	if spec.Resiliency.AdaptiveCallTimeout.InitialTimeout != "" {
+		handler = WithAdaptiveCallTimeout(spec.Resiliency.AdaptiveCallTimeout, adapter, handler)
+	} else if spec.Resiliency.CallTimeout != "" {
 		handler = WithCallTimeout(spec.Resiliency.GetCallTimeout(), handler)
 	}
 
@@ -42,7 +44,9 @@ func NewTaskHandler(telCtx domain.TelemetryContext, spec model.TaskSpec, adapter
 		}
 	}
 
-	if spec.Resiliency.TaskTimeout != "" {
+	if spec.Resiliency.AdaptiveTaskTimeout.InitialTimeout != "" {
+		handler = WithAdaptiveTaskTimeout(spec.Resiliency.AdaptiveCallTimeout, adapter, handler)
+	} else if spec.Resiliency.TaskTimeout != "" {
 		handler = WithTaskTimeout(spec.Resiliency.GetTaskTimeout(), handler)
 	}
 
