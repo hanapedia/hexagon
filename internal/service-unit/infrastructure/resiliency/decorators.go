@@ -168,6 +168,8 @@ func WithAdaptiveTaskTimeout(spec model.AdaptiveTimeoutSpec, secondaryAdapter se
 				Errorf("failed to create new adaptive timeout. resorting to default task timeout.")
 			timeoutDuration = model.DEFAULT_TASK_TIMEOUT
 		}
+		// record gauge metrics for timeout value
+		go metrics.SetAdaptiveTaskTimeoutDuration(timeoutDuration, domain.AdaptiveTimeoutGaugeLabels{Ctx: taskCtx.telemetryCtx})
 		go func() {
 			select {
 			case <-ctx.Done():
@@ -207,6 +209,8 @@ func WithAdaptiveCallTimeout(spec model.AdaptiveTimeoutSpec, secondaryAdapter se
 				Errorf("failed to create new adaptive timeout. resorting to default call timeout.")
 			timeoutDuration = model.DEFAULT_CALL_TIMEOUT
 		}
+		// record gauge metrics for timeout value
+		go metrics.SetAdaptiveCallTimeoutDuration(timeoutDuration, domain.AdaptiveTimeoutGaugeLabels{Ctx: taskCtx.telemetryCtx})
 		go func() {
 			select {
 			case <-ctx.Done():

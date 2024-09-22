@@ -24,6 +24,8 @@ const (
 	SecondaryAdapterCallDuration   HistogramVecName = "secondary_adapter_call_duration_ms"
 	SecondaryAdapterTaskDuration   HistogramVecName = "secondary_adapter_task_duration_ms"
 	PrimaryAdapterInProgress       GaugeVecName     = "primary_adapter_in_progress"
+	AdaptiveTaskTimeoutDuration    GaugeVecName     = "adaptive_task_timeout_duration"
+	AdaptiveCallTimeoutDuration    GaugeVecName     = "adaptive_call_timeout_duration"
 	CallTimeout                    GaugeVecName     = "call_timeout_ms"
 	TaskTimeout                    GaugeVecName     = "task_timeout_ms"
 	CircuitBreakerDisabled         GaugeVecName     = "circuit_breaker_disabled"
@@ -85,6 +87,20 @@ var gaugeVecs map[GaugeVecName]*prometheus.GaugeVec = map[GaugeVecName]*promethe
 			Help: "Gauge for primary adapter in progress requests.",
 		},
 		utils.GetMapKeys(PrimaryAdapterInProgressLabels{}.AsMap()),
+	),
+	AdaptiveTaskTimeoutDuration: prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: AdaptiveTaskTimeoutDuration,
+			Help: "Gauge for adaptive task timeout duration.",
+		},
+		utils.GetMapKeys(AdaptiveTimeoutGaugeLabels{}.AsMap()),
+	),
+	AdaptiveCallTimeoutDuration: prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: AdaptiveCallTimeoutDuration,
+			Help: "Gauge for adaptive call timeout duration.",
+		},
+		utils.GetMapKeys(AdaptiveTimeoutGaugeLabels{}.AsMap()),
 	),
 	CallTimeout: prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
@@ -274,4 +290,12 @@ func (rgl RetryGaugeLabels) AsMap() map[string]string {
 	base := rgl.Ctx.AsMap()
 	base["backoff_policy"] = rgl.BackoffPolicy
 	return base
+}
+
+type AdaptiveTimeoutGaugeLabels struct {
+	Ctx TelemetryContext
+}
+
+func (atgl AdaptiveTimeoutGaugeLabels) AsMap() map[string]string {
+	return atgl.Ctx.AsMap()
 }

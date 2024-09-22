@@ -1,6 +1,8 @@
 package metrics
 
 import (
+	"time"
+
 	"github.com/hanapedia/hexagon/internal/service-unit/domain"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/utils"
@@ -14,6 +16,16 @@ func SetPrimaryAdapterInProgress(op domain.GaugeOp, labels domain.PrimaryAdapter
 	case domain.DEC:
 		metrics.PrimaryAdapterInProgress.With(labels.AsMap()).Dec()
 	}
+}
+
+func SetAdaptiveTaskTimeoutDuration(value time.Duration, labels domain.AdaptiveTimeoutGaugeLabels) {
+	metrics := GetInstance()
+	metrics.AdaptiveTaskTimeoutDuration.With(labels.AsMap()).Set(float64(value))
+}
+
+func SetAdaptiveCallTimeoutDuration(value time.Duration, labels domain.AdaptiveTimeoutGaugeLabels) {
+	metrics := GetInstance()
+	metrics.AdaptiveCallTimeoutDuration.With(labels.AsMap()).Set(float64(value))
 }
 
 // SetGaugeMetricsFromSpecs sets gauge metrics from resiliency spec.
