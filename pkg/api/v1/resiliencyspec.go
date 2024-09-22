@@ -5,6 +5,11 @@ import (
 	"time"
 )
 
+var (
+	DEFAULT_TASK_TIMEOUT = 5 * time.Second
+	DEFAULT_CALL_TIMEOUT = 2 * time.Second
+)
+
 type RetryBackoffPolicy = string
 
 const (
@@ -19,13 +24,16 @@ var (
 )
 
 var (
-	DEFAULT_CIRCUIT_BREAKER_INTERVAL     time.Duration = time.Minute
-	DEFAULT_CIRCUIT_BREAKER_TIMEOUT      time.Duration = time.Minute
+	DEFAULT_CIRCUIT_BREAKER_INTERVAL time.Duration = time.Minute
+	DEFAULT_CIRCUIT_BREAKER_TIMEOUT  time.Duration = time.Minute
 )
 
 var (
-	DEFAULT_TASK_TIMEOUT = 5 * time.Second
-	DEFAULT_CALL_TIMEOUT = 2 * time.Second
+	DEFAULT_ADAPTIVE_TIMEOUT_INTERVAL         time.Duration = time.Minute
+	DEFAULT_ADAPTIVE_TIMEOUT_INTITIAL_TIMEOUT time.Duration = 10 * time.Second
+	DEFAULT_ADAPTIVE_TIMEOUT_DEC_BY           time.Duration = time.Minute
+	DEFAULT_ADAPTIVE_TIMEOUT_MIN              time.Duration = time.Millisecond
+	DEFAULT_ADAPTIVE_TIMEOUT_MAX              time.Duration = time.Minute
 )
 
 // ResiliencySpec is the configuration for what the service unit will do
@@ -46,6 +54,36 @@ type ResiliencySpec struct {
 	TaskTimeout string `json:"taskTimeout,omitempty"`
 	// callTimeout refers to the timeout assigend to each call attempt
 	CallTimeout string `json:"callTimeout,omitempty"`
+
+	// AdaptiveTaskTimeout takes configurations for adaptive task timeout
+	AdaptiveTaskTimeout AdaptiveTimeoutSpec `json:"adaptiveTaskTimeout,omitempty"`
+
+	// AdaptiveCallTimeout takes configurations for adaptive call timeout
+	AdaptiveCallTimeout AdaptiveTimeoutSpec `json:"adaptiveCallTimeout,omitempty"`
+}
+
+// Get parsed taskTimeout as time.Duration
+func (r ResiliencySpec) GetTaskTimeout() time.Duration {
+	duration, err := time.ParseDuration(r.TaskTimeout)
+	if err != nil {
+		return DEFAULT_TASK_TIMEOUT
+	}
+	if duration == 0 {
+		return DEFAULT_TASK_TIMEOUT
+	}
+	return duration
+}
+
+// Get parsed getCallTimeout as time.Duration
+func (r ResiliencySpec) GetCallTimeout() time.Duration {
+	duration, err := time.ParseDuration(r.CallTimeout)
+	if err != nil {
+		return DEFAULT_CALL_TIMEOUT
+	}
+	if duration == 0 {
+		return DEFAULT_CALL_TIMEOUT
+	}
+	return duration
 }
 
 type RetrySpec struct {
@@ -67,6 +105,29 @@ type RetrySpec struct {
 
 	// Disabled is the flag to turn off retry feature entirely
 	Disabled bool `json:"disabled,omitempty"`
+}
+
+// Get parsed initial backoff as time.Duration
+func (rs *RetrySpec) GetInitialBackoff() time.Duration {
+	duration, err := time.ParseDuration(rs.InitialBackoff)
+	if err != nil {
+		return DEFAULT_RETRY_INITIAL_BACKOFF
+	}
+	return duration
+}
+
+// GetNthBackoff returns the backoff duration for Nth retry attempt.
+func (rs *RetrySpec) GetNthBackoff(n int) time.Duration {
+	switch rs.BackoffPolicy {
+	case CONSTANT_BACKOFF:
+		return rs.GetInitialBackoff()
+	case LINEAR_BACKOFF:
+		return rs.GetInitialBackoff() * time.Duration(n)
+	case EXPONENTIAL_BACKOFF:
+		return rs.GetInitialBackoff() * time.Duration(math.Pow(2, float64(n-1)))
+	case NO_BACKOFF:
+	}
+	return 0
 }
 
 type CircuitBreakerSpec struct {
@@ -106,29 +167,6 @@ type CircuitBreakerSpec struct {
 	Disabled bool `json:"disabled,omitempty"`
 }
 
-// Get parsed initial backoff as time.Duration
-func (rs *RetrySpec) GetInitialBackoff() time.Duration {
-	duration, err := time.ParseDuration(rs.InitialBackoff)
-	if err != nil {
-		return DEFAULT_RETRY_INITIAL_BACKOFF
-	}
-	return duration
-}
-
-// GetNthBackoff returns the backoff duration for Nth retry attempt.
-func (rs *RetrySpec) GetNthBackoff(n int) time.Duration {
-	switch rs.BackoffPolicy {
-	case CONSTANT_BACKOFF:
-		return rs.GetInitialBackoff()
-	case LINEAR_BACKOFF:
-		return rs.GetInitialBackoff() * time.Duration(n)
-	case EXPONENTIAL_BACKOFF:
-		return rs.GetInitialBackoff() * time.Duration(math.Pow(2, float64(n-1)))
-	case NO_BACKOFF:
-	}
-	return 0
-}
-
 // Get parsed circuit breaker interval as time.Duration
 func (cbs *CircuitBreakerSpec) GetInterval() time.Duration {
 	duration, err := time.ParseDuration(cbs.Interval)
@@ -147,26 +185,66 @@ func (cbs *CircuitBreakerSpec) GetTimeout() time.Duration {
 	return duration
 }
 
-// Get parsed taskTimeout as time.Duration
-func (r ResiliencySpec) GetTaskTimeout() time.Duration {
-	duration, err := time.ParseDuration(r.TaskTimeout)
+type AdaptiveTimeoutSpec struct {
+	// Interval is the duration for when internal count is reset
+	// Must be parsable with time.ParseDuration, otherwise default value will be used
+	Interval string `json:"interval,omitempty"`
+	// InitialTimeout is the initial timeout before adjustments
+	// Must be parsable with time.ParseDuration, otherwise default value will be used
+	InitialTimeout string `json:"initialTimeout,omitempty"`
+	// Threshold is the failure rate threshold for triggering adjustments
+	Threshold float32 `json:"threshold,omitempty"`
+	// IncBy is the multiplicative factor that is applied when timeout value is incremented
+	IncBy float32 `json:"incBy,omitempty"`
+	// DecBy is the additive(subtractive) factor that is applied when timeout value is decremented
+	// Must be parsable with time.ParseDuration, otherwise default value will be used
+	DecBy string `json:"decBy,omitempty"`
+	// MinimumCount is the minimum number of count required to check the threshold
+	MinimumCount uint32 `json:"minimumCount,omitempty"`
+	// Min is the minimum timeout duration allowed
+	// Must be parsable with time.ParseDuration, otherwise default value will be used
+	Min string `json:"min,omitempty"`
+	// Max is the maximum timeout duration allowed
+	// Must be parsable with time.ParseDuration, otherwise default value will be used
+	Max string `json:"max,omitempty"`
+}
+
+func (ats *AdaptiveTimeoutSpec) GetInterval() time.Duration {
+	duration, err := time.ParseDuration(ats.Interval)
 	if err != nil {
-		return DEFAULT_TASK_TIMEOUT
-	}
-	if duration == 0 {
-		return DEFAULT_TASK_TIMEOUT
+		return DEFAULT_ADAPTIVE_TIMEOUT_INTERVAL
 	}
 	return duration
 }
 
-// Get parsed getCallTimeout as time.Duration
-func (r ResiliencySpec) GetCallTimeout() time.Duration {
-	duration, err := time.ParseDuration(r.CallTimeout)
+func (ats *AdaptiveTimeoutSpec) GetInitialTimeout() time.Duration {
+	duration, err := time.ParseDuration(ats.InitialTimeout)
 	if err != nil {
-		return DEFAULT_CALL_TIMEOUT
+		return DEFAULT_ADAPTIVE_TIMEOUT_INTITIAL_TIMEOUT
 	}
-	if duration == 0 {
-		return DEFAULT_CALL_TIMEOUT
+	return duration
+}
+
+func (ats *AdaptiveTimeoutSpec) GetDecBy() time.Duration {
+	duration, err := time.ParseDuration(ats.DecBy)
+	if err != nil {
+		return DEFAULT_ADAPTIVE_TIMEOUT_DEC_BY
+	}
+	return duration
+}
+
+func (ats *AdaptiveTimeoutSpec) GetMin() time.Duration {
+	duration, err := time.ParseDuration(ats.Min)
+	if err != nil {
+		return DEFAULT_ADAPTIVE_TIMEOUT_MIN
+	}
+	return duration
+}
+
+func (ats *AdaptiveTimeoutSpec) GetMax() time.Duration {
+	duration, err := time.ParseDuration(ats.Max)
+	if err != nil {
+		return DEFAULT_ADAPTIVE_TIMEOUT_MAX
 	}
 	return duration
 }

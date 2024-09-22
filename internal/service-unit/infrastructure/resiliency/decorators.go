@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/hanapedia/adapto"
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	"github.com/hanapedia/hexagon/internal/service-unit/domain"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/telemetry/metrics"
@@ -141,6 +142,84 @@ func WithTaskTimeout(timeout time.Duration, next CallWithContextAlias) CallWithC
 	return func(ctx context.Context, taskCtx *TaskContext) secondary.SecondaryPortCallResult {
 		newCtx, taskCancel := context.WithTimeout(ctx, timeout)
 		defer taskCancel()
+		result := next(newCtx, taskCtx)
+		return result
+	}
+}
+
+func WithAdaptiveTaskTimeout(spec model.AdaptiveTimeoutSpec, secondaryAdapter secondary.SecodaryPort, next CallWithContextAlias) CallWithContextAlias {
+	adaptoConfig := adapto.Config{
+		Id:             secondaryAdapter.GetDestId(),
+		Interval:       spec.GetInterval(),
+		InitialTimeout: spec.GetInitialTimeout(),
+		Threshold:      spec.Threshold,
+		IncBy:          spec.IncBy,
+		DecBy:          spec.GetDecBy(),
+		MinimumCount:   spec.MinimumCount,
+		Min:            spec.GetMin(),
+		Max:            spec.GetMax(),
+	}
+	return func(ctx context.Context, taskCtx *TaskContext) secondary.SecondaryPortCallResult {
+		timeoutDuration, didDeadlineExceed, err := adapto.GetTimeout(adaptoConfig)
+		if err != nil {
+			logger.Logger.
+				WithField("id", adaptoConfig.Id).
+				WithField("err", err).
+				Errorf("failed to create new adaptive timeout. resorting to default task timeout.")
+			timeoutDuration = model.DEFAULT_TASK_TIMEOUT
+		}
+		go func() {
+			select {
+			case <-ctx.Done():
+				// Check if the context's deadline was exceeded
+				if ctx.Err() == context.DeadlineExceeded {
+					didDeadlineExceed <- true
+				} else {
+					didDeadlineExceed <- false
+				}
+			}
+		}()
+		newCtx, taskCancel := context.WithTimeout(ctx, timeoutDuration)
+		defer taskCancel()
+		result := next(newCtx, taskCtx)
+		return result
+	}
+}
+
+func WithAdaptiveCallTimeout(spec model.AdaptiveTimeoutSpec, secondaryAdapter secondary.SecodaryPort, next CallWithContextAlias) CallWithContextAlias {
+	adaptoConfig := adapto.Config{
+		Id:             secondaryAdapter.GetDestId(),
+		Interval:       spec.GetInterval(),
+		InitialTimeout: spec.GetInitialTimeout(),
+		Threshold:      spec.Threshold,
+		IncBy:          spec.IncBy,
+		DecBy:          spec.GetDecBy(),
+		MinimumCount:   spec.MinimumCount,
+		Min:            spec.GetMin(),
+		Max:            spec.GetMax(),
+	}
+	return func(ctx context.Context, taskCtx *TaskContext) secondary.SecondaryPortCallResult {
+		timeoutDuration, didDeadlineExceed, err := adapto.GetTimeout(adaptoConfig)
+		if err != nil {
+			logger.Logger.
+				WithField("id", adaptoConfig.Id).
+				WithField("err", err).
+				Errorf("failed to create new adaptive timeout. resorting to default call timeout.")
+			timeoutDuration = model.DEFAULT_CALL_TIMEOUT
+		}
+		go func() {
+			select {
+			case <-ctx.Done():
+				// Check if the context's deadline was exceeded
+				if ctx.Err() == context.DeadlineExceeded {
+					didDeadlineExceed <- true
+				} else {
+					didDeadlineExceed <- false
+				}
+			}
+		}()
+		newCtx, callCancel := context.WithTimeout(ctx, timeoutDuration)
+		defer callCancel()
 		result := next(newCtx, taskCtx)
 		return result
 	}
