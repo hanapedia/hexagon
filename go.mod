@@ -4,6 +4,7 @@ go 1.23.1
 
 require (
 	github.com/go-playground/validator/v10 v10.21.0
+	github.com/hanapedia/adapto v1.0.2
 	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.75.2
 	github.com/prometheus/client_golang v1.19.1
 	github.com/redis/go-redis/extra/redisotel/v9 v9.5.3
@@ -43,7 +44,6 @@ require (
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.20.0 // indirect
-	github.com/hanapedia/adapto v1.0.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.17.8 // indirect
