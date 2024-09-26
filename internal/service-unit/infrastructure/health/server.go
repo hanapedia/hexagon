@@ -8,7 +8,7 @@ import (
 	"sync"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/adapters/secondary/config"
-	logger "github.com/hanapedia/hexagon/pkg/operator/log"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
 const (

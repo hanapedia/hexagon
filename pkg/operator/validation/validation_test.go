@@ -5,7 +5,7 @@ import (
 
 	"github.com/hanapedia/hexagon/internal/config/infrastructure/yaml"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
-	logger "github.com/hanapedia/hexagon/pkg/operator/log"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
 // test multiple valid config
