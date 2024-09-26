@@ -10,5 +10,5 @@ import (
 func Log(handler *domain.PrimaryAdapterHandler, startTime time.Time) {
 	elapsed := time.Since(startTime).Milliseconds()
 	logger.Logger.
-		Infof("Message consumed | %-30s | %10v ms", handler.GetId(), elapsed)
+		Tracef("Message consumed | %-30s | %10v ms", handler.GetId(), elapsed)
 }
