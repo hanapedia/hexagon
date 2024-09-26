@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/hanapedia/hexagon/internal/service-unit/domain"
-	logger "github.com/hanapedia/hexagon/pkg/operator/log"
+	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
 func Log(handler *domain.PrimaryAdapterHandler, startTime time.Time) {
