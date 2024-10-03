@@ -48,6 +48,9 @@ func NewTaskHandler(telCtx domain.TelemetryContext, spec model.TaskSpec, adapter
 			handler, circuitBreaker = WithCircuitBreaker(spec.Resiliency.CircutBreaker, adapter, handler)
 			handler = WithCallDurationMetrics(handler)
 		}
+		if spec.Resiliency.CircutBreaker.Disabled && spec.Resiliency.Retry.Disabled {
+			handler = WithCallDurationMetrics(handler)
+		}
 	}
 
 	if spec.Resiliency.AdaptiveTaskTimeout.InitialTimeout != "" {
