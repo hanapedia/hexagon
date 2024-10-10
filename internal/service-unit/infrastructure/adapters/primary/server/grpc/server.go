@@ -126,7 +126,7 @@ func (gsa *GrpcServerAdapter) SimpleRPC(ctx context.Context, req *pb.StreamReque
 	result := runtime.TaskSetHandler(ctx, handler)
 	defer func() {
 		// record metrics
-		go server.ObserveServerAdapterDuration(time.Since(startTime), handler.ServiceName, handler.ServerConfig, result.ShouldFail)
+		server.ObserveServerAdapterDuration(time.Since(startTime), handler.ServiceName, handler.ServerConfig, result.ShouldFail)
 		// decrement in-progress counter
 		server.SetServerAdapterInProgress(domain.DEC, handler.ServiceName, handler.ServerConfig)
 	}()
@@ -173,7 +173,7 @@ func (gsa *GrpcServerAdapter) ClientStreaming(stream pb.Grpc_ClientStreamingServ
 	result := runtime.TaskSetHandler(stream.Context(), handler)
 	defer func() {
 		// record metrics
-		go server.ObserveServerAdapterDuration(time.Since(startTime), handler.ServiceName, handler.ServerConfig, result.ShouldFail)
+		server.ObserveServerAdapterDuration(time.Since(startTime), handler.ServiceName, handler.ServerConfig, result.ShouldFail)
 		// decrement in-progress counter
 		server.SetServerAdapterInProgress(domain.DEC, handler.ServiceName, handler.ServerConfig)
 	}()
@@ -221,7 +221,7 @@ func (gsa *GrpcServerAdapter) ServerStreaming(req *pb.StreamRequest, stream pb.G
 	result := runtime.TaskSetHandler(stream.Context(), handler)
 	defer func() {
 		// record metrics
-		go server.ObserveServerAdapterDuration(time.Since(startTime), handler.ServiceName, handler.ServerConfig, result.ShouldFail)
+		server.ObserveServerAdapterDuration(time.Since(startTime), handler.ServiceName, handler.ServerConfig, result.ShouldFail)
 		// decrement in-progress counter
 		server.SetServerAdapterInProgress(domain.DEC, handler.ServiceName, handler.ServerConfig)
 	}()
@@ -278,7 +278,7 @@ func (gsa *GrpcServerAdapter) BidirectionalStreaming(stream pb.Grpc_Bidirectiona
 	result := runtime.TaskSetHandler(stream.Context(), handler)
 	defer func() {
 		// record metrics
-		go server.ObserveServerAdapterDuration(time.Since(startTime), handler.ServiceName, handler.ServerConfig, result.ShouldFail)
+		server.ObserveServerAdapterDuration(time.Since(startTime), handler.ServiceName, handler.ServerConfig, result.ShouldFail)
 		// decrement in-progress counter
 		server.SetServerAdapterInProgress(domain.DEC, handler.ServiceName, handler.ServerConfig)
 	}()
