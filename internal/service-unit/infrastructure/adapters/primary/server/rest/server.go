@@ -86,7 +86,7 @@ func (rsa *RestServerAdapter) Register(handler *domain.PrimaryAdapterHandler) er
 		result := runtime.TaskSetHandler(r.Context(), handler)
 		defer func() {
 			// record metrics
-			go server.ObserveServerAdapterDuration(time.Since(startTime), handler.ServiceName, handler.ServerConfig, result.ShouldFail)
+			server.ObserveServerAdapterDuration(time.Since(startTime), handler.ServiceName, handler.ServerConfig, result.ShouldFail)
 			server.SetServerAdapterInProgress(domain.DEC, handler.ServiceName, handler.ServerConfig)
 		}()
 

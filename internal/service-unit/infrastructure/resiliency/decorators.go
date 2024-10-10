@@ -43,32 +43,40 @@ func WithUnWrapTaskContext(next CallAlias) CallWithContextAlias {
 	}
 }
 
-func WithCallDurationMetrics(next CallWithContextAlias) CallWithContextAlias {
+func WithCallDurationMetrics(next CallWithContextAlias, async bool) CallWithContextAlias {
 	return func(ctx context.Context, tc *TaskContext) secondary.SecondaryPortCallResult {
 		startTime := time.Now()
 		result := next(ctx, tc)
 		elapsed := time.Since(startTime)
 
-		go func() {
-			var status domain.Status
-			switch result.Error {
-			case nil:
-				status = domain.Ok
-			case context.DeadlineExceeded:
-				status = domain.ErrCtxDeadlineExceeded
-			case context.Canceled:
-				status = domain.ErrCtxCanceled
-			case gobreaker.ErrOpenState:
-				status = domain.ErrCBOpen
-			default:
-				status = domain.ErrGeneric
-			}
+		var status domain.Status
+		switch result.Error {
+		case nil:
+			status = domain.Ok
+		case context.DeadlineExceeded:
+			status = domain.ErrCtxDeadlineExceeded
+		case context.Canceled:
+			status = domain.ErrCtxCanceled
+		case gobreaker.ErrOpenState:
+			status = domain.ErrCBOpen
+		default:
+			status = domain.ErrGeneric
+		}
 
-			var circuitBreakerState = ""
-			if tc.circuitBreaker != nil {
-				circuitBreakerState = tc.circuitBreaker.State().String()
-			}
+		var circuitBreakerState = ""
+		if tc.circuitBreaker != nil {
+			circuitBreakerState = tc.circuitBreaker.State().String()
+		}
 
+		if async {
+			go metrics.ObserveSecondaryAdapterCallDuration(elapsed, domain.SecondaryAdapterCallDurationLabels{
+				Ctx:                 tc.telemetryCtx,
+				Status:              status,
+				NthAttmpt:           tc.attempt,
+				CircuitBreakerState: circuitBreakerState,
+				IsConcurrent:        tc.isConcurrent,
+			})
+		} else {
 			metrics.ObserveSecondaryAdapterCallDuration(elapsed, domain.SecondaryAdapterCallDurationLabels{
 				Ctx:                 tc.telemetryCtx,
 				Status:              status,
@@ -76,37 +84,45 @@ func WithCallDurationMetrics(next CallWithContextAlias) CallWithContextAlias {
 				CircuitBreakerState: circuitBreakerState,
 				IsConcurrent:        tc.isConcurrent,
 			})
-		}()
+		}
 		return result
 	}
 }
 
-func WithTaskDurationMetrics(next CallWithContextAlias) CallWithContextAlias {
+func WithTaskDurationMetrics(next CallWithContextAlias, async bool) CallWithContextAlias {
 	return func(ctx context.Context, tc *TaskContext) secondary.SecondaryPortCallResult {
 		startTime := time.Now()
 		result := next(ctx, tc)
 		elapsed := time.Since(startTime)
 
-		go func() {
-			var status domain.Status
-			switch result.Error {
-			case nil:
-				status = domain.Ok
-			case context.DeadlineExceeded:
-				status = domain.ErrCtxDeadlineExceeded
-			case context.Canceled:
-				status = domain.ErrCtxCanceled
-			case gobreaker.ErrOpenState:
-				status = domain.ErrCBOpen
-			default:
-				status = domain.ErrGeneric
-			}
+		var status domain.Status
+		switch result.Error {
+		case nil:
+			status = domain.Ok
+		case context.DeadlineExceeded:
+			status = domain.ErrCtxDeadlineExceeded
+		case context.Canceled:
+			status = domain.ErrCtxCanceled
+		case gobreaker.ErrOpenState:
+			status = domain.ErrCBOpen
+		default:
+			status = domain.ErrGeneric
+		}
 
-			var circuitBreakerState = ""
-			if tc.circuitBreaker != nil {
-				circuitBreakerState = tc.circuitBreaker.State().String()
-			}
+		var circuitBreakerState = ""
+		if tc.circuitBreaker != nil {
+			circuitBreakerState = tc.circuitBreaker.State().String()
+		}
 
+		if async {
+			go metrics.ObserveSecondaryAdapterTaskDuration(elapsed, domain.SecondaryAdapterTaskDurationLabels{
+				Ctx:                 tc.telemetryCtx,
+				Status:              status,
+				TotalAttempts:       tc.attempt,
+				CircuitBreakerState: circuitBreakerState,
+				IsConcurrent:        tc.isConcurrent,
+			})
+		} else {
 			metrics.ObserveSecondaryAdapterTaskDuration(elapsed, domain.SecondaryAdapterTaskDurationLabels{
 				Ctx:                 tc.telemetryCtx,
 				Status:              status,
@@ -114,7 +130,7 @@ func WithTaskDurationMetrics(next CallWithContextAlias) CallWithContextAlias {
 				CircuitBreakerState: circuitBreakerState,
 				IsConcurrent:        tc.isConcurrent,
 			})
-		}()
+		}
 		return result
 	}
 }
