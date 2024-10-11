@@ -41,7 +41,7 @@ var (
 type ResiliencySpec struct {
 	// IsCritical takes boolean specifying whether to fail
 	// the parent primary adapter call when this secondary adapter call fails.
-	IsCritical bool `json:"concurrent,omitempty"`
+	IsCritical bool `json:"isCritical,omitempty"`
 
 	// Retry configurations
 	Retry RetrySpec `json:"retry,omitempty"`

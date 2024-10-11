@@ -7,7 +7,7 @@ The definitions for Go struct is in [`pkg/api/v1/resiliencyspec.go`](../../../pk
 
 | Parameter     | Description                                   | Default     | Required    |
 |---------------|-----------------------------------------------|-------------|-------------|
-| isCritial     | When set to true, error on this secondary adapter call will result in primary adapter error | false | false |
+| isCritical     | When set to true, error on this secondary adapter call will result in primary adapter error | false | false |
 | retry         | configurations for [retry](#retry) | {} | false |
 | circuitBreaker| configurations for [circuit breaker](#circuit-breaker) | {} | false |
 | callTimeout   | configurations for call timeout. Must be parsable by `time.ParseDuration` | "" | false |
