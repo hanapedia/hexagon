@@ -185,7 +185,7 @@ func WithAdaptiveTaskTimeout(spec model.AdaptiveTimeoutSpec, secondaryAdapter se
 			timeoutDuration = model.DEFAULT_TASK_TIMEOUT
 		}
 		// record gauge metrics for timeout value
-		go metrics.SetAdaptiveTaskTimeoutDuration(timeoutDuration, domain.AdaptiveTimeoutGaugeLabels{Ctx: taskCtx.telemetryCtx})
+		metrics.SetAdaptiveTaskTimeoutDuration(timeoutDuration, domain.AdaptiveTimeoutGaugeLabels{Ctx: taskCtx.telemetryCtx})
 		newCtx, taskCancel := context.WithTimeout(ctx, timeoutDuration)
 		defer taskCancel()
 		go func() {
@@ -226,7 +226,7 @@ func WithAdaptiveCallTimeout(spec model.AdaptiveTimeoutSpec, secondaryAdapter se
 			timeoutDuration = model.DEFAULT_CALL_TIMEOUT
 		}
 		// record gauge metrics for timeout value
-		go metrics.SetAdaptiveCallTimeoutDuration(timeoutDuration, domain.AdaptiveTimeoutGaugeLabels{Ctx: taskCtx.telemetryCtx})
+		metrics.SetAdaptiveCallTimeoutDuration(timeoutDuration, domain.AdaptiveTimeoutGaugeLabels{Ctx: taskCtx.telemetryCtx})
 		newCtx, callCancel := context.WithTimeout(ctx, timeoutDuration)
 		defer callCancel()
 		go func() {
