@@ -8,7 +8,6 @@ import (
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 	"github.com/hanapedia/hexagon/pkg/operator/manifest/serviceunit"
 	"github.com/hanapedia/hexagon/pkg/operator/yaml"
-	promv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 )
@@ -17,7 +16,6 @@ type ServiceUnitManifest struct {
 	deployment     *appsv1.Deployment
 	service        *corev1.Service
 	configMap      *corev1.ConfigMap
-	serviceMonitor *promv1.ServiceMonitor
 }
 
 func NewServiceUnitManifest(suc *model.ServiceUnitConfig, cc *model.ClusterConfig, configPath string) *ServiceUnitManifest {
@@ -29,7 +27,6 @@ func NewServiceUnitManifest(suc *model.ServiceUnitConfig, cc *model.ClusterConfi
 		deployment:     serviceunit.CreateStatelessUnitDeployment(suc, cc),
 		service:        serviceunit.CreateStatelessUnitService(suc, cc),
 		configMap:      serviceunit.CreateStatelessUnitYamlConfigMap(suc, cc, string(data)),
-		serviceMonitor: serviceunit.CreateServiceMonitor(suc, cc),
 	}
 
 	return &manifest
@@ -76,16 +73,5 @@ func (sum *ServiceUnitManifest) Generate(config *model.ServiceUnitConfig, path s
 			},
 		}
 	}
-
-	serviceMonitorYaml := yaml.GenerateManifest(sum.serviceMonitor)
-	_, err = file.WriteString(core.FormatManifest(serviceMonitorYaml))
-	if err != nil {
-		return core.ManifestErrors{
-			Stateless: []core.StatelessManifestError{
-				core.NewStatelessManifestError(config, "Failed to write ServiceMonitor manifest"),
-			},
-		}
-	}
-
 	return core.ManifestErrors{}
 }
