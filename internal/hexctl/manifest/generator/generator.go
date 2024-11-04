@@ -85,8 +85,14 @@ func (mg ManifestGenerator) GenerateManifest() core.ManifestErrors {
 		manfiestErrors.Extend(loadGeneratorManifest.Generate(mg.ServiceUnitConfig, path))
 	}
 
+	// generate service monitor manifests
+	serviceMonitorManifest := serviceunit.NewServiceMonitorManifest(mg.ServiceUnitConfig, mg.ClusterConfig)
+	path := core.GetFilePath(mg.Output, mg.ServiceUnitConfig.Name, "service-monitor")
+	manfiestErrors.Extend(serviceMonitorManifest.Generate(mg.ServiceUnitConfig, path))
+
+	// generate service unit manifests
 	serviceUnitManifest := serviceunit.NewServiceUnitManifest(mg.ServiceUnitConfig, mg.ClusterConfig, mg.Input)
-	path := core.GetFilePath(mg.Output, mg.ServiceUnitConfig.Name, "service-unit")
+	path = core.GetFilePath(mg.Output, mg.ServiceUnitConfig.Name, "service-unit")
 	manfiestErrors.Extend(serviceUnitManifest.Generate(mg.ServiceUnitConfig, path))
 
 	return manfiestErrors
