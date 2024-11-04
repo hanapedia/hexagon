@@ -20,12 +20,14 @@ func SetPrimaryAdapterInProgress(op domain.GaugeOp, labels domain.PrimaryAdapter
 
 func SetAdaptiveTaskTimeoutDuration(value time.Duration, labels domain.AdaptiveTimeoutGaugeLabels) {
 	metrics := GetInstance()
-	metrics.AdaptiveTaskTimeoutDuration.With(labels.AsMap()).Set(float64(value))
+	ms := float64(value) / float64(time.Millisecond)
+	metrics.AdaptiveTaskTimeoutDuration.With(labels.AsMap()).Set(ms)
 }
 
 func SetAdaptiveCallTimeoutDuration(value time.Duration, labels domain.AdaptiveTimeoutGaugeLabels) {
 	metrics := GetInstance()
-	metrics.AdaptiveCallTimeoutDuration.With(labels.AsMap()).Set(float64(value))
+	ms := float64(value) / float64(time.Millisecond)
+	metrics.AdaptiveCallTimeoutDuration.With(labels.AsMap()).Set(ms)
 }
 
 // SetGaugeMetricsFromSpecs sets gauge metrics from resiliency spec.
