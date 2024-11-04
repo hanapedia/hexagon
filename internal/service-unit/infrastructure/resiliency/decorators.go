@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/hanapedia/adapto"
+	"github.com/hanapedia/adapto/rto"
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	"github.com/hanapedia/hexagon/internal/service-unit/domain"
 	"github.com/hanapedia/hexagon/internal/service-unit/infrastructure/telemetry/metrics"
@@ -188,18 +189,13 @@ func WithAdaptiveTaskTimeout(spec model.AdaptiveTimeoutSpec, secondaryAdapter se
 		metrics.SetAdaptiveTaskTimeoutDuration(timeoutDuration, domain.AdaptiveTimeoutGaugeLabels{Ctx: taskCtx.telemetryCtx})
 		newCtx, taskCancel := context.WithTimeout(ctx, timeoutDuration)
 		defer taskCancel()
-		go func() {
-			select {
-			case <-newCtx.Done():
-				// Check if the context's deadline was exceeded
-				if newCtx.Err() == context.DeadlineExceeded {
-					didDeadlineExceed <- true
-				} else {
-					didDeadlineExceed <- false
-				}
-			}
-		}()
+
 		result := next(newCtx, taskCtx)
+		if newCtx.Err() == context.DeadlineExceeded {
+			didDeadlineExceed <- true
+		} else {
+			didDeadlineExceed <- false
+		}
 		return result
 	}
 }
@@ -229,18 +225,49 @@ func WithAdaptiveCallTimeout(spec model.AdaptiveTimeoutSpec, secondaryAdapter se
 		metrics.SetAdaptiveCallTimeoutDuration(timeoutDuration, domain.AdaptiveTimeoutGaugeLabels{Ctx: taskCtx.telemetryCtx})
 		newCtx, callCancel := context.WithTimeout(ctx, timeoutDuration)
 		defer callCancel()
-		go func() {
-			select {
-			case <-newCtx.Done():
-				// Check if the context's deadline was exceeded
-				if newCtx.Err() == context.DeadlineExceeded {
-					didDeadlineExceed <- true
-				} else {
-					didDeadlineExceed <- false
-				}
-			}
-		}()
+
 		result := next(newCtx, taskCtx)
+		if newCtx.Err() == context.DeadlineExceeded {
+			didDeadlineExceed <- true
+		} else {
+			didDeadlineExceed <- false
+		}
+		return result
+	}
+}
+
+func WithAdaptiveRTOCallTimeout(spec model.AdaptiveTimeoutSpec, secondaryAdapter secondary.SecodaryPort, next CallWithContextAlias) CallWithContextAlias {
+	adaptoRTOConfig := rto.Config{
+		Id:     secondaryAdapter.GetDestId(),
+		Min:    spec.GetMin(),
+		Max:    spec.GetMax(),
+		Margin: spec.RTOMargin,
+	}
+	return func(ctx context.Context, taskCtx *TaskContext) secondary.SecondaryPortCallResult {
+		timeoutDuration, rttCh, err := rto.GetTimeout(adaptoRTOConfig)
+		if err != nil {
+			logger.Logger.
+				WithField("id", adaptoRTOConfig.Id).
+				WithField("err", err).
+				Errorf("failed to create new adaptive RTO timeout. resorting to default call timeout.")
+			timeoutDuration = model.DEFAULT_CALL_TIMEOUT
+		}
+		// record gauge metrics for timeout value
+		metrics.SetAdaptiveCallTimeoutDuration(timeoutDuration, domain.AdaptiveTimeoutGaugeLabels{Ctx: taskCtx.telemetryCtx})
+
+		newCtx, callCancel := context.WithTimeout(ctx, timeoutDuration)
+		defer callCancel()
+
+		startTime := time.Now()
+		result := next(newCtx, taskCtx)
+
+		// Check for cancelation or timeout after `next` returns
+		if newCtx.Err() == context.DeadlineExceeded {
+			rttCh <- rto.DeadlineExceeded
+		} else if result.Error == nil {
+			elapsed := time.Since(startTime)
+			rttCh <- elapsed
+		}
 		return result
 	}
 }

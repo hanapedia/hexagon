@@ -186,6 +186,7 @@ func (cbs *CircuitBreakerSpec) GetTimeout() time.Duration {
 }
 
 type AdaptiveTimeoutSpec struct {
+	Enabled bool `json:"enabled,omitempty"`
 	// Interval is the duration for when internal count is reset
 	// Must be parsable with time.ParseDuration, otherwise default value will be used
 	Interval string `json:"interval,omitempty"`
@@ -207,6 +208,10 @@ type AdaptiveTimeoutSpec struct {
 	// Max is the maximum timeout duration allowed
 	// Must be parsable with time.ParseDuration, otherwise default value will be used
 	Max string `json:"max,omitempty"`
+	// RTO is the flag to indicate whether to use RTO
+	RTO bool `json:"rto,omitempty"`
+	// RTOMargin is the margin factor used in RTO timeout
+	RTOMargin int64 `json:"margin,omitempty"`
 }
 
 func (ats *AdaptiveTimeoutSpec) GetInterval() time.Duration {
