@@ -29,11 +29,9 @@ var (
 )
 
 var (
-	DEFAULT_ADAPTIVE_TIMEOUT_INTERVAL         time.Duration = time.Minute
-	DEFAULT_ADAPTIVE_TIMEOUT_INTITIAL_TIMEOUT time.Duration = 10 * time.Second
-	DEFAULT_ADAPTIVE_TIMEOUT_DEC_BY           time.Duration = time.Minute
-	DEFAULT_ADAPTIVE_TIMEOUT_MIN              time.Duration = time.Millisecond
-	DEFAULT_ADAPTIVE_TIMEOUT_MAX              time.Duration = time.Minute
+	DEFAULT_ADAPTIVE_TIMEOUT_INTERVAL time.Duration = time.Minute
+	DEFAULT_ADAPTIVE_TIMEOUT_MIN      time.Duration = time.Millisecond
+	DEFAULT_ADAPTIVE_TIMEOUT_MAX      time.Duration = time.Minute
 )
 
 // ResiliencySpec is the configuration for what the service unit will do
@@ -186,22 +184,6 @@ func (cbs *CircuitBreakerSpec) GetTimeout() time.Duration {
 }
 
 type AdaptiveTimeoutSpec struct {
-	Enabled bool `json:"enabled,omitempty"`
-	// Interval is the duration for when internal count is reset
-	// Must be parsable with time.ParseDuration, otherwise default value will be used
-	Interval string `json:"interval,omitempty"`
-	// InitialTimeout is the initial timeout before adjustments
-	// Must be parsable with time.ParseDuration, otherwise default value will be used
-	InitialTimeout string `json:"initialTimeout,omitempty"`
-	// Threshold is the failure rate threshold for triggering adjustments
-	Threshold float32 `json:"threshold,omitempty"`
-	// IncBy is the multiplicative factor that is applied when timeout value is incremented
-	IncBy float32 `json:"incBy,omitempty"`
-	// DecBy is the additive(subtractive) factor that is applied when timeout value is decremented
-	// Must be parsable with time.ParseDuration, otherwise default value will be used
-	DecBy string `json:"decBy,omitempty"`
-	// MinimumCount is the minimum number of count required to check the threshold
-	MinimumCount uint32 `json:"minimumCount,omitempty"`
 	// Min is the minimum timeout duration allowed
 	// Must be parsable with time.ParseDuration, otherwise default value will be used
 	Min string `json:"min,omitempty"`
@@ -210,30 +192,18 @@ type AdaptiveTimeoutSpec struct {
 	Max string `json:"max,omitempty"`
 	// RTO is the flag to indicate whether to use RTO
 	RTO bool `json:"rto,omitempty"`
-	// RTOMargin is the margin factor used in RTO timeout
-	RTOMargin int64 `json:"margin,omitempty"`
+	// SLO is the SLO failure rate target used by RTO
+	SLO float64 `json:"slo,omitempty"`
+	// Capacity is the capacity used by RTO to determine the change in load pattern
+	Capacity int64 `json:"capacity,omitempty"`
+	// Interval is the duration used for the periodic calculation of failure rate
+	Interval string `json:"interval,omitempty"`
 }
 
 func (ats *AdaptiveTimeoutSpec) GetInterval() time.Duration {
 	duration, err := time.ParseDuration(ats.Interval)
 	if err != nil {
 		return DEFAULT_ADAPTIVE_TIMEOUT_INTERVAL
-	}
-	return duration
-}
-
-func (ats *AdaptiveTimeoutSpec) GetInitialTimeout() time.Duration {
-	duration, err := time.ParseDuration(ats.InitialTimeout)
-	if err != nil {
-		return DEFAULT_ADAPTIVE_TIMEOUT_INTITIAL_TIMEOUT
-	}
-	return duration
-}
-
-func (ats *AdaptiveTimeoutSpec) GetDecBy() time.Duration {
-	duration, err := time.ParseDuration(ats.DecBy)
-	if err != nil {
-		return DEFAULT_ADAPTIVE_TIMEOUT_DEC_BY
 	}
 	return duration
 }
