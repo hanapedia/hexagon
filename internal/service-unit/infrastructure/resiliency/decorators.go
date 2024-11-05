@@ -6,7 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hanapedia/adapto"
 	"github.com/hanapedia/adapto/rto"
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	"github.com/hanapedia/hexagon/internal/service-unit/domain"
@@ -164,84 +163,15 @@ func WithTaskTimeout(timeout time.Duration, next CallWithContextAlias) CallWithC
 	}
 }
 
-func WithAdaptiveTaskTimeout(spec model.AdaptiveTimeoutSpec, secondaryAdapter secondary.SecodaryPort, next CallWithContextAlias) CallWithContextAlias {
-	adaptoConfig := adapto.Config{
-		Id:             secondaryAdapter.GetDestId(),
-		Interval:       spec.GetInterval(),
-		InitialTimeout: spec.GetInitialTimeout(),
-		Threshold:      spec.Threshold,
-		IncBy:          spec.IncBy,
-		DecBy:          spec.GetDecBy(),
-		MinimumCount:   spec.MinimumCount,
-		Min:            spec.GetMin(),
-		Max:            spec.GetMax(),
-	}
-	return func(ctx context.Context, taskCtx *TaskContext) secondary.SecondaryPortCallResult {
-		timeoutDuration, didDeadlineExceed, err := adapto.GetTimeout(adaptoConfig)
-		if err != nil {
-			logger.Logger.
-				WithField("id", adaptoConfig.Id).
-				WithField("err", err).
-				Errorf("failed to create new adaptive timeout. resorting to default task timeout.")
-			timeoutDuration = model.DEFAULT_TASK_TIMEOUT
-		}
-		// record gauge metrics for timeout value
-		metrics.SetAdaptiveTaskTimeoutDuration(timeoutDuration, domain.AdaptiveTimeoutGaugeLabels{Ctx: taskCtx.telemetryCtx})
-		newCtx, taskCancel := context.WithTimeout(ctx, timeoutDuration)
-		defer taskCancel()
-
-		result := next(newCtx, taskCtx)
-		if newCtx.Err() == context.DeadlineExceeded {
-			didDeadlineExceed <- true
-		} else {
-			didDeadlineExceed <- false
-		}
-		return result
-	}
-}
-
-func WithAdaptiveCallTimeout(spec model.AdaptiveTimeoutSpec, secondaryAdapter secondary.SecodaryPort, next CallWithContextAlias) CallWithContextAlias {
-	adaptoConfig := adapto.Config{
-		Id:             secondaryAdapter.GetDestId(),
-		Interval:       spec.GetInterval(),
-		InitialTimeout: spec.GetInitialTimeout(),
-		Threshold:      spec.Threshold,
-		IncBy:          spec.IncBy,
-		DecBy:          spec.GetDecBy(),
-		MinimumCount:   spec.MinimumCount,
-		Min:            spec.GetMin(),
-		Max:            spec.GetMax(),
-	}
-	return func(ctx context.Context, taskCtx *TaskContext) secondary.SecondaryPortCallResult {
-		timeoutDuration, didDeadlineExceed, err := adapto.GetTimeout(adaptoConfig)
-		if err != nil {
-			logger.Logger.
-				WithField("id", adaptoConfig.Id).
-				WithField("err", err).
-				Errorf("failed to create new adaptive timeout. resorting to default call timeout.")
-			timeoutDuration = model.DEFAULT_CALL_TIMEOUT
-		}
-		// record gauge metrics for timeout value
-		metrics.SetAdaptiveCallTimeoutDuration(timeoutDuration, domain.AdaptiveTimeoutGaugeLabels{Ctx: taskCtx.telemetryCtx})
-		newCtx, callCancel := context.WithTimeout(ctx, timeoutDuration)
-		defer callCancel()
-
-		result := next(newCtx, taskCtx)
-		if newCtx.Err() == context.DeadlineExceeded {
-			didDeadlineExceed <- true
-		} else {
-			didDeadlineExceed <- false
-		}
-		return result
-	}
-}
-
 func WithAdaptiveRTOCallTimeout(spec model.AdaptiveTimeoutSpec, secondaryAdapter secondary.SecodaryPort, next CallWithContextAlias) CallWithContextAlias {
 	adaptoRTOConfig := rto.Config{
-		Id:     secondaryAdapter.GetDestId(),
-		Min:    spec.GetMin(),
-		Max:    spec.GetMax(),
-		Margin: spec.RTOMargin,
+		Id:       secondaryAdapter.GetDestId(),
+		Min:      spec.GetMin(),
+		Max:      spec.GetMax(),
+		SLO:      spec.SLO,
+		Capacity: spec.Capacity,
+		Interval: spec.GetInterval(),
+		Logger:   logger.AdaptoLogger,
 	}
 	return func(ctx context.Context, taskCtx *TaskContext) secondary.SecondaryPortCallResult {
 		timeoutDuration, rttCh, err := rto.GetTimeout(adaptoRTOConfig)
