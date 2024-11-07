@@ -14,19 +14,19 @@ type AdaptoLoggerType struct {
 
 // Info logs an informational message
 func (l *AdaptoLoggerType) Info(msg string, args ...interface{}) {
-	fields := convertToLogrusFields(args)
+	fields := convertToLogrusFields(args...)
 	l.logger.WithFields(fields).Info(msg)
 }
 
 // Error logs an error message
 func (l *AdaptoLoggerType) Error(msg string, args ...interface{}) {
-	fields := convertToLogrusFields(args)
+	fields := convertToLogrusFields(args...)
 	l.logger.WithFields(fields).Error(msg)
 }
 
 // Debug logs a debug message
 func (l *AdaptoLoggerType) Debug(msg string, args ...interface{}) {
-	fields := convertToLogrusFields(args)
+	fields := convertToLogrusFields(args...)
 	l.logger.WithFields(fields).Debug(msg)
 }
 
