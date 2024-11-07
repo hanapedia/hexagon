@@ -56,6 +56,8 @@ github.com/hanapedia/adapto v1.0.12 h1:gi0h/Cx8AkKPb/NNL2oR4h+6h97kDOsYcI5cP/z+e
 github.com/hanapedia/adapto v1.0.12/go.mod h1:GhOAHo+lsCUso5+S+0JyvVADO5k2C2HGO1XdFurCIG4=
 github.com/hanapedia/adapto v1.0.13 h1:BSMiJBdvkzGjq0HNdZzMFoVsNtd55G1m8OfPCplCNCc=
 github.com/hanapedia/adapto v1.0.13/go.mod h1:GhOAHo+lsCUso5+S+0JyvVADO5k2C2HGO1XdFurCIG4=
+github.com/hanapedia/adapto v1.0.14 h1:R9fk9/1LT3VP6Yy03O868BpMpX97YazmkQMV/sJS2RQ=
+github.com/hanapedia/adapto v1.0.14/go.mod h1:GhOAHo+lsCUso5+S+0JyvVADO5k2C2HGO1XdFurCIG4=
 github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2s0bqwp9tc8=
 github.com/inconshreveable/mousetrap v1.1.0/go.mod h1:vpF70FUmC8bwa3OWnCshd2FqLfsEA9PFc4w1p2J65bw=
 github.com/json-iterator/go v1.1.12 h1:PV8peI4a0ysnczrg+LtxykD8LfKY9ML6u2jnxaEnrnM=
