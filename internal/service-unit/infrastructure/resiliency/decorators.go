@@ -171,6 +171,7 @@ func WithAdaptiveRTOCallTimeout(spec model.AdaptiveTimeoutSpec, secondaryAdapter
 		SLO:      spec.SLO,
 		Capacity: spec.Capacity,
 		Interval: spec.GetInterval(),
+		KMargin:  spec.KMargin,
 		Logger:   logger.AdaptoLogger,
 	}
 	return func(ctx context.Context, taskCtx *TaskContext) secondary.SecondaryPortCallResult {

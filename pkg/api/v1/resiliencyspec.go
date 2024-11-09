@@ -198,6 +198,8 @@ type AdaptiveTimeoutSpec struct {
 	Capacity int64 `json:"capacity,omitempty"`
 	// Interval is the duration used for the periodic calculation of failure rate
 	Interval string `json:"interval,omitempty"`
+	// KMargin is the starting kMargin used for rto w/ slo and static kMargin for rto w/out SLO
+	KMargin int64 `json:"kMargin,omitempty"`
 }
 
 func (ats *AdaptiveTimeoutSpec) GetInterval() time.Duration {
