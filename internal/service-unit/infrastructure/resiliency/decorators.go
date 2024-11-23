@@ -165,14 +165,14 @@ func WithTaskTimeout(timeout time.Duration, next CallWithContextAlias) CallWithC
 
 func WithAdaptiveRTOCallTimeout(spec model.AdaptiveTimeoutSpec, secondaryAdapter secondary.SecodaryPort, next CallWithContextAlias) CallWithContextAlias {
 	adaptoRTOConfig := rto.Config{
-		Id:       secondaryAdapter.GetDestId(),
-		Min:      spec.GetMin(),
-		Max:      spec.GetMax(),
-		SLO:      spec.SLO,
-		Capacity: spec.Capacity,
-		Interval: spec.GetInterval(),
-		KMargin:  spec.KMargin,
-		Logger:   logger.AdaptoLogger,
+		Id:             secondaryAdapter.GetDestId(),
+		Min:            spec.GetMin(),
+		Max:            spec.GetMax(),
+		SLOFailureRate: spec.SLO,
+		/* Capacity:       spec.Capacity, */
+		Interval:       spec.GetInterval(),
+		KMargin:        spec.KMargin,
+		Logger:         logger.AdaptoLogger,
 	}
 	return func(ctx context.Context, taskCtx *TaskContext) secondary.SecondaryPortCallResult {
 		timeoutDuration, rttCh, err := rto.GetTimeout(adaptoRTOConfig)
