@@ -23,7 +23,7 @@ func NewSecondaryAdapter(config *model.SecondaryAdapterConfig, client secondary.
 		return producer.NewSecondaryAdapter(config.ProducerConfig, client)
 	}
 	if config.StressorConfig != nil {
-		return stressor.NewSecondaryAdapter(config.StressorConfig)
+		return stressor.NewSecondaryAdapter(config.StressorConfig, client)
 	}
 	err := errors.New("No matching protocol found when making secondary adapter.")
 
@@ -39,6 +39,9 @@ func NewSecondaryAdapterClient(config *model.SecondaryAdapterConfig) secondary.S
 	}
 	if config.ProducerConfig != nil {
 		return producer.NewClient(config.ProducerConfig)
+	}
+	if config.StressorConfig != nil {
+		return stressor.NewClient(config.StressorConfig)
 	}
 	l.Logger.Fatalf("invalid protocol")
 	return nil

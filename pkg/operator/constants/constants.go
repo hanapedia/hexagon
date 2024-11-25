@@ -74,3 +74,7 @@ const (
 const (
 	NumInitialEntries = 100
 )
+
+const (
+	DISK_STRESSOR_TMP_FILEPATH = "/tmp/shared_io_file"
+)
