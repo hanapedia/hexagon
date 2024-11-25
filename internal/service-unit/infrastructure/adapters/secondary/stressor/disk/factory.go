@@ -1,4 +1,4 @@
-package cpu
+package disk
 
 import (
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
@@ -6,8 +6,8 @@ import (
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
 )
 
-func CpuStressorAdapterFactory(adapterConfig *model.StressorConfig) (secondary.SecodaryPort, error) {
-	var cpuStressor secondary.SecodaryPort
+func DiskStressorAdapterFactory(adapterConfig *model.StressorConfig, client secondary.SecondaryAdapterClient) (secondary.SecodaryPort, error) {
+	var diskStressor secondary.SecodaryPort
 	var err error
 
 	iters := adapterConfig.Iterations
@@ -20,27 +20,16 @@ func CpuStressorAdapterFactory(adapterConfig *model.StressorConfig) (secondary.S
 		threadCount = 1
 	}
 
-	cpuStressor = &cpuStressorAdapter{
+	diskStressor = &diskStressorAdapter{
 		payloadSize: model.GetPayloadSize(adapterConfig.Payload),
 		iterations:  iters,
 		threadCount: threadCount,
+
 	}
 
 	// set destionation id
-	cpuStressor.SetDestId(adapterConfig.GetId())
+	diskStressor.SetDestId(adapterConfig.GetId())
 
 	logger.Logger.Debugf("Initialized cpu stressor adapter: %s", adapterConfig.GetId())
-	return cpuStressor, err
-}
-
-// Empty client for cpu stressor
-// implements SecondaryAdapterClient
-type CpuStressorClient struct{}
-
-func (csc *CpuStressorClient) Close() {
-	return
-}
-
-func NewCpuStressorClient() *CpuStressorClient {
-	return &CpuStressorClient{}
+	return diskStressor, err
 }
