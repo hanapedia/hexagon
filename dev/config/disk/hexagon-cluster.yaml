@@ -1,0 +1,4 @@
+kind: ClusterConfig
+tracing:
+  enabled: false
+logLevel: info

@@ -99,7 +99,6 @@ adapters:
       stressor:
         name: cpu
         variant: cpu
-        duration: 10ms
         payload:
           variant: large
   - adapter:

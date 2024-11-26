@@ -1,0 +1,45 @@
+# Service Unit definition for service A in single tier application.
+# A -> B, A -> C, A calls B and then C sequentially
+version: dev
+name: service-a
+deployment:
+  replicas: 1
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
+adapters:
+- server:
+    action: read
+    variant: rest
+    route: gateway
+  tasks:
+  - adapter:
+      stressor:
+        name: cpu-stressor
+        variant: cpu
+        iters: 2
+        threads: 1
+  - adapter:
+      invocation:
+        variant: rest
+        service: service-b
+        action: get
+        route: get
+    resiliency:
+      isCritical: true
+      adaptiveCallTimeout:
+        rto: true
+        min: 1ms
+        max: 1s
+        slo: 0.01
+        capacity: 145
+        interval: 5s
+        kMargin: 1
+      retry:
+        disabled: true
+      circuitBreaker:
+        disabled: true

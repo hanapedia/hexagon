@@ -17,8 +17,13 @@ adapters:
         service: grpcserver
         action: simpleRpc
         route: get
-      onError:
-        retryBackoffPolicy: exponential
-        retryMaxAttempt: 5
-        retryInitialBackoff: 1s
-      timeout: 15ms
+    resiliency:
+      isCritical: true
+      retry:
+        disabled: false
+        backoffPolicy: exponential
+        maxAttempt: 5
+        initialBackoff: 1s
+      circuitBreaker:
+        disabled: true
+      callTimeout: 15ms

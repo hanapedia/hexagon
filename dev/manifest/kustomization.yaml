@@ -13,4 +13,5 @@ resources:
   # - ./onlineboutique
   # - ./onlineboutique-async
   # - ./timeout-test
-  - ./rest-monitored
+  # - ./rest-monitored
+  - ./disk

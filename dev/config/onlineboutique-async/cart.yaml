@@ -42,6 +42,7 @@ adapters:
             payload:
               size: 18
               variant: small
+      - adapter:
           repository:
             name: cartredis
             variant: redis
