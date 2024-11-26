@@ -1,6 +1,8 @@
 package disk
 
 import (
+	"fmt"
+
 	"github.com/hanapedia/hexagon/internal/service-unit/application/ports/secondary"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/logger"
@@ -20,11 +22,15 @@ func DiskStressorAdapterFactory(adapterConfig *model.StressorConfig, client seco
 		threadCount = 1
 	}
 
-	diskStressor = &diskStressorAdapter{
-		payloadSize: model.GetPayloadSize(adapterConfig.Payload),
-		iterations:  iters,
-		threadCount: threadCount,
-
+	if diskClient, ok := (client).(*DiskStressorClient); ok {
+		diskStressor = &diskStressorAdapter{
+			payloadSize: model.GetPayloadSize(adapterConfig.Payload),
+			iterations:  iters,
+			threadCount: threadCount,
+			client:      diskClient,
+		}
+	} else {
+		err = fmt.Errorf("Unmatched client instance")
 	}
 
 	// set destionation id
