@@ -36,7 +36,7 @@ func (dsa *diskStressorAdapter) Call(ctx context.Context) secondary.SecondaryPor
 		wg.Add(1)
 		go func(p string) {
 			defer wg.Done()
-			stressDisk(ctx, dsa.client.file, dsa.iterations, []byte(p))
+			stressDisk(ctx, dsa.client.readFile, dsa.client.writeFile, dsa.iterations, dsa.payloadSize)
 		}(payload)
 	}
 
@@ -56,26 +56,34 @@ func (dsa *diskStressorAdapter) Call(ctx context.Context) secondary.SecondaryPor
 	}
 }
 
-// stressDisk simulates disk I/O stress by reading and writing small chunks iteratively
-func stressDisk(ctx context.Context, file *os.File, iter int, payload []byte) error {
+func stressDisk(ctx context.Context, srcFile, dstFile *os.File, iter int, chunkSize int64) error {
+	buffer := make([]byte, chunkSize)
+
 	for i := 0; i < iter; i++ {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
 		default:
-			// Read from the file
-			_, err := file.Read(payload)
-			if err != nil && err != os.ErrClosed && err != io.EOF {
-				return fmt.Errorf("error reading file: %v", err)
+			// Copy data from srcFile to dstFile
+			if _, err := srcFile.Seek(0, 0); err != nil {
+				return fmt.Errorf("failed to seek srcFile: %v", err)
+			}
+			if err := dstFile.Truncate(0); err != nil {
+				return fmt.Errorf("failed to truncate dstFile: %v", err)
+			}
+			if _, err := dstFile.Seek(0, 0); err != nil {
+				return fmt.Errorf("failed to seek dstFile: %v", err)
 			}
 
-			// Write back to the file
-			_, err = file.Write(payload)
+			// Perform the copy
+			_, err := io.CopyBuffer(dstFile, srcFile, buffer)
 			if err != nil {
-				return fmt.Errorf("error writing file: %v", err)
+				return fmt.Errorf("error during io.Copy: %v", err)
 			}
+
+			// Swap src and dst for the next iteration
+			srcFile, dstFile = dstFile, srcFile
 		}
 	}
-
 	return nil
 }

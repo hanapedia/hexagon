@@ -30,7 +30,7 @@ func NewClient(adapterConfig *model.StressorConfig) secondary.SecondaryAdapterCl
 		cpuStressorClient := cpu.NewCpuStressorClient()
 		return cpuStressorClient
 	case constants.DISK:
-		diskStressorClient := disk.NewDiskStressorClient(adapterConfig.GetGroupByKey())
+		diskStressorClient := disk.NewDiskStressorClient(adapterConfig)
 		return diskStressorClient
 	default:
 		logger.Logger.Fatalf("invalid protocol")

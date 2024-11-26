@@ -76,5 +76,5 @@ const (
 )
 
 const (
-	DISK_STRESSOR_TMP_FILEPATH = "/tmp/shared_io_file"
+	DISK_STRESSOR_TMP_FILEPATH = "/tmp"
 )
