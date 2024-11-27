@@ -14,19 +14,22 @@ type CommonConfig struct {
 }
 
 // GenerateChain generates ServiceUnitConfigs for chain topology of given tiers.
-func GenerateChain(tiers uint64, commonConfig CommonConfig) []v1.ServiceUnitConfig {
+func GenerateChain(commonConfigs []CommonConfig) []v1.ServiceUnitConfig {
 	configs := []v1.ServiceUnitConfig{}
-	for tier := range tiers - 1 {
+	for tier, commonConfig := range commonConfigs[:len(commonConfigs)-1] {
 		configs = append(configs, NewTrunkOrBranchService(
 			commonConfig.Version,
-			tier,
+			uint64(tier),
 			0,
-			tier == tier-2,
+			tier == len(commonConfigs)-2,
 			commonConfig.Timeout,
 			commonConfig.AdaptiveTimeout,
 		))
 	}
-	configs = append(configs, NewLeafService(commonConfig.Version, tiers-1, 0))
-
+	configs = append(configs, NewLeafService(
+		commonConfigs[len(commonConfigs)-1].Version,
+		uint64(len(commonConfigs)-1),
+		0,
+	))
 	return configs
 }
