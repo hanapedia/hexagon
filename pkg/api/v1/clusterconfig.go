@@ -6,6 +6,7 @@ type ClusterConfig struct {
 	ConfigTemplate
 	Namespace         string                     `json:"namespace,omitempty"`
 	LogLevel          string                     `json:"logLevel,omitempty"`
+	ServiceMonitor    bool                       `json:"serviceMonitor,omitempty"`
 	DockerHubUsername string                     `json:"dockerHubUsername,omitempty"`
 	MetricsPort       int32                      `json:"metricsPort,omitempty"`
 	HealthPort        int32                      `json:"healthPort,omitempty"`
@@ -52,6 +53,7 @@ func NewClusterConfig() ClusterConfig {
 	return ClusterConfig{
 		Namespace:         defaults.NAMESPACE,
 		LogLevel:          defaults.LOG_LEVEL,
+		ServiceMonitor:    defaults.SERVICE_MONITOR,
 		DockerHubUsername: defaults.DOCKER_USERNAME,
 		MetricsPort:       defaults.METRICS_PORT,
 		HealthPort:        defaults.HEALTH_PORT,
