@@ -22,6 +22,7 @@ func GenerateChain(commonConfigs []CommonConfig) []v1.ServiceUnitConfig {
 			uint64(tier),
 			0,
 			tier == len(commonConfigs)-2,
+			1,
 			commonConfig.Timeout,
 			commonConfig.AdaptiveTimeout,
 		))
@@ -31,5 +32,36 @@ func GenerateChain(commonConfigs []CommonConfig) []v1.ServiceUnitConfig {
 		uint64(len(commonConfigs)-1),
 		0,
 	))
+	return configs
+}
+
+// GenerateFanout generates ServiceUnitConfigs for fanout topology of given tiers.
+// []CommonConfig should contain configs for each tier. Note that it is not for each service.
+// so leaves will have same config for example.
+func GenerateFanout(commonConfigs []CommonConfig, fanoutDegree uint64) []v1.ServiceUnitConfig {
+	configs := []v1.ServiceUnitConfig{}
+	for tier, commonConfig := range commonConfigs[:len(commonConfigs)-1] {
+		var fanout uint64 = 1
+		isEdge := tier == len(commonConfigs)-2
+		if isEdge {
+			fanout = fanoutDegree
+		}
+		configs = append(configs, NewTrunkOrBranchService(
+			commonConfig.Version,
+			uint64(tier),
+			0,
+			isEdge,
+			fanout,
+			commonConfig.Timeout,
+			commonConfig.AdaptiveTimeout,
+		))
+	}
+	for index := range fanoutDegree {
+		configs = append(configs, NewLeafService(
+			commonConfigs[len(commonConfigs)-1].Version,
+			uint64(len(commonConfigs)-1),
+			index,
+		))
+	}
 	return configs
 }
