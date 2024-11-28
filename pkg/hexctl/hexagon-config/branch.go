@@ -41,7 +41,7 @@ import (
 /*         disabled: true */
 /*       circuitBreaker: */
 /*         disabled: true */
-func NewTrunkOrBranchService(version string, tier, index uint64, isEdge bool, timeout time.Duration, adaptiveTimeout v1.AdaptiveTimeoutSpec) v1.ServiceUnitConfig {
+func NewTrunkOrBranchService(version string, tier, index uint64, isEdge bool, fanout uint64, timeout time.Duration, adaptiveTimeout v1.AdaptiveTimeoutSpec) v1.ServiceUnitConfig {
 	this := "trunk"
 	primaryRoute := DEFAULT_GW_ROUTE
 	if tier > 0 {
@@ -52,6 +52,45 @@ func NewTrunkOrBranchService(version string, tier, index uint64, isEdge bool, ti
 	if isEdge {
 		next = "leaf"
 	}
+
+	// build fanout adapters
+	taskSpecs := []v1.TaskSpec{}
+	taskSpecs = append(taskSpecs, v1.TaskSpec{
+		AdapterConfig: &v1.SecondaryAdapterConfig{
+			StressorConfig: &v1.StressorConfig{
+				Name:        "cpu-stressor",
+				Variant:     constants.CPU,
+				Iterations:  2,
+				ThreadCount: 1,
+			},
+		},
+		Resiliency: v1.ResiliencySpec{
+			Retry:         v1.RetrySpec{Disabled: true},
+			CircutBreaker: v1.CircuitBreakerSpec{Disabled: true},
+		},
+	})
+	for nextIndex := range fanout {
+		taskSpecs = append(taskSpecs,
+			v1.TaskSpec{
+				AdapterConfig: &v1.SecondaryAdapterConfig{
+					InvocationConfig: &v1.InvocationConfig{
+						Service: fmt.Sprintf("service-%s-t%v-%v", next, tier+1, nextIndex),
+						Variant: constants.REST,
+						Action:  constants.GET,
+						Route:   DEFAULT_GET_ROUTE,
+					},
+				},
+				Resiliency: v1.ResiliencySpec{
+					IsCritical:          true,
+					CallTimeout:         timeout.String(),
+					AdaptiveCallTimeout: adaptiveTimeout,
+					Retry:               v1.RetrySpec{Disabled: true},
+					CircutBreaker:       v1.CircuitBreakerSpec{Disabled: true},
+				},
+			},
+		)
+	}
+
 	return v1.ServiceUnitConfig{
 		Version:        version,
 		Name:           fmt.Sprintf("service-%s-t%v-%v", this, tier, index),
@@ -63,39 +102,7 @@ func NewTrunkOrBranchService(version string, tier, index uint64, isEdge bool, ti
 					Action:  constants.GET,
 					Route:   primaryRoute,
 				},
-				TaskSpecs: []v1.TaskSpec{
-					{
-						AdapterConfig: &v1.SecondaryAdapterConfig{
-							StressorConfig: &v1.StressorConfig{
-								Name:        "cpu-stressor",
-								Variant:     constants.CPU,
-								Iterations:  2,
-								ThreadCount: 1,
-							},
-						},
-						Resiliency: v1.ResiliencySpec{
-							Retry:         v1.RetrySpec{Disabled: true},
-							CircutBreaker: v1.CircuitBreakerSpec{Disabled: true},
-						},
-					},
-					{
-						AdapterConfig: &v1.SecondaryAdapterConfig{
-							InvocationConfig: &v1.InvocationConfig{
-								Service: fmt.Sprintf("service-%s-t%v-%v", next, tier+1, index),
-								Variant: constants.REST,
-								Action:  constants.GET,
-								Route:   DEFAULT_GET_ROUTE,
-							},
-						},
-						Resiliency: v1.ResiliencySpec{
-							IsCritical:          true,
-							CallTimeout:         timeout.String(),
-							AdaptiveCallTimeout: adaptiveTimeout,
-							Retry:               v1.RetrySpec{Disabled: true},
-							CircutBreaker:       v1.CircuitBreakerSpec{Disabled: true},
-						},
-					},
-				},
+				TaskSpecs: []v1.TaskSpec{},
 			},
 		},
 	}
