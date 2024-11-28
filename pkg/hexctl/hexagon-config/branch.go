@@ -102,7 +102,7 @@ func NewTrunkOrBranchService(version string, tier, index uint64, isEdge bool, fa
 					Action:  constants.GET,
 					Route:   primaryRoute,
 				},
-				TaskSpecs: []v1.TaskSpec{},
+				TaskSpecs: taskSpecs,
 			},
 		},
 	}
