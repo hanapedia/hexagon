@@ -65,3 +65,28 @@ func GenerateFanout(commonConfigs []CommonConfig, fanoutDegree uint64) []v1.Serv
 	}
 	return configs
 }
+
+// GenerateFunnel generates ServiceUnitConfigs for funnel topology of given degree.
+// []CommonConfig should contain configs for each tier. Note that it is not for each service.
+// so leaves will have same config for example.
+func GenerateFunnel(trunkConfig, leafConfig CommonConfig, funnelDegrees uint64) []v1.ServiceUnitConfig {
+	configs := []v1.ServiceUnitConfig{}
+	for index := range funnelDegrees {
+		configs = append(configs, NewTrunkOrBranchService(
+			trunkConfig.Version,
+			0,
+			index,
+			true,
+			1,
+			trunkConfig.Timeout,
+			trunkConfig.AdaptiveTimeout,
+		))
+	}
+	// add a leaf
+	configs = append(configs, NewLeafService(
+		leafConfig.Version,
+		1,
+		0,
+	))
+	return configs
+}
