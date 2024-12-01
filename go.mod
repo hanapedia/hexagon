@@ -4,7 +4,7 @@ go 1.23.1
 
 require (
 	github.com/go-playground/validator/v10 v10.21.0
-	github.com/hanapedia/adapto v1.1.1
+	github.com/hanapedia/adapto v1.1.3-beta.0
 	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.75.2
 	github.com/prometheus/client_golang v1.19.1
 	github.com/redis/go-redis/extra/redisotel/v9 v9.5.3
