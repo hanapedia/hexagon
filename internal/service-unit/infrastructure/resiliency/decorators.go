@@ -170,13 +170,19 @@ func WithAdaptiveRTOCallTimeout(spec model.AdaptiveTimeoutSpec, secondaryAdapter
 		Max:            spec.GetMax(),
 		SLOFailureRate: spec.SLO,
 		/* Capacity:       spec.Capacity, */
-		Interval:       spec.GetInterval(),
-		KMargin:        spec.KMargin,
-		Logger:         logger.AdaptoLogger,
+		Interval: spec.GetInterval(),
+		KMargin:  spec.KMargin,
+		Logger:   logger.AdaptoLogger,
 	}
 	return func(ctx context.Context, taskCtx *TaskContext) secondary.SecondaryPortCallResult {
-		timeoutDuration, rttCh, err := rto.GetTimeout(adaptoRTOConfig)
+		timeoutDuration, rttCh, err := rto.GetTimeout(ctx, adaptoRTOConfig)
 		if err != nil {
+			if err == rto.RequestRateLimitExceeded {
+				return secondary.SecondaryPortCallResult{
+					Payload: nil,
+					Error:   err,
+				}
+			}
 			logger.Logger.
 				WithField("id", adaptoRTOConfig.Id).
 				WithField("err", err).
