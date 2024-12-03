@@ -59,6 +59,8 @@ func WithCallDurationMetrics(next CallWithContextAlias, async bool) CallWithCont
 			status = domain.ErrCtxCanceled
 		case gobreaker.ErrOpenState:
 			status = domain.ErrCBOpen
+		case rto.RequestRateLimitExceeded:
+			status = domain.ErrCBOpen
 		default:
 			status = domain.ErrGeneric
 		}
@@ -104,6 +106,8 @@ func WithTaskDurationMetrics(next CallWithContextAlias, async bool) CallWithCont
 		case context.Canceled:
 			status = domain.ErrCtxCanceled
 		case gobreaker.ErrOpenState:
+			status = domain.ErrCBOpen
+		case rto.RequestRateLimitExceeded:
 			status = domain.ErrCBOpen
 		default:
 			status = domain.ErrGeneric
