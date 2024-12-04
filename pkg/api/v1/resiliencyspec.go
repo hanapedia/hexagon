@@ -189,17 +189,22 @@ type AdaptiveTimeoutSpec struct {
 	Min string `json:"min,omitempty"`
 	// Max is the maximum timeout duration allowed
 	// Must be parsable with time.ParseDuration, otherwise default value will be used
-	Max string `json:"max,omitempty"`
+	Max        string `json:"max,omitempty"`
+	LatencySLO string `json:"latencySLO,omitempty"` // deprecates Max in v1.2.0
 	// RTO is the flag to indicate whether to use RTO
 	RTO bool `json:"rto,omitempty"`
 	// SLO is the SLO failure rate target used by RTO
-	SLO float64 `json:"slo,omitempty"`
+	SLO            float64 `json:"slo,omitempty"`
+	FailureRateSLO float64 `json:"failureRateSLO,omitempty"` // deprecates SLO in v1.2.0
 	// Capacity is the capacity used by RTO to determine the change in load pattern
-	Capacity int64 `json:"capacity,omitempty"`
+	Capacity int64 `json:"capacity,omitempty"` // deprecated in v1.2.0
 	// Interval is the duration used for the periodic calculation of failure rate
 	Interval string `json:"interval,omitempty"`
 	// KMargin is the starting kMargin used for rto w/ slo and static kMargin for rto w/out SLO
 	KMargin int64 `json:"kMargin,omitempty"`
+	// OverloadDetectionTiming specifies the timing for overload detection.
+	// can be maxTimeoutGenrated or maxTimeoutExceeded (default)
+	OverloadDetectionTiming string `json:"overloadDetectionTiming,omitempty"`
 }
 
 func (ats *AdaptiveTimeoutSpec) GetInterval() time.Duration {
@@ -218,10 +223,22 @@ func (ats *AdaptiveTimeoutSpec) GetMin() time.Duration {
 	return duration
 }
 
-func (ats *AdaptiveTimeoutSpec) GetMax() time.Duration {
-	duration, err := time.ParseDuration(ats.Max)
+func (ats *AdaptiveTimeoutSpec) GetLatencySLO() time.Duration {
+	var duration time.Duration
+	var err error
+	if ats.Max != "" && ats.LatencySLO == "" {
+		duration, err = time.ParseDuration(ats.Max)
+	}
+	duration, err = time.ParseDuration(ats.LatencySLO)
 	if err != nil {
 		return DEFAULT_ADAPTIVE_TIMEOUT_MAX
 	}
 	return duration
+}
+
+func (ats *AdaptiveTimeoutSpec) GetFailureRateSLO() float64 {
+	if ats.SLO != 0 && ats.FailureRateSLO == 0 {
+		return ats.SLO
+	}
+	return ats.FailureRateSLO
 }

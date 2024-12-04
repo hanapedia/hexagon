@@ -169,19 +169,20 @@ func WithTaskTimeout(timeout time.Duration, next CallWithContextAlias) CallWithC
 
 func WithAdaptiveRTOCallTimeout(spec model.AdaptiveTimeoutSpec, secondaryAdapter secondary.SecodaryPort, next CallWithContextAlias) CallWithContextAlias {
 	adaptoRTOConfig := rto.Config{
-		Id:             secondaryAdapter.GetDestId(),
-		Min:            spec.GetMin(),
-		Max:            spec.GetMax(),
-		SLOFailureRate: spec.SLO,
-		/* Capacity:       spec.Capacity, */
-		Interval: spec.GetInterval(),
-		KMargin:  spec.KMargin,
-		Logger:   logger.AdaptoLogger,
+		Id:                      secondaryAdapter.GetDestId(),
+		Min:                     spec.GetMin(),
+		SLOLatency:              spec.GetLatencySLO(),
+		SLOFailureRate:          spec.GetFailureRateSLO(),
+		Interval:                spec.GetInterval(),
+		KMargin:                 spec.KMargin,
+		OverloadDetectionTiming: spec.OverloadDetectionTiming,
+		Logger:                  logger.AdaptoLogger,
 	}
 	return func(ctx context.Context, taskCtx *TaskContext) secondary.SecondaryPortCallResult {
 		timeoutDuration, rttCh, err := rto.GetTimeout(ctx, adaptoRTOConfig)
 		if err != nil {
-			if err == rto.RequestRateLimitExceeded {
+			// handle client queueing errors
+			if err == rto.RequestRateLimitExceeded || err == context.Canceled || err == context.DeadlineExceeded {
 				return secondary.SecondaryPortCallResult{
 					Payload: nil,
 					Error:   err,
