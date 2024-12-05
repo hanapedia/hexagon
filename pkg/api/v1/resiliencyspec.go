@@ -226,10 +226,12 @@ func (ats *AdaptiveTimeoutSpec) GetMin() time.Duration {
 func (ats *AdaptiveTimeoutSpec) GetLatencySLO() time.Duration {
 	var duration time.Duration
 	var err error
-	if ats.Max != "" && ats.LatencySLO == "" {
+	if ats.Max != "" {
 		duration, err = time.ParseDuration(ats.Max)
 	}
-	duration, err = time.ParseDuration(ats.LatencySLO)
+	if ats.LatencySLO != ""{
+		duration, err = time.ParseDuration(ats.LatencySLO)
+	}
 	if err != nil {
 		return DEFAULT_ADAPTIVE_TIMEOUT_MAX
 	}
