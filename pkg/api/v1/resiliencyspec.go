@@ -205,6 +205,8 @@ type AdaptiveTimeoutSpec struct {
 	// OverloadDetectionTiming specifies the timing for overload detection.
 	// can be maxTimeoutGenrated or maxTimeoutExceeded (default)
 	OverloadDetectionTiming string `json:"overloadDetectionTiming,omitempty"`
+	// OverloadDrainIntervals is the number of intervals for draining overload
+	OverloadDrainIntervals uint64 `json:"overloadDrainIntervals,omitempty"`
 }
 
 func (ats *AdaptiveTimeoutSpec) GetInterval() time.Duration {
@@ -229,7 +231,7 @@ func (ats *AdaptiveTimeoutSpec) GetLatencySLO() time.Duration {
 	if ats.Max != "" {
 		duration, err = time.ParseDuration(ats.Max)
 	}
-	if ats.LatencySLO != ""{
+	if ats.LatencySLO != "" {
 		duration, err = time.ParseDuration(ats.LatencySLO)
 	}
 	if err != nil {
