@@ -54,8 +54,8 @@ func NewTrunkOrBranchService(version string, tier, index uint64, isEdge bool, fa
 	}
 
 	// build fanout adapters
-	taskSpecs := []v1.TaskSpec{}
-	taskSpecs = append(taskSpecs, v1.TaskSpec{
+	taskSpecs := []*v1.TaskSpec{}
+	taskSpecs = append(taskSpecs, &v1.TaskSpec{
 		AdapterConfig: &v1.SecondaryAdapterConfig{
 			StressorConfig: &v1.StressorConfig{
 				Name:        "cpu-stressor",
@@ -71,7 +71,7 @@ func NewTrunkOrBranchService(version string, tier, index uint64, isEdge bool, fa
 	})
 	for nextIndex := range fanout {
 		taskSpecs = append(taskSpecs,
-			v1.TaskSpec{
+			&v1.TaskSpec{
 				AdapterConfig: &v1.SecondaryAdapterConfig{
 					InvocationConfig: &v1.InvocationConfig{
 						Service: fmt.Sprintf("service-%s-t%v-%v", next, tier+1, nextIndex),
@@ -95,7 +95,7 @@ func NewTrunkOrBranchService(version string, tier, index uint64, isEdge bool, fa
 		Version:        version,
 		Name:           fmt.Sprintf("service-%s-t%v-%v", this, tier, index),
 		DeploymentSpec: NewDefaultDeploymentSpec(),
-		AdapterConfigs: []v1.PrimaryAdapterSpec{
+		AdapterConfigs: []*v1.PrimaryAdapterSpec{
 			{
 				ServerConfig: &v1.ServerConfig{
 					Variant: constants.REST,

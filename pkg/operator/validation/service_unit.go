@@ -16,7 +16,7 @@ func ValidateServiceUnitConfigFields(serviceUnitConfig *model.ServiceUnitConfig)
 	return ConfigValidationError{ServiceUnitFieldErrors: errs}
 }
 
-func ValidateStepFields(task model.TaskSpec, adapterConfig *model.PrimaryAdapterSpec, serviceName string) []InvalidStepFieldValueError {
+func ValidateStepFields(task *model.TaskSpec, adapterConfig *model.PrimaryAdapterSpec, serviceName string) []InvalidStepFieldValueError {
 	var taskFieldErrors []InvalidStepFieldValueError
 	if task.AdapterConfig == nil {
 		taskFieldErrors = append(taskFieldErrors, NewInvalidStepFieldValueError(adapterConfig.GetId(serviceName)))

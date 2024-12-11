@@ -12,7 +12,7 @@ func ValidateFields(serviceUnitConfig *model.ServiceUnitConfig) ConfigValidation
 	configValidationError.Extend(validateServiceUnitConfigFields(serviceUnitConfig))
 
 	for i := range serviceUnitConfig.AdapterConfigs {
-		configValidationError.Extend(validatePrimaryAdapterConfigFields(serviceUnitConfig, &serviceUnitConfig.AdapterConfigs[i]))
+		configValidationError.Extend(validatePrimaryAdapterConfigFields(serviceUnitConfig, serviceUnitConfig.AdapterConfigs[i]))
 		for _, task := range serviceUnitConfig.AdapterConfigs[i].TaskSpecs {
 			// ensure that secondary adapter is defined
 			if task.AdapterConfig == nil {
@@ -38,7 +38,7 @@ func validateServiceUnitConfigFields(serviceUnitConfig *model.ServiceUnitConfig)
 		}
 		if repositoryConfig != nil {
 			logger.Logger.Warnf("repository adapter found, ignoring other primary adapter definitions.\n")
-			serviceUnitConfig.AdapterConfigs = []model.PrimaryAdapterSpec{
+			serviceUnitConfig.AdapterConfigs = []*model.PrimaryAdapterSpec{
 				{
 					RepositoryConfig: repositoryConfig,
 				},
@@ -65,7 +65,7 @@ func validatePrimaryAdapterConfigFields(serviceUnitConfig *model.ServiceUnitConf
 	}
 	if primaryAdapterConfig.RepositoryConfig != nil {
 		if len(primaryAdapterConfig.TaskSpecs) > 0 {
-			primaryAdapterConfig.TaskSpecs = []model.TaskSpec{} // makes sure that repository service unit config have no tasks defined
+			primaryAdapterConfig.TaskSpecs = []*model.TaskSpec{} // makes sure that repository service unit config have no tasks defined
 			logger.Logger.Warnf(
 				"Steps definition found on repository config for %s. These Steps will be ignored.\n",
 				serviceUnitConfig.Name,
