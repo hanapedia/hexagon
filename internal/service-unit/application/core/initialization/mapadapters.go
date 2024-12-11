@@ -14,8 +14,8 @@ import (
 // mapSecondaryToPrimary map secondary adapter to primary adapter
 func (su *ServiceUnit) mapSecondaryToPrimary() {
 	for _, primaryConfig := range su.Config.AdapterConfigs {
-		taskSet := su.newTaskSet(&primaryConfig)
-		handler, err := su.newPrimaryAdapterHandler(&primaryConfig, taskSet)
+		taskSet := su.newTaskSet(primaryConfig)
+		handler, err := su.newPrimaryAdapterHandler(primaryConfig, taskSet)
 		if err != nil {
 			l.Logger.Fatalf("Error creating handler: %v", err)
 		}

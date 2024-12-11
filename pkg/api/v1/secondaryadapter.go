@@ -6,6 +6,15 @@ import (
 	"github.com/hanapedia/hexagon/pkg/operator/constants"
 )
 
+type SecondaryAdapterType int64
+
+const (
+	Invocation SecondaryAdapterType = iota
+	RepositoryClient
+	Producer
+	Stressor
+)
+
 // secondary Adapter definition for a task.
 // one of the adapter type must be provided
 type SecondaryAdapterConfig struct {
@@ -51,16 +60,14 @@ type StressorConfig struct {
 // Get secondary adapter id
 func (sac *SecondaryAdapterConfig) GetId() string {
 	var id string
-	if sac.InvocationConfig != nil {
+	switch sac.Type() {
+	case Invocation:
 		id = sac.InvocationConfig.GetId()
-	}
-	if sac.ProducerConfig != nil {
+	case Producer:
 		id = sac.ProducerConfig.GetId()
-	}
-	if sac.RepositoryConfig != nil {
+	case RepositoryClient:
 		id = sac.RepositoryConfig.GetId()
-	}
-	if sac.StressorConfig != nil {
+	case Stressor:
 		id = sac.StressorConfig.GetId()
 	}
 	return id
@@ -70,19 +77,36 @@ func (sac *SecondaryAdapterConfig) GetId() string {
 // Get secondary adapter id
 func (sac SecondaryAdapterConfig) GetGroupByKey() string {
 	var key string
-	if sac.InvocationConfig != nil {
+	switch sac.Type() {
+	case Invocation:
 		key = sac.InvocationConfig.GetGroupByKey()
-	}
-	if sac.ProducerConfig != nil {
+	case Producer:
 		key = sac.ProducerConfig.GetGroupByKey()
-	}
-	if sac.RepositoryConfig != nil {
+	case RepositoryClient:
 		key = sac.RepositoryConfig.GetGroupByKey()
-	}
-	if sac.StressorConfig != nil {
+	case Stressor:
 		key = sac.StressorConfig.GetGroupByKey()
 	}
 	return key
+}
+
+// Get secondary adapter type
+func (sac *SecondaryAdapterConfig) Type() SecondaryAdapterType {
+	if sac.InvocationConfig != nil {
+		return Invocation
+	}
+	if sac.ProducerConfig != nil {
+		return Producer
+	}
+	if sac.RepositoryConfig != nil {
+		return RepositoryClient
+	}
+	if sac.StressorConfig != nil {
+		return Stressor
+	}
+
+	// Should not happen
+	return 0
 }
 
 // Get server secondary adapter id

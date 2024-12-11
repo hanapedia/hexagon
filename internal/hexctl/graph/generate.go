@@ -104,7 +104,7 @@ func addEdge(graph *graphml.Graph, source, destination, edgeLabel string) error 
 }
 
 // parseSteps parses tasks and update graph.
-func parseSteps(graph *graphml.Graph, serviceName string, tasks []model.TaskSpec) {
+func parseSteps(graph *graphml.Graph, serviceName string, tasks []*model.TaskSpec) {
 	for _, task := range tasks {
 		var destination, edgeLabel string
 		if task.AdapterConfig.ProducerConfig != nil {

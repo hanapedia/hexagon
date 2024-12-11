@@ -9,7 +9,7 @@ import (
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 )
 
-func NewTaskHandler(telCtx domain.TelemetryContext, spec model.TaskSpec, adapter secondary.SecodaryPort) domain.TaskHandler {
+func NewTaskHandler(telCtx domain.TelemetryContext, spec *model.TaskSpec, adapter secondary.SecodaryPort) domain.TaskHandler {
 	var handler CallWithContextAlias = WithUnWrapTaskContext(adapter.Call)
 	var circuitBreaker CircuitBreaker = nil
 

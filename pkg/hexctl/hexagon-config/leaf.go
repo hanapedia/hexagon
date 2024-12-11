@@ -30,14 +30,14 @@ func NewLeafService(version string, tier, index uint64) v1.ServiceUnitConfig {
 		Version:        version,
 		Name:           fmt.Sprintf("service-leaf-t%v-%v", tier, index),
 		DeploymentSpec: NewDefaultDeploymentSpec(),
-		AdapterConfigs: []v1.PrimaryAdapterSpec{
+		AdapterConfigs: []*v1.PrimaryAdapterSpec{
 			{
 				ServerConfig: &v1.ServerConfig{
 					Variant: constants.REST,
 					Action:  constants.GET,
 					Route:   "get",
 				},
-				TaskSpecs: []v1.TaskSpec{
+				TaskSpecs: []*v1.TaskSpec{
 					{
 						AdapterConfig: &v1.SecondaryAdapterConfig{
 							StressorConfig: &v1.StressorConfig{

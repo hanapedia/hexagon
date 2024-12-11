@@ -7,13 +7,21 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+type PrimaryAdapterType int64
+
+const (
+	Server PrimaryAdapterType = iota
+	Consumer
+	Repository
+)
+
 // PrimaryAdapterSpec
 // must be attachted to a service unit
 type PrimaryAdapterSpec struct {
 	ServerConfig     *ServerConfig     `json:"server,omitempty"`
 	ConsumerConfig   *ConsumerConfig   `json:"consumer,omitempty"`
 	RepositoryConfig *RepositoryConfig `json:"repository,omitempty"`
-	TaskSpecs        []TaskSpec        `json:"tasks,omitempty" validate:"required"`
+	TaskSpecs        []*TaskSpec        `json:"tasks,omitempty" validate:"required"`
 
 	// +optional
 	Selector *metav1.LabelSelector `json:"selector,omitempty"`
@@ -51,33 +59,47 @@ type ConsumerConfig struct {
 }
 
 // Get primary adapter id
-func (ias *PrimaryAdapterSpec) GetId(serviceName string) string {
+func (pas *PrimaryAdapterSpec) GetId(serviceName string) string {
 	var id string
-	if ias.ServerConfig != nil {
-		id = ias.ServerConfig.GetId(serviceName)
-	}
-	if ias.ConsumerConfig != nil {
-		id = ias.ConsumerConfig.GetId(serviceName)
-	}
-	if ias.RepositoryConfig != nil {
-		id = ias.RepositoryConfig.GetId(serviceName)
+	switch pas.Type() {
+	case Server:
+		id = pas.ServerConfig.GetId(serviceName)
+	case Consumer:
+		id = pas.ConsumerConfig.GetId(serviceName)
+	case Repository:
+		id = pas.RepositoryConfig.GetId(serviceName)
 	}
 	return id
 }
 
 // Get primary adapter group by key
-func (ias *PrimaryAdapterSpec) GetGroupByKey() string {
+func (pas *PrimaryAdapterSpec) GetGroupByKey() string {
 	var key string
-	if ias.ServerConfig != nil {
-		key = ias.ServerConfig.GetGroupByKey()
-	}
-	if ias.ConsumerConfig != nil {
-		key = ias.ConsumerConfig.GetGroupByKey()
-	}
-	if ias.RepositoryConfig != nil {
-		key = ias.RepositoryConfig.GetGroupByKey()
+	switch pas.Type() {
+	case Server:
+		key = pas.ServerConfig.GetGroupByKey()
+	case Consumer:
+		key = pas.ConsumerConfig.GetGroupByKey()
+	case Repository:
+		key = pas.RepositoryConfig.GetGroupByKey()
 	}
 	return key
+}
+
+// Get primary adapter type
+func (pas *PrimaryAdapterSpec) Type() PrimaryAdapterType {
+	if pas.ServerConfig != nil {
+		return Server
+	}
+	if pas.ConsumerConfig != nil {
+		return Consumer
+	}
+	if pas.RepositoryConfig != nil {
+		return Repository
+	}
+
+	// Should not happen
+	return 0
 }
 
 // Get invocation adapter id

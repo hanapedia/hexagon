@@ -42,7 +42,7 @@ func mapSecondaryAdapters(serviceAdapterIds []string, serviceUnitConfigs []*mode
 
 // map secondary adapters to primary adapters of services
 // conditionally handle the adapters
-func mapAdapters(serviceAdapterIds []string, primaryAdapterConfig model.PrimaryAdapterSpec) []InvalidAdapterMappingError {
+func mapAdapters(serviceAdapterIds []string, primaryAdapterConfig* model.PrimaryAdapterSpec) []InvalidAdapterMappingError {
 	var mappingErrors []InvalidAdapterMappingError
 	for _, task := range primaryAdapterConfig.TaskSpecs {
 		// ensure that secondaryAdapter is defined

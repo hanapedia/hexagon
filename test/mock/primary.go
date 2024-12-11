@@ -32,7 +32,7 @@ func NewPrimaryHandler(numTask int) domain.PrimaryAdapterHandler {
 		tasks = append(tasks,
 			resiliency.NewTaskHandler(
 				domain.TelemetryContext{PrimaryLabels: domain.PrimaryLabels{ServiceName: "RegularCallHandler"}},
-				model.TaskSpec{},
+				&model.TaskSpec{},
 				NewSecondaryAdapter("RegularSecondaryAdapter1", time.Second, 0),
 			))
 	}
