@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/fs"
 	"path/filepath"
+	"strings"
 
 	"github.com/hanapedia/hexagon/internal/config/application/ports"
 	"github.com/hanapedia/hexagon/internal/config/infrastructure/yaml"
@@ -65,4 +66,22 @@ func GetYAMLFiles(dir string) ([]string, error) {
 	}
 
 	return yamlFiles, nil
+}
+
+// ReplaceInputDirectory replaces the current parent directory with new parent directory
+// while preserving the other children directories
+func ReplaceInputDirectory(path string, oldParent, newParent string) string {
+	oldParent = filepath.Clean(oldParent)
+	newParent = filepath.Clean(newParent)
+	// Check if the path starts with the old parent directory
+	if strings.HasPrefix(path, oldParent) {
+		// Replace the old parent directory with the new parent directory
+		relativePath, err := filepath.Rel(oldParent, path)
+		if err != nil {
+			fmt.Printf("Error getting relative path for %s: %v\n", path, err)
+			return path
+		}
+		return filepath.Join(newParent, relativePath)
+	}
+	return path
 }

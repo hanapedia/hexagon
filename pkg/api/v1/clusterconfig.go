@@ -1,6 +1,10 @@
 package v1
 
-import "github.com/hanapedia/hexagon/pkg/api/defaults"
+import (
+	"time"
+
+	"github.com/hanapedia/hexagon/pkg/api/defaults"
+)
 
 type ClusterConfig struct {
 	ConfigTemplate
@@ -17,6 +21,8 @@ type ClusterConfig struct {
 	Mongo             MongoClusterConfig         `json:"mongo,omitempty"`
 	Redis             RedisClusterConfig         `json:"redis,omitempty"`
 	Otel              OtelCollectorClusterConfig `json:"otel,omitempty"`
+	AdaptiveTimeout   AdaptiveTimeoutSpec        `json:"adaptiveTimeout,omitempty"`
+	BaseTimeout       string                     `json:"baseTimeout,omitempty"`
 }
 
 type TracingClusterConfig struct {
@@ -83,4 +89,13 @@ func NewClusterConfig() ClusterConfig {
 			Namespace: defaults.OTEL_COLLECTOR_NAMESPACE,
 		},
 	}
+}
+
+// Parses BaseTimeout with time.ParseDuration
+func (cc *ClusterConfig) GetBaseTimeout() (time.Duration, error) {
+	duration, err := time.ParseDuration(cc.BaseTimeout)
+	if err != nil {
+		return duration, err
+	}
+	return duration, nil
 }
