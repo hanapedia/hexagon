@@ -3,7 +3,6 @@ package redis
 import (
 	"fmt"
 
-	"github.com/hanapedia/hexagon/pkg/api/defaults"
 	model "github.com/hanapedia/hexagon/pkg/api/v1"
 	"github.com/hanapedia/hexagon/pkg/operator/object/factory"
 
@@ -29,7 +28,7 @@ func CreateRedisDeployment(suc *model.ServiceUnitConfig, cc *model.ClusterConfig
 		Name:         suc.Name,
 		Namespace:    cc.Namespace,
 		Annotations:  map[string]string{"rca": "ignore"},
-		Image:        fmt.Sprintf("%s/%s:%s", cc.Redis.ImageName, defaults.REDIS_IMAGE_NAME, suc.Version),
+		Image:        fmt.Sprintf("%s/%s:%s", cc.DockerHubUsername, cc.Redis.ImageName,  suc.Version),
 		Replicas:     replica,
 		Resource:     resource,
 		Ports:        map[string]int32{"redis": cc.Redis.Port},
