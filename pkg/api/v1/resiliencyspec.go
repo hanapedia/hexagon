@@ -58,6 +58,10 @@ type ResiliencySpec struct {
 
 	// AdaptiveCallTimeout takes configurations for adaptive call timeout
 	AdaptiveCallTimeout AdaptiveTimeoutSpec `json:"adaptiveCallTimeout,omitempty"`
+
+	// LogCallError & LogTaskError indicates whether to log the call and task level error
+	LogCallError bool `json:"logCallError,omitempty"`
+	LogTaskError bool `json:"logTaskError,omitempty"`
 }
 
 // Get parsed taskTimeout as time.Duration
@@ -101,8 +105,8 @@ type RetrySpec struct {
 	// Must be parsable using time.ParseDuration
 	InitialBackoff string `json:"initialBackoff,omitempty"`
 
-	// Disabled is the flag to turn off retry feature entirely
-	Disabled bool `json:"disabled,omitempty"`
+	// Enabled is the flag to turn off retry feature entirely
+	Enabled bool `json:"enabled,omitempty"`
 }
 
 // Get parsed initial backoff as time.Duration
@@ -161,8 +165,8 @@ type CircuitBreakerSpec struct {
 	// Note that circuit broken requests will also be retried when set to true.
 	CountRetries bool `json:"countRetries,omitempty"`
 
-	// Disabled is the flag to turn off circuit breaker feature entirely
-	Disabled bool `json:"disabled,omitempty"`
+	// Enabled is the flag to turn off circuit breaker feature entirely
+	Enabled bool `json:"enabled,omitempty"`
 }
 
 // Get parsed circuit breaker interval as time.Duration
@@ -184,18 +188,16 @@ func (cbs *CircuitBreakerSpec) GetTimeout() time.Duration {
 }
 
 type AdaptiveTimeoutSpec struct {
+	// Enabled is the flag to indicate whether to use RTO
+	Enabled bool `json:"enabled,omitempty"`
 	// Min is the minimum timeout duration allowed
 	// Must be parsable with time.ParseDuration, otherwise default value will be used
-	Min string `json:"min,omitempty"`
+	MinTimeout string `json:"min,omitempty"`
 	// Max is the maximum timeout duration allowed
 	// Must be parsable with time.ParseDuration, otherwise default value will be used
-	Max        string `json:"max,omitempty"`
-	LatencySLO string `json:"latencySLO,omitempty"` // deprecates Max in v1.2.0
-	// RTO is the flag to indicate whether to use RTO
-	RTO bool `json:"rto,omitempty"`
-	// SLO is the SLO failure rate target used by RTO
-	SLO            float64 `json:"slo,omitempty"`
-	FailureRateSLO float64 `json:"failureRateSLO,omitempty"` // deprecates SLO in v1.2.0
+	LatencySLO string `json:"latencySLO,omitempty"`
+	// SLO failure rate target used by RTO
+	FailureRateSLO float64 `json:"failureRateSLO,omitempty"`
 	// Capacity is the capacity used by RTO to determine the change in load pattern
 	Capacity int64 `json:"capacity,omitempty"` // deprecated in v1.2.0
 	// Interval is the duration used for the periodic calculation of failure rate
@@ -218,7 +220,7 @@ func (ats *AdaptiveTimeoutSpec) GetInterval() time.Duration {
 }
 
 func (ats *AdaptiveTimeoutSpec) GetMin() time.Duration {
-	duration, err := time.ParseDuration(ats.Min)
+	duration, err := time.ParseDuration(ats.MinTimeout)
 	if err != nil {
 		return DEFAULT_ADAPTIVE_TIMEOUT_MIN
 	}
@@ -228,12 +230,10 @@ func (ats *AdaptiveTimeoutSpec) GetMin() time.Duration {
 func (ats *AdaptiveTimeoutSpec) GetLatencySLO() time.Duration {
 	var duration time.Duration
 	var err error
-	if ats.Max != "" {
-		duration, err = time.ParseDuration(ats.Max)
+	if ats.LatencySLO == "" {
+		return DEFAULT_ADAPTIVE_TIMEOUT_MAX
 	}
-	if ats.LatencySLO != "" {
-		duration, err = time.ParseDuration(ats.LatencySLO)
-	}
+	duration, err = time.ParseDuration(ats.LatencySLO)
 	if err != nil {
 		return DEFAULT_ADAPTIVE_TIMEOUT_MAX
 	}
@@ -241,8 +241,5 @@ func (ats *AdaptiveTimeoutSpec) GetLatencySLO() time.Duration {
 }
 
 func (ats *AdaptiveTimeoutSpec) GetFailureRateSLO() float64 {
-	if ats.SLO != 0 && ats.FailureRateSLO == 0 {
-		return ats.SLO
-	}
 	return ats.FailureRateSLO
 }

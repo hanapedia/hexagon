@@ -83,14 +83,11 @@ func (ag *AdaptoGenerator) PatchServiceUnitConfigs() {
 					logger.Logger.Errorf("No matching adapter found.")
 					continue
 				}
-				taskSpec.Resiliency.AdaptiveCallTimeout = model.AdaptiveTimeoutSpec{
-					RTO:                     true,
-					FailureRateSLO:          ag.ClusterConfig.AdaptiveTimeout.FailureRateSLO,
-					LatencySLO:              (baseTimeout * time.Duration(calls+1)).String(),
-					Interval:                ag.ClusterConfig.AdaptiveTimeout.Interval,
-					KMargin:                 ag.ClusterConfig.AdaptiveTimeout.KMargin,
-					OverloadDrainIntervals:  ag.ClusterConfig.AdaptiveTimeout.OverloadDrainIntervals,
-					OverloadDetectionTiming: ag.ClusterConfig.AdaptiveTimeout.OverloadDetectionTiming,
+				taskSpec.Resiliency = ag.ClusterConfig.Resiliency
+				if ag.ClusterConfig.Resiliency.AdaptiveCallTimeout.Enabled {
+					taskSpec.Resiliency.AdaptiveCallTimeout.LatencySLO = (baseTimeout * time.Duration(calls+1)).String()
+				} else {
+					taskSpec.Resiliency.CallTimeout = (baseTimeout * time.Duration(calls+1)).String()
 				}
 			}
 		}

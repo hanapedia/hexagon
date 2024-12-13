@@ -65,8 +65,8 @@ func NewTrunkOrBranchService(version string, tier, index uint64, isEdge bool, fa
 			},
 		},
 		Resiliency: v1.ResiliencySpec{
-			Retry:         v1.RetrySpec{Disabled: true},
-			CircutBreaker: v1.CircuitBreakerSpec{Disabled: true},
+			Retry:         v1.RetrySpec{Enabled: true},
+			CircutBreaker: v1.CircuitBreakerSpec{Enabled: true},
 		},
 	})
 	for nextIndex := range fanout {
@@ -84,8 +84,8 @@ func NewTrunkOrBranchService(version string, tier, index uint64, isEdge bool, fa
 					IsCritical:          true,
 					CallTimeout:         timeout.String(),
 					AdaptiveCallTimeout: adaptiveTimeout,
-					Retry:               v1.RetrySpec{Disabled: true},
-					CircutBreaker:       v1.CircuitBreakerSpec{Disabled: true},
+					Retry:               v1.RetrySpec{Enabled: true},
+					CircutBreaker:       v1.CircuitBreakerSpec{Enabled: true},
 				},
 			},
 		)

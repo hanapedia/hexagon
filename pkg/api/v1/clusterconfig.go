@@ -21,7 +21,7 @@ type ClusterConfig struct {
 	Mongo             MongoClusterConfig         `json:"mongo,omitempty"`
 	Redis             RedisClusterConfig         `json:"redis,omitempty"`
 	Otel              OtelCollectorClusterConfig `json:"otel,omitempty"`
-	AdaptiveTimeout   AdaptiveTimeoutSpec        `json:"adaptiveTimeout,omitempty"`
+	Resiliency        ResiliencySpec             `json:"resiliency,omitempty"`
 	BaseTimeout       string                     `json:"baseTimeout,omitempty"`
 }
 
