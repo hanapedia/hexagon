@@ -20,12 +20,20 @@ import (
 func CreateStatelessUnitDeployment(suc *model.ServiceUnitConfig, cc *model.ClusterConfig) *appsv1.Deployment {
 	replica := suc.DeploymentSpec.Replicas
 	if replica <= 0 {
-		replica = 1
+		if cc.Deployment.Replicas <= 0 {
+			replica = 1
+		} else {
+			replica = cc.Deployment.Replicas
+		}
 	}
 
 	resource := suc.DeploymentSpec.Resource
 	if resource == nil {
-		resource = getDefaultResource()
+		if cc.Deployment.Resource == nil {
+			resource = getDefaultResource()
+		} else {
+			resource = cc.Deployment.Resource
+		}
 	}
 
 	deploymentArgs := factory.DeploymentArgs{

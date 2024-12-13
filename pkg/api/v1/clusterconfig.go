@@ -23,6 +23,7 @@ type ClusterConfig struct {
 	Otel              OtelCollectorClusterConfig `json:"otel,omitempty"`
 	Resiliency        ResiliencySpec             `json:"resiliency,omitempty"`
 	BaseTimeout       string                     `json:"baseTimeout,omitempty"`
+	Deployment        DeploymentSpec             `json:"deployment,omitempty"`
 }
 
 type TracingClusterConfig struct {
