@@ -86,6 +86,7 @@ func (ag *AdaptoGenerator) PatchServiceUnitConfigs() {
 				taskSpec.Resiliency = ag.ClusterConfig.Resiliency
 				if ag.ClusterConfig.Resiliency.AdaptiveCallTimeout.Enabled {
 					taskSpec.Resiliency.AdaptiveCallTimeout.LatencySLO = (baseTimeout * time.Duration(calls+1)).String()
+					taskSpec.Resiliency.AdaptiveCallTimeout.MinTimeout = (baseTimeout * time.Duration(calls)).String()
 				} else {
 					taskSpec.Resiliency.CallTimeout = (baseTimeout * time.Duration(calls+1)).String()
 				}

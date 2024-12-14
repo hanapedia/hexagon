@@ -15,7 +15,7 @@ func NewTaskHandler(telCtx domain.TelemetryContext, spec *model.TaskSpec, adapte
 
 	// Skip configurations if not set
 	if spec.Resiliency.AdaptiveCallTimeout.Enabled {
-		handler = WithAdaptiveRTOCallTimeout(spec.Resiliency.AdaptiveCallTimeout, adapter, handler)
+		handler = WithAdaptiveRTOCallTimeout(spec.Resiliency.AdaptiveCallTimeout, adapter, telCtx, handler)
 	} else if spec.Resiliency.CallTimeout != "" {
 		handler = WithCallTimeout(spec.Resiliency.GetCallTimeout(), handler)
 	}

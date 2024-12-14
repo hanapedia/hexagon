@@ -30,6 +30,11 @@ func SetAdaptiveCallTimeoutDuration(value time.Duration, labels domain.AdaptiveT
 	metrics.AdaptiveCallTimeoutDuration.With(labels.AsMap()).Set(ms)
 }
 
+func SetAdaptiveCallTimeoutCapacityEstimate(value int64, labels domain.AdaptiveTimeoutGaugeLabels) {
+	metrics := GetInstance()
+	metrics.AdaptiveCallTimeoutCapacityEstimate.With(labels.AsMap()).Set(float64(value))
+}
+
 // SetGaugeMetricsFromSpecs sets gauge metrics from resiliency spec.
 // `With` can panic, however, it shouldn't if the labels match what's defined in Metrics instance.
 func SetGaugeMetricsFromSpecs(spec model.ResiliencySpec, telemetryCtx domain.TelemetryContext) {

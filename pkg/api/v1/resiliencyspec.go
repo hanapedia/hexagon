@@ -224,6 +224,9 @@ func (ats *AdaptiveTimeoutSpec) GetMin() time.Duration {
 	if err != nil {
 		return DEFAULT_ADAPTIVE_TIMEOUT_MIN
 	}
+	if duration == 0 {
+		return DEFAULT_ADAPTIVE_TIMEOUT_MIN
+	}
 	return duration
 }
 

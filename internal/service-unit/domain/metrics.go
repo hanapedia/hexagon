@@ -20,25 +20,26 @@ type GaugeVecName = string
 type HistogramVecName = string
 
 const (
-	PrimaryAdapterDuration         HistogramVecName = "primary_adapter_duration_ms"
-	SecondaryAdapterCallDuration   HistogramVecName = "secondary_adapter_call_duration_ms"
-	SecondaryAdapterTaskDuration   HistogramVecName = "secondary_adapter_task_duration_ms"
-	PrimaryAdapterInProgress       GaugeVecName     = "primary_adapter_in_progress"
-	AdaptiveTaskTimeoutDuration    GaugeVecName     = "adaptive_task_timeout_duration"
-	AdaptiveCallTimeoutDuration    GaugeVecName     = "adaptive_call_timeout_duration"
-	CallTimeout                    GaugeVecName     = "call_timeout_ms"
-	TaskTimeout                    GaugeVecName     = "task_timeout_ms"
-	CircuitBreakerDisabled         GaugeVecName     = "circuit_breaker_disabled"
-	CircuitBreakerCountRetries     GaugeVecName     = "circuit_breaker_count_retries"
-	CircuitBreakerIntervalSecs     GaugeVecName     = "circuit_breaker_interval_seconds"
-	CircuitBreakerMaxRequests      GaugeVecName     = "circuit_breaker_max_requests"
-	CircuitBreakerMinRequests      GaugeVecName     = "circuit_breaker_min_requests"
-	CircuitBreakerTimeout          GaugeVecName     = "circuit_breaker_timeout_seconds"
-	CircuitBreakerRatio            GaugeVecName     = "circuit_breaker_ratio"
-	CircuitBreakerConsecutiveFails GaugeVecName     = "circuit_breaker_consecutive_fails"
-	RetryDisabled                  GaugeVecName     = "retry_disabled"
-	RetryMaxAttempt                GaugeVecName     = "retry_max_attempt"
-	RetryInitialBackoff            GaugeVecName     = "retry_initial_backoff"
+	PrimaryAdapterDuration              HistogramVecName = "primary_adapter_duration_ms"
+	SecondaryAdapterCallDuration        HistogramVecName = "secondary_adapter_call_duration_ms"
+	SecondaryAdapterTaskDuration        HistogramVecName = "secondary_adapter_task_duration_ms"
+	PrimaryAdapterInProgress            GaugeVecName     = "primary_adapter_in_progress"
+	AdaptiveTaskTimeoutDuration         GaugeVecName     = "adaptive_task_timeout_duration"
+	AdaptiveCallTimeoutDuration         GaugeVecName     = "adaptive_call_timeout_duration"
+	AdaptiveCallTimeoutCapacityEstimate GaugeVecName     = "adaptive_call_timeout_capacity_estimate"
+	CallTimeout                         GaugeVecName     = "call_timeout_ms"
+	TaskTimeout                         GaugeVecName     = "task_timeout_ms"
+	CircuitBreakerDisabled              GaugeVecName     = "circuit_breaker_disabled"
+	CircuitBreakerCountRetries          GaugeVecName     = "circuit_breaker_count_retries"
+	CircuitBreakerIntervalSecs          GaugeVecName     = "circuit_breaker_interval_seconds"
+	CircuitBreakerMaxRequests           GaugeVecName     = "circuit_breaker_max_requests"
+	CircuitBreakerMinRequests           GaugeVecName     = "circuit_breaker_min_requests"
+	CircuitBreakerTimeout               GaugeVecName     = "circuit_breaker_timeout_seconds"
+	CircuitBreakerRatio                 GaugeVecName     = "circuit_breaker_ratio"
+	CircuitBreakerConsecutiveFails      GaugeVecName     = "circuit_breaker_consecutive_fails"
+	RetryDisabled                       GaugeVecName     = "retry_disabled"
+	RetryMaxAttempt                     GaugeVecName     = "retry_max_attempt"
+	RetryInitialBackoff                 GaugeVecName     = "retry_initial_backoff"
 )
 
 // Default Histogram bucket is []float64{.005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10}
@@ -99,6 +100,13 @@ var gaugeVecs map[GaugeVecName]*prometheus.GaugeVec = map[GaugeVecName]*promethe
 		prometheus.GaugeOpts{
 			Name: AdaptiveCallTimeoutDuration,
 			Help: "Gauge for adaptive call timeout duration.",
+		},
+		utils.GetMapKeys(AdaptiveTimeoutGaugeLabels{}.AsMap()),
+	),
+	AdaptiveCallTimeoutCapacityEstimate: prometheus.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: AdaptiveCallTimeoutCapacityEstimate,
+			Help: "Gauge for adaptive call timeout capacity estimate.",
 		},
 		utils.GetMapKeys(AdaptiveTimeoutGaugeLabels{}.AsMap()),
 	),
