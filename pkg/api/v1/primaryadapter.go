@@ -30,7 +30,7 @@ type PrimaryAdapterSpec struct {
 // A spec for atask to be performed
 type TaskSpec struct {
 	AdapterConfig *SecondaryAdapterConfig `json:"adapter,omitempty" validate:"required"`
-	Concurrent    bool                    `json:"concurrent,omitempty" `
+	Concurrent    bool                    `json:"concurrent"`
 	Resiliency    ResiliencySpec          `json:"resiliency,omitempty"`
 }
 

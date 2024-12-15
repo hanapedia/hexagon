@@ -39,7 +39,7 @@ var (
 type ResiliencySpec struct {
 	// IsCritical takes boolean specifying whether to fail
 	// the parent primary adapter call when this secondary adapter call fails.
-	IsCritical bool `json:"isCritical,omitempty"`
+	IsCritical bool `json:"isCritical"`
 
 	// Retry configurations
 	Retry RetrySpec `json:"retry,omitempty"`
@@ -60,8 +60,8 @@ type ResiliencySpec struct {
 	AdaptiveCallTimeout AdaptiveTimeoutSpec `json:"adaptiveCallTimeout,omitempty"`
 
 	// LogCallError & LogTaskError indicates whether to log the call and task level error
-	LogCallError bool `json:"logCallError,omitempty"`
-	LogTaskError bool `json:"logTaskError,omitempty"`
+	LogCallError bool `json:"logCallError"`
+	LogTaskError bool `json:"logTaskError"`
 }
 
 // Get parsed taskTimeout as time.Duration
@@ -106,7 +106,7 @@ type RetrySpec struct {
 	InitialBackoff string `json:"initialBackoff,omitempty"`
 
 	// Enabled is the flag to turn off retry feature entirely
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled"`
 }
 
 // Get parsed initial backoff as time.Duration
@@ -163,10 +163,10 @@ type CircuitBreakerSpec struct {
 	// if set to `true`, the circuit breaker counts each attempt.
 	// if set to `false`, the circuit breaker counts all retry attempts as a single request.
 	// Note that circuit broken requests will also be retried when set to true.
-	CountRetries bool `json:"countRetries,omitempty"`
+	CountRetries bool `json:"countRetries"`
 
 	// Enabled is the flag to turn off circuit breaker feature entirely
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled"`
 }
 
 // Get parsed circuit breaker interval as time.Duration
@@ -189,7 +189,7 @@ func (cbs *CircuitBreakerSpec) GetTimeout() time.Duration {
 
 type AdaptiveTimeoutSpec struct {
 	// Enabled is the flag to indicate whether to use RTO
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled"`
 	// Min is the minimum timeout duration allowed
 	// Must be parsable with time.ParseDuration, otherwise default value will be used
 	MinTimeout string `json:"min,omitempty"`

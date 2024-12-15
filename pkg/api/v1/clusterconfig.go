@@ -10,7 +10,7 @@ type ClusterConfig struct {
 	ConfigTemplate
 	Namespace         string                     `json:"namespace,omitempty"`
 	LogLevel          string                     `json:"logLevel,omitempty"`
-	ServiceMonitor    bool                       `json:"serviceMonitor,omitempty"`
+	ServiceMonitor    bool                       `json:"serviceMonitor"`
 	DockerHubUsername string                     `json:"dockerHubUsername,omitempty"`
 	MetricsPort       int32                      `json:"metricsPort,omitempty"`
 	HealthPort        int32                      `json:"healthPort,omitempty"`
@@ -27,7 +27,7 @@ type ClusterConfig struct {
 }
 
 type TracingClusterConfig struct {
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled"`
 }
 
 type KafkaClusterConfig struct {
