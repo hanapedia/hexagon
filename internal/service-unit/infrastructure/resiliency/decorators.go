@@ -209,11 +209,8 @@ func WithAdaptiveRTOCallTimeout(spec model.AdaptiveTimeoutSpec, secondaryAdapter
 
 		// Check for cancelation or timeout after `next` returns
 		if newCtx.Err() == context.DeadlineExceeded {
-			// send negative timeout duration to signal that deadline exceeded
-			// from adapto v1.0.14
 			rttCh <- rto.RttSignal{Duration: timeoutDuration, Type: rto.TimeoutError}
 		} else if result.Error != nil {
-			// send negative duration to indicate failures
 			rttCh <- rto.RttSignal{Duration: time.Since(startTime), Type: rto.GenericError}
 		} else if result.Error == nil {
 			rttCh <- rto.RttSignal{Duration: time.Since(startTime), Type: rto.Successful}
