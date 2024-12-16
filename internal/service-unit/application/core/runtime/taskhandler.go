@@ -9,10 +9,22 @@ import (
 
 func TaskSetHandler(ctx context.Context, handler *domain.PrimaryAdapterHandler) domain.TaskSetResult {
 	resultCh := make(chan *secondary.SecondaryPortCallResult, len(handler.TaskSet))
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 
-	for _, taskHandler := range handler.TaskSet {
-		taskHandler(ctx, resultCh)
-	}
+	go func() {
+		for _, taskHandler := range handler.TaskSet {
+			if ctx.Err() != nil {
+				// stop further processing if context has been cancelled
+				resultCh <- &secondary.SecondaryPortCallResult{
+					Payload: nil,
+					Error:   ctx.Err(),
+				}
+				continue
+			}
+			taskHandler(ctx, resultCh)
+		}
+	}()
 
 	var results []*secondary.SecondaryPortCallResult
 	shouldFail := false
@@ -26,6 +38,9 @@ func TaskSetHandler(ctx context.Context, handler *domain.PrimaryAdapterHandler) 
 		}
 		// shouldFail when all adapters return err even if none of them have IsCritical set to True
 		shouldFail = shouldFail || errCount == len(handler.TaskSet)
+		if shouldFail {
+			cancel() // cancel context immediately to prevent further processing
+		}
 	}
 	close(resultCh)
 
