@@ -301,9 +301,12 @@ func (rgl RetryGaugeLabels) AsMap() map[string]string {
 }
 
 type AdaptiveTimeoutGaugeLabels struct {
-	Ctx TelemetryContext
+	Ctx   TelemetryContext
+	State string
 }
 
 func (atgl AdaptiveTimeoutGaugeLabels) AsMap() map[string]string {
-	return atgl.Ctx.AsMap()
+	base := atgl.Ctx.AsMap()
+	base["state"] = atgl.State
+	return base
 }
