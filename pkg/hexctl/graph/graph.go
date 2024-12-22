@@ -56,3 +56,12 @@ func (g *Graph) CalculateRecursiveCalls() map[string]int {
 	}
 	return result
 }
+
+func (g *Graph) CountNodesAndEdges() (int, int) {
+    numNodes := len(g.Nodes)
+    numEdges := 0
+    for _, neighbors := range g.Adjacency {
+        numEdges += len(neighbors)
+    }
+    return numNodes, numEdges
+}

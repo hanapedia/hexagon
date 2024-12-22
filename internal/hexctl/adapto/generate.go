@@ -1,6 +1,7 @@
 package adapto
 
 import (
+	"fmt"
 	"path/filepath"
 	"time"
 
@@ -41,6 +42,11 @@ func GenerateFromDirectory(input, output string) {
 	ag.GenerateGraph()
 	ag.PatchServiceUnitConfigs()
 	ag.RewriteYAML()
+
+	// Log total number of edges and nodes
+	numNodes, numEdges := ag.Graph.CountNodesAndEdges()
+	fmt.Printf("Total Number of Nodes: %v\n", numNodes)
+	fmt.Printf("Total Number of Edges: %v\n", numEdges)
 }
 
 // generate generates GraphML compatible Graph
