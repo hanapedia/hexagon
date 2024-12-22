@@ -198,17 +198,10 @@ type AdaptiveTimeoutSpec struct {
 	LatencySLO string `json:"latencySLO,omitempty"`
 	// SLO failure rate target used by RTO
 	FailureRateSLO float64 `json:"failureRateSLO,omitempty"`
-	// Capacity is the capacity used by RTO to determine the change in load pattern
-	Capacity int64 `json:"capacity,omitempty"` // deprecated in v1.2.0
 	// Interval is the duration used for the periodic calculation of failure rate
 	Interval string `json:"interval,omitempty"`
-	// KMargin is the starting kMargin used for rto w/ slo and static kMargin for rto w/out SLO
-	KMargin int64 `json:"kMargin,omitempty"`
-	// OverloadDetectionTiming specifies the timing for overload detection.
-	// can be maxTimeoutGenrated or maxTimeoutExceeded (default)
-	OverloadDetectionTiming string `json:"overloadDetectionTiming,omitempty"`
-	// OverloadDrainIntervals is the number of intervals for draining overload
-	OverloadDrainIntervals uint64 `json:"overloadDrainIntervals,omitempty"`
+	// DisableClientQueuing indicate to feature gate client queueing
+	DisableClientQueuing bool `json:"disableClientQueuing"`
 }
 
 func (ats *AdaptiveTimeoutSpec) GetInterval() time.Duration {
