@@ -74,16 +74,50 @@ func (ag *AdaptoGenerator) PatchServiceUnitConfigs() {
 	// callsMap contains the recursive call counters for each primary adapter
 	// should set the adaptive timeout based on (counter + 1) * base timeout
 	callsMap := ag.Graph.CalculateRecursiveCalls()
+
+	// find the max calls for static timeout in tier-0 mode
+	var maxCalls int = 0
+	for _, calls := range callsMap {
+		maxCalls = max(maxCalls, calls)
+	}
+
 	baseTimeout, err := ag.ClusterConfig.GetBaseTimeout()
 	if err != nil {
 		baseTimeout = model.DEFAULT_ADAPTIVE_TIMEOUT_MAX
 	}
+	sourceNodes := ag.Graph.GetSourceNodesMap()
 	for _, suc := range ag.ServiceUnitConfigs {
 		for _, primary := range suc.AdapterConfigs {
 			for _, taskSpec := range primary.TaskSpecs {
 				if taskSpec.AdapterConfig.Type() != model.Invocation {
 					continue
 				}
+				if ag.ClusterConfig.TimeoutScaling == model.TIER_0_ATS {
+					if _, ok := sourceNodes[taskSpec.AdapterConfig.GetId()]; !ok {
+						// Not source node. Apply static timeout
+						taskSpec.Resiliency = ag.ClusterConfig.Resiliency
+						ag.ClusterConfig.Resiliency.AdaptiveCallTimeout.Enabled = false
+						taskSpec.Resiliency.CallTimeout = (baseTimeout * time.Duration(maxCalls+1)).String()
+						continue
+					}
+
+					// get the number of recursive calls for the source node and scale timeout
+					calls, ok := callsMap[taskSpec.AdapterConfig.GetId()]
+					if !ok {
+						logger.Logger.Errorf("No matching adapter found.")
+						continue
+					}
+					taskSpec.Resiliency = ag.ClusterConfig.Resiliency
+					if ag.ClusterConfig.Resiliency.AdaptiveCallTimeout.Enabled {
+						taskSpec.Resiliency.AdaptiveCallTimeout.LatencySLO = (baseTimeout * time.Duration(calls+1)).String()
+						taskSpec.Resiliency.AdaptiveCallTimeout.MinTimeout = (baseTimeout * time.Duration(calls)).String()
+					} else {
+						taskSpec.Resiliency.CallTimeout = (baseTimeout * time.Duration(calls+1)).String()
+					}
+					continue
+				}
+
+				// use recursive by default
 				calls, ok := callsMap[taskSpec.AdapterConfig.GetId()]
 				if !ok {
 					logger.Logger.Errorf("No matching adapter found.")

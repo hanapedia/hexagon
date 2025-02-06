@@ -23,6 +23,7 @@ type ClusterConfig struct {
 	Otel              OtelCollectorClusterConfig `json:"otel,omitempty"`
 	Resiliency        ResiliencySpec             `json:"resiliency,omitempty"`
 	BaseTimeout       string                     `json:"baseTimeout,omitempty"`
+	TimeoutScaling    TimeoutScaling             `json:"timeoutScaling,omitempty"`
 	Deployment        DeploymentSpec             `json:"deployment,omitempty"`
 }
 
@@ -55,6 +56,13 @@ type OtelCollectorClusterConfig struct {
 	Name      string `json:"name,omitempty"`
 	Namespace string `json:"namespace,omitempty"`
 }
+
+type TimeoutScaling string
+
+const (
+	TIER_0_ATS    TimeoutScaling = "tier-0"    // Apply only at most upstream
+	RECURSIVE_ATS TimeoutScaling = "recursive" // Scale SLO latency recursively (DEFAULT)
+)
 
 func NewClusterConfig() ClusterConfig {
 	return ClusterConfig{

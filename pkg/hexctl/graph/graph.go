@@ -40,9 +40,9 @@ func (g *Graph) CountReachable(nodeID string, visited map[string]bool) int {
 
 	count := 0
 	for _, neighbor := range g.Adjacency[nodeID] {
-        if !visited[neighbor] {
-            count += 1 + g.CountReachable(neighbor, visited)
-        }
+		if !visited[neighbor] {
+			count += 1 + g.CountReachable(neighbor, visited)
+		}
 	}
 	return count
 }
@@ -58,10 +58,38 @@ func (g *Graph) CalculateRecursiveCalls() map[string]int {
 }
 
 func (g *Graph) CountNodesAndEdges() (int, int) {
-    numNodes := len(g.Nodes)
-    numEdges := 0
-    for _, neighbors := range g.Adjacency {
-        numEdges += len(neighbors)
-    }
-    return numNodes, numEdges
+	numNodes := len(g.Nodes)
+	numEdges := 0
+	for _, neighbors := range g.Adjacency {
+		numEdges += len(neighbors)
+	}
+	return numNodes, numEdges
+}
+
+// GetSourceNodesMap returns a map of node IDs to Nodes where each node has no incoming edges.
+func (g *Graph) GetSourceNodesMap() map[string]*Node {
+	// Create a map to keep track of the in-degree for each node.
+	inDegree := make(map[string]int)
+
+	// Initialize the in-degree for every node in the graph to 0.
+	for id := range g.Nodes {
+		inDegree[id] = 0
+	}
+
+	// Iterate over the Adjacency map and count incoming edges for each node.
+	for _, neighbors := range g.Adjacency {
+		for _, neighborID := range neighbors {
+			inDegree[neighborID]++
+		}
+	}
+
+	// Build the result map containing only nodes with an in-degree of 0.
+	sourceNodes := make(map[string]*Node)
+	for id, count := range inDegree {
+		if count == 0 {
+			sourceNodes[id] = g.Nodes[id]
+		}
+	}
+
+	return sourceNodes
 }
